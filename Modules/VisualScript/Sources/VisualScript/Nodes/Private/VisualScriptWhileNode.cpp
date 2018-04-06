@@ -17,11 +17,11 @@ VisualScriptWhileNode::VisualScriptWhileNode()
     SetType(WHILE);
     SetName(GetTypeName());
 
-    execPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
-    conditionPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("condition"), Type::Instance<bool>()));
-    loopBodyPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("loop body"), nullptr));
-    loopCompletedPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("completed"), nullptr));
+    execPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_IN, FastName("exec"), nullptr));
+    conditionPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("condition"), Type::Instance<bool>()));
+    loopBodyPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("loop body"), nullptr));
+    loopCompletedPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("completed"), nullptr));
 
-    cyclePin = new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("cycle"), nullptr);
+    cyclePin = new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_IN, FastName("cycle"), nullptr);
 }
 }

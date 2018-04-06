@@ -16,7 +16,7 @@ class VisualScriptPin final
     DAVA_REFLECTION(VisualScriptPin);
 
 public:
-    enum eAttribute
+    enum class Attribute
     {
         ATTR_IN = 0,
         ATTR_OUT,
@@ -24,20 +24,20 @@ public:
         EXEC_OUT,
     };
 
-    enum eDefaultParam
+    enum class DefaultParam
     {
         NO_DEFAULT_PARAM = 0,
         DEFAULT_PARAM,
     };
 
-    enum eCanConnectResult
+    enum class CanConnectResult
     {
         CANNOT_CONNECT = 0,
         CAN_CONNECT = 1,
         CAN_CONNECT_WITH_CAST = 2,
     };
 
-    VisualScriptPin(VisualScriptNode* owner_, eAttribute attr_, const FastName& name_, const Type* type_, eDefaultParam defaultParam_ = NO_DEFAULT_PARAM);
+    VisualScriptPin(VisualScriptNode* owner_, Attribute attr_, const FastName& name_, const Type* type_, DefaultParam defaultParam_ = DefaultParam::NO_DEFAULT_PARAM);
     ~VisualScriptPin();
 
     void SetType(const Type* type);
@@ -57,7 +57,7 @@ public:
     VisualScriptPin* GetConnectedTo() const;
     const Set<VisualScriptPin*>& GetConnectedSet() const;
 
-    eAttribute GetAttribute() const;
+    Attribute GetAttribute() const;
 
     bool HasDefaultValue() const;
     void SetDefaultValue(Any defaultValue_);
@@ -80,8 +80,8 @@ public:
     VisualScriptNode* GetSerializationOwner() const;
 
     static bool IsConnected(VisualScriptPin* pin1, VisualScriptPin* pin2);
-    static eCanConnectResult CanConnect(VisualScriptPin* pin1, VisualScriptPin* pin2);
-    static eCanConnectResult CanConnectDataPinsOutputToInput(VisualScriptPin* outputPin, VisualScriptPin* inputPin);
+    static CanConnectResult CanConnect(VisualScriptPin* pin1, VisualScriptPin* pin2);
+    static CanConnectResult CanConnectDataPinsOutputToInput(VisualScriptPin* outputPin, VisualScriptPin* inputPin);
 
 private:
     static bool ConnectDataPins(VisualScriptPin* inputPin, VisualScriptPin* outputPin);
@@ -91,8 +91,8 @@ private:
     VisualScriptNode* serializationOwner = nullptr; // Required for serialization & deserialization
 
     const Type* type = nullptr;
-    eAttribute attr = ATTR_IN;
-    eDefaultParam defaultParam = NO_DEFAULT_PARAM;
+    Attribute attr = Attribute::ATTR_IN;
+    DefaultParam defaultParam = DefaultParam::NO_DEFAULT_PARAM;
     Set<VisualScriptPin*> connectedTo;
     FastName name;
     Any defaultValue;
@@ -101,7 +101,7 @@ private:
 
 inline VisualScriptPin* VisualScriptPin::GetConnectedTo() const
 {
-    DVASSERT(attr == ATTR_IN || attr == EXEC_OUT);
+    DVASSERT(attr == Attribute::ATTR_IN || attr == Attribute::EXEC_OUT);
     if (connectedTo.size() != 1)
         return nullptr;
     return *connectedTo.begin();
@@ -149,19 +149,19 @@ inline VisualScriptNode* VisualScriptPin::GetSerializationOwner() const
     return serializationOwner;
 }
 
-inline VisualScriptPin::eAttribute VisualScriptPin::GetAttribute() const
+inline VisualScriptPin::Attribute VisualScriptPin::GetAttribute() const
 {
     return attr;
 }
 
 inline bool VisualScriptPin::IsInputDataRequired() const
 {
-    return !(defaultParam == DEFAULT_PARAM && defaultValue.IsEmpty() == false);
+    return !(defaultParam == DefaultParam::DEFAULT_PARAM && defaultValue.IsEmpty() == false);
 }
 
 inline bool VisualScriptPin::HasDefaultValue() const
 {
-    return (defaultParam == DEFAULT_PARAM);
+    return (defaultParam == DefaultParam::DEFAULT_PARAM);
 }
 
 inline void VisualScriptPin::SetDefaultValue(Any defaultValue_)

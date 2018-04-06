@@ -27,7 +27,7 @@ class VisualScriptNode : public ReflectionBase
 public:
     DAVA_VIRTUAL_REFLECTION(VisualScriptNode);
 
-    enum eType
+    enum NodeType
     {
         NONE,
         GET_VAR,
@@ -50,8 +50,8 @@ public:
     VisualScriptNode();
     virtual ~VisualScriptNode();
 
-    void SetType(eType type);
-    eType GetType() const;
+    void SetType(NodeType type);
+    NodeType GetType() const;
     const FastName& GetTypeName();
 
     void SetName(const FastName& name);
@@ -77,6 +77,8 @@ public:
     void SetScript(VisualScript* script);
     VisualScript* GetScript() const;
 
+    Result GetCompileResult() const;
+
     virtual void Save(YamlNode* node) const;
     virtual void Load(const YamlNode* node);
 
@@ -84,7 +86,7 @@ protected:
     void SaveDefaults(YamlNode* node) const;
     void LoadDefaults(const YamlNode* node);
 
-    eType type = NONE;
+    NodeType type = NodeType::NONE;
     VisualScript* script = nullptr;
     FastName name;
 
@@ -107,7 +109,7 @@ public:
     Vector2 position;
 };
 
-inline void VisualScriptNode::SetType(eType type_)
+inline void VisualScriptNode::SetType(NodeType type_)
 {
     type = type_;
 }
@@ -117,7 +119,7 @@ inline void VisualScriptNode::SetName(const FastName& name_)
     name = name_;
 }
 
-inline VisualScriptNode::eType VisualScriptNode::GetType() const
+inline VisualScriptNode::NodeType VisualScriptNode::GetType() const
 {
     return type;
 }

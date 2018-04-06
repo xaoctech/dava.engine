@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowDataService)
     ReflectionRegistrator<UIFlowDataService>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowDataService* s) { delete s; })
-    .Method("SetDataDirty", &UIFlowDataService::SetDataDirty)[M::Params("reflection")]
+    .Method("SetDataDirty", &UIFlowDataService::SetDataDirty)[M::ArgNames("reflection")]
     .End();
 }
 

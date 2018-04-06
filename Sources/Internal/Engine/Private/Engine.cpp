@@ -11,13 +11,6 @@ namespace EngineSingletonNamespace
 Engine* engineSingleton = nullptr;
 }
 
-DAVA_REFLECTION_IMPL(Engine)
-{
-    ReflectionRegistrator<Engine>::Begin()
-    .Method("QuitAsync", &Engine::QuitAsync)[M::Params("exitCode")]
-    .End();
-}
-
 Engine* Engine::Instance()
 {
     return EngineSingletonNamespace::engineSingleton;

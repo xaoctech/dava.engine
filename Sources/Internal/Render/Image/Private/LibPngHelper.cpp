@@ -18,24 +18,22 @@
 #include <unistd.h>
 #endif //#if !defined(__DAVAENGINE_WINDOWS__)
 
-using namespace DAVA;
-
 #define PNG_DEBUG 3
 
 namespace
 {
 struct PngImageRawData
 {
-    File* file;
+    DAVA::File* file;
 };
 
 void PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 {
     PngImageRawData* self = static_cast<PngImageRawData*>(png_get_io_ptr(pngPtr));
-    self->file->Read(data, static_cast<uint32>(size));
+    self->file->Read(data, static_cast<DAVA::uint32>(size));
 }
 
-void ReleaseWriteData(png_struct*& png_ptr, png_info*& info_ptr, unsigned char**& row_pointers, FILE*& fp, Image*& convertedImage)
+void ReleaseWriteData(png_struct*& png_ptr, png_info*& info_ptr, unsigned char**& row_pointers, FILE*& fp, DAVA::Image*& convertedImage)
 {
     free(row_pointers);
     row_pointers = nullptr;
@@ -47,7 +45,7 @@ void ReleaseWriteData(png_struct*& png_ptr, png_info*& info_ptr, unsigned char**
         fclose(fp);
         fp = nullptr;
     }
-    SafeRelease(convertedImage);
+    DAVA::SafeRelease(convertedImage);
 }
 }
 
@@ -61,6 +59,8 @@ void abort_(const char* s, ...)
     abort();
 }
 
+namespace DAVA
+{
 LibPngHelper::LibPngHelper()
     : ImageFormatInterface(ImageFormat::IMAGE_FORMAT_PNG, "PNG", { ".png" }, { FORMAT_RGBA8888, FORMAT_A8, FORMAT_A16 })
 {
@@ -247,7 +247,7 @@ eErrorCode LibPngHelper::WriteFileAsCubeMap(const FilePath& fileName, const Vect
     return eErrorCode::ERROR_WRITE_FAIL;
 }
 
-DAVA::ImageInfo DAVA::LibPngHelper::GetImageInfo(File* infile) const
+ImageInfo LibPngHelper::GetImageInfo(File* infile) const
 {
     if (!infile)
     {
@@ -521,4 +521,5 @@ eErrorCode LibPngHelper::ReadPngFile(File* infile, Image* image, PixelFormat tar
     png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
     return eErrorCode::SUCCESS;
+}
 }

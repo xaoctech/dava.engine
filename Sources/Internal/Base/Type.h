@@ -44,7 +44,6 @@ public:
 
     uint32_t GetSize() const;
     const char* GetName() const;
-    String GetDemangledName() const;
     std::type_index GetTypeIndex() const;
     const TypeInheritance* GetInheritance() const;
     unsigned long GetTypeFlags() const;

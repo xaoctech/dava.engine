@@ -86,7 +86,6 @@ FileList::FileList(const FilePath& filepath, bool includeHidden)
             entry.path = path + namelist[n]->d_name;
             entry.name = namelist[n]->d_name;
 
-#if defined(__DAVAENGINE_MACOS__)
             struct stat entry_stat;
             stat(entry.path.GetAbsolutePathname().c_str(), &entry_stat);
 
@@ -100,11 +99,6 @@ FileList::FileList(const FilePath& filepath, bool includeHidden)
             }
 
             entry.size = entry_stat.st_size;
-
-#elif defined(__DAVAENGINE_IPHONE__)
-            entry.isDirectory = (DT_DIR == namelist[n]->d_type);
-            entry.size = 0;
-#endif
 
             if (entry.name != "." && entry.name != "..")
             {

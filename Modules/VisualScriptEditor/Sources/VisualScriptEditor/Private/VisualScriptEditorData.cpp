@@ -26,13 +26,4 @@ DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptEditorData)
     .Field(reflectionHolderProperty, &VisualScriptEditorData::GetReflection, nullptr)
     .End();
 }
-
-//template <>
-//bool AnyCompare<VisualScriptEditorReflectionHolder>::IsEqual(const Any& v1, const Any& v2)
-//{
-//    const VisualScriptEditorReflectionHolder rh1 = v1.Get<VisualScriptEditorReflectionHolder>();
-//    const VisualScriptEditorReflectionHolder rh2 = v2.Get<VisualScriptEditorReflectionHolder>();
-//    return AnyCompare<Vector<Reflection>>::IsEqual(rh1.reflectedModels, rh2.reflectedModels);
-//}
-
 } //DAVA

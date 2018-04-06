@@ -1,8 +1,8 @@
 #include "VirtualProperty.h"
 
-#include "PropertyVisitor.h"
-#include "../PackageHierarchy/ControlNode.h"
 #include "Base/TemplateHelpers.h"
+#include "Model/PackageHierarchy/ControlNode.h"
+#include "PropertyVisitor.h"
 #include "VirtualPropertiesSection.h"
 
 #include "UI/UIControl.h"
@@ -63,7 +63,6 @@ bool VirtualProperty::IsOverriddenLocally() const
 void VirtualProperty::ResetValue()
 {
     vSection->ResetLocalValue(propertyName);
-    //SetOverridden(false);
 }
 
 void VirtualProperty::ApplyValue(const DAVA::Any& value)

@@ -28,7 +28,6 @@ VisualScriptFunctionNode::VisualScriptFunctionNode(const FastName& className_, c
     InitPins();
 }
 
-
 void VisualScriptFunctionNode::InitPins()
 {
     if (className.IsValid() && functionName.IsValid())
@@ -37,18 +36,26 @@ void VisualScriptFunctionNode::InitPins()
         SetName(FastName(nodeName));
 
         const ReflectedType* type = ReflectedTypeDB::GetByPermanentName(className.c_str());
-        const ReflectedStructure::Method* method = type->GetStructure()->GetMethod(functionName);
+        const ReflectedStructure::Method* method = nullptr;
+        for (auto& m : type->GetStructure()->methods)
+        {
+            if (functionName == m->name)
+            {
+                method = m.get();
+            }
+        }
+
         if (method)
         {
             function = method->fn;
 
             if (!function.IsConst() && !function.IsStatic())
             {
-                RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
-                RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("exit"), nullptr));
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_IN, FastName("exec"), nullptr));
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("exit"), nullptr));
             }
 
-            const M::Params* paramsMeta = method->meta ? method->meta->GetMeta<M::Params>() : nullptr;
+            const M::ArgNames* paramsMeta = method->meta ? method->meta->GetMeta<M::ArgNames>() : nullptr;
             int32 index = function.IsStatic() ? 0 : -1; // First argument is pointer to object
             for (auto type : function.GetInvokeParams().argsType)
             {
@@ -57,9 +64,9 @@ void VisualScriptFunctionNode::InitPins()
                 {
                     paramName = FastName("self");
                 }
-                else if (paramsMeta && paramsMeta->paramsNames.size() > index) // Give name to argument from meta
+                else if (paramsMeta && paramsMeta->argNames.size() > index) // Give name to argument from meta
                 {
-                    paramName = FastName(paramsMeta->paramsNames[index]);
+                    paramName = FastName(paramsMeta->argNames[index]);
                 }
                 else // Give name to argument from argument' number
                 {
@@ -67,13 +74,13 @@ void VisualScriptFunctionNode::InitPins()
                 }
                 index++;
 
-                RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, paramName, type, VisualScriptPin::DEFAULT_PARAM));
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, paramName, type, VisualScriptPin::DefaultParam::DEFAULT_PARAM));
             }
 
             const Type* returnType = function.GetInvokeParams().retType;
             if (returnType != Type::Instance<void>())
             {
-                RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("result"), returnType));
+                RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_OUT, FastName("result"), returnType));
             }
         }
         else

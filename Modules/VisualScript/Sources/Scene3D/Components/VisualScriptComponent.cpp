@@ -1,10 +1,13 @@
 #include "Scene3D/Components/VisualScriptComponent.h"
+#include "Scene3D/Components/SingleComponents/VisualScriptSingleComponent.h"
 #include "VisualScript/VisualScript.h"
 
-#include "Reflection/ReflectionRegistrator.h"
-#include "Reflection/ReflectedMeta.h"
-#include "FileSystem/KeyedArchive.h"
 #include "Engine/Engine.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Reflection/ReflectedMeta.h"
+#include "Reflection/ReflectionRegistrator.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
 
 namespace DAVA
 {
@@ -35,6 +38,15 @@ void VisualScriptComponent::SetScriptFilepath(const FilePath& scriptFilepath_)
         SafeDelete(script);
         script = new VisualScript();
         script->Load(scriptFilepath);
+
+        if (GetEntity() && GetEntity()->GetScene())
+        {
+            VisualScriptSingleComponent* singleComponent = GetEntity()->GetScene()->GetSingletonComponent<VisualScriptSingleComponent>();
+            if (singleComponent)
+            {
+                singleComponent->compiledScripts.insert(this);
+            }
+        }
     }
 }
 

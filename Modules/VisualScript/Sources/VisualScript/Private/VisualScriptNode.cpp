@@ -74,23 +74,23 @@ VisualScriptPin* VisualScriptNode::RegisterPin(VisualScriptPin* pin)
 {
     allPinsMap.emplace(pin->GetName(), pin);
 
-    if (pin->GetAttribute() == VisualScriptPin::ATTR_IN)
+    if (pin->GetAttribute() == VisualScriptPin::Attribute::ATTR_IN)
     {
         allInputPins.emplace_back(pin);
         dataInputPins.emplace_back(pin);
     }
-    if (pin->GetAttribute() == VisualScriptPin::ATTR_OUT)
+    if (pin->GetAttribute() == VisualScriptPin::Attribute::ATTR_OUT)
     {
         allOutputPins.emplace_back(pin);
         dataOutputPins.emplace_back(pin);
     }
 
-    if (pin->GetAttribute() == VisualScriptPin::EXEC_IN)
+    if (pin->GetAttribute() == VisualScriptPin::Attribute::EXEC_IN)
     {
         allInputPins.emplace_back(pin);
         execInPins.emplace_back(pin);
     }
-    if (pin->GetAttribute() == VisualScriptPin::EXEC_OUT)
+    if (pin->GetAttribute() == VisualScriptPin::Attribute::EXEC_OUT)
     {
         allOutputPins.emplace_back(pin);
         execOutPins.emplace_back(pin);
@@ -129,7 +129,6 @@ VisualScriptPin* VisualScriptNode::GetPinByName(const FastName& pinName)
     return nullptr;
 }
 
-
 Set<std::pair<VisualScriptPin*, VisualScriptPin*>> VisualScriptNode::GetAllConnections() const
 {
     Set<std::pair<VisualScriptPin*, VisualScriptPin*>> connections;
@@ -145,6 +144,11 @@ Set<std::pair<VisualScriptPin*, VisualScriptPin*>> VisualScriptNode::GetAllConne
         }
     }
     return connections;
+}
+
+Result VisualScriptNode::GetCompileResult() const
+{
+    return Result();
 }
 
 void VisualScriptNode::Save(YamlNode* node) const

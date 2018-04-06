@@ -302,16 +302,16 @@ class MergeableField
 };
 
 /** Defines parameters' names for reflected method. Usefull for scripting. */
-class Params
+class ArgNames
 {
 public:
     template <typename... Args>
-    Params(Args&&... args)
+    ArgNames(Args&&... args)
     {
-        paramsNames = { args... };
+        argNames = { args... };
     }
 
-    Vector<String> paramsNames;
+    Vector<String> argNames;
 };
 } // namespace Metas
 } // namespace DAVA

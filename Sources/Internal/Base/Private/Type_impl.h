@@ -119,11 +119,6 @@ inline const char* Type::GetName() const
     return stdTypeInfo->name();
 }
 
-inline String Type::GetDemangledName() const
-{
-    return DAVA::Debug::DemangleFrameSymbol(GetName());
-}
-
 inline std::type_index Type::GetTypeIndex() const
 {
     return std::type_index(*stdTypeInfo);

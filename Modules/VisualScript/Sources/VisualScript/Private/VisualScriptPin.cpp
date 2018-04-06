@@ -15,7 +15,7 @@ DAVA_REFLECTION_IMPL(VisualScriptPin)
     .End();
 }
 
-VisualScriptPin::VisualScriptPin(VisualScriptNode* owner_, eAttribute attr_, const FastName& name_, const Type* type_, eDefaultParam defaultParam_)
+VisualScriptPin::VisualScriptPin(VisualScriptNode* owner_, Attribute attr_, const FastName& name_, const Type* type_, DefaultParam defaultParam_)
     : owner(owner_)
     , attr(attr_)
     , name(name_)
@@ -32,10 +32,10 @@ VisualScriptPin::~VisualScriptPin()
      Data pins allow only 1 input pin
 */
 
-VisualScriptPin::eCanConnectResult VisualScriptPin::CanConnect(VisualScriptPin* pin1, VisualScriptPin* pin2)
+VisualScriptPin::CanConnectResult VisualScriptPin::CanConnect(VisualScriptPin* pin1, VisualScriptPin* pin2)
 {
     if (pin1->attr == pin2->attr)
-        return CANNOT_CONNECT;
+        return CanConnectResult::CANNOT_CONNECT;
 
     VisualScriptPin* inputPin = pin1;
     VisualScriptPin* outputPin = pin2;
@@ -51,34 +51,34 @@ VisualScriptPin::eCanConnectResult VisualScriptPin::CanConnect(VisualScriptPin* 
     }
     else if (inputPin->IsExecutionPin() && outputPin->IsExecutionPin())
     {
-        return CAN_CONNECT;
+        return CanConnectResult::CAN_CONNECT;
     }
 
-    return CANNOT_CONNECT;
+    return CanConnectResult::CANNOT_CONNECT;
 }
 
-VisualScriptPin::eCanConnectResult VisualScriptPin::CanConnectDataPinsOutputToInput(VisualScriptPin* outputPin, VisualScriptPin* inputPin)
+VisualScriptPin::CanConnectResult VisualScriptPin::CanConnectDataPinsOutputToInput(VisualScriptPin* outputPin, VisualScriptPin* inputPin)
 {
     if (outputPin->type == inputPin->type)
-        return CAN_CONNECT;
+        return CanConnectResult::CAN_CONNECT;
     if (outputPin->type == inputPin->type->Decay())
-        return CAN_CONNECT;
+        return CanConnectResult::CAN_CONNECT;
     if (outputPin->type->Pointer() == inputPin->type)
-        return CAN_CONNECT;
+        return CanConnectResult::CAN_CONNECT;
     if (outputPin->type == inputPin->type->Pointer())
-        return CAN_CONNECT;
+        return CanConnectResult::CAN_CONNECT;
     if (TypeInheritance::CanCast(outputPin->type, inputPin->type))
-        return CAN_CONNECT_WITH_CAST;
+        return CanConnectResult::CAN_CONNECT_WITH_CAST;
     if (inputPin->type->Pointer() && TypeInheritance::CanCast(outputPin->type, inputPin->type->Pointer()))
-        return CAN_CONNECT_WITH_CAST;
+        return CanConnectResult::CAN_CONNECT_WITH_CAST;
     if (outputPin->type->Pointer() && TypeInheritance::CanCast(outputPin->type->Pointer(), inputPin->type))
-        return CAN_CONNECT_WITH_CAST;
+        return CanConnectResult::CAN_CONNECT_WITH_CAST;
 
 #define CHECK_CAST(from, to)                                                                     \
     if ((outputPin->type == Type::Instance<from>()) && (inputPin->type == Type::Instance<to>())) \
-        return CAN_CONNECT_WITH_CAST;                                                            \
+        return CanConnectResult::CAN_CONNECT_WITH_CAST;                                                            \
     if ((outputPin->type == Type::Instance<to>()) && (inputPin->type == Type::Instance<from>())) \
-        return CAN_CONNECT_WITH_CAST;
+        return CanConnectResult::CAN_CONNECT_WITH_CAST;
 
     CHECK_CAST(bool, int32);
     CHECK_CAST(bool, uint32);
@@ -92,13 +92,13 @@ VisualScriptPin::eCanConnectResult VisualScriptPin::CanConnectDataPinsOutputToIn
 
 #undef CHECK_CAST
 
-    return CANNOT_CONNECT;
+    return CanConnectResult::CANNOT_CONNECT;
 }
 
 bool VisualScriptPin::ConnectDataPins(VisualScriptPin* inputPin, VisualScriptPin* outputPin)
 {
     // DATA PINS
-    if (CanConnectDataPinsOutputToInput(outputPin, inputPin) == CANNOT_CONNECT)
+    if (CanConnectDataPinsOutputToInput(outputPin, inputPin) == CanConnectResult::CANNOT_CONNECT)
     {
         return false;
     }
@@ -155,7 +155,7 @@ bool VisualScriptPin::Connect(VisualScriptPin* otherPin)
 
     VisualScriptPin* inputPin = otherPin;
     VisualScriptPin* outputPin = this;
-    if ((this->attr == ATTR_IN) || (this->attr == EXEC_IN))
+    if ((this->attr == Attribute::ATTR_IN) || (this->attr == Attribute::EXEC_IN))
     {
         inputPin = this;
         outputPin = otherPin;
@@ -168,22 +168,22 @@ bool VisualScriptPin::Connect(VisualScriptPin* otherPin)
 
 bool VisualScriptPin::IsInputPin() const
 {
-    return (attr == EXEC_IN) || (attr == ATTR_IN);
+    return (attr == Attribute::EXEC_IN) || (attr == Attribute::ATTR_IN);
 }
 
 bool VisualScriptPin::IsOutputPin() const
 {
-    return (attr == EXEC_OUT) || (attr == ATTR_OUT);
+    return (attr == Attribute::EXEC_OUT) || (attr == Attribute::ATTR_OUT);
 }
 
 bool VisualScriptPin::IsExecutionPin() const
 {
-    return (attr == EXEC_IN) || (attr == EXEC_OUT);
+    return (attr == Attribute::EXEC_IN) || (attr == Attribute::EXEC_OUT);
 }
 
 bool VisualScriptPin::IsDataPin() const
 {
-    return (attr == ATTR_IN) || (attr == ATTR_OUT);
+    return (attr == Attribute::ATTR_IN) || (attr == Attribute::ATTR_OUT);
 }
 
 bool VisualScriptPin::IsConnected(VisualScriptPin* pin1, VisualScriptPin* pin2)
@@ -204,18 +204,18 @@ void VisualScriptPin::Disconnect(VisualScriptPin* disconnectFrom)
 
 const Any& VisualScriptPin::GetValue() const
 {
-    if (attr == ATTR_IN)
+    if (attr == Attribute::ATTR_IN)
     {
         VisualScriptPin* outputPin = GetConnectedTo();
         if (outputPin)
             return outputPin->GetValue();
         else
         {
-            DVASSERT(defaultParam == DEFAULT_PARAM);
+            DVASSERT(defaultParam == DefaultParam::DEFAULT_PARAM);
             return defaultValue;
         }
     }
-    else if (attr == ATTR_OUT)
+    else if (attr == Attribute::ATTR_OUT)
     {
         return value;
     }

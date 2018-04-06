@@ -18,11 +18,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowSystemService)
     ReflectionRegistrator<UIFlowSystemService>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowSystemService* s) { delete s; })
-    .Method("ActivateState", &UIFlowSystemService::ActivateState)[M::Params("statePath", "background")]
-    .Method("DeactivateState", &UIFlowSystemService::DeactivateState)[M::Params("statePath", "background")]
-    .Method("PreloadState", &UIFlowSystemService::PreloadState)[M::Params("statePath", "background")]
-    .Method("IsStateLoaded", &UIFlowSystemService::IsStateLoaded)[M::Params("statePath")]
-    .Method("IsStateActive", &UIFlowSystemService::IsStateActive)[M::Params("statePath")]
+    .Method("ActivateState", &UIFlowSystemService::ActivateState)[M::ArgNames("statePath", "background")]
+    .Method("DeactivateState", &UIFlowSystemService::DeactivateState)[M::ArgNames("statePath", "background")]
+    .Method("PreloadState", &UIFlowSystemService::PreloadState)[M::ArgNames("statePath", "background")]
+    .Method("IsStateLoaded", &UIFlowSystemService::IsStateLoaded)[M::ArgNames("statePath")]
+    .Method("IsStateActive", &UIFlowSystemService::IsStateActive)[M::ArgNames("statePath")]
     .Method("HasTransitions", &UIFlowSystemService::HasTransitions)
     .Method("GetCurrentSingleState", &UIFlowSystemService::GetCurrentSingleState)
     .Method("GetCurrentMultipleStates", &UIFlowSystemService::GetCurrentMultipleStates)

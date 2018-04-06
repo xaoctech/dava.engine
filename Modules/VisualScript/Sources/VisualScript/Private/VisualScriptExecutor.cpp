@@ -424,7 +424,7 @@ void VisualScriptExecutor::CompileNode(VisualScriptNode* node)
                 VisualScriptNode* owner = connectedTo->GetExecutionOwner();
                 if (owner)
                 {
-                    VisualScriptNode::eType type = owner->GetType();
+                    VisualScriptNode::NodeType type = owner->GetType();
 
                     /*
                      Types that support back-propagation of calls.
@@ -515,7 +515,7 @@ void VisualScriptExecutor::Compile(VisualScriptPin* entryPin)
     {
         VisualScriptPin* activationPin = instructionStack.top();
         instructionStack.pop();
-        DVASSERT(activationPin->GetAttribute() == VisualScriptPin::EXEC_IN);
+        DVASSERT(activationPin->GetAttribute() == VisualScriptPin::Attribute::EXEC_IN);
         VisualScriptNode* currentNode = activationPin->GetExecutionOwner();
         CompileNode(currentNode);
 
@@ -534,7 +534,7 @@ void VisualScriptExecutor::Compile(VisualScriptPin* entryPin)
 void VisualScriptExecutor::PushInstruction(VisualScriptPin* activationPin)
 {
     DVASSERT(activationPin != nullptr);
-    DVASSERT(activationPin->GetAttribute() == VisualScriptPin::EXEC_IN);
+    DVASSERT(activationPin->GetAttribute() == VisualScriptPin::Attribute::EXEC_IN);
     instructionStack.push(activationPin);
 }
 
@@ -546,7 +546,7 @@ void VisualScriptExecutor::Execute(VisualScriptPin* entryPin)
     {
         VisualScriptPin* activationPin = instructionStack.top();
         instructionStack.pop();
-        DVASSERT(activationPin->GetAttribute() == VisualScriptPin::EXEC_IN);
+        DVASSERT(activationPin->GetAttribute() == VisualScriptPin::Attribute::EXEC_IN);
         VisualScriptNode* currentNode = activationPin->GetExecutionOwner();
         ExecuteSubTree(currentNode, activationPin);
     }

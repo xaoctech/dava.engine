@@ -6,63 +6,24 @@
 #include "VisualScript/VisualScriptPin.h"
 #include "VisualScript/VisualScriptEvents.h"
 
-#include "FileSystem/YamlEmitter.h"
-#include "FileSystem/YamlNode.h"
-#include "FileSystem/YamlParser.h"
-#include "Reflection/Reflection.h"
-#include "Reflection/ReflectionRegistrator.h"
-#include "Utils/Utils.h"
-#include "Math/Vector.h"
-#include "Math/Matrix2.h"
-#include "Math/Matrix3.h"
-#include "Math/Matrix4.h"
-#include "Render/Image/Image.h"
-#include "Utils/StringUtils.h"
+#include <Debug/Backtrace.h>
+#include <FileSystem/YamlEmitter.h>
+#include <FileSystem/YamlNode.h>
+#include <FileSystem/YamlParser.h>
+#include <Math/Matrix2.h>
+#include <Math/Matrix3.h>
+#include <Math/Matrix4.h>
+#include <Math/Vector.h>
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Render/Image/Image.h>
+#include <Utils/StringUtils.h>
+#include <Utils/Utils.h>
 
 #include <algorithm>
 
 namespace DAVA
 {
-//namespace VisualScriptDetails
-//{
-//const ReflectedType* GetValueReflectedType(const Any& value);
-//
-//const ReflectedType* GetValueReflectedType(const Reflection& r)
-//{
-//    const ReflectedType* type = GetValueReflectedType(r.GetValue());
-//    if (type != nullptr)
-//    {
-//        return type;
-//    }
-//
-//    return r.GetValueObject().GetReflectedType();
-//}
-//
-//const ReflectedType* GetValueReflectedType(const Any& value)
-//{
-//    if (value.IsEmpty() == true)
-//    {
-//        return nullptr;
-//    }
-//
-//    const Type* type = value.GetType();
-//    if (type->IsPointer())
-//    {
-//        void* pointerValue = value.Get<void*>();
-//        if (pointerValue != nullptr)
-//        {
-//            return ReflectedTypeDB::GetByPointer(pointerValue, type->Deref());
-//        }
-//        else
-//        {
-//            return ReflectedTypeDB::GetByType(type->Deref());
-//        }
-//    }
-//
-//    return ReflectedTypeDB::GetByType(type);
-//}
-//}
-
 DAVA_REFLECTION_IMPL(VisualScript)
 {
     ReflectionRegistrator<VisualScript>::Begin()
@@ -151,7 +112,8 @@ void VisualScript::Save(const FilePath& filepath)
 
             const ReflectedType* reflectedType = ReflectedTypeDB::GetByPointer(node);
 
-            VSLogger_Debug("uname:%s type: %s pname: %s", uniqueNames[node].c_str(), type->GetDemangledName().c_str(), reflectedType->GetPermanentName().c_str());
+            const String demangledName = DAVA::Debug::DemangleFrameSymbol(type->GetName());
+            VSLogger_Debug("uname:%s type: %s pname: %s", uniqueNames[node].c_str(), demangledName.c_str(), reflectedType->GetPermanentName().c_str());
 
             YamlNode* yNode = YamlNode::CreateMapNode();
             yAllNodes->Add(uniqueNames[node].c_str(), yNode);

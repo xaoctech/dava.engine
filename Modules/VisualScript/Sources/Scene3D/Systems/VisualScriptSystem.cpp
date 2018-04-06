@@ -1,22 +1,17 @@
 #include "Scene3D/Systems/VisualScriptSystem.h"
+#include "Scene3D/Components/SingleComponents/VisualScriptSingleComponent.h"
 #include "Scene3D/Components/VisualScriptComponent.h"
 #include "Scene3D/Entity.h"
-#include "VisualScript/VisualScriptEvents.h"
 #include "VisualScript/VisualScript.h"
+#include "VisualScript/VisualScriptEvents.h"
 
+#include <Debug/ProfilerCPU.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include <Scene3D/Scene.h>
 #include <Scene3D/Components/SingleComponents/CollisionSingleComponent.h>
+#include <Scene3D/Scene.h>
 
 namespace DAVA
 {
-//DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptSystem)
-//{
-//    ReflectionRegistrator<VisualScriptSystem>::Begin()[M::Order(50)]
-//    .ConstructorByPointer<Scene*>()
-//    .End();
-//}
-
 VisualScriptSystem::VisualScriptSystem(Scene* scene)
     : SceneSystem(scene)
 {
@@ -24,56 +19,67 @@ VisualScriptSystem::VisualScriptSystem(Scene* scene)
 
 void VisualScriptSystem::SetScene(Scene* scene)
 {
+    visualScriptSingleComponent = new VisualScriptSingleComponent();
+    scene->AddSingletonComponent(visualScriptSingleComponent);
+
     collisionSingleComponent = scene->GetSingletonComponent<CollisionSingleComponent>();
 }
 
 void VisualScriptSystem::Process(float32 timeElapsed)
 {
-    //DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_VISUAL_SCRIPT_SYSTEM);
+    DAVA_PROFILER_CPU_SCOPE("VisualScriptSystem::Process");
 
-    for (CollisionInfo& collisionInfo : collisionSingleComponent->collisions)
+    for (VisualScriptComponent* scriptComponent : visualScriptSingleComponent->compiledScripts)
     {
-        VisualScriptComponent* firstScript = collisionInfo.first->GetComponent<VisualScriptComponent>();
-        VisualScriptComponent* secondScript = collisionInfo.second->GetComponent<VisualScriptComponent>();
-
-        EntitiesCollideEvent collideEvent;
-        collideEvent.collisionInfo = &collisionInfo;
-        if (firstScript)
+        if (scriptComponent && scriptComponent->GetScript())
         {
-            VisualScript* script = firstScript->GetScript();
-            if (script)
-            {
-                script->Execute(FastName("EntitiesCollideEvent"), Reflection::Create(&collideEvent));
-            }
+            CheckAndInsertScript(scriptComponent);
         }
+    }
 
-        if (secondScript)
+    if (!processVisualScripts.empty())
+    {
+        for (CollisionInfo& collisionInfo : collisionSingleComponent->collisions)
         {
-            VisualScript* script = secondScript->GetScript();
-            if (script)
+            VisualScriptComponent* firstScript = collisionInfo.first->GetComponent<VisualScriptComponent>();
+            VisualScriptComponent* secondScript = collisionInfo.second->GetComponent<VisualScriptComponent>();
+
+            EntitiesCollideEvent collideEvent;
+            collideEvent.collisionInfo = &collisionInfo;
+
+            if (collisionVisualScripts.find(firstScript) != collisionVisualScripts.end())
             {
-                script->Execute(FastName("EntitiesCollideEvent"), Reflection::Create(&collideEvent));
+                VisualScript* script = firstScript->GetScript();
+                if (script)
+                {
+                    script->Execute(FastName("EntitiesCollideEvent"), Reflection::Create(&collideEvent));
+                }
+            }
+
+            if (collisionVisualScripts.find(secondScript) != collisionVisualScripts.end())
+            {
+                VisualScript* script = secondScript->GetScript();
+                if (script)
+                {
+                    script->Execute(FastName("EntitiesCollideEvent"), Reflection::Create(&collideEvent));
+                }
             }
         }
     }
 
-    if (!visualScripts.empty())
+    if (!processVisualScripts.empty())
     {
         ProcessEvent processEvent;
         processEvent.frameDelta = timeElapsed;
         Reflection processEventRef = Reflection::Create(&processEvent);
 
-        for (Entity* e : visualScripts)
+        for (VisualScriptComponent* scriptComponent : processVisualScripts)
         {
-            VisualScriptComponent* scriptComponent = e->GetComponent<VisualScriptComponent>();
-            if (scriptComponent)
+            VisualScript* script = scriptComponent->GetScript();
+            if (script)
             {
-                VisualScript* script = scriptComponent->GetScript();
-                if (script)
-                {
-                    processEvent.component = scriptComponent;
-                    script->Execute(FastName("ProcessEvent"), processEventRef);
-                }
+                processEvent.component = scriptComponent;
+                script->Execute(FastName("ProcessEvent"), processEventRef);
             }
         }
     }
@@ -81,18 +87,55 @@ void VisualScriptSystem::Process(float32 timeElapsed)
 
 void VisualScriptSystem::AddEntity(Entity* entity)
 {
-    visualScripts.insert(entity);
     VisualScriptComponent* component = entity->GetComponent<VisualScriptComponent>();
+    if (component)
+    {
+        CheckAndInsertScript(component);
+    }
 }
 
 void VisualScriptSystem::RemoveEntity(Entity* entity)
 {
-    visualScripts.erase(entity);
+    VisualScriptComponent* component = entity->GetComponent<VisualScriptComponent>();
+    if (component)
+    {
+        processVisualScripts.erase(component);
+        collisionVisualScripts.erase(component);
+    }
 }
 
 void VisualScriptSystem::PrepareForRemove()
 {
-    visualScripts.clear();
-    eventToScripts.clear();
+    processVisualScripts.clear();
+    collisionVisualScripts.clear();
+}
+
+void VisualScriptSystem::CheckAndInsertScript(VisualScriptComponent* scriptComponent)
+{
+    VisualScript* script = scriptComponent->GetScript();
+    if (!script)
+    {
+        return;
+    }
+
+    // Collisions
+    if (script->HasEventNode(FastName("EntitiesCollideEvent")))
+    {
+        collisionVisualScripts.insert(scriptComponent);
+    }
+    else
+    {
+        collisionVisualScripts.erase(scriptComponent);
+    }
+
+    // Process
+    if (script->HasEventNode(FastName("ProcessEvent")))
+    {
+        processVisualScripts.insert(scriptComponent);
+    }
+    else
+    {
+        processVisualScripts.erase(scriptComponent);
+    }
 }
 }

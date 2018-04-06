@@ -50,20 +50,6 @@ public:
 
     Vector<std::unique_ptr<AnyFn>> ctors;
     std::unique_ptr<AnyFn> dtor;
-
-    const Method* GetMethod(const Key& key) const;
 };
 
-inline const ReflectedStructure::Method* ReflectedStructure::GetMethod(const Key& key) const
-{
-    // TODO: Replace vector to UnorderedMap.
-    for (auto& method : methods)
-    {
-        if (key == method->name)
-        {
-            return method.get();
-        }
-    }
-    return nullptr;
-}
 } // namespace DAVA

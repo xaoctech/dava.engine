@@ -93,10 +93,10 @@ void VisualScriptGetMemberNode::InitPins()
             valueWrapper = vw;
 
             const Type* classType = ReflectedTypeDB::GetByPermanentName(className.c_str())->GetType();
-            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("object"), classType));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("object"), classType));
 
             const Type* memberType = valueWrapper->GetType(ReflectedObject());
-            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("get"), memberType));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_OUT, FastName("get"), memberType));
         }
         else
         {

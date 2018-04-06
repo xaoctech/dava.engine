@@ -16,7 +16,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptEventNode)
 VisualScriptEventNode::VisualScriptEventNode()
 {
     SetType(EVENT);
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("event"), nullptr));
+    RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("event"), nullptr));
 }
 
 void VisualScriptEventNode::SetEventName(const FastName& eventName_)
@@ -25,7 +25,7 @@ void VisualScriptEventNode::SetEventName(const FastName& eventName_)
 
     for (const auto& field : rType->GetStructure()->fields)
     {
-        RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, field->name, field->valueWrapper->GetType(ReflectedObject())));
+        RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_OUT, field->name, field->valueWrapper->GetType(ReflectedObject())));
     }
 
     eventName = eventName_;

@@ -78,6 +78,8 @@ public:
     void Compile();
     void Execute(const FastName& eventNodeName, const Reflection& eventReflection);
 
+    bool HasEventNode(const FastName& eventNodeName) const;
+
     void Save(const FilePath& filepath);
     void Load(const FilePath& filepath);
     void PrepareDataForReload(const FilePath& filepath);

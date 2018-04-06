@@ -13,7 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(UIFlowEventsService)
     ReflectionRegistrator<UIFlowEventsService>::Begin()
     .ConstructorByPointer()
     .DestructorByPointer([](UIFlowEventsService* s) { delete s; })
-    .Method("Send", &UIFlowEventsService::Send)[M::Params("control", "eventName")]
+    .Method("Send", &UIFlowEventsService::Send)[M::ArgNames("control", "eventName")]
     .End();
 }
 

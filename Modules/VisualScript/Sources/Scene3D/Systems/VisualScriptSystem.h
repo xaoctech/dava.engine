@@ -7,11 +7,11 @@
 namespace DAVA
 {
 class CollisionSingleComponent;
+class VisualScriptComponent;
+class VisualScriptSingleComponent;
 class VisualScriptSystem : public SceneSystem
 {
 public:
-    //    DAVA_VIRTUAL_REFLECTION(VisualScriptSystem, SceneSystem);
-
     VisualScriptSystem(Scene* scene);
 
     void Process(float32 timeElapsed) override;
@@ -24,7 +24,10 @@ protected:
 
 private:
     CollisionSingleComponent* collisionSingleComponent = nullptr;
-    UnorderedSet<Entity*> visualScripts;
-    UnorderedMap<FastName, Vector<Entity*>> eventToScripts;
+    VisualScriptSingleComponent* visualScriptSingleComponent = nullptr;
+    UnorderedSet<VisualScriptComponent*> processVisualScripts;
+    UnorderedSet<VisualScriptComponent*> collisionVisualScripts;
+
+    void CheckAndInsertScript(VisualScriptComponent* scriptComponent);
 };
 }

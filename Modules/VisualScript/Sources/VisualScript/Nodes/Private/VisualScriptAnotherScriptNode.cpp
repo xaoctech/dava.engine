@@ -8,7 +8,6 @@
 
 namespace DAVA
 {
-
 DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptAnotherScriptNode)
 {
     ReflectionRegistrator<VisualScriptAnotherScriptNode>::Begin()
@@ -32,11 +31,7 @@ void VisualScriptAnotherScriptNode::SetScriptFilepath(const FilePath& scriptFile
         anotherScript->Load(scriptFilepath);
         anotherScript->Compile();
 
-        // anotherScript = GetEngineContext()->assetManager->LoadAsset<VisualScript>(scriptFilepath, [this](Asset<AssetBase> asset){
-        //     DVASSERT(asset == anotherScript);
-        //     CompleteScriptLoading();
-        // }, false);
-        // GetEngineContext()->jobManager->WaitWorkerJobs();
+        // TODO: Place here code that loading assets
 
         CompleteScriptLoad();
     }
@@ -69,21 +64,10 @@ void VisualScriptAnotherScriptNode::CompleteScriptLoad()
     Vector<VisualScriptPin*> allInputPins;
     Vector<VisualScriptPin*> allOutputPins;
 
-    uint32 execInputPins = 0;
     for (const auto& node : nodes)
     {
         const Vector<VisualScriptPin*>& inputPins = node->GetAllInputPins();
-        /*
-         //
-         // More than one exec pin? (is it a problem or not?)
-         // For now decided that is not
-         //
 
-        for (const auto& inPin: inputPins)
-        {
-            if (inPin->GetAttribute() == VisualScriptPin::EXEC_IN)
-                execInputPins++;
-        }*/
         for (const auto& inPin : inputPins)
         {
             if (inPin->GetConnectedSet().size() == 0 && inPin->GetDefaultValue().IsEmpty())

@@ -20,7 +20,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptGetVarNode)
 VisualScriptGetVarNode::VisualScriptGetVarNode()
 {
     SetType(GET_VAR);
-    outValuePin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("value"), nullptr));
+    outValuePin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_OUT, FastName("value"), nullptr));
 }
 
 VisualScriptGetVarNode::VisualScriptGetVarNode(const Reflection& ref, const FastName& varPath)

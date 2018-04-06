@@ -5,7 +5,6 @@
 #include "Engine/EngineContext.h"
 #include "Engine/Window.h"
 #include "Functional/Functional.h"
-#include "Reflection/Reflection.h"
 #include "Render/RHI/rhi_Type.h"
 
 /**
@@ -170,8 +169,6 @@ AppInstanceMonitor* GetAppInstanceMonitor(const char* uniqueAppId);
 */
 class Engine final
 {
-    DAVA_REFLECTION(Engine);
-
 public:
     /**
         Return a pointer to Engine object or null if Engine is not created yet.

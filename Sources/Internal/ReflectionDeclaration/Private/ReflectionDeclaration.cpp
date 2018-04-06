@@ -60,7 +60,6 @@
 #include "Math/Rect.h"
 #include "Math/AABBox3.h"
 #include "Math/Color.h"
-#include "Math/Math.h"
 #include "UI/Script/UIScriptComponent.h"
 #include "UI/Script/UIScriptComponentController.h"
 #include "UI/Script/Private/UILuaScriptComponentController.h"
@@ -230,13 +229,13 @@ void RegisterVector2()
     ReflectionRegistrator<Vector2>::Begin()
     .Field("X", &Vector2::x)[M::SubProperty()]
     .Field("Y", &Vector2::y)[M::SubProperty()]
-    .Method("Mul", static_cast<Vector2 (*)(const Vector2&, const Vector2&)>(&DAVA::Mul))[M::Params("v1", "v2")]
-    .Method("CrossProduct", static_cast<float32 (*)(const Vector2&, const Vector2&)>(&DAVA::CrossProduct))[M::Params("v1", "v2")]
-    .Method("DotProduct", static_cast<float32 (*)(const Vector2&, const Vector2&)>(&DAVA::DotProduct))[M::Params("v1", "v2")]
-    .Method("Normalize", static_cast<Vector2 (*)(const Vector2&)>(&DAVA::Normalize))[M::Params("v")]
-    .Method("Reflect", static_cast<Vector2 (*)(const Vector2&, const Vector2&)>(&DAVA::Reflect))[M::Params("v", "n")]
-    .Method("Rotate", static_cast<Vector2 (*)(const Vector2&, float32)>(&DAVA::Rotate))[M::Params("in", "angleRad")]
-    .Method("Make", [](float32 x, float32 y) { return Vector2(x, y); })[M::Params("x", "y")]
+    .Method("Mul", static_cast<Vector2 (*)(const Vector2&, const Vector2&)>(&DAVA::Mul))[M::ArgNames("v1", "v2")]
+    .Method("CrossProduct", static_cast<float32 (*)(const Vector2&, const Vector2&)>(&DAVA::CrossProduct))[M::ArgNames("v1", "v2")]
+    .Method("DotProduct", static_cast<float32 (*)(const Vector2&, const Vector2&)>(&DAVA::DotProduct))[M::ArgNames("v1", "v2")]
+    .Method("Normalize", static_cast<Vector2 (*)(const Vector2&)>(&DAVA::Normalize))[M::ArgNames("v")]
+    .Method("Reflect", static_cast<Vector2 (*)(const Vector2&, const Vector2&)>(&DAVA::Reflect))[M::ArgNames("v", "n")]
+    .Method("Rotate", static_cast<Vector2 (*)(const Vector2&, float32)>(&DAVA::Rotate))[M::ArgNames("in", "angleRad")]
+    .Method("Make", [](float32 x, float32 y) { return Vector2(x, y); })[M::ArgNames("x", "y")]
     .End();
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Vector2);
@@ -248,15 +247,15 @@ void RegisterVector3()
     .Field("X", &Vector3::x)[M::SubProperty()]
     .Field("Y", &Vector3::y)[M::SubProperty()]
     .Field("Z", &Vector3::z)[M::SubProperty()]
-    .Method("Mul", static_cast<Vector3 (*)(const Vector3&, const Vector3&)>(&DAVA::Mul))[M::Params("v1", "v2")]
-    .Method("CrossProduct", static_cast<Vector3 (*)(const Vector3&, const Vector3&)>(&DAVA::CrossProduct))[M::Params("v1", "v2")]
-    .Method("DotProduct", static_cast<float32 (*)(const Vector3&, const Vector3&)>(&DAVA::DotProduct))[M::Params("v1", "v2")]
-    .Method("Normalize", static_cast<Vector3 (*)(const Vector3&)>(&DAVA::Normalize))[M::Params("v")]
-    .Method("Reflect", static_cast<Vector3 (*)(const Vector3&, const Vector3&)>(&DAVA::Reflect))[M::Params("v", "n")]
-    .Method("Lerp", static_cast<Vector3 (*)(const Vector3&, const Vector3&, float32)>(&DAVA::Lerp))[M::Params("v1", "v2", "t")]
-    .Method("Distance", static_cast<float32 (*)(const Vector3&, const Vector3&)>(&DAVA::Distance))[M::Params("v1", "v2")]
-    .Method("PerpendicularVector", static_cast<Vector3 (*)(const Vector3&)>(&DAVA::PerpendicularVector))[M::Params("normal")]
-    .Method("Make", [](float32 x, float32 y, float32 z) { return Vector3(x, y, z); })[M::Params("x", "y", "z")]
+    .Method("Mul", static_cast<Vector3 (*)(const Vector3&, const Vector3&)>(&DAVA::Mul))[M::ArgNames("v1", "v2")]
+    .Method("CrossProduct", static_cast<Vector3 (*)(const Vector3&, const Vector3&)>(&DAVA::CrossProduct))[M::ArgNames("v1", "v2")]
+    .Method("DotProduct", static_cast<float32 (*)(const Vector3&, const Vector3&)>(&DAVA::DotProduct))[M::ArgNames("v1", "v2")]
+    .Method("Normalize", static_cast<Vector3 (*)(const Vector3&)>(&DAVA::Normalize))[M::ArgNames("v")]
+    .Method("Reflect", static_cast<Vector3 (*)(const Vector3&, const Vector3&)>(&DAVA::Reflect))[M::ArgNames("v", "n")]
+    .Method("Lerp", static_cast<Vector3 (*)(const Vector3&, const Vector3&, float32)>(&DAVA::Lerp))[M::ArgNames("v1", "v2", "t")]
+    .Method("Distance", static_cast<float32 (*)(const Vector3&, const Vector3&)>(&DAVA::Distance))[M::ArgNames("v1", "v2")]
+    .Method("PerpendicularVector", static_cast<Vector3 (*)(const Vector3&)>(&DAVA::PerpendicularVector))[M::ArgNames("normal")]
+    .Method("Make", [](float32 x, float32 y, float32 z) { return Vector3(x, y, z); })[M::ArgNames("x", "y", "z")]
     .End();
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Vector3);
@@ -269,12 +268,12 @@ void RegisterVector4()
     .Field("Y", &Vector4::y)[M::SubProperty()]
     .Field("Z", &Vector4::z)[M::SubProperty()]
     .Field("W", &Vector4::w)[M::SubProperty()]
-    .Method("Mul", static_cast<Vector4 (*)(const Vector4&, const Vector4&)>(&DAVA::Mul))[M::Params("v1", "v2")]
-    .Method("CrossProduct", static_cast<Vector4 (*)(const Vector4&, const Vector4&)>(&DAVA::CrossProduct))[M::Params("v1", "v2")]
-    .Method("DotProduct", static_cast<float32 (*)(const Vector4&, const Vector4&)>(&DAVA::DotProduct))[M::Params("v1", "v2")]
-    .Method("Normalize", static_cast<Vector4 (*)(const Vector4&)>(&DAVA::Normalize))[M::Params("v")]
-    .Method("Lerp", static_cast<Vector4 (*)(const Vector4&, const Vector4&, float32)>(&DAVA::Lerp))[M::Params("v1", "v2", "t")]
-    .Method("Make", [](float32 x, float32 y, float32 z, float32 w) { return Vector4(x, y, z, w); })[M::Params("x", "y", "z", "w")]
+    .Method("Mul", static_cast<Vector4 (*)(const Vector4&, const Vector4&)>(&DAVA::Mul))[M::ArgNames("v1", "v2")]
+    .Method("CrossProduct", static_cast<Vector4 (*)(const Vector4&, const Vector4&)>(&DAVA::CrossProduct))[M::ArgNames("v1", "v2")]
+    .Method("DotProduct", static_cast<float32 (*)(const Vector4&, const Vector4&)>(&DAVA::DotProduct))[M::ArgNames("v1", "v2")]
+    .Method("Normalize", static_cast<Vector4 (*)(const Vector4&)>(&DAVA::Normalize))[M::ArgNames("v")]
+    .Method("Lerp", static_cast<Vector4 (*)(const Vector4&, const Vector4&, float32)>(&DAVA::Lerp))[M::ArgNames("v1", "v2", "t")]
+    .Method("Make", [](float32 x, float32 y, float32 z, float32 w) { return Vector4(x, y, z, w); })[M::ArgNames("x", "y", "z", "w")]
     .End();
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Vector4);
@@ -283,9 +282,9 @@ void RegisterVector4()
 void RegisterMatrix4()
 {
     ReflectionRegistrator<Matrix4>::Begin()
-    .Method("MakeTranslation", &Matrix4::MakeTranslation)[M::Params("translationVector")]
-    .Method("MakeRotation", &Matrix4::MakeRotation)[M::Params("axis", "angleRadians")]
-    .Method("MakeScale", &Matrix4::MakeScale)[M::Params("scaleVector")]
+    .Method("MakeTranslation", &Matrix4::MakeTranslation)[M::ArgNames("translationVector")]
+    .Method("MakeRotation", &Matrix4::MakeRotation)[M::ArgNames("axis", "angleRadians")]
+    .Method("MakeScale", &Matrix4::MakeScale)[M::ArgNames("scaleVector")]
     .Method("GetTranslationVector", &Matrix4::GetTranslationVector)
     .Method("GetScaleVector", &Matrix4::GetScaleVector)
     .End();
@@ -301,6 +300,8 @@ void RegisterRect()
     .Field("Width", &Rect::dx)[M::SubProperty()]
     .Field("Height", &Rect::dy)[M::SubProperty()]
     .End();
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Rect);
 }
 
 void RegisterAABBox3()
@@ -313,6 +314,8 @@ void RegisterAABBox3()
     .Field("MaxY", &ReflectionDeclarationDetail::GetMaxY, &ReflectionDeclarationDetail::SetMaxY)[M::SubProperty()]
     .Field("MaxZ", &ReflectionDeclarationDetail::GetMaxZ, &ReflectionDeclarationDetail::SetMaxZ)[M::SubProperty()]
     .End();
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(AABBox3);
 }
 
 void RegisterColor()
@@ -322,139 +325,153 @@ void RegisterColor()
     .Field("G", &Color::g)
     .Field("B", &Color::b)
     .Field("A", &Color::a)
-    .Method("Lerp", [](Color a, Color b, float32 t) { return a + (b - a) * DAVA::Clamp(t, 0.0f, 1.0f); })[M::Params("a", "b", "t")]
+    .Method("Lerp", [](Color a, Color b, float32 t) { return a + (b - a) * DAVA::Clamp(t, 0.0f, 1.0f); })[M::ArgNames("a", "b", "t")]
     .End();
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Color);
 }
 
-void RegisterIntegerMath()
-{
-    ReflectionRegistrator<IntegerMath>::Begin()
-    .Method("Inc", [](int32 a) { return ++a; })[M::Params("a")]
-    .Method("Dec", [](int32 a) { return --a; })[M::Params("a")]
-    .Method("Sign", [](int32 a) { return (a == 0 ? 0 : (a > 0 ? 1 : -1)); })[M::Params("a")]
-    .Method("Abs", [](int32 a) { return DAVA::Abs(a); })[M::Params("a")]
-    .Method("Min", [](int32 a, int32 b) { return DAVA::Min(a, b); })[M::Params("a", "b")]
-    .Method("Max", [](int32 a, int32 b) { return DAVA::Max(a, b); })[M::Params("a", "b")]
-    .Method("Sum", [](int32 a, int32 b) { return a + b; })[M::Params("a", "b")]
-    .Method("Sub", [](int32 a, int32 b) { return a - b; })[M::Params("a", "b")]
-    .Method("Mul", [](int32 a, int32 b) { return a * b; })[M::Params("a", "b")]
-    .Method("Div", [](int32 a, int32 b) { return a / b; })[M::Params("a", "b")]
-    .Method("Mod", [](int32 a, int32 b) { return a % b; })[M::Params("a", "b")]
-    .Method("Clamp", [](int32 a, int32 b, int32 c) { return DAVA::Clamp(a, b, c); })[M::Params("a", "b", "c")]
-    .End();
-
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(IntegerMath);
-}
-
-void RegisterFloatMath()
-{
-    ReflectionRegistrator<FloatMath>::Begin()
-    .Method("Sign", [](float32 a) { return static_cast<float32>(a == 0.0 ? 0 : (a > 0.0 ? 1.0 : -1.0)); })[M::Params("a")]
-    .Method("Abs", [](float32 a) { return DAVA::Abs(a); })[M::Params("a")]
-    .Method("Sin", [](float32 a) { return std::sin(a); })[M::Params("a")]
-    .Method("Asin", [](float32 a) { return std::asin(a); })[M::Params("a")]
-    .Method("Cos", [](float32 a) { return std::cos(a); })[M::Params("a")]
-    .Method("Acos", [](float32 a) { return std::acos(a); })[M::Params("a")]
-    .Method("Tan", [](float32 a) { return std::tan(a); })[M::Params("a")]
-    .Method("Atan", [](float32 a) { return std::atan(a); })[M::Params("a")]
-    .Method("Pow", [](float32 a, float32 b) { return std::pow(a, b); })[M::Params("a", "b")]
-    .Method("Floor", [](float32 a) { return std::floor(a); })[M::Params("a")]
-    .Method("Ceil", [](float32 a) { return std::ceil(a); })[M::Params("a")]
-    .Method("Round", [](float32 a) { return std::round(a); })[M::Params("a")]
-    .Method("Min", [](float32 a, float32 b) { return DAVA::Min(a, b); })[M::Params("a", "b")]
-    .Method("Max", [](float32 a, float32 b) { return DAVA::Max(a, b); })[M::Params("a", "b")]
-    .Method("Sum", [](float32 a, float32 b) { return a + b; })[M::Params("a", "b")]
-    .Method("Sub", [](float32 a, float32 b) { return a - b; })[M::Params("a", "b")]
-    .Method("Mul", [](float32 a, float32 b) { return a * b; })[M::Params("a", "b")]
-    .Method("Div", [](float32 a, float32 b) { return a / b; })[M::Params("a", "b")]
-    .Method("Mod", [](float32 a, float32 b) { return fmod(a, b); })[M::Params("a", "b")]
-    .Method("Clamp", [](float32 a, float32 b, float32 c) { return DAVA::Clamp(a, b, c); })[M::Params("a", "b", "c")]
-    .Method("Lerp", [](float32 a, float32 b, float32 t) { return a + (b - a) * DAVA::Clamp(t, 0.0f, 1.0f); })[M::Params("a", "b", "t")]
-    .End();
-
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(FloatMath);
-}
 template <class T>
 bool CompareFuncEqual(const T& a, const T& b)
 {
     return a == b;
 }
+
 template <class T>
 bool CompareFuncNEqual(const T& a, const T& b)
 {
     return a != b;
 }
+
 template <class T>
 bool CompareFuncLess(const T& a, const T& b)
 {
     return a < b;
 }
+
 template <class T>
 bool CompareFuncLEqual(const T& a, const T& b)
 {
     return a <= b;
 }
+
 template <class T>
 bool CompareFuncGreater(const T& a, const T& b)
 {
     return a > b;
 }
+
 template <class T>
 bool CompareFuncGEqual(const T& a, const T& b)
 {
     return a >= b;
 }
-class ConditionsInt
+
+/* Need template wrapper structures because ReflectionRegistrator can't register basic types. */
+template <typename T>
+struct IntegerMath
 {
 };
-class ConditionsFloat
+template <typename T>
+struct FloatMath
 {
 };
-class ConditionsBool
+template <typename T>
+struct BoolMath
 {
 };
 
-void RegisterConditions()
+template <typename T>
+void RegisterIntegerMath(const char* permanentName)
 {
-    ReflectionRegistrator<ConditionsInt>::Begin()
-    .Method("==", &CompareFuncEqual<int32>)[M::Params("a", "b")]
-    .Method("!=", &CompareFuncNEqual<int32>)[M::Params("a", "b")]
-    .Method("<", &CompareFuncLess<int32>)[M::Params("a", "b")]
-    .Method("<=", &CompareFuncLEqual<int32>)[M::Params("a", "b")]
-    .Method(">", &CompareFuncGreater<int32>)[M::Params("a", "b")]
-    .Method(">=", &CompareFuncGEqual<int32>)[M::Params("a", "b")]
-    .End();
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConditionsInt);
+    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(IntegerMath<T>, permanentName);
 
-    ReflectionRegistrator<ConditionsFloat>::Begin()
-    .Method("Equal", [](float32 a, float32 b) { return static_cast<bool>(FLOAT_EQUAL(a, b)); })[M::Params("a", "b")]
-    .Method("EqualEpsilon", [](float32 a, float32 b, float32 c) { return static_cast<bool>(FLOAT_EQUAL_EPS(a, b, c)); })[M::Params("a", "b", "c")]
-    .Method("==", &CompareFuncEqual<float32>)[M::Params("a", "b")]
-    .Method("!=", &CompareFuncNEqual<float32>)[M::Params("a", "b")]
-    .Method("<", &CompareFuncLess<float32>)[M::Params("a", "b")]
-    .Method("<=", &CompareFuncLEqual<float32>)[M::Params("a", "b")]
-    .Method(">", &CompareFuncGreater<float32>)[M::Params("a", "b")]
-    .Method(">=", &CompareFuncGEqual<float32>)[M::Params("a", "b")]
-    .End();
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConditionsFloat);
+    ReflectionRegistrator<IntegerMath<T>>::Begin()
+    .Method("Inc", [](T a) { return ++a; })[M::ArgNames("a")]
+    .Method("Dec", [](T a) { return --a; })[M::ArgNames("a")]
+    .Method("Sign", [](T a) { return (a == 0 ? 0 : (a > 0 ? 1 : -1)); })[M::ArgNames("a")]
+    .Method("Abs", [](T a) { return DAVA::Abs(static_cast<std::make_signed<T>::type>(a)); })[M::ArgNames("a")]
+    .Method("Min", [](T a, T b) { return DAVA::Min(a, b); })[M::ArgNames("a", "b")]
+    .Method("Max", [](T a, T b) { return DAVA::Max(a, b); })[M::ArgNames("a", "b")]
+    .Method("Sum", [](T a, T b) { return a + b; })[M::ArgNames("a", "b")]
+    .Method("Sub", [](T a, T b) { return a - b; })[M::ArgNames("a", "b")]
+    .Method("Mul", [](T a, T b) { return a * b; })[M::ArgNames("a", "b")]
+    .Method("Div", [](T a, T b) { return a / b; })[M::ArgNames("a", "b")]
+    .Method("Mod", [](T a, T b) { return a % b; })[M::ArgNames("a", "b")]
+    .Method("Clamp", [](T val, T a, T b) { return DAVA::Clamp(val, a, b); })[M::ArgNames("val", "a", "b")]
 
-    ReflectionRegistrator<ConditionsBool>::Begin()
-    .Method("==", [](bool a, bool b) { return a == b; })[M::Params("a", "b")]
-    .Method("!=", [](bool a, bool b) { return a != b; })[M::Params("a", "b")]
-    .Method("And", [](bool a, bool b) { return a && b; })[M::Params("a", "b")]
-    .Method("Or", [](bool a, bool b) { return a || b; })[M::Params("a", "b")]
-    .Method("Xor", [](bool a, bool b) { return a ^ b; })[M::Params("a", "b")]
-    .Method("Not", [](bool a) { return !a; })[M::Params("a")]
+    .Method("==", &CompareFuncEqual<T>)[M::ArgNames("a", "b")]
+    .Method("!=", &CompareFuncNEqual<T>)[M::ArgNames("a", "b")]
+    .Method("<", &CompareFuncLess<T>)[M::ArgNames("a", "b")]
+    .Method("<=", &CompareFuncLEqual<T>)[M::ArgNames("a", "b")]
+    .Method(">", &CompareFuncGreater<T>)[M::ArgNames("a", "b")]
+    .Method(">=", &CompareFuncGEqual<T>)[M::ArgNames("a", "b")]
+
+    .Method("And", [](T a, T b) { return a && b; })[M::ArgNames("a", "b")]
+    .Method("Or", [](T a, T b) { return a || b; })[M::ArgNames("a", "b")]
+    .Method("Xor", [](T a, T b) { return a ^ b; })[M::ArgNames("a", "b")]
+    .Method("Not", [](T a) { return !a; })[M::ArgNames("a")]
+
     .End();
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ConditionsBool);
+}
+
+template <typename T>
+void RegisterFloatMath(const char* permanentName)
+{
+    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(FloatMath<T>, permanentName);
+
+    ReflectionRegistrator<FloatMath<T>>::Begin()
+    .Method("Sign", [](T a) { return static_cast<T>(a == static_cast<T>(0) ? 0 : (a > static_cast<T>(0) ? 1 : -1)); })[M::ArgNames("a")]
+    .Method("Abs", [](T a) { return DAVA::Abs(a); })[M::ArgNames("a")]
+    .Method("Sin", [](T a) { return std::sin(a); })[M::ArgNames("a")]
+    .Method("Asin", [](T a) { return std::asin(a); })[M::ArgNames("a")]
+    .Method("Cos", [](T a) { return std::cos(a); })[M::ArgNames("a")]
+    .Method("Acos", [](T a) { return std::acos(a); })[M::ArgNames("a")]
+    .Method("Tan", [](T a) { return std::tan(a); })[M::ArgNames("a")]
+    .Method("Atan", [](T a) { return std::atan(a); })[M::ArgNames("a")]
+    .Method("Pow", [](T a, T b) { return std::pow(a, b); })[M::ArgNames("a", "b")]
+    .Method("Floor", [](T a) { return std::floor(a); })[M::ArgNames("a")]
+    .Method("Ceil", [](T a) { return std::ceil(a); })[M::ArgNames("a")]
+    .Method("Round", [](T a) { return std::round(a); })[M::ArgNames("a")]
+    .Method("Min", [](T a, T b) { return DAVA::Min(a, b); })[M::ArgNames("a", "b")]
+    .Method("Max", [](T a, T b) { return DAVA::Max(a, b); })[M::ArgNames("a", "b")]
+    .Method("Sum", [](T a, T b) { return a + b; })[M::ArgNames("a", "b")]
+    .Method("Sub", [](T a, T b) { return a - b; })[M::ArgNames("a", "b")]
+    .Method("Mul", [](T a, T b) { return a * b; })[M::ArgNames("a", "b")]
+    .Method("Div", [](T a, T b) { return a / b; })[M::ArgNames("a", "b")]
+    .Method("Mod", [](T a, T b) { return fmod(a, b); })[M::ArgNames("a", "b")]
+    .Method("Clamp", [](T val, T a, T b) { return DAVA::Clamp(val, a, b); })[M::ArgNames("val", "a", "b")]
+    .Method("Lerp", [](T a, T b, T t) { return a + (b - a) * DAVA::Clamp(t, static_cast<T>(0), static_cast<T>(1)); })[M::ArgNames("a", "b", "t")]
+
+    .Method("==", &CompareFuncEqual<T>)[M::ArgNames("a", "b")]
+    .Method("!=", &CompareFuncNEqual<T>)[M::ArgNames("a", "b")]
+    .Method("<", &CompareFuncLess<T>)[M::ArgNames("a", "b")]
+    .Method("<=", &CompareFuncLEqual<T>)[M::ArgNames("a", "b")]
+    .Method(">", &CompareFuncGreater<T>)[M::ArgNames("a", "b")]
+    .Method(">=", &CompareFuncGEqual<T>)[M::ArgNames("a", "b")]
+
+    .End();
+}
+
+template <typename T>
+void RegisterBoolMath(const char* permanentName)
+{
+    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(BoolMath<T>, permanentName);
+
+    ReflectionRegistrator<BoolMath<T>>::Begin()
+    .Method("==", [](T a, T b) { return a == b; })[M::ArgNames("a", "b")]
+    .Method("!=", [](T a, T b) { return a != b; })[M::ArgNames("a", "b")]
+    .Method("And", [](T a, T b) { return a && b; })[M::ArgNames("a", "b")]
+    .Method("Or", [](T a, T b) { return a || b; })[M::ArgNames("a", "b")]
+    .Method("Xor", [](T a, T b) { return a ^ b; })[M::ArgNames("a", "b")]
+    .Method("Not", [](T a) { return !a; })[M::ArgNames("a")]
+    .End();
 }
 
 void RegisterRandom()
 {
     ReflectionRegistrator<Random>::Begin()
-    .Method("Random", [](uint32 n) { return Random::Instance()->Rand(n); })[M::Params("n")]
+    .Method("Random", [](uint32 n) { return Random::Instance()->Rand(n); })[M::ArgNames("n")]
     .Method("RandomFloat", []() { return static_cast<float32>(Random::Instance()->RandFloat()); })
     .Method("RandomVector2", []() { return Vector2(static_cast<float32>(Random::Instance()->RandFloat()),
                                                    static_cast<float32>(Random::Instance()->RandFloat())); })
@@ -648,9 +665,17 @@ void RegisterReflectionForBaseTypes()
     RegisterAABBox3();
     RegisterColor();
 
-    RegisterIntegerMath();
-    RegisterFloatMath();
-    RegisterConditions();
+    RegisterIntegerMath<int8>("Int8Math");
+    RegisterIntegerMath<int16>("Int16Math");
+    RegisterIntegerMath<int32>("Int32Math");
+    RegisterIntegerMath<int64>("Int64Math");
+    RegisterIntegerMath<uint8>("UInt8Math");
+    RegisterIntegerMath<uint16>("UInt16Math");
+    RegisterIntegerMath<uint32>("UInt32Math");
+    RegisterIntegerMath<uint64>("UInt64Math");
+    RegisterFloatMath<float32>("Float32Math");
+    RegisterFloatMath<float64>("Float64Math");
+    RegisterBoolMath<bool>("BoolMath");
     RegisterRandom();
 
     RegisterPermanentNames();

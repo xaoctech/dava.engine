@@ -34,7 +34,6 @@ void InitVSResources()
 
 namespace DAVA
 {
-
 VisualScriptEditorModule::VisualScriptEditorModule()
 {
     InitVSResources();

@@ -42,7 +42,7 @@ const AnyFn* ReflectedType::GetCtor(const Type* retType) const
     auto params = DAVA::AnyFn::Params::FromArgs<Args...>(retType);
     for (auto& ctor : structure->ctors)
     {
-        if (ctor->CanBeCalledWithParams(params))
+        if (ctor->GetInvokeParams().IsMatching(params))
         {
             return ctor.get();
         }

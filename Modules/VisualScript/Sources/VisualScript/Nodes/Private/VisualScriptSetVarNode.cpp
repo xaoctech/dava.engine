@@ -21,12 +21,12 @@ VisualScriptSetVarNode::VisualScriptSetVarNode()
 {
     SetType(SET_VAR);
 
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
-    varInPin = new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("set"), nullptr, VisualScriptPin::DEFAULT_PARAM);
+    RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_IN, FastName("exec"), nullptr));
+    varInPin = new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("set"), nullptr, VisualScriptPin::DefaultParam::DEFAULT_PARAM);
     RegisterPin(varInPin);
 
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("exit"), nullptr));
-    varOutPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("get"), nullptr));
+    RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("exit"), nullptr));
+    varOutPin = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_OUT, FastName("get"), nullptr));
 }
 
 VisualScriptSetVarNode::VisualScriptSetVarNode(const Reflection& ref, const FastName& varPath)

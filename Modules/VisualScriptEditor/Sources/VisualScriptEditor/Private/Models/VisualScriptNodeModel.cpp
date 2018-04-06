@@ -4,6 +4,7 @@
 
 #include <nodes/NodeData>
 
+#include <TArc/Controls/Widget.h>
 #include <TArc/Controls/CheckBox.h>
 #include <TArc/Controls/DoubleSpinBox.h>
 #include <TArc/Controls/ImageView.h>
@@ -20,6 +21,7 @@
 
 #include <Base/Result.h>
 #include <Debug/DVAssert.h>
+#include <Debug/Backtrace.h>
 #include <Logger/Logger.h>
 #include <Render/Image/Image.h>
 
@@ -404,7 +406,8 @@ QString VisualScriptNodeModel::portHint(QtNodes::PortType portType, QtNodes::Por
     QString hint;
     if (pin->GetType() != nullptr)
     {
-        hint = "type: " + QString::fromLatin1(pin->GetType()->GetDemangledName().c_str());
+        const String demangledName = DAVA::Debug::DemangleFrameSymbol(pin->GetType()->GetName());
+        hint = "type: " + QString::fromLatin1(demangledName.c_str());
     }
 
     return hint;
@@ -547,7 +550,7 @@ bool VisualScriptNodeModel::canSetInData(std::shared_ptr<QtNodes::NodeData> data
     if (newData)
     {
         VisualScriptPin* outPin = newData->GetPin();
-        return VisualScriptPin::CanConnect(inPin, outPin) != VisualScriptPin::CANNOT_CONNECT;
+        return VisualScriptPin::CanConnect(inPin, outPin) != VisualScriptPin::CanConnectResult::CANNOT_CONNECT;
     }
 
     return false;
@@ -650,8 +653,7 @@ QtNodes::NodeValidationState VisualScriptNodeModel::validationState() const
 {
     if (visualScriptNode != nullptr)
     {
-        //Result res = visualScriptNode->GetCompileResult();
-        Result res;
+        Result res = visualScriptNode->GetCompileResult();
         switch (res.type)
         {
         case Result::RESULT_SUCCESS:
@@ -670,8 +672,7 @@ QString VisualScriptNodeModel::validationMessage() const
 {
     if (visualScriptNode != nullptr)
     {
-        //Result res = visualScriptNode->GetCompileResult();
-        Result res;
+        Result res = visualScriptNode->GetCompileResult();
         return QString::fromStdString(res.message);
     }
 

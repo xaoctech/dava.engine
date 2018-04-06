@@ -1,6 +1,7 @@
 #include "VisualScriptEditor/Private/Models/TypeConversion.h"
 
 #include <Base/Type.h>
+#include <Debug/Backtrace.h>
 #include <Reflection/ReflectedType.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <VisualScript/VisualScriptPin.h>
@@ -39,7 +40,8 @@ QtNodes::NodeDataType DAVATypeToNodeType(const VisualScriptPin* pin)
                 }
                 else
                 {
-                    prettyName = QString::fromStdString(userType->GetDemangledName());
+                    const String demangledName = DAVA::Debug::DemangleFrameSymbol(userType->GetName());
+                    prettyName = QString::fromStdString(demangledName.c_str());
                 }
             }
         }

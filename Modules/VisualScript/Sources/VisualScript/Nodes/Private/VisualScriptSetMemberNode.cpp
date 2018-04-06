@@ -95,15 +95,15 @@ void VisualScriptSetMemberNode::InitPins()
         {
             valueWrapper = vw;
 
-            RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
-            RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("exit"), nullptr));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_IN, FastName("exec"), nullptr));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("exit"), nullptr));
 
             const Type* classType = ReflectedTypeDB::GetByPermanentName(className.c_str())->GetType();
-            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("object"), classType));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("object"), classType));
 
             const Type* memberType = valueWrapper->GetType(ReflectedObject());
-            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("set"), memberType, VisualScriptPin::DEFAULT_PARAM));
-            RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_OUT, FastName("get"), memberType));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("set"), memberType, VisualScriptPin::DefaultParam::DEFAULT_PARAM));
+            RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_OUT, FastName("get"), memberType));
         }
         else
         {
@@ -111,5 +111,4 @@ void VisualScriptSetMemberNode::InitPins()
         }
     }
 }
-
 }

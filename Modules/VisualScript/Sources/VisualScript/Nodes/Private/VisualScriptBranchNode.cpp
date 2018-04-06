@@ -18,9 +18,9 @@ VisualScriptBranchNode::VisualScriptBranchNode()
     SetType(BRANCH);
     SetName(GetTypeName());
 
-    RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_IN, FastName("exec"), nullptr));
-    conditionIn = RegisterPin(new VisualScriptPin(this, VisualScriptPin::ATTR_IN, FastName("condition"), Type::Instance<bool>()));
-    execOutTrue = RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("true"), nullptr));
-    execOutFalse = RegisterPin(new VisualScriptPin(this, VisualScriptPin::EXEC_OUT, FastName("false"), nullptr));
+    RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_IN, FastName("exec"), nullptr));
+    conditionIn = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("condition"), Type::Instance<bool>()));
+    execOutTrue = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("true"), nullptr));
+    execOutFalse = RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("false"), nullptr));
 }
 }

@@ -60,9 +60,4 @@ public:
 
     DAVA_VIRTUAL_REFLECTION(VisualScriptEditorData, TArcDataNode);
 };
-
-//template <>
-//bool AnyCompare<VisualScriptEditorReflectionHolder>::IsEqual(const Any& v1, const Any& v2);
-//extern template struct AnyCompare<VisualScriptEditorReflectionHolder>;
-
 } //DAVA
