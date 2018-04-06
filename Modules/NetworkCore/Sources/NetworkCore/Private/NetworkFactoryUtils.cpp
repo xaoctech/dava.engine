@@ -15,16 +15,7 @@
 
 namespace DAVA
 {
-struct PairHash
-{
-    template <typename L, typename R>
-    std::size_t operator()(const std::pair<L, R>& x) const
-    {
-        return std::hash<L>()(x.first) ^ std::hash<R>()(x.second);
-    }
-};
-
-static const UnorderedMap<FastName, EntityCfg::Domain> gDomainFromName =
+const UnorderedMap<FastName, EntityCfg::Domain> EntityConfigManager::DomainFromName =
 {
   { FastName("Server"), EntityCfg::Domain::Server },
   { FastName("Client"), EntityCfg::Domain::Client },
@@ -32,50 +23,190 @@ static const UnorderedMap<FastName, EntityCfg::Domain> gDomainFromName =
   { FastName("ClientNotOwner"), EntityCfg::Domain::ClientNotOwner }
 };
 
-EntityCfg::Domain EntityCfg::GetDomainByName(FastName name)
+const UnorderedMap<FastName, M::Privacy> EntityConfigManager::PrivacyFromName =
 {
-    auto findIt = gDomainFromName.find(name);
-    if (findIt == gDomainFromName.end())
-    {
-        return Domain::None;
-    }
-    return findIt->second;
-}
-
-static const UnorderedMap<FastName, M::Privacy> gPrivacyFromName =
-{
-  { FastName("ClientOwner"), M::Privacy::OWNER },
+  { FastName("ClientOwner"), M::Privacy::PRIVATE },
   { FastName("ClientNotOwner"), M::Privacy::NOT_OWNER },
   { FastName("Client"), M::Privacy::PUBLIC },
 };
 
-M::Privacy EntityCfg::GetPrivacyByName(FastName name)
+EntityConfigManager::EntityConfigManager()
 {
-    auto findIt = gPrivacyFromName.find(name);
-    if (findIt == gPrivacyFromName.end())
+    for (const FilePath& path : FileSystem::Instance()->EnumerateFilesInDirectory(FilePath("~res:/cfg/")))
+    {
+        if (".yaml" == path.GetExtension())
+        {
+            ReadYaml(path);
+        }
+    }
+}
+
+const EntityCfg* EntityConfigManager::GetEntityCfg(const String& name) const
+{
+    const auto& findIt = entityCfgCache.find(FastName(name));
+    if (findIt != entityCfgCache.end())
+    {
+        return &findIt->second;
+    }
+
+    return nullptr;
+}
+
+void EntityConfigManager::ReadYaml(const FilePath& filePath)
+{
+    RefPtr<YamlParser> parser(YamlParser::Create(filePath));
+    DVASSERT(parser && parser.Valid());
+
+    YamlNode* rootNode = parser->GetRootNode();
+    DVASSERT(rootNode);
+
+    const uint32 numberOfEntities = rootNode->GetCount();
+    DVASSERT(numberOfEntities);
+
+    const String fileName = filePath.GetBasename();
+    for (uint32 entityIdx = 0; entityIdx < numberOfEntities; ++entityIdx)
+    {
+        const YamlNode* entityNode = rootNode->Get(entityIdx);
+        ReadEntity(fileName, entityNode);
+    }
+}
+
+void EntityConfigManager::ReadEntity(const String& fileName, const YamlNode* entityNode)
+{
+    using D = EntityCfg::Domain;
+
+    const YamlNode* prototypeNode = entityNode->Get("Prototype");
+    EntityCfg entityCfg;
+    if (prototypeNode)
+    {
+        String prototypeName = prototypeNode->AsString();
+        if (prototypeName.find("/") == String::npos)
+        {
+            prototypeName = fileName + "/" + prototypeName;
+        }
+        const EntityCfg* protoCfg = GetEntityCfg(prototypeName);
+        DVASSERT(protoCfg);
+        entityCfg = *protoCfg;
+    }
+
+    entityCfg.domainMask = ReadDomainMask(entityNode, "Domains", entityCfg.domainMask);
+    const YamlNode* componentsNode = entityNode->Get("Components");
+    if (componentsNode)
+    {
+        const size_t numberOfComponents = componentsNode->GetCount();
+        for (size_t compIdx = 0; compIdx < numberOfComponents; ++compIdx)
+        {
+            const YamlNode* compNode = componentsNode->Get(compIdx);
+            const String& compName = componentsNode->GetItemKeyName(compIdx);
+            const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(compName);
+            DVASSERT(reflectedType);
+            if (reflectedType->GetType()->Is<NetworkPredictComponent>())
+            {
+                /* Should be created auto */
+                continue;
+            }
+
+            EntityCfg::ComponentCfg& componentCfg = entityCfg.components[reflectedType];
+            componentCfg.domainMask = ReadDomainMask(compNode, "Domains", entityCfg.domainMask);
+            DVASSERT((entityCfg.domainMask & componentCfg.domainMask) == componentCfg.domainMask, "Component has invalid domain");
+            componentCfg.predictDomainMask = ReadDomainMask(compNode, "Predict", 0);
+            DVASSERT((componentCfg.domainMask & componentCfg.predictDomainMask) == componentCfg.predictDomainMask, "Component has invalid prediction domain");
+            componentCfg.replicationPrivacy = ReadReplicationPrivacy(compNode, "Replicate", M::Privacy::SERVER_ONLY);
+            DVASSERT(componentCfg.replicationPrivacy != M::Privacy::NOT_OWNER, "Component has invalid replication tag");
+            const uint8 replicateMask = ReadDomainMask(compNode, "Replicate", 0);
+            DVASSERT(!((componentCfg.domainMask & ~componentCfg.predictDomainMask) & replicateMask), "Component has replicate and domain tags both");
+
+            const YamlNode* fieldsNode = compNode->Get("Fields");
+            if (fieldsNode)
+            {
+                size_t numberOfFields = fieldsNode->GetCount();
+                componentCfg.fields.reserve(numberOfFields);
+                for (size_t fieldIdx = 0; fieldIdx < numberOfFields; ++fieldIdx)
+                {
+                    FastName fieldName(fieldsNode->GetItemKeyName(fieldIdx));
+                    const YamlNode* fieldNode = fieldsNode->Get(fieldIdx);
+
+                    const ReflectedStructure::Field* field = GetField(reflectedType, fieldName);
+                    DVASSERT(field);
+                    const String& strValue = fieldNode->AsString();
+                    //                    TODO: Use this method after completed reflection improvement.
+                    //                    Any value = Any(strValue).Cast(field->valueWrapper->GetValueType());
+                    Any value = fieldNode->AsAny(field);
+                    componentCfg.fields.push_back({ fieldName, value });
+                }
+            }
+        }
+    }
+
+    const YamlNode* modelsNode = entityNode->Get("Models");
+    if (modelsNode)
+    {
+        const uint32 numberOfModels = modelsNode->GetCount();
+        entityCfg.models.reserve(numberOfModels);
+        uint8 mask = 0;
+        for (uint32 modelIdx = 0; modelIdx < numberOfModels; ++modelIdx)
+        {
+            const YamlNode* modelNode = modelsNode->Get(modelIdx);
+            const uint8 modelDomain = ReadDomainMask(modelNode, "Domains", entityCfg.domainMask);
+            DVASSERT((mask & modelDomain) == 0, "Intersect model masks");
+            const YamlNode* resourceNode = modelNode->Get("Resource");
+            DVASSERT(resourceNode);
+            FilePath modelFileName("~res:/" + resourceNode->AsString());
+            bool isExists = GetEngineContext()->fileSystem->Exists(modelFileName);
+            DVASSERT(isExists);
+            ScopedPtr<Scene> scene(new Scene(0));
+            SceneFileV2::eError err = scene->LoadScene(modelFileName);
+            DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
+            DVASSERT(scene->GetChildrenCount() == 1);
+            Entity* model = scene->GetChild(0)->Clone();
+            model->SetName("Model");
+            entityCfg.models.push_back({ model, modelDomain });
+            mask |= modelDomain;
+        }
+    }
+
+    const YamlNode* nameNode = entityNode->Get("Name");
+    DVASSERT(nameNode);
+    const String& entityName = nameNode->AsString();
+    entityCfgCache.emplace(FastName(fileName + "/" + entityName), std::move(entityCfg));
+}
+
+EntityCfg::Domain EntityConfigManager::GetDomainByName(FastName name)
+{
+    auto findIt = DomainFromName.find(name);
+    if (findIt == DomainFromName.end())
+    {
+        return EntityCfg::Domain::None;
+    }
+    return findIt->second;
+}
+
+M::Privacy EntityConfigManager::GetPrivacyByName(FastName name)
+{
+    auto findIt = PrivacyFromName.find(name);
+    if (findIt == PrivacyFromName.end())
     {
         return M::Privacy::SERVER_ONLY;
     }
     return findIt->second;
 }
 
-M::Privacy EntityCfg::GetPrivacyByDomain(uint8 domainMask)
+M::Privacy EntityConfigManager::GetPrivacyByDomain(uint8 domainMask)
 {
-    if (domainMask & Domain::ClientNotOwner)
+    if (domainMask & EntityCfg::Domain::ClientNotOwner)
         return M::Privacy::PUBLIC;
 
-    if (domainMask & Domain::ClientOwner)
+    if (domainMask & EntityCfg::Domain::ClientOwner)
         return M::Privacy::PRIVATE;
 
     return M::Privacy::SERVER_ONLY;
 }
 
-const ReflectedStructure::Field* GetField(const ReflectedType* currRefType, FastName name)
+const ReflectedStructure::Field* EntityConfigManager::GetField(const ReflectedType* currRefType, FastName name)
 {
-    static UnorderedMap<std::pair<const ReflectedType*, FastName>, const ReflectedStructure::Field*, PairHash> gFieldCache;
     auto key = std::make_pair(currRefType, name);
-    auto findIt = gFieldCache.find(key);
-    if (findIt != gFieldCache.end())
+    auto findIt = fieldCache.find(key);
+    if (findIt != fieldCache.end())
     {
         return findIt->second;
     }
@@ -87,7 +218,7 @@ const ReflectedStructure::Field* GetField(const ReflectedType* currRefType, Fast
         {
             if (f->name == name)
             {
-                gFieldCache.emplace(key, f.get());
+                fieldCache.emplace(key, f.get());
                 return f.get();
             }
         }
@@ -108,11 +239,11 @@ const ReflectedStructure::Field* GetField(const ReflectedType* currRefType, Fast
         }
     }
 
-    gFieldCache.emplace(key, nullptr);
+    fieldCache.emplace(key, nullptr);
     return nullptr;
 };
 
-uint8 ReadDomainMask(const YamlNode* node, const String& sectionName, uint8 defaultValue)
+uint8 EntityConfigManager::ReadDomainMask(const YamlNode* node, const String& sectionName, uint8 defaultValue)
 {
     const YamlNode* domainsNode = node->Get(sectionName);
     if (!domainsNode)
@@ -123,14 +254,14 @@ uint8 ReadDomainMask(const YamlNode* node, const String& sectionName, uint8 defa
     for (size_t idx = 0; idx < numberOfDomains; ++idx)
     {
         FastName domainName = domainsNode->Get(idx)->AsFastName();
-        EntityCfg::Domain domain = EntityCfg::GetDomainByName(domainName);
+        EntityCfg::Domain domain = GetDomainByName(domainName);
         DVASSERT(domain != EntityCfg::Domain::None);
         result |= domain;
     }
     return result;
 }
 
-M::Privacy ReadReplicationPrivacy(const YamlNode* node, const String& sectionName, M::Privacy defaultValue)
+M::Privacy EntityConfigManager::ReadReplicationPrivacy(const YamlNode* node, const String& sectionName, M::Privacy defaultValue)
 {
     const YamlNode* privacyNode = node->Get(sectionName);
     if (!privacyNode)
@@ -141,7 +272,7 @@ M::Privacy ReadReplicationPrivacy(const YamlNode* node, const String& sectionNam
     for (size_t idx = 0; idx < numberOfPrivacy; ++idx)
     {
         FastName domainName = privacyNode->Get(idx)->AsFastName();
-        M::Privacy privacy = EntityCfg::GetPrivacyByName(domainName);
+        M::Privacy privacy = GetPrivacyByName(domainName);
         DVASSERT(privacy != M::Privacy::SERVER_ONLY);
         result |= privacy;
     }
@@ -149,161 +280,14 @@ M::Privacy ReadReplicationPrivacy(const YamlNode* node, const String& sectionNam
     return static_cast<M::Privacy>(result);
 }
 
-const EntityCfg& EntityCfg::LoadFromYaml(const String& name)
-{
-    using D = EntityCfg::Domain;
-    static UnorderedMap<String, EntityCfg> gEntityCfgStorage;
-    EntityCfg& entityCfg = gEntityCfgStorage[name];
-    if (entityCfg.domainMask > 0)
-    {
-        return entityCfg;
-    }
-
-    FilePath filename("~res:/" + name + ".yaml");
-    bool isExist = GetEngineContext()->fileSystem->Exists(filename);
-    DVASSERT(isExist);
-    if (!isExist)
-    {
-        Logger::Error("GetEntityConfig Does not exists (%s)", filename.GetStringValue().c_str());
-        return entityCfg;
-    }
-
-    RefPtr<YamlParser> parser(YamlParser::Create(filename));
-    DVASSERT(parser && parser.Valid());
-    if (!parser || !parser.Valid())
-    {
-        Logger::Error("GetEntityConfig failed (%s)", filename.GetStringValue().c_str());
-        return entityCfg;
-    }
-
-    YamlNode* rootNode = parser->GetRootNode();
-    DVASSERT(rootNode);
-    if (!rootNode)
-    {
-        Logger::Error("GetEntityConfig empty (%s)", filename.GetStringValue().c_str());
-        return entityCfg;
-    }
-
-    entityCfg.domainMask = ReadDomainMask(rootNode, "Domains", D::Server | D::ClientOwner);
-    const YamlNode* componentsNode = rootNode->Get("Components");
-    DVASSERT(componentsNode);
-    if (!componentsNode)
-    {
-        Logger::Error("GetEntityConfig no any entities (%s)", filename.GetStringValue().c_str());
-        return entityCfg;
-    }
-
-    const size_t numberOfComponents = componentsNode->GetCount();
-    for (size_t compIdx = 0; compIdx < numberOfComponents; ++compIdx)
-    {
-        const YamlNode* compNode = componentsNode->Get(compIdx);
-        const String& compName = componentsNode->GetItemKeyName(compIdx);
-        const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(compName);
-        if (!reflectedType)
-        {
-            Logger::Error("Component:%s not found", compName.c_str());
-            DVASSERT(0);
-            continue;
-        }
-
-        if (reflectedType->GetType()->Is<NetworkPredictComponent>())
-        {
-            /* Should be created auto */
-            continue;
-        }
-
-        ComponentCfg& componentCfg = entityCfg.components[reflectedType];
-        componentCfg.domainMask = ReadDomainMask(compNode, "Domains", entityCfg.domainMask);
-        if ((entityCfg.domainMask & componentCfg.domainMask) != componentCfg.domainMask)
-        {
-            Logger::Error("Component:%s has invalid domain", compName.c_str());
-            DVASSERT(0);
-        }
-
-        componentCfg.predictDomainMask = ReadDomainMask(compNode, "Predict", 0);
-        if ((componentCfg.domainMask & componentCfg.predictDomainMask) != componentCfg.predictDomainMask)
-        {
-            Logger::Error("Component:%s has invalid prediction domain", compName.c_str());
-            DVASSERT(0);
-        }
-
-        componentCfg.replicationPrivacy = ReadReplicationPrivacy(compNode, "Replicate", M::Privacy::SERVER_ONLY);
-
-        const YamlNode* fieldsNode = compNode->Get("Fields");
-        if (fieldsNode)
-        {
-            size_t numberOfFields = fieldsNode->GetCount();
-            for (size_t fieldIdx = 0; fieldIdx < numberOfFields; ++fieldIdx)
-            {
-                FastName fieldName(fieldsNode->GetItemKeyName(fieldIdx));
-                const YamlNode* fieldNode = fieldsNode->Get(fieldIdx);
-
-                const ReflectedStructure::Field* field = GetField(reflectedType, fieldName);
-                if (field)
-                {
-                    Any value = fieldNode->AsAny(field);
-                    componentCfg.fields.push_back({ fieldName, value });
-                }
-                else
-                {
-                    Logger::Error("Component: %s has not field: %s", compName.c_str(), fieldName.c_str());
-                    DVASSERT(0);
-                }
-            }
-        }
-    }
-
-    const YamlNode* modelNode = rootNode->Get("Model");
-    if (modelNode)
-    {
-        FilePath modelFileName("~res:/" + modelNode->AsString() + ".sc2");
-        bool isExists = GetEngineContext()->fileSystem->Exists(modelFileName);
-        DVASSERT(isExists);
-        if (!isExists)
-        {
-            Logger::Error("Model does not exists (%s)", modelFileName.GetStringValue().c_str());
-            return entityCfg;
-        }
-
-        ScopedPtr<Scene> model(new Scene(0));
-        SceneFileV2::eError err = model->LoadScene(modelFileName);
-        DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
-        entityCfg.model = model->GetEntityByID(1)->Clone();
-        entityCfg.model->SetName("Model");
-    }
-
-    return entityCfg;
-}
-
-NetworkFactoryComponent* CreateFactoryEntity(const String& name, NetworkID replicationId)
+NetworkFactoryComponent* CreateEntityWithFactoryComponent(const String& name, NetworkID replicationId)
 {
     Entity* entity = new Entity();
     NetworkFactoryComponent* factoryComponent = new NetworkFactoryComponent();
     factoryComponent->name = name;
-    factoryComponent->playerId = replicationId.GetPlayerId();
-
-    const EntityCfg& entityCfg = EntityCfg::LoadFromYaml(name);
-    const M::Privacy privacy = EntityCfg::GetPrivacyByDomain(entityCfg.domainMask);
-    if (privacy != M::Privacy::SERVER_ONLY)
-    {
-        NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(replicationId);
-        replicationComponent->SetForReplication<NetworkFactoryComponent>(privacy);
-
-        for (const auto& componentIt : entityCfg.components)
-        {
-            const ReflectedType* reflectedType = componentIt.first;
-            const EntityCfg::ComponentCfg& componentCfg = componentIt.second;
-            if (componentCfg.replicationPrivacy != M::Privacy::SERVER_ONLY)
-            {
-                replicationComponent->SetForReplication(reflectedType->GetType(), componentCfg.replicationPrivacy);
-            }
-        }
-        entity->AddComponent(replicationComponent);
-    }
+    factoryComponent->replicationId = replicationId;
 
     entity->AddComponent(factoryComponent);
-    entity->SetName(name.c_str());
-
     return factoryComponent;
 }
 } //namespace DAVA

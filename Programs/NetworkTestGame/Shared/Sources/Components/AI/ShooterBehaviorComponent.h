@@ -20,7 +20,6 @@ public:
 private:
     BotTaskComponent* currentTask = nullptr;
     bool isActor = false;
-
     friend class ShooterBehaviorSystem;
 
     DAVA_VIRTUAL_REFLECTION(ShooterBehaviorComponent, Component);

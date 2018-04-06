@@ -13,7 +13,7 @@ struct Snapshot;
 class EntitySnapshotWriter
 {
 public:
-    EntitySnapshotWriter(BitWriter& bitStream, NetworkID rootEntityId, M::Privacy playerPrivacy, const Snapshot* snapshot1, const Snapshot* snapshot2);
+    EntitySnapshotWriter(BitWriter& bitStream, NetworkID rootEntityId, M::OwnershipRelation playerRelation, const Snapshot* snapshot1, const Snapshot* snapshot2);
     size_t Write();
 
 private:
@@ -31,14 +31,14 @@ private:
 
     BitWriter& bstream;
     NetworkID rootEntityId;
-    M::Privacy playerPrivacy = Metas::Privacy::OWNER;
+    M::OwnershipRelation playerRelation;
     const Snapshot* snapshot1 = nullptr;
     const Snapshot* snapshot2 = nullptr;
 };
 
 inline bool EntitySnapshotWriter::CheckPrivacy(M::Privacy privacyToCheck) const
 {
-    return static_cast<bool>((privacyToCheck & playerPrivacy) == playerPrivacy);
+    return static_cast<bool>(privacyToCheck & playerRelation);
 }
 
 } // namespace DAVA

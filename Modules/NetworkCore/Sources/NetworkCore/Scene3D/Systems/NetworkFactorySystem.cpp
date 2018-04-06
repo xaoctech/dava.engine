@@ -1,6 +1,7 @@
-#include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkFactoryComponent.h"
+#include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
+#include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 #include "NetworkCore/Scene3D/Systems/NetworkFactorySystem.h"
 
 #include "NetworkCore/NetworkCoreUtils.h"
@@ -30,54 +31,84 @@ NetworkFactorySystem::NetworkFactorySystem(Scene* scene)
     : DAVA::SceneSystem(scene, ComponentUtils::MakeMask<NetworkFactoryComponent>())
     , factoryGroup(scene->AquireComponentGroup<NetworkFactoryComponent>())
     , factoryGroupPending(scene->AquireComponentGroupOnAdd(factoryGroup, this))
+    , entityConfigManager(new EntityConfigManager())
 {
 }
 
 void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
 {
-    DAVA_PROFILER_CPU_SCOPE("NetworkFactorySystem::Process");
+    DAVA_PROFILER_CPU_SCOPE("NetworkFactorySystem::ProcessFixed");
     for (NetworkFactoryComponent* fc : factoryGroupPending->components)
     {
         Entity* entity = fc->GetEntity();
-        const EntityCfg& entityCfg = EntityCfg::LoadFromYaml(fc->name);
-        const uint8 domainMask = GetDomainMask(entity, fc->playerId);
-        if ((domainMask & entityCfg.domainMask) == 0)
+        const String& name = fc->name;
+        entity->SetName(name.c_str());
+        const EntityCfg* entityCfg = entityConfigManager->GetEntityCfg(name);
+        DVASSERT(entityCfg);
+
+        NetworkReplicationComponent* replicationComponent = entity->GetComponent<NetworkReplicationComponent>();
+        if (!replicationComponent)
+        {
+            DVASSERT(fc->replicationId.IsValid());
+            const M::Privacy privacy = entityConfigManager->GetPrivacyByDomain(entityCfg->domainMask);
+            replicationComponent = new NetworkReplicationComponent(fc->replicationId);
+            replicationComponent->SetForReplication<NetworkFactoryComponent>(privacy);
+            for (const auto& componentIt : entityCfg->components)
+            {
+                const ReflectedType* reflectedType = componentIt.first;
+                const EntityCfg::ComponentCfg& componentCfg = componentIt.second;
+                if (componentCfg.replicationPrivacy != M::Privacy::SERVER_ONLY)
+                {
+                    replicationComponent->SetForReplication(reflectedType->GetType(), componentCfg.replicationPrivacy);
+                }
+            }
+
+            entity->AddComponent(replicationComponent);
+        }
+
+        const uint8 currentDomain = GetCurrentDomain(replicationComponent->GetNetworkID().GetPlayerId());
+        if ((currentDomain & entityCfg->domainMask) == 0)
         {
             continue;
         }
 
-        Entity* model = entityCfg.model->Clone();
-        entity->AddNode(model);
-        model->Release();
-
-        if (fc->initialTransformPtr)
+        for (auto& modelDomain : entityCfg->models)
         {
-            TransformComponent* transComp = entity->GetComponent<TransformComponent>();
-            DVASSERT(transComp);
-            if (transComp)
+            if (modelDomain.domainMask & currentDomain)
             {
-                const NetworkFactoryComponent::InitialTransform& src = *fc->initialTransformPtr;
-                transComp->SetLocalTransform(src.position, src.rotation, Vector3(src.scale, src.scale, src.scale));
+                Entity* model = modelDomain.model->Clone();
+                entity->AddNode(model);
+                model->Release();
+                break;
             }
         }
 
+        TransformComponent* transComp = entity->GetComponent<TransformComponent>();
+        DVASSERT(transComp);
+        NetworkFactoryComponent::InitialTransform initTrans = { transComp->GetPosition(), transComp->GetRotation() };
+        if (fc->initialTransformPtr)
+        {
+            initTrans = *fc->initialTransformPtr;
+        }
+        transComp->SetLocalTransform(initTrans.position, initTrans.rotation, transComp->GetScale() * fc->scale);
+
         Vector<const Type*> predictComponentTypes;
-        for (const auto& componentIt : entityCfg.components)
+        for (const auto& componentIt : entityCfg->components)
         {
             const ReflectedType* reflectedType = componentIt.first;
             const EntityCfg::ComponentCfg& componentCfg = componentIt.second;
-            if ((domainMask & componentCfg.domainMask) == 0)
+            const Type* type = reflectedType->GetType();
+            if ((currentDomain & componentCfg.domainMask) == 0)
             {
                 continue;
             }
 
-            if (entity->GetComponent(reflectedType->GetType()))
+            Component* component = entity->GetComponent(type);
+            if (!component)
             {
-                Logger::Error("Duplicate component:%s", reflectedType->GetPermanentName().c_str());
-                continue;
+                component = ComponentUtils::Create(type);
             }
 
-            Component* component = ComponentUtils::Create(reflectedType->GetType());
             Reflection refComp = Reflection::Create(ReflectedObject(component));
 
             for (const auto& f : componentCfg.fields)
@@ -86,14 +117,14 @@ void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
                 refField.SetValueWithCast(f.value);
             }
 
-            if (componentCfg.predictDomainMask & domainMask)
+            if (componentCfg.predictDomainMask & currentDomain)
             {
-                predictComponentTypes.push_back(reflectedType->GetType());
+                predictComponentTypes.push_back(type);
             }
 
             entity->AddComponent(component);
 
-            auto findIt = fc->componentTypeToOverrideData.find(reflectedType->GetType());
+            auto findIt = fc->componentTypeToOverrideData.find(type);
             if (findIt != fc->componentTypeToOverrideData.end())
             {
                 NetworkFactoryComponent::OverrideFieldData& overrideFieldData = findIt->second;
@@ -101,11 +132,6 @@ void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
                 for (const NetworkFactoryComponent::FieldValue& fieldValue : overrideFieldData.fieldValues)
                 {
                     refComp.GetField(fieldValue.name).SetValueWithCast(fieldValue.value);
-                }
-
-                if (overrideFieldData.callbackHolder)
-                {
-                    overrideFieldData.callbackHolder->Invoke(component);
                 }
 
                 if (overrideFieldData.callbackWithCast)
@@ -136,31 +162,24 @@ void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
     factoryGroupPending->components.clear();
 }
 
-uint8 NetworkFactorySystem::GetDomainMask(Entity* entity, NetworkPlayerID playerId)
+uint8 NetworkFactorySystem::GetCurrentDomain(NetworkPlayerID playerId)
 {
     using D = EntityCfg::Domain;
-    uint8 domainMask = 0;
     if (IsServer(this))
     {
-        domainMask |= D::Server;
+        return D::Server;
     }
 
     if (IsClient(this))
     {
-        domainMask |= D::Client;
-
         const NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
         DVASSERT(netGameModeComp);
         if (netGameModeComp->GetNetworkPlayerID() == playerId)
         {
-            domainMask |= D::ClientOwner;
+            return D::ClientOwner;
         }
-        else
-        {
-            domainMask |= D::ClientNotOwner;
-        }
-    }
 
-    return domainMask;
+        return D::ClientNotOwner;
+    }
 };
 }

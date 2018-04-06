@@ -82,7 +82,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PlayerEntitySystem)
 
 PlayerEntitySystem::PlayerEntitySystem(DAVA::Scene* scene)
     : SceneSystem(scene, ComponentMask())
-    , tanksSubscriber(scene->AquireEntityGroupOnAdd(scene->AquireEntityGroup<PlayerTankComponent>(), this))
+    , cameraSubscriber(scene->AquireComponentGroupOnAdd(scene->AquireComponentGroup<CameraComponent>(), this))
     , carsSubscriber(scene->AquireEntityGroupOnAdd(scene->AquireEntityGroup<PlayerCarComponent>(), this))
 {
     optionsComp = scene->GetSingleComponent<BattleOptionsSingleComponent>();
@@ -90,11 +90,11 @@ PlayerEntitySystem::PlayerEntitySystem(DAVA::Scene* scene)
 
 void PlayerEntitySystem::ProcessFixed(DAVA::float32 timeElapsed)
 {
-    for (Entity* e : tanksSubscriber->entities)
+    for (CameraComponent* c : cameraSubscriber->components)
     {
-        FillTankPlayerEntity(e);
+        TuneCameraComponent(c);
     }
-    tanksSubscriber->entities.clear();
+    cameraSubscriber->components.clear();
 
     for (Entity* e : carsSubscriber->entities)
     {
@@ -103,121 +103,20 @@ void PlayerEntitySystem::ProcessFixed(DAVA::float32 timeElapsed)
     carsSubscriber->entities.clear();
 }
 
-void PlayerEntitySystem::FillTankPlayerEntity(DAVA::Entity* entity)
+void PlayerEntitySystem::TuneCameraComponent(DAVA::CameraComponent* camComp)
 {
-    PlayerTankComponent* ptc = entity->GetComponent<PlayerTankComponent>();
-    NetworkPlayerID playerId = ptc->playerId;
-
-    Logger::Debug("[PlayerEntitySystem::Process] %d tank factory, for player %d", entity->GetID(), playerId);
-
-    String filePath("~res:/Sniper_2.sc2");
-    entity->SetName(Format("Tank %d", playerId).c_str());
-
-    if (IsServer(this))
-    {
-        NetworkID tankId = NetworkID::CreatePlayerOwnId(playerId);
-        NetworkReplicationComponent* nrc = new NetworkReplicationComponent(tankId);
-
-        nrc->SetForReplication<NetworkPlayerComponent>(M::Privacy::PRIVATE);
-        nrc->SetForReplication<NetworkInputComponent>(M::Privacy::PRIVATE);
-        nrc->SetForReplication<NetworkRemoteInputComponent>(M::Privacy::PUBLIC);
-        nrc->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
-        nrc->SetForReplication<PlayerTankComponent>(M::Privacy::PUBLIC);
-        nrc->SetForReplication<HealthComponent>(M::Privacy::PUBLIC);
-        nrc->SetForReplication<ShootCooldownComponent>(M::Privacy::PRIVATE);
-        nrc->SetForReplication<GameStunnableComponent>(M::Privacy::PUBLIC);
-
-        NetworkRemoteInputComponent* netRemoteInputComp = new NetworkRemoteInputComponent();
-        if (optionsComp->isEnemyPredicted)
-        {
-            PlayerEntitySystemDetail::CollectRemoteMovingInput(netRemoteInputComp);
-        }
-
-        entity->AddComponent(nrc);
-        entity->AddComponent(netRemoteInputComp);
-        entity->AddComponent(new NetworkInputComponent());
-        entity->AddComponent(new ShootCooldownComponent());
-        entity->AddComponent(new NetworkTransformComponent());
-        entity->AddComponent(new NetworkPlayerComponent());
-        entity->AddComponent(new GameStunnableComponent());
-        entity->AddComponent(new HealthComponent());
-        entity->AddComponent(new PowerupCatcherComponent());
-        entity->AddComponent(new NetworkTrafficLimitComponent());
-        entity->AddComponent(new ObserverComponent());
-        entity->AddComponent(new ObservableComponent());
-        entity->AddComponent(new SimpleVisibilityShapeComponent());
-    }
-    else
-    {
-        const bool isClientOwner = IsClientOwner(this, entity);
-        if (isClientOwner)
-        {
-            NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
-            Logger::Debug("[PlayerEntitySystem::Process] Set player:%d vehicle:%d", netReplComp->GetNetworkPlayerID(), entity->GetID());
-            entity->SetName("MyTank");
-            filePath = "~res:/Sniper_1.sc2";
-
-            Camera* camera = new Camera();
-            camera->SetUp(Vector3(0.f, 0.f, 1.f));
-            camera->SetPosition(Vector3(0.f, -50.f, 100.f));
-            camera->SetTarget(Vector3(0.f, 0.f, 0.f));
-            camera->RebuildCameraFromValues();
-            VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
-            const Size2i& physicalSize = vcs->GetPhysicalScreenSize();
-            float32 screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);
-            camera->SetupPerspective(70.f, screenAspect, 0.5f, 2500.f);
-            GetScene()->AddCamera(camera);
-            GetScene()->SetCurrentCamera(camera);
-            entity->AddComponent(new CameraComponent(camera));
-        }
-
-        if (isClientOwner || optionsComp->isEnemyPredicted)
-        {
-            ComponentMask predictionMask;
-            predictionMask.Set<NetworkTransformComponent>();
-
-            if (isClientOwner)
-            {
-                predictionMask.Set<ShootCooldownComponent>();
-            }
-
-            NetworkPredictComponent* npc = new NetworkPredictComponent(predictionMask);
-            entity->AddComponent(npc);
-        }
-
-        entity->AddComponent(new NetworkMovementComponent());
-    }
-
-    Entity* tankModel = GetModel(filePath);
-    if (IsClient(this))
-    {
-        NetworkDebugDrawComponent* debugDrawComponent = new NetworkDebugDrawComponent();
-        debugDrawComponent->box = tankModel->GetWTMaximumBoundingBoxSlow();
-        entity->AddComponent(debugDrawComponent);
-
-        if (optionsComp->options.playerKind.GetId() == PlayerKind::Id::SHOOTER_BOT)
-        {
-            bool isActor = IsClientOwner(this, entity);
-            ShooterBehaviorComponent* behaviorComponent = new ShooterBehaviorComponent(isActor);
-            entity->AddComponent(behaviorComponent);
-        }
-    }
-
-    BoxShapeComponent* boxShape = new BoxShapeComponent();
-    const AABBox3 bbox = tankModel->GetWTMaximumBoundingBoxSlow();
-    boxShape->SetHalfSize(bbox.GetSize() / 2.0);
-    boxShape->SetTypeMask(1);
-    boxShape->SetTypeMaskToCollideWith(2);
-    boxShape->SetOverrideMass(true);
-    boxShape->SetMass(10000.f);
-    entity->AddComponent(boxShape);
-
-    DynamicBodyComponent* dynamicBody = new DynamicBodyComponent();
-    dynamicBody->SetBodyFlags(PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
-    entity->AddComponent(dynamicBody);
-
-    entity->AddNode(tankModel);
-    tankModel->Release();
+    Camera* camera = new Camera();
+    camera->SetUp(Vector3(0.f, 0.f, 1.f));
+    camera->SetPosition(Vector3(0.f, -50.f, 100.f));
+    camera->SetTarget(Vector3(0.f, 0.f, 0.f));
+    camera->RebuildCameraFromValues();
+    VirtualCoordinatesSystem* vcs = GetEngineContext()->uiControlSystem->vcs;
+    const Size2i& physicalSize = vcs->GetPhysicalScreenSize();
+    float32 screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);
+    camera->SetupPerspective(70.f, screenAspect, 0.5f, 2500.f);
+    GetScene()->AddCamera(camera);
+    GetScene()->SetCurrentCamera(camera);
+    camComp->SetCamera(camera);
 }
 
 void PlayerEntitySystem::FillCarPlayerEntity(DAVA::Entity* entity)

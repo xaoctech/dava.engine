@@ -22,12 +22,6 @@ public:
     static const DAVA::uint32 MAX_DISTANCE;
     static const DAVA::float32 MOVE_SPEED;
 
-    enum ShootType
-    {
-        MAIN = 1 << 0,
-        STUN = 1 << 1,
-    };
-
     ShootComponent();
 
     DAVA::Component* Clone(DAVA::Entity* toEntity) override;
@@ -42,13 +36,9 @@ public:
     DAVA::uint32 GetDistance() const;
     void SetDistance(DAVA::uint32 distance_);
 
-    DAVA::uint32 GetShootType() const;
-    void SetShootType(DAVA::uint32 shootTypeMask);
-
     DAVA_VIRTUAL_REFLECTION(ShootComponent, Component);
 
 protected:
     ShootPhase phase = ShootPhase::BURN;
     DAVA::uint32 distance = 0;
-    DAVA::uint32 shootTypeMask = ShootType::MAIN;
 };

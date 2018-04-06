@@ -11,7 +11,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShootComponent)
 {
     ReflectionRegistrator<ShootComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
-    .Field("distance", &ShootComponent::distance)[M::Replicable()]
+    .Field("Distance", &ShootComponent::distance)[M::Replicable()]
     .End();
 }
 
@@ -57,13 +57,4 @@ uint32 ShootComponent::GetDistance() const
 void ShootComponent::SetDistance(uint32 distance_)
 {
     distance = distance_;
-}
-
-DAVA::uint32 ShootComponent::GetShootType() const
-{
-    return shootTypeMask;
-}
-void ShootComponent::SetShootType(DAVA::uint32 shootTypeMask_)
-{
-    shootTypeMask = shootTypeMask_;
 }

@@ -5,11 +5,13 @@
 #include <Base/BaseTypes.h>
 #include <Entity/SceneSystem.h>
 #include <Scene3D/EntityGroup.h>
+#include <Scene3D/ComponentGroup.h>
 
 namespace DAVA
 {
 class Scene;
 class Entity;
+class CameraComponent;
 }
 class BattleOptionsSingleComponent;
 
@@ -24,7 +26,7 @@ public:
     void PrepareForRemove() override{};
 
 private:
-    void FillTankPlayerEntity(DAVA::Entity* entity);
+    void TuneCameraComponent(DAVA::CameraComponent* camComp);
     void FillCarPlayerEntity(DAVA::Entity* entity);
 
     DAVA::Entity* GetModel(const DAVA::String& pathname) const;
@@ -34,6 +36,6 @@ private:
 
     BattleOptionsSingleComponent* optionsComp = nullptr;
 
-    DAVA::EntityGroupOnAdd* tanksSubscriber = nullptr;
+    DAVA::ComponentGroupOnAdd<DAVA::CameraComponent>* cameraSubscriber = nullptr;
     DAVA::EntityGroupOnAdd* carsSubscriber = nullptr;
 };

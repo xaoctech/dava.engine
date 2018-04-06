@@ -84,7 +84,7 @@ private:
 
     using SeqToSentFrames = Array<SequenceData, MAX_SENT_COUNT>;
     using EntityToBaseFrames = UnorderedMap<NetworkID, FrameRange>;
-    using RemovedEntityToPrivacy = UnorderedMap<NetworkID, M::Privacy>;
+    using RemovedEntityToOwnership = UnorderedMap<NetworkID, M::OwnershipRelation>;
 
     struct ResponderEnvironment
     {
@@ -103,7 +103,7 @@ private:
         Vector<SequenceId> acks;
         EntityToBaseFrames baseFrames;
         SeqToSentFrames sentFrames;
-        RemovedEntityToPrivacy removedEntities;
+        RemovedEntityToOwnership removedEntities;
         FastName token;
         NetworkPlayerComponent* playerComponent = nullptr;
         SequenceId maxSeq = 0;
@@ -116,12 +116,10 @@ private:
     void OnPlayerComponentRemoved(NetworkPlayerComponent* component);
     void ProcessAckPackets(ResponderData& responderData);
     void ProcessResponder(ResponderData& responderData, NetworkPlayerID playerId);
-    void ProcessEntity(NetworkID netEntityId, M::Privacy privacy, ResponderEnvironment& env);
-    WriteResult WriteEntity(NetworkID netEntityId, M::Privacy privacy, ResponderEnvironment& env);
+    void ProcessEntity(NetworkID netEntityId, M::OwnershipRelation ownership, ResponderEnvironment& env);
+    WriteResult WriteEntity(NetworkID netEntityId, M::OwnershipRelation ownership, ResponderEnvironment& env);
     void SendMtuBlock(ResponderEnvironment& env);
     void SendTmpBlock(ResponderEnvironment& env);
-
-    M::Privacy GetPlayerPrivacy(NetworkPlayerID playerId, NetworkPlayerID entityPlayerId);
 
     UnorderedMap<const Responder*, NetworkPlayerID> responderToPlayerID;
     Vector<ResponderData> responderDataList;

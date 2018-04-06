@@ -6,6 +6,7 @@
 
 namespace DAVA
 {
+class EntityConfigManager;
 class Entity;
 class NetworkFactoryComponent;
 
@@ -20,9 +21,10 @@ public:
     void ProcessFixed(float32 timeElapsed) override;
 
 private:
-    uint8 GetDomainMask(Entity* entity, NetworkPlayerID playerId);
+    uint8 GetCurrentDomain(NetworkPlayerID playerId);
 
     ComponentGroup<NetworkFactoryComponent>* factoryGroup;
     ComponentGroupOnAdd<NetworkFactoryComponent>* factoryGroupPending;
+    std::unique_ptr<EntityConfigManager> entityConfigManager;
 };
 };

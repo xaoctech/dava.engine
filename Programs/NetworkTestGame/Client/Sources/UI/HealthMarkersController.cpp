@@ -88,10 +88,15 @@ void HealthMarkersController::CustomStrategy(DAVA::UIControl* ctrl, DAVA::UIEnti
 {
     using namespace DAVA;
     Entity* markerEntity = emc->GetTargetEntity();
-    Entity* healthEntity = markerEntity->GetParent();
-    HealthComponent* healthComponent = healthEntity->GetComponent<HealthComponent>();
-    if (healthComponent)
+    Entity* healthEntityOpt = markerEntity->GetParent();
+    while (healthEntityOpt)
     {
-        ctrl->SetTag(static_cast<int32>(healthComponent->GetPercentage() * 100));
+        HealthComponent* healthComponent = healthEntityOpt->GetComponent<HealthComponent>();
+        if (healthComponent)
+        {
+            ctrl->SetTag(static_cast<int32>(healthComponent->GetPercentage() * 100));
+            break;
+        }
+        healthEntityOpt = healthEntityOpt->GetParent();
     }
 }

@@ -83,7 +83,7 @@ struct SnapshotUtils
 
     static bool TestSnapshotComponentsEqual(const SnapshotComponent* snapshotComponent1, const SnapshotComponent* snapshotComponent2);
 
-    static size_t CreateSnapshotDiff(const Snapshot* base, Snapshot* current, NetworkID entityId, M::Privacy privacy, uint8* dstBuff, size_t dstSize);
+    static size_t CreateSnapshotDiff(const Snapshot* base, Snapshot* current, NetworkID entityId, M::OwnershipRelation ownership, uint8* dstBuff, size_t dstSize);
     static size_t ApplySnapshotDiff(const Snapshot* base, Snapshot* target, NetworkID entityId, const uint8* srcBuff, size_t srcSize, SnapshotApplyCallback callback);
     static size_t GetSnapshotDiffSize(const uint8* srcBuff, size_t srcSize);
 

@@ -68,7 +68,7 @@ void ShooterBehaviorSystem::ProcessPendingAgents()
     for (ShooterBehaviorComponent* agent : pendingAgents)
     {
         // TODO: current solution don't support multiple actors
-        DVASSERT(agent->isActor);
+        agent->isActor = true;
         BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingleComponent<BattleOptionsSingleComponent>();
         uint32 seed = static_cast<uint32>(std::hash<std::string>{}(optionsComp->options.token.c_str()));
         localRandom.Seed(seed);

@@ -85,6 +85,26 @@ Entity* GetEntityWithNetworkId(Scene* scene, NetworkID networkId)
     return nullptr;
 }
 
+M::OwnershipRelation GetPlayerOwnershipRelation(const Entity* entity, NetworkPlayerID playerId)
+{
+    const NetworkReplicationComponent* replicationComponent = entity->GetComponent<NetworkReplicationComponent>();
+    DVASSERT(replicationComponent);
+    const NetworkPlayerID entityOwnerId = replicationComponent->GetNetworkPlayerID();
+    if (entityOwnerId == playerId)
+    {
+        return M::OwnershipRelation::OWNER;
+    }
+
+    /*  TODO: Not implemented.
+    if (GetTeam(entityOwnerId) == GetTeam(playerId))
+    {
+        return M::OwnershipRelation::TEAMMATE;
+    }
+    */
+
+    return M::OwnershipRelation::ENEMY;
+}
+
 Vector<ActionsSingleComponent::Actions>& GetCollectedActionsForClient(Scene* scene, const Entity* clientEntity)
 {
     NetworkReplicationComponent* networkReplicationComponent = clientEntity->GetComponent<NetworkReplicationComponent>();

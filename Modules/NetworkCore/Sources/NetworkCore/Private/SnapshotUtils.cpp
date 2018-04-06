@@ -196,12 +196,12 @@ bool SnapshotUtils::TestSnapshotComponentsEqual(const SnapshotComponent* snapsho
     return true;
 }
 
-size_t SnapshotUtils::CreateSnapshotDiff(const Snapshot* base, Snapshot* current, NetworkID entityId, M::Privacy privacy, uint8* dstBuff, size_t dstSize)
+size_t SnapshotUtils::CreateSnapshotDiff(const Snapshot* base, Snapshot* current, NetworkID entityId, M::OwnershipRelation ownership, uint8* dstBuff, size_t dstSize)
 {
     DVASSERT(current != nullptr);
 
     BitWriter bitStream(dstBuff, dstSize);
-    EntitySnapshotWriter writer(bitStream, entityId, privacy, base, current);
+    EntitySnapshotWriter writer(bitStream, entityId, ownership, base, current);
     size_t n = writer.Write();
     return n;
 }

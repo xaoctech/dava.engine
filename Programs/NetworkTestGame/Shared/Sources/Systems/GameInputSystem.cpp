@@ -266,7 +266,7 @@ void GameInputSystem::ApplyDigitalActions(Entity* entity,
     
 #ifndef SERVER
     CameraComponent* cameraComp = entity->GetComponent<CameraComponent>();
-    if (nullptr != cameraComp)
+    if (nullptr != cameraComp && cameraComp->GetCamera())
     {
         Camera* camera = cameraComp->GetCamera();
         Vector3 curCamPos = camera->GetPosition();

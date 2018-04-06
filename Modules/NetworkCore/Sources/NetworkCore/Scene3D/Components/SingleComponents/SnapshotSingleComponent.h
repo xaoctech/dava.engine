@@ -40,7 +40,7 @@ public:
         NetworkID entityId;
         uint32 frameIdBase = 0;
         uint32 frameId = 0;
-        M::Privacy privacy = M::Privacy::PRIVATE;
+        M::OwnershipRelation ownership;
         uint8* buff = nullptr;
         size_t buffSize = 0;
 

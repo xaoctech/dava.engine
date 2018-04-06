@@ -59,7 +59,7 @@ public:
 
     CachedDiff GetCache(const SnapshotSingleComponent::CreateDiffParams& params)
     {
-        if (params.privacy == M::Privacy::PUBLIC && params.frameId == cacheFrameId)
+        if (params.ownership == M::OwnershipRelation::ENEMY && params.frameId == cacheFrameId)
         {
             auto it = cache.find({ params.entityId, params.frameIdBase });
             if (it != cache.end())
@@ -81,7 +81,7 @@ public:
             memPoolPos = 0;
         }
 
-        if (params.privacy == M::Privacy::PUBLIC)
+        if (params.ownership == M::OwnershipRelation::ENEMY)
         {
             DVASSERT(params.entityId != NetworkID::INVALID);
             DVASSERT(params.buffSize > 0);
@@ -295,7 +295,7 @@ bool SnapshotSingleComponent::GetServerDiff(CreateDiffParams& params)
         DVASSERT(snapshot != nullptr);
         DVASSERT(snapshot != snapshotBase);
 
-        size_t diffSz = SnapshotUtils::CreateSnapshotDiff(snapshotBase, snapshot, params.entityId, params.privacy, params.buff, params.buffSize);
+        size_t diffSz = SnapshotUtils::CreateSnapshotDiff(snapshotBase, snapshot, params.entityId, params.ownership, params.buff, params.buffSize);
 
         if (diffSz > 0)
         {

@@ -2,7 +2,6 @@
 
 #include "InputUtils.h"
 
-#include "Components/ExplosiveRocketComponent.h"
 #include "Components/GameStunnableComponent.h"
 #include "Components/HealthComponent.h"
 #include "Components/ShootComponent.h"
@@ -106,67 +105,22 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
 
             if (!bullet)
             {
-                if (isSecondShoot)
-                {
-                    bullet = new Entity;
-
-                    NetworkReplicationComponent* bulletReplComp = new NetworkReplicationComponent(bulletId);
-
-                    ExplosiveRocketComponent* rocketComp = new ExplosiveRocketComponent();
-                    rocketComp->shooterId = shooterReplComp->GetNetworkID();
-                    bullet->AddComponent(rocketComp);
-
-                    ComponentMask predictionComponentMask;
-                    predictionComponentMask.Set<ExplosiveRocketComponent>();
-                    bulletReplComp->SetForReplication<ExplosiveRocketComponent>(M::Privacy::PUBLIC);
-
-                    predictionComponentMask.Set<NetworkTransformComponent>();
-                    NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionComponentMask);
-                    bullet->AddComponent(networkPredictComponent);
-                    bullet->AddComponent(new NetworkTransformComponent());
-
-                    if (IsServer(this))
+                const String cfgName = (isFirstShoot) ? "Ammo/DamageBullet" : "Ammo/StunBullet";
+                NetworkFactoryComponent* factoryComponent = CreateEntityWithFactoryComponent(cfgName, bulletId);
+                bullet = factoryComponent->GetEntity();
+                const TransformComponent* src = shooter->GetComponent<TransformComponent>();
+                factoryComponent->SetInitialTransform(src->GetPosition(), src->GetRotation(), 8.f);
+                factoryComponent->OverrideField("DynamicBodyComponent/BodyFlags",
+                                                PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
+                factoryComponent->SetupAfterInit([](Entity* e) {
+                    BoxShapeComponent* bsc = e->GetComponent<BoxShapeComponent>();
+                    if (bsc)
                     {
-                        bullet->AddComponent(new ObservableComponent());
-                        bullet->AddComponent(new SimpleVisibilityShapeComponent());
+                        Entity* rocketModel = e->FindByName("Model");
+                        const AABBox3 bbox = rocketModel->GetWTMaximumBoundingBoxSlow();
+                        bsc->SetHalfSize(bbox.GetSize() / 2.0);
                     }
-
-                    bulletReplComp->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
-                    bullet->AddComponent(bulletReplComp);
-                }
-                else
-                {
-                    NetworkFactoryComponent* factoryComponent = CreateFactoryEntity("Bullet", bulletId);
-                    bullet = factoryComponent->GetEntity();
-                    const TransformComponent* src = shooter->GetComponent<TransformComponent>();
-                    factoryComponent->SetInitialTransform(src->GetPosition(), src->GetRotation(), 8.f);
-                    factoryComponent->OverrideField("DynamicBodyComponent/BodyFlags",
-                                                    PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
-
-                    {
-                        //TODO : Two syntax equal variants.
-
-                        SETUP_AFTER_INIT(factoryComponent, BoxShapeComponent, c)
-                        {
-                            Entity* rocketModel = c->GetEntity()->FindByName("Model");
-                            const AABBox3 bbox = rocketModel->GetWTMaximumBoundingBoxSlow();
-                            c->SetHalfSize(bbox.GetSize() / 2.0);
-                        };
-
-                        factoryComponent->SetupAfterInit<BoxShapeComponent>([shooterReplComp](BoxShapeComponent* c)
-                                                                            {
-                                                                                Entity* rocketModel = c->GetEntity()->FindByName(
-                                                                                "Model");
-                                                                                const AABBox3 bbox = rocketModel->GetWTMaximumBoundingBoxSlow();
-                                                                                c->SetHalfSize(bbox.GetSize() / 2.0);
-                                                                            });
-                    }
-
-                    factoryComponent->SetupAfterInit([](Entity* e)
-                                                     {
-                                                         //                                                         Logger::Debug("SetupAfterInit entity:%s", e->GetName());
-                                                     });
-                }
+                });
 
                 GetScene()->AddNode(bullet);
                 shootCooldownComponent->SetLastShootFrameId(clientFrameId);

@@ -281,6 +281,7 @@ using IntColor = Meta<Metas::IntColor>;
 */
 using Multiple = Meta<Metas::Multiple>;
 
+using OwnershipRelation = Metas::Ownership;
 using Privacy = Metas::Privacy;
 using Replicable = Meta<Metas::Replicable>;
 using Observable = Meta<Metas::Observable>;

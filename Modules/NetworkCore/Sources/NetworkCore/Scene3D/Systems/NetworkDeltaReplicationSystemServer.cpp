@@ -82,7 +82,7 @@ void NetworkDeltaReplicationSystemServer::RemoveEntity(Entity* entity)
             {
                 FrameRange& frameRange = findIt->second;
                 frameRange.delFrameId = frameId;
-                data.removedEntities[netEntityId] = GetPlayerPrivacy(playerId, entPlayerId);
+                data.removedEntities[netEntityId] = GetPlayerOwnershipRelation(entity, entPlayerId);
             }
         }
     }
@@ -250,7 +250,7 @@ void NetworkDeltaReplicationSystemServer::OnClientDisconnect(const FastName& tok
 }
 
 NetworkDeltaReplicationSystemServer::WriteResult
-NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Privacy privacy, ResponderEnvironment& env)
+NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::OwnershipRelation ownership, ResponderEnvironment& env)
 {
     FrameRange& range = env.entityToBaseFrames[netEntityId];
     range.currFrameId = env.frameId;
@@ -264,7 +264,7 @@ NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Priva
         params.entityId = netEntityId;
         params.frameId = range.currFrameId;
         params.frameIdBase = range.baseFrameId;
-        params.privacy = privacy;
+        params.ownership = ownership;
         const size_t diffSize = CreateDiff(params);
         // We can save net-traffic by ignoring to send touch-info for static objects.
         // If we have such entity we should just skip it and continue to the next one.
@@ -379,12 +379,6 @@ void NetworkDeltaReplicationSystemServer::SendTmpBlock(ResponderEnvironment& env
     ++env.currPktCount;
 }
 
-M::Privacy NetworkDeltaReplicationSystemServer::GetPlayerPrivacy(NetworkPlayerID playerId, NetworkPlayerID entityPlayerId)
-{
-    const bool isSelfEntity = entityPlayerId == playerId;
-    return (isSelfEntity) ? M::Privacy::OWNER : M::Privacy::NOT_OWNER;
-}
-
 void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& responderData, NetworkPlayerID playerId)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkDeltaReplicationSystemServer::ProcessResponder");
@@ -414,7 +408,7 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& respon
 
     mtuBlock.size = env.pktHeader.GetSize();
 
-    ProcessEntity(NetworkID::SCENE_ID, M::Privacy::PUBLIC, env);
+    ProcessEntity(NetworkID::SCENE_ID, M::OwnershipRelation::OWNER, env);
 
     if (responderData.playerComponent)
     {
@@ -439,8 +433,8 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& respon
 
             NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
             const NetworkID netEntityId = netReplComp->GetNetworkID();
-            M::Privacy privacy = GetPlayerPrivacy(playerId, netReplComp->GetNetworkPlayerID());
-            ProcessEntity(netEntityId, privacy, env);
+            M::OwnershipRelation ownership = GetPlayerOwnershipRelation(entity, playerId);
+            ProcessEntity(netEntityId, ownership, env);
         }
     }
 
@@ -456,14 +450,14 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& respon
     }
 }
 
-void NetworkDeltaReplicationSystemServer::ProcessEntity(NetworkID netEntityId, M::Privacy privacy, ResponderEnvironment& env)
+void NetworkDeltaReplicationSystemServer::ProcessEntity(NetworkID netEntityId, M::OwnershipRelation ownership, ResponderEnvironment& env)
 {
-    switch (WriteEntity(netEntityId, privacy, env))
+    switch (WriteEntity(netEntityId, ownership, env))
     {
     case WriteResult::MTU_OVERFLOW:
     {
         SendMtuBlock(env);
-        WriteResult result = WriteEntity(netEntityId, privacy, env);
+        WriteResult result = WriteEntity(netEntityId, ownership, env);
         DVASSERT(WriteResult::CONTINUE == result, "Logic is corrupted");
         break;
     }

@@ -267,15 +267,20 @@ public:
     String tooltipFieldName;
 };
 
+enum Ownership : uint8
+{
+    OWNER = 1 << 0,
+    TEAMMATE = 1 << 1,
+    ENEMY = 1 << 2,
+};
+
 enum Privacy : uint8
 {
     SERVER_ONLY = 0,
-    OWNER = 1 << 0,
-    TEAMMATE = 1 << 1,
-    NOT_OWNER = 1 << 2,
     PRIVATE = OWNER,
-    PUBLIC = OWNER | NOT_OWNER | TEAMMATE,
-    AS_PARENT,
+    NOT_OWNER = ENEMY | TEAMMATE,
+    PUBLIC = OWNER | ENEMY | TEAMMATE,
+    AS_PARENT = static_cast<uint8>(~0)
 };
 
 /** Components or field are simulated */

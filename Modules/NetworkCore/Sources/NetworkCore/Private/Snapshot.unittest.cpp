@@ -225,7 +225,7 @@ DAVA_TESTCLASS (SnapshotTest)
 
         uint8 buf[1400];
         NetworkID nid = NetworkCoreUtils::GetEntityId(e1);
-        size_t n = SnapshotUtils::CreateSnapshotDiff(&s1, snapshot, nid, Metas::Privacy::PRIVATE, buf, 1400);
+        size_t n = SnapshotUtils::CreateSnapshotDiff(&s1, snapshot, nid, Metas::Ownership::OWNER, buf, 1400);
 
         size_t j = SnapshotUtils::GetSnapshotDiffSize(buf, n);
 

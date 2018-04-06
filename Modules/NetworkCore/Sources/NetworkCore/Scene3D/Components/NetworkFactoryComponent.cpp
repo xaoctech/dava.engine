@@ -13,6 +13,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkFactoryComponent)
     ReflectionRegistrator<NetworkFactoryComponent>::Begin()[M::Replicable(M::Privacy::PUBLIC)]
     .ConstructorByPointer()
     .Field("Name", &NetworkFactoryComponent::name)[M::Replicable()]
+    .Field("Scale", &NetworkFactoryComponent::scale)[M::Replicable()]
     .End();
 }
 
@@ -23,9 +24,10 @@ Component* NetworkFactoryComponent::Clone(Entity* toEntity)
     return newComp;
 }
 
-void NetworkFactoryComponent::SetInitialTransform(const Vector3& position, const Quaternion& rotation, float32 scale)
+void NetworkFactoryComponent::SetInitialTransform(const Vector3& position, const Quaternion& rotation, float32 scale_)
 {
-    initialTransformPtr.reset(new InitialTransform{ position, rotation, scale });
+    scale = scale_;
+    initialTransformPtr.reset(new InitialTransform{ position, rotation });
 }
 
 UnorderedMap<FastName, NetworkFactoryComponent::ComponentField> NetworkFactoryComponent::componentFieldsCache = {};
@@ -37,7 +39,7 @@ const NetworkFactoryComponent::ComponentField& NetworkFactoryComponent::ParsePat
     {
         Vector<String> parts;
         Split(path, "/", parts);
-        DVASSERT(parts.size() == 2, "Required format: Component/Filed");
+        DVASSERT(parts.size() == 2, "Required format: Component/Field");
 
         const String& compName(parts[0]);
         FastName fieldName(parts[1]);
@@ -48,4 +50,9 @@ const NetworkFactoryComponent::ComponentField& NetworkFactoryComponent::ParsePat
 
     return findIt->second;
 }
+
+void NetworkFactoryComponent::SetupAfterInit(Function<void(Entity*)> callback)
+{
+    overrideEntityDataCallback = std::move(callback);
+};
 };

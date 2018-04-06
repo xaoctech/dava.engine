@@ -2,6 +2,7 @@
 
 #include "NetworkTypes.h"
 #include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
+#include <Reflection/ReflectedMeta.h>
 
 namespace DAVA
 {
@@ -21,6 +22,7 @@ bool IsClientOwner(SceneSystem* sceneSystem, const Entity* entity);
 bool IsClientOwner(const Entity* entity);
 
 Entity* GetEntityWithNetworkId(Scene* scene, NetworkID networkId);
+M::OwnershipRelation GetPlayerOwnershipRelation(const Entity* entity, NetworkPlayerID playerId);
 
 // TODO: --> move to NetworkInputUtils
 Vector<ActionsSingleComponent::Actions>& GetCollectedActionsForClient(Scene* scene, const Entity* clientEntity);
