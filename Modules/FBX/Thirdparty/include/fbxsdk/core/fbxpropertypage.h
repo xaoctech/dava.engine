@@ -113,9 +113,9 @@ public:
 
     inline void SetUserData(const void* pUserData)
     {
-        mUserData = (void*)pUserData;
+        mUserData = (const void*)pUserData;
     }
-    inline void* GetUserData() const
+    inline const void* GetUserData() const
     {
         return mUserData;
     }
@@ -131,7 +131,7 @@ public:
 
             bool lCanAdd = (lType == eFbxEnumM || mEnumList->FindIndex(pStringValue) == -1);
             if (lCanAdd)
-                return mEnumList->Add((char*)pStringValue);
+                return mEnumList->Add((const char*)pStringValue);
         }
         return -1;
     }
@@ -146,7 +146,7 @@ public:
 
             bool lCanAdd = (lType == eFbxEnumM || mEnumList->FindIndex(pStringValue) == -1);
             if (lCanAdd)
-                mEnumList->InsertAt(pIndex, (char*)pStringValue);
+                mEnumList->InsertAt(pIndex, (const char*)pStringValue);
         }
     }
 
@@ -165,7 +165,7 @@ public:
 
             bool lCanAdd = (lType == eFbxEnumM || mEnumList->FindIndex(pStringValue) == -1);
             if (lCanAdd)
-                mEnumList->SetStringAt(pIndex, (char*)pStringValue);
+                mEnumList->SetStringAt(pIndex, (const char*)pStringValue);
         }
     }
 
@@ -293,7 +293,7 @@ private:
     FbxPropertyPage* mTypeInfo;
     int mUserTag;
     void* mMinMaxValue[eValueCount];
-    void* mUserData;
+    const void* mUserData;
     FbxConnectionPointFilter* mFilter;
     FbxAutoDeletePtr<FbxStringList> mEnumList;
 };
@@ -709,10 +709,10 @@ public:
         }
     }
 
-    void* GetUserData(FbxInt pId = FBXSDK_PROPERTY_ID_ROOT)
+    const void* GetUserData(FbxInt pId = FBXSDK_PROPERTY_ID_ROOT)
     {
         FbxPropertyInfo* lPropertyInfo = GetPropertyItem(FBX_TYPE(FbxPropertyInfo), pId);
-        return lPropertyInfo ? lPropertyInfo->GetUserData() : 0;
+        return lPropertyInfo ? lPropertyInfo->GetUserData() : nullptr;
     }
 
     bool SetUserData(FbxInt pId = FBXSDK_PROPERTY_ID_ROOT, const void* pUserData = 0)
@@ -1135,10 +1135,10 @@ public:
             lPropertyInfo->RemoveEnumValue(pIndex);
     }
 
-    char* GetEnumValue(FbxInt pId, int pIndex)
+    const char* GetEnumValue(FbxInt pId, int pIndex)
     {
         FbxPropertyInfo* lPropertyInfo = GetPropertyItem(FBX_TYPE(FbxPropertyInfo), pId);
-        return lPropertyInfo ? lPropertyInfo->GetEnumValue(pIndex) : (char*)"";
+        return lPropertyInfo ? lPropertyInfo->GetEnumValue(pIndex) : (const char*)"";
     }
 
     // Connection

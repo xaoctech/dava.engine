@@ -105,6 +105,7 @@ public:
         VISIBLE_PICKING_PASS = 1 << 14,
 
         TRANSFORM_UPDATED = 1 << 15,
+        VELOCITY_UPDATE = 1 << 16
     };
 
     static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_STATIC_OCCLUSION | VISIBLE_QUALITY;
@@ -140,6 +141,8 @@ public:
     void RemoveRenderBatchProvider(RenderBatchProvider*);
 
     virtual void RecalcBoundingBox();
+
+    virtual void UpdatePreviousState();
 
     inline uint32 GetRenderBatchCount() const;
     inline RenderBatch* GetRenderBatch(uint32 batchIndex) const;
@@ -184,6 +187,7 @@ public:
     inline const Matrix4* GetWorldTransformPtr() const;
     inline void SetInverseTransform(const Matrix4& _inverseWorldTransform);
     inline const Matrix4& GetInverseWorldTransform() const;
+    const Matrix4& GetPrevWorldTransform() const;
 
     inline eType GetType() const
     {
@@ -354,6 +358,7 @@ protected:
 
     RenderSystem* renderSystem = nullptr;
     const Matrix4* worldTransform = nullptr; // temporary - this should me moved directly to matrix uniforms
+    Matrix4 prevWorldTransform; // GFX_COMPLETE we need this matrix only for velocity buffer. There are not too many moving objects in level actually so we just wasting memory.
     Matrix4 inverseWorldTransform;
     FastName ownerDebugInfo;
     AABBox3 bbox;
@@ -432,6 +437,11 @@ inline void RenderObject::SetWorldTransformPtr(const Matrix4* _worldTransform)
 inline const Matrix4* RenderObject::GetWorldTransformPtr() const
 {
     return worldTransform;
+}
+
+inline const Matrix4& RenderObject::GetPrevWorldTransform() const
+{
+    return prevWorldTransform;
 }
 
 inline void RenderObject::SetInverseTransform(const Matrix4& _inverseWorldTransform)

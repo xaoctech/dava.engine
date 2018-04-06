@@ -111,7 +111,7 @@ DAVA_TARC_TESTCLASS(NotificationTest)
         layout->ShowNotification(parent, params);
 
         EXPECT_CALL(*this, OnDestroyed())
-        .WillOnce(Invoke([layout, elapsedTimer, timeout]() {
+        .WillOnce(Invoke([layout, elapsedTimer]() {
             int elapsedMs = elapsedTimer->elapsed();
             const int maxExpectedTimeMs = 300; //time can be increased by animations or NotificationLayout timer accuracy
             TEST_VERIFY(elapsedMs < maxExpectedTimeMs);

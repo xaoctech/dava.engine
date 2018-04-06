@@ -95,7 +95,6 @@ private:
 
     AABBox3 worldBox;
     int32 maxTreeDepth = 0;
-    Frustum* currFrustum = nullptr;
     Camera* currCamera = nullptr;
     uint32 currVisibilityCriteria = 0;
     uint32 localRayBoxTraceCount = 0;

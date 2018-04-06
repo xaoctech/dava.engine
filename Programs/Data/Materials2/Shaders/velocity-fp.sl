@@ -1,18 +1,21 @@
 #include "include/common.h"
 
+color_mask = rg;
+
 [auto][global] property float4x4 projMatrix;
 [auto][global] property float4x4 viewMatrix;
 [auto][global] property float4x4 worldMatrix;
+[auto][global] property float4x4 prevWorldMatrix;
 [auto][global] property float4x4 invViewMatrix;
 [auto][global] property float4x4 invProjMatrix;
 [auto][global] property float4x4 viewProjMatrix;
+[auto][global] property float4x4 prevViewProjMatrix;
 [auto][global] property float4x4 worldViewMatrix;
 [auto][global] property float4x4 invViewProjMatrix;
 [auto][global] property float4x4 invWorldViewMatrix;
 [auto][global] property float4x4 worldInvTransposeMatrix;
 
-[material][a] property float4x4 jitPrevVP;
-[material][a] property float4 prevCurrJitter;
+[auto][global] property float4 cameraProjJitterPrevCurr;
 
 uniform sampler2D depth;
 
@@ -37,12 +40,12 @@ fragment_out fp_main(fragment_in input)
     float4 worldPos = mul(float4(ndcPos, 1.0), invViewProjMatrix);
     worldPos /= worldPos.w;
 
-    float4 prevCoordNDCunjitter = mul(worldPos, jitPrevVP);
+    float4 prevCoordNDCunjitter = mul(worldPos, prevViewProjMatrix);
     prevCoordNDCunjitter /= prevCoordNDCunjitter.w;
-    prevCoordNDCunjitter.xy += prevCurrJitter.xy;
+    prevCoordNDCunjitter.xy += cameraProjJitterPrevCurr.xy;
 
-    float2 thisCoordNDCunjitter = input.inPos.xy + prevCurrJitter.zw;
-    float2 vel = (prevCoordNDCunjitter.xy - thisCoordNDCunjitter.xy) * 0.5f;
+    float2 thisCoordNDCunjitter = input.inPos.xy + cameraProjJitterPrevCurr.zw;
+    float2 vel = (prevCoordNDCunjitter.xy - thisCoordNDCunjitter.xy) * ndcToUvMapping.xy;
 
     if (depthSample < 0.000001f)
         vel.xy = float2(0.0f, 0.0f);

@@ -51,7 +51,7 @@ DAVA_TARC_TESTCLASS(ClientModuleTest)
         DataContext::ContextID becomeUnactiveContext = DataContext::Empty;
         DataContext::ContextID becomeActiveContext = DataContext::Empty;
         DataContext::ContextID newContext = DataContext::Empty;
-        auto fn = [this, &newContext](DataContext* ctx)
+        auto fn = [&newContext](DataContext* ctx)
         {
             newContext = ctx->GetID();
         };
@@ -98,7 +98,7 @@ DAVA_TARC_TESTCLASS(ClientModuleTest)
             }
         };
 
-        auto verifyFn = [this, &newContext](DataContext* ctx)
+        auto verifyFn = [&newContext](DataContext* ctx)
         {
             TEST_VERIFY(newContext == ctx->GetID());
         };

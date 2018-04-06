@@ -1,9 +1,16 @@
-#include "DeferredLightsRenderer.h"
+#include "HDRDeferredFetchPass.h"
+#include "Render/Highlevel/PostEffectRenderer.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Render/Highlevel/ReflectionRenderer.h"
+#include "FileSystem/FileSystem.h"
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Render/3D/MeshUtils.h"
 #include "Render/Highlevel/Light.h"
 #include "Render/DynamicBufferAllocator.h"
+#include "Render/Highlevel/DecalRenderObject.h"
+#include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/VelocityPass.h"
 
 //for debug dump gbuffers
 #include "Logger/Logger.h"
@@ -14,148 +21,230 @@
 
 namespace DAVA
 {
-DeferredLightsRenderer::DeferredLightsRenderer(bool useFetch_)
+HDRDeferredFetchPass::HDRDeferredFetchPass()
+    : RenderPass(PASS_GBUFFER_FETCH)
 {
-    useFetch = useFetch_;
-    unityCube = MeshUtils::BuildAABox(Vector3(1.0f, 1.0f, 1.0f));
+    defaultCubemap = GetEngineContext()->assetManager->GetAsset<Texture>(Texture::MakePinkKey(rhi::TEXTURE_TYPE_CUBE), AssetManager::SYNC);
+    //init layers
+    //deferred
+    AddRenderLayer(new RenderLayer(RENDER_LAYER_OPAQUE_ID, RenderLayer::LAYER_SORTING_FLAGS_OPAQUE));
 
-    rhi::DepthStencilState::Descriptor dsDescr;
-    dsDescr.depthTestEnabled = 1;
-    dsDescr.depthFunc = rhi::CMP_GREATEREQUAL;
-    dsDescr.depthWriteEnabled = 0;
+    //forward
+    AddRenderLayer(new RenderLayer(RENDER_LAYER_AFTER_OPAQUE_ID, RenderLayer::LAYER_SORTING_FLAGS_AFTER_OPAQUE));
+    AddRenderLayer(new RenderLayer(RENDER_LAYER_SKY_ID, 0));
+    AddRenderLayer(new RenderLayer(RENDER_LAYER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_TRANSLUCENT));
+    AddRenderLayer(new RenderLayer(RENDER_LAYER_AFTER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_AFTER_TRANSLUCENT));
+    AddRenderLayer(new RenderLayer(RENDER_LAYER_DEBUG_DRAW_ID, RenderLayer::LAYER_SORTING_FLAGS_DEBUG_DRAW));
 
-    rhi::VertexLayout deferredLightLayout;
-    deferredLightLayout.AddStream(rhi::VDF_PER_VERTEX);
-    deferredLightLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3); //vertex position
-    deferredLightLayout.AddStream(rhi::VDF_PER_INSTANCE);
-    deferredLightLayout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 4); //(lightPosition.xyz, radius)
-    deferredLightLayout.AddElement(rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 4); //(color.rgb, shadowIndex)
+    deferredLightsRenderer = new DeferredLightsRenderer(true);
+    deferredDecalRenderer = new DeferredDecalRenderer(true);
 
-    deferredLightsPacket.vertexStreamCount = 2;
-    deferredLightsPacket.vertexStream[0] = unityCube->vertexBuffer;
-    deferredLightsPacket.instanceCount = 0;
-    deferredLightsPacket.baseVertex = 0;
-    deferredLightsPacket.vertexCount = unityCube->vertexCount;
-    deferredLightsPacket.indexBuffer = unityCube->indexBuffer;
-    deferredLightsPacket.primitiveType = unityCube->primitiveType;
-    deferredLightsPacket.primitiveCount = CalculatePrimitiveCount(unityCube->indexCount, unityCube->primitiveType);
-    deferredLightsPacket.vertexLayoutUID = rhi::VertexLayout::UniqueId(deferredLightLayout);
-    deferredLightsPacket.startIndex = 0;
-    deferredLightsPacket.depthStencilState = rhi::AcquireDepthStencilState(dsDescr);
-    deferredLightsPacket.cullMode = rhi::CULL_CCW;
-    InvalidateMaterials();
-
-    listener.onReloaded = [this](const Asset<AssetBase>& originalAsset, const Asset<AssetBase>& reloadedAsset) {
-        if (deferredLightsShader == originalAsset)
-        {
-            deferredLightsShader = std::dynamic_pointer_cast<ShaderDescriptor>(reloadedAsset);
-            UpdatePacketParams();
-        }
+    const static uint32 VERTEX_COUNT = 6;
+    struct ResVertex
+    {
+        Vector3 pos;
+        Vector2 uv;
     };
-}
-
-DeferredLightsRenderer::~DeferredLightsRenderer()
-{
-    SafeRelease(unityCube);
-}
-
-void DeferredLightsRenderer::InvalidateMaterials()
-{
-    UnorderedMap<FastName, int32> flags;
-    if (useFetch)
-        flags[NMaterialFlagName::FLAG_USE_FRAMEBUFFER_FETCH] = 1;
-
-    ShaderDescriptor::Key key(FastName("~res:/Materials2/Shaders/deferred-light"), flags);
-    deferredLightsShader = GetEngineContext()->assetManager->GetAsset<ShaderDescriptor>(key, AssetManager::SYNC);
-    if (!deferredLightsShader->IsValid())
-        return;
-
-    UpdatePacketParams();
-}
-
-void DeferredLightsRenderer::UpdatePacketParams()
-{
-    deferredLightsPacket.renderPipelineState = deferredLightsShader->GetPiplineState();
-    deferredLightsPacket.vertexConstCount = static_cast<uint32>(deferredLightsShader->GetVertexConstBuffersCount());
-    deferredLightsPacket.fragmentConstCount = static_cast<uint32>(deferredLightsShader->GetFragmentConstBuffersCount());
-    for (const ConstBufferDescriptor& bufferDescriptor : deferredLightsShader->GetConstBufferDescriptors())
+    std::array<ResVertex, VERTEX_COUNT> quad =
     {
-        // const rhi::ShaderPropList& props = ShaderDescriptor::GetProps(bufferDescriptor.propertyLayoutId);
-        // only auto bindings - all material bindings should be passed via lightInstanceBuffers
+      Vector3(-1.f, -1.f, 1.f), Vector2(0.f, 0.f), Vector3(-1.f, 1.f, 1.f), Vector2(0.f, 1.f), Vector3(1.f, -1.f, 1.f), Vector2(1.f, 0.f),
+      Vector3(-1.f, 1.f, 1.f), Vector2(0.f, 1.f), Vector3(1.f, 1.f, 1.f), Vector2(1.f, 1.f), Vector3(1.f, -1.f, 1.f), Vector2(1.f, 0.f)
+    };
 
-        DVASSERT(bufferDescriptor.updateType == rhi::ShaderProp::SOURCE_AUTO);
+    rhi::VertexBuffer::Descriptor vDesc;
+    vDesc.size = sizeof(ResVertex) * VERTEX_COUNT;
+    vDesc.initialData = quad.data();
+    vDesc.usage = rhi::USAGE_STATICDRAW;
+    quadBuffer = rhi::CreateVertexBuffer(vDesc);
 
-        rhi::HConstBuffer buffer = deferredLightsShader->GetDynamicBuffer(bufferDescriptor.type, bufferDescriptor.targetSlot);
+    rhi::VertexLayout vxLayout;
+    vxLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
+    vxLayout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 2);
+    screenResolvePacket.vertexLayoutUID = rhi::VertexLayout::UniqueId(vxLayout);
 
-        if (bufferDescriptor.type == ConstBufferDescriptor::Type::Vertex)
-            deferredLightsPacket.vertexConst[bufferDescriptor.targetSlot] = buffer;
-        else
-            deferredLightsPacket.fragmentConst[bufferDescriptor.targetSlot] = buffer;
-    }
+    screenResolvePacket.vertexStreamCount = 1;
+    screenResolvePacket.vertexStream[0] = quadBuffer;
+    screenResolvePacket.primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
+    screenResolvePacket.primitiveCount = 2;
+
+    screenResolveMaterial = new NMaterial();
+    screenResolveMaterial->SetFXName(NMaterialName::GBUFFER_RESOLVE);
+
+    Renderer::GetDynamicBindings().SetDynamicTexture(DynamicBindings::DYNAMIC_TEXTURE_GLOBAL_REFLECTION, defaultCubemap->handle);
+    Renderer::GetDynamicBindings().SetDynamicTexture(DynamicBindings::DYNAMIC_TEXTURE_LOCAL_REFLECTION, defaultCubemap->handle);
+
+    GetPassConfig().usesReverseDepth = rhi::DeviceCaps().isReverseDepthSupported;
+    velocityPass = new VelocityPass();
 }
 
-void DeferredLightsRenderer::Draw(RenderHierarchy::ClipResult& visibilityArray, rhi::HPacketList packetList)
+HDRDeferredFetchPass::~HDRDeferredFetchPass()
 {
-    const Vector<Light*>& dynamicLights = visibilityArray.lightArray;
-    uint32 lightsCount = uint32(dynamicLights.size());
-    if (deferredLightsShader->IsValid() && lightsCount)
+    SafeDelete(deferredDecalRenderer);
+    SafeDelete(deferredLightsRenderer);
+    SafeDelete(velocityPass);
+    SafeRelease(screenResolveMaterial);
+    rhi::DeleteVertexBuffer(quadBuffer);
+}
+
+void HDRDeferredFetchPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
+{
+    const uint32 forwardMask = RenderLayer::MakeLayerMask({ RENDER_LAYER_AFTER_OPAQUE_ID, RENDER_LAYER_SKY_ID, RENDER_LAYER_TRANSLUCENT_ID, RENDER_LAYER_AFTER_TRANSLUCENT_ID, RENDER_LAYER_DEBUG_DRAW_ID });
+
+    DAVA_PROFILER_GPU_RENDER_PASS(deferredPassConfig, ProfilerGPUMarkerName::GBUFFER_PASS);
+
+    //if no postefect resolve it to screen? it might be not possible
+    Rect originalVP = viewport;
+    PreparePassConfig(renderSystem->GetPostEffectRenderer()->GetHDRTarget());
+
+    //GFX_COMPLETE - GBufferPass and DeferredDecalPass actually share camera params and visibility arrays - so we can do clipping only once
+    Camera* mainCamera = renderSystem->GetMainCamera();
+    Camera* drawCamera = renderSystem->GetDrawCamera();
+    SetupCameraParams(mainCamera, drawCamera);
+
+    PrepareVisibilityArrays(mainCamera, renderSystem);
+
+    //per pass viewport bindings
+    viewportSize = Vector2(viewport.dx, viewport.dy);
+    rcpViewportSize = Vector2(1.0f / viewport.dx, 1.0f / viewport.dy);
+    viewportOffset = Vector2(viewport.x, viewport.y);
+    Vector4 lightsCount = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEWPORT_SIZE, &viewportSize, reinterpret_cast<pointer_size>(&viewportSize));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_RCP_VIEWPORT_SIZE, &rcpViewportSize, reinterpret_cast<pointer_size>(&rcpViewportSize));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEWPORT_OFFSET, &viewportOffset, reinterpret_cast<pointer_size>(&viewportOffset));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_LIGHTING_PARAMETERS, lightsCount.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+    deferredPassConfig.priority = passConfig.priority + PRIORITY_SERVICE_3D - 1;
+
+    PostEffectRenderer* postEffectRenderer = renderSystem->GetPostEffectRenderer();
+
+    if (BeginRenderPass(deferredPassConfig))
     {
-        deferredLightsShader->UpdateDynamicParams();
-        DAVA_PROFILER_GPU_PACKET(deferredLightsPacket, ProfilerGPUMarkerName::DEFERRED_LIGHTS);
-
-        struct LightInstanceData
+        // draw main deferred stuff
+        DrawLayers(mainCamera, 1 << RENDER_LAYER_OPAQUE_ID);
+        // draw decals
+        // deferredDecalRenderer->Draw(visibilityArray, packetList);
+        // draw screen resolve
+        if (screenResolveMaterial->PreBuildMaterial(PASS_GBUFFER_FETCH))
         {
-            Vector3 pos;
-            float radius;
-            float color[3];
-            float shadowId;
-        };
-
-        uint32 processedLights = 0;
-
-        if (initTextureSet && !useFetch)
-        {
-            rhi::TextureSetDescriptor textureDescr;
-            rhi::SamplerState::Descriptor samplerDescr;
-            textureDescr.fragmentTextureCount = 4;
-            samplerDescr.fragmentSamplerCount = 4;
-
-            textureDescr.fragmentTexture[0] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_0);
-            textureDescr.fragmentTexture[1] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_1);
-            textureDescr.fragmentTexture[2] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_2);
-            textureDescr.fragmentTexture[3] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
-
-            samplerDescr.fragmentSampler[0] = Renderer::GetRuntimeTextures().GetRuntimeTextureSamplerState(RuntimeTextures::TEXTURE_GBUFFER_0);
-            samplerDescr.fragmentSampler[1] = Renderer::GetRuntimeTextures().GetRuntimeTextureSamplerState(RuntimeTextures::TEXTURE_GBUFFER_1);
-            samplerDescr.fragmentSampler[2] = Renderer::GetRuntimeTextures().GetRuntimeTextureSamplerState(RuntimeTextures::TEXTURE_GBUFFER_2);
-            samplerDescr.fragmentSampler[3] = Renderer::GetRuntimeTextures().GetRuntimeTextureSamplerState(RuntimeTextures::TEXTURE_GBUFFER_3);
-
-            deferredLightsPacket.textureSet = rhi::AcquireTextureSet(textureDescr);
-            deferredLightsPacket.samplerState = rhi::AcquireSamplerState(samplerDescr);
-
-            initTextureSet = false;
+            screenResolveMaterial->BindParams(screenResolvePacket);
+            DAVA_PROFILER_GPU_PACKET(screenResolvePacket, ProfilerGPUMarkerName::GBUFFER_RESOLVE);
+            rhi::AddPacket(packetList, screenResolvePacket);
         }
+        // draw deferred lights
+        // deferredLightsRenderer->Draw(visibilityArray, packetList);
 
-        do
+        DrawLayers(mainCamera, forwardMask);
+
+        // If we have velocity buffer in our flow, we need to tear the fetch pass to 3 passes to spit velocity buffer
+        // (actually velocity can be in the pass, but we run out of tile memory, with velocity texture it will be
+        // 36 bytes, when we have only 32 in ipad pro). So pass 1 is the fetch pass till posteffects and we have hdr target
+        // after this pass, pass 2 is the velocity pass and posteffect with separate combine mode.
+        if (enableFrameJittering)
         {
-            DynamicBufferAllocator::AllocResultInstnceBuffer target = DynamicBufferAllocator::AllocateInstanceBuffer(8 * sizeof(float32), lightsCount - processedLights);
-            deferredLightsPacket.vertexStream[1] = target.buffer;
-            deferredLightsPacket.instanceCount = target.allocatedInstances;
-            LightInstanceData* instanceDataPtr = reinterpret_cast<LightInstanceData*>(target.data);
-            for (uint32 i = 0; i < target.allocatedInstances; ++i)
-            {
-                const Color& color = dynamicLights[processedLights + i]->GetColor();
-                instanceDataPtr[i].pos = dynamicLights[processedLights + i]->GetPosition();
-                instanceDataPtr[i].radius = dynamicLights[processedLights + i]->GetRadius();
-                instanceDataPtr[i].color[0] = color.r;
-                instanceDataPtr[i].color[1] = color.g;
-                instanceDataPtr[i].color[2] = color.b;
-                instanceDataPtr[i].shadowId = -1.0f; //GFX_COMPLETE shadow id here later
-            }
-            //deferredLightsPacket.options = rhi::Packet::OPT_WIREFRAME;
-            rhi::AddPacket(packetList, deferredLightsPacket);
-            processedLights += target.allocatedInstances;
-        } while (processedLights < lightsCount);
+            EndRenderPass();
+            velocityPass->GetPassConfig().priority = deferredPassConfig.priority - 1;
+
+            velocityPass->SetEnableFrameJittering(enableFrameJittering);
+            velocityPass->SetViewport(viewport);
+            velocityPass->DrawVisibilityArray(renderSystem, visibilityArray);
+            postEffectRenderer->Render(deferredPassConfig.colorBuffer[4].texture, deferredPassConfig.colorBuffer[5].texture, passConfig.viewport);
+        }
+        else
+        {
+            postEffectRenderer->Combine(PostEffectRenderer::CombineMode::InplaceDeferred, packetList);
+            EndRenderPass();
+        }
     }
+
+    rhi::HTexture luminanceTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
+    const Size2i& luminanceTextureSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_GBUFFER_3);
+    postEffectRenderer->DownsampleLuminanceInplace(luminanceTexture, Size2i(deferredPassConfig.viewport.width, deferredPassConfig.viewport.height), luminanceTextureSize, -3);
+}
+
+void HDRDeferredFetchPass::UpdateScreenResolveData(RenderSystem* renderSystem)
+{
+    Asset<Texture> reflectionSpecularConvolution2 = renderSystem->GetReflectionRenderer()->GetGlobalProbeSpecularConvolution();
+    if (screenResolveMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION))
+    {
+        screenResolveMaterial->SetTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION, reflectionSpecularConvolution2);
+    }
+    else
+    {
+        screenResolveMaterial->AddTexture(NMaterialTextureName::TEXTURE_GLOBAL_REFLECTION, reflectionSpecularConvolution2);
+    }
+}
+
+void HDRDeferredFetchPass::InvalidateMaterials()
+{
+    screenResolveMaterial->InvalidateRenderVariants();
+}
+
+void HDRDeferredFetchPass::PreparePassConfig(rhi::HTexture colorTarget)
+{
+    if (!gbuffersInited)
+    {
+        deferredPassConfig.priority = PRIORITY_MAIN_3D;
+
+        deferredPassConfig.colorBuffer[0].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_0);
+        deferredPassConfig.colorBuffer[0].loadAction = rhi::LOADACTION_NONE;
+        deferredPassConfig.colorBuffer[0].storeAction = rhi::STOREACTION_NONE;
+
+        deferredPassConfig.colorBuffer[1].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_1);
+        deferredPassConfig.colorBuffer[1].loadAction = rhi::LOADACTION_NONE;
+        deferredPassConfig.colorBuffer[1].storeAction = rhi::STOREACTION_NONE;
+
+        deferredPassConfig.colorBuffer[2].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_2);
+        deferredPassConfig.colorBuffer[2].loadAction = rhi::LOADACTION_NONE;
+        deferredPassConfig.colorBuffer[2].storeAction = rhi::STOREACTION_NONE;
+
+        deferredPassConfig.colorBuffer[3].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
+        deferredPassConfig.colorBuffer[3].storeAction = rhi::STOREACTION_STORE;
+
+        deferredPassConfig.colorBuffer[4].loadAction = rhi::LOADACTION_NONE;
+
+        deferredPassConfig.colorBuffer[5].texture = rhi::InvalidHandle;
+        deferredPassConfig.colorBuffer[5].loadAction = rhi::LOADACTION_NONE;
+        deferredPassConfig.colorBuffer[5].storeAction = rhi::STOREACTION_STORE;
+
+        deferredPassConfig.explicitColorBuffersCount = 6;
+        deferredPassConfig.usesReverseDepth = GetPassConfig().usesReverseDepth;
+
+        deferredPassConfig.depthStencilBuffer.loadAction = rhi::LOADACTION_CLEAR;
+
+        Size2i gBufferSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_GBUFFER_0);
+        SetRenderTargetProperties(gBufferSize.dx, gBufferSize.dy, Renderer::GetRuntimeTextures().GetRuntimeTextureFormat(RuntimeTextures::TEXTURE_GBUFFER_0));
+
+        gbuffersInited = true;
+    }
+
+    // per frame reconfiguration
+    {
+        deferredPassConfig.colorBuffer[4].texture = colorTarget;
+
+        deferredPassConfig.colorBuffer[5].texture = GetPassConfig().colorBuffer[5].texture; // Final target (screen or in case of rescale - rescale texture).
+        forwardStuffPassConfig.colorBuffer[0].texture = colorTarget;
+        deferredPassConfig.viewport.x = static_cast<uint32>(viewport.x);
+        deferredPassConfig.viewport.y = static_cast<uint32>(viewport.y);
+        deferredPassConfig.viewport.width = static_cast<uint32>(viewport.dx);
+        deferredPassConfig.viewport.height = static_cast<uint32>(viewport.dy);
+    }
+    // configuration for velocity
+    if (enableFrameJittering)
+    {
+        deferredPassConfig.colorBuffer[3].loadAction = rhi::LOADACTION_CLEAR; // Clear depth for velocity.
+        deferredPassConfig.colorBuffer[4].storeAction = rhi::STOREACTION_STORE; // HDR target.
+
+        deferredPassConfig.depthStencilBuffer.storeAction = rhi::STOREACTION_STORE; // We use the same depth stencil for velocity pass.
+    }
+    else
+    {
+        deferredPassConfig.colorBuffer[3].loadAction = rhi::LOADACTION_NONE;
+        deferredPassConfig.colorBuffer[4].storeAction = rhi::STOREACTION_NONE;
+
+        deferredPassConfig.depthStencilBuffer.storeAction = rhi::STOREACTION_NONE;
+    }
+
+    forwardStuffPassConfig.usesReverseDepth = GetPassConfig().usesReverseDepth;
+    forwardStuffPassConfig.depthStencilBuffer.texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
+    deferredPassConfig.depthStencilBuffer.texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
 }
 }

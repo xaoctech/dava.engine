@@ -35,7 +35,7 @@ std::pair<Asset<Texture>, Asset<Texture>> CubemapRenderTargetAtIndex(uint32 inde
     if (cubemapPool[index].first == nullptr)
     {
         const PixelFormatDescriptor& pfd = PixelFormatDescriptor::GetPixelFormatDescriptor(VisibilityCheckRenderer::TEXTURE_FORMAT);
-        DVASSERT(rhi::TextureFormatSupported(pfd.format, rhi::PROG_FRAGMENT));
+        DVASSERT(rhi::DeviceCaps().textureFormat[pfd.format].renderable && rhi::DeviceCaps().textureFormat[pfd.format].filterable);
         Texture::RenderTargetTextureKey key;
         key.width = CUBEMAP_SIZE;
         key.height = CUBEMAP_SIZE;

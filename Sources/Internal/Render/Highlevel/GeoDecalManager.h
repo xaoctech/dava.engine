@@ -7,7 +7,6 @@
 
 namespace DAVA
 {
-class Texture;
 class RenderSystem;
 class RenderObject;
 class RenderBatch;

@@ -26,7 +26,9 @@ VTDecalManager::VTSpaceBox VTDecalManager::GetVTSpaceBox(Vector2 min, Vector2 ma
 }
 void VTDecalManager::AddDecal(DecalRenderObject* ro)
 {
+    ro->SetTreeNodeIndex(uint16(decals.size()));
     decals.push_back(ro);
+    testedDecals.Resize(uint32(decals.size()));
     if (worldInitialized)
     {
         InvalidateVTPages(ro->GetWorldBoundingBox());
@@ -42,8 +44,12 @@ void VTDecalManager::AddDecal(DecalRenderObject* ro)
 }
 void VTDecalManager::RemoveDecal(DecalRenderObject* ro)
 {
-    bool decalFound = FindAndRemoveExchangingWithLast(decals, ro);
-    DVASSERT(decalFound);
+    uint32 index = FindAndRemoveExchangingWithLastIndex(decals, ro);
+    DVASSERT(index != static_cast<uint32>(-1));
+
+    if (index < decals.size())
+        decals[index]->SetTreeNodeIndex(index);
+
     if (worldInitialized)
     {
         InvalidateVTPages(ro->GetWorldBoundingBox());
@@ -102,6 +108,7 @@ void VTDecalManager::RemoveLandscape(Landscape* ro)
 
 void VTDecalManager::Clip(const AABBox2& box, Vector<DecalRenderObject*>& clipResult)
 {
+    testedDecals.Clear();
     const float32 decalSquareThreshold = 0.1f;
     float32 thresholdBoxSize = (box.max.x - box.min.x) * (box.max.y - box.min.y) * decalSquareThreshold;
     VTSpaceBox vtSpaceBox = GetVTSpaceBox(box.min, box.max);
@@ -113,6 +120,10 @@ void VTDecalManager::Clip(const AABBox2& box, Vector<DecalRenderObject*>& clipRe
             {
                 for (DecalRenderObject* decal : leafs[leafIndices[node]])
                 {
+                    uint32 decalIndex = decal->GetTreeNodeIndex();
+                    if (testedDecals.At(decalIndex))
+                        continue;
+                    testedDecals.Set(decalIndex, true);
                     const AABBox3& decalBox = decal->GetWorldBoundingBox();
                     float32 decalSize = (decalBox.max.x - decalBox.min.x) * (decalBox.max.y - decalBox.min.y);
                     if (decalSize < thresholdBoxSize) //skip

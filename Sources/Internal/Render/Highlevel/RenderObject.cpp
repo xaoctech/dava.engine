@@ -275,6 +275,11 @@ void RenderObject::RecalcBoundingBox()
         bbox.AddAABBox(i.renderBatch->GetBoundingBox());
 }
 
+void RenderObject::UpdatePreviousState()
+{
+    prevWorldTransform = *worldTransform;
+}
+
 void RenderObject::CollectRenderBatches(int32 requestLodIndex, int32 requestSwitchIndex, Vector<RenderBatch*>& batches, bool includeShareLods /* = false */) const
 {
     uint32 batchesCount = static_cast<uint32>(renderBatchArray.size());
@@ -413,11 +418,12 @@ void RenderObject::LoadFlags(KeyedArchive* archive, SerializationContext* serial
 
 void RenderObject::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 {
-    DVASSERT(worldTransform != 0);
+    DVASSERT(worldTransform != nullptr);
 
     DynamicBindings& bindings = Renderer::GetDynamicBindings();
 
     bindings.SetDynamicParam(DynamicBindings::PARAM_WORLD, worldTransform, reinterpret_cast<pointer_size>(worldTransform));
+    bindings.SetDynamicParam(DynamicBindings::PARAM_PREV_WORLD, prevWorldTransform.data, reinterpret_cast<pointer_size>(prevWorldTransform.data));
 
     if (camera && lights[0])
     {

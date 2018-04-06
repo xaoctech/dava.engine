@@ -57,16 +57,22 @@ public:
 
         DEBUG_DRAW_PARTICLES,
 
+        TAA_SAMPLE_INDEX,
+
         OPTIONS_COUNT
     };
 
     bool IsOptionEnabled(RenderOption option);
+    int32 GetOptionValue(RenderOption option);
+
     void SetOption(RenderOption option, bool value);
+    void SetOptionValue(RenderOption option, int32 value);
+
     FastName GetOptionName(RenderOption option);
     RenderOptions();
 
 private:
-    bool options[OPTIONS_COUNT];
+    int32 options[OPTIONS_COUNT]{};
 };
 };
 

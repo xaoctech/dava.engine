@@ -1,7 +1,7 @@
 #ifndef __DAVAENGINE_IOSGL_H__
 #define __DAVAENGINE_IOSGL_H__
 
-void ios_gl_init(void* nativeLayer);
+void ios_gl_init(void* nativeLayer, bool srgbFramebuffer);
 bool ios_gl_check_layer();
 void ios_gl_begin_frame();
 void ios_gl_reset(void* nativeLayer, GLint width, GLint height);

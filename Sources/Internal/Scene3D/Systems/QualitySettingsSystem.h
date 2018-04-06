@@ -23,10 +23,10 @@ enum QualityGroup : uint32
 struct ShadowQuality
 {
     uint32 cascadesCount = 1;
-    bool enablePCF = false;
-    ShadowQuality(uint32 c, bool pcf)
+    uint32 PCFsamples = 0;
+    ShadowQuality(uint32 c, uint32 pcfsmp)
         : cascadesCount(c)
-        , enablePCF(pcf)
+        , PCFsamples(pcfsmp)
     {
     }
 };

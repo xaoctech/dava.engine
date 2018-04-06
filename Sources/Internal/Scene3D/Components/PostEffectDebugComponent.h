@@ -37,6 +37,9 @@ public:
     bool GetLightMeterMaskEnabled() const;
     void SetLightMeterMaskEnabled(bool value);
 
+    int32 GetTAASampleIndex() const;
+    void SetTAASampleIndex(int32 value);
+
 private:
     bool drawHDRTarget = false;
     bool drawLuminance = false;

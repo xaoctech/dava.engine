@@ -40,7 +40,7 @@ public:
         GetBackground()->SetColor(Color(0.65f, 0.65f, 0.65f, OPACITY));
         GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
 
-        float32 leftColumnWidth = 170.f;
+        float32 leftColumnWidth = 85.f;
 
         leftColumnText = new UIStaticText(Rect(0.f, 0.f, leftColumnWidth, 0.f));
         leftColumnText->SetFont(font);
@@ -320,6 +320,7 @@ void QualitySettingsDialog::ApplyQualitySettings()
     using namespace DAVA;
 
     bool qualityChanged = false;
+    bool materialSettingsChanged = false;
     bool qualityGroupChanged[QualityGroup::Count] = {};
 
     DAVA::QualitySettingsSystem* qs = DAVA::QualitySettingsSystem::Instance();
@@ -357,6 +358,27 @@ void QualitySettingsDialog::ApplyQualitySettings()
     if (qualityGroupChanged[QualityGroup::RenderFlowType])
     {
         Renderer::SetRenderFlow(qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>());
+    }
+
+    if (qualityGroupChanged[QualityGroup::Shadow])
+    {
+        ShadowQuality shadowQuality = QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Shadow>();
+        Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::SHADOW_CASCADES, std::min(uint32(MAX_SHADOW_CASCADES), shadowQuality.cascadesCount));
+        Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::SHADOW_PCF, shadowQuality.PCFsamples);
+        Renderer::GetRuntimeTextures().InvalidateTexture(RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER);
+        materialSettingsChanged = true;
+    }
+
+    if (qualityGroupChanged[QualityGroup::Scattering])
+    {
+        ScatteringQuality scatteringQuality = QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Scattering>();
+        Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::ATMOSPHERE_SCATTERING_SAMPLES, scatteringQuality.scatteringSamples);
+        materialSettingsChanged = true;
+    }
+
+    if (materialSettingsChanged)
+    {
+        QualityPreferences::ReloadShaders();
     }
 
     if (qualityChanged || optionsChanged)

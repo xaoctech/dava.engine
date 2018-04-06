@@ -5,10 +5,14 @@ RenderTechnique:
     RenderState:            
         blendDest: "BLEND_ONE"
         blendSrc: "BLEND_ONE"
-        state: "STATE_BLEND | STATE_DEPTH_TEST"
+        blendEnabled: true
+        depthTest: true
     Passes:
         ForwardPass:
+            SupportedRenderFlows: ["HDR"]
         ForwardPassWithCombine:
             UniqueDefines: ["FOWARD_WITH_COMBINE"]
+            SupportedRenderFlows: ["TileBasedHDRForward"]
         LDRForwardPass:
+            SupportedRenderFlows: ["LDR"]
             Shader: "~res:/Materials2/ShadersLDR/background"

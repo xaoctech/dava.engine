@@ -56,7 +56,7 @@ T GetNextToken(T txt, ptrdiff_t txtSize, ptrdiff_t& tokenSize)
     return firstValidSymbol;
 }
 
-bool PerformMacroSubstitution(const char* source, char* targetBuffer, ptrdiff_t targetBufferSize, const PreProc::MacroMap& macro)
+bool PerformMacroSubstitution(const char* source, char* targetBuffer, ptrdiff_t targetBufferSize, const PreProc::MacroMap& macro, PreprocessorTokenSet& tokens)
 {
     bool marcoFound = false;
 
@@ -79,8 +79,15 @@ bool PerformMacroSubstitution(const char* source, char* targetBuffer, ptrdiff_t 
 
         if (tokenSize > 0)
         {
+            bool tokenValid = false;
             auto i = macro.find(PreProc::MacroStringBuffer(token, static_cast<uint32>(tokenSize)));
-            if (i != macro.end())
+            if ((i != macro.end()))
+            {
+                tokens.RegisterTextSubstitutionToken(token, uint32(tokenSize));
+                tokenValid = i->second.IsValid();
+            }
+
+            if (tokenValid)
             {
                 marcoFound = true;
                 DVASSERT(bufferPos + static_cast<ptrdiff_t>(i->second.length) < targetBufferSize);
@@ -112,7 +119,7 @@ PreProc::~PreProc()
     Clear();
 }
 
-bool PreProc::ProcessFile(const char* file_name, TextBuffer* output)
+bool PreProc::ProcessFile(const char* file_name, TextBuffer* output, PreprocessorTokenSet& tokens)
 {
     bool success = false;
 
@@ -126,7 +133,7 @@ bool PreProc::ProcessFile(const char* file_name, TextBuffer* output)
         fileCB->Read(text_sz, text);
         fileCB->Close();
 
-        success = ProcessInplaceInternal(text, output);
+        success = ProcessInplaceInternal(text, output, tokens);
     }
     else
     {
@@ -136,14 +143,14 @@ bool PreProc::ProcessFile(const char* file_name, TextBuffer* output)
     return success;
 }
 
-bool PreProc::Process(const char* src_text, TextBuffer* output)
+bool PreProc::Process(const char* src_text, TextBuffer* output, PreprocessorTokenSet& tokens)
 {
     Reset();
 
     char* text = AllocBuffer(uint32(strlen(src_text)) + 1);
     strcpy(text, src_text);
 
-    return ProcessInplaceInternal(text, output);
+    return ProcessInplaceInternal(text, output, tokens);
 }
 
 void PreProc::Clear()
@@ -154,7 +161,8 @@ void PreProc::Clear()
 
 bool PreProc::AddDefine(const char* name, const char* value)
 {
-    return ProcessDefine(name, value);
+    PreprocessorTokenSet tokens;
+    return ProcessDefine(name, value, tokens);
 }
 
 void PreProc::Reset()
@@ -296,7 +304,7 @@ int32 PreProc::GetNameAndValue(char* txt, char** name, char** value, char** end)
     }
 }
 
-bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
+bool PreProc::ProcessBuffer(char* inputText, LineVector& lines, PreprocessorTokenSet& tokens)
 {
     uint32 textLength = 0;
     char* dest = inputText;
@@ -347,45 +355,15 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
     for (char* currentChar = inputText; (static_cast<uint32>(currentChar - inputText) < textLength) && (*currentChar != Zero); ++currentChar)
     {
-        int32 skipping_line = false;
+        bool processingLine = true;
 
         /* searching from last to first entries in pending_elif (notice rbegin, rend)*/
         for (auto i = pending_elif.rbegin(), e = pending_elif.rend(); i != e; ++i)
         {
             if (i->do_skip_lines)
             {
-                skipping_line = true;
+                processingLine = false;
                 break;
-            }
-        }
-
-        if (skipping_line)
-        {
-            bool do_skip = true;
-
-            if (dcheck_pending)
-            {
-                char* ns1 = SkipWhitespace(currentChar);
-
-                if (*ns1 == Zero)
-                    return false;
-
-                if (*ns1 == '#')
-                    do_skip = false;
-            }
-
-            if (do_skip)
-            {
-                currentChar = SeekToLineEnding(currentChar);
-
-                if (*currentChar == Zero)
-                    break;
-
-                ++currentChar;
-                currentLine = currentChar;
-
-                ++src_line_n;
-                dcheck_pending = true;
             }
         }
 
@@ -393,8 +371,11 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
         if (*currentChar == NewLine)
         {
-            *currentChar = Zero;
-            lines.emplace_back(currentLine, line_n);
+            if (processingLine)
+            {
+                *currentChar = Zero;
+                lines.emplace_back(currentLine, line_n);
+            }
 
             currentLine = currentChar + 1;
             ++line_n;
@@ -411,7 +392,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
             if (*ns1 == '#')
             {
                 currentChar = ns1;
-                if (!skipping_line && strncmp(currentChar + 1, "include", 7) == 0)
+                if (strncmp(currentChar + 1, "include", 7) == 0)
                 {
                     char* t = SeekToCharacter(currentChar, DoubleQuotes);
                     if (*t == 0)
@@ -430,10 +411,18 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         return false;
                     }
 
-                    *t = Zero; // make includeFileName zero terminated
+                    *t = Zero; // make include file name zero terminated
 
-                    if (!ProcessInclude(includeFileName, lines))
-                        return false;
+                    if (processingLine)
+                    {
+                        if (!ProcessInclude(includeFileName, lines, tokens))
+                            return false;
+                    }
+                    else
+                    {
+                        LineVector localLines;
+                        ProcessInclude(includeFileName, localLines, tokens);
+                    }
 
                     t = SeekToLineEnding(t + 1);
 
@@ -443,7 +432,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                     currentChar = t;
                     currentLine = t + 1;
                 }
-                else if (!skipping_line && strncmp(currentChar + 1, "define", 6) == 0)
+                else if (strncmp(currentChar + 1, "define", 6) == 0)
                 {
                     char* name = nullptr;
                     char* value = nullptr;
@@ -457,8 +446,16 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                             return false;
                         }
 
-                        if (!ProcessDefine(name, value))
-                            return false;
+                        if (processingLine)
+                        {
+                            if (!ProcessDefine(name, value, tokens))
+                                return false;
+                        }
+                        else
+                        {
+                            // TODO : handle redefiniion?
+                            macro.emplace(MacroStringBuffer(name, uint32(strlen(name))), MacroStringBuffer());
+                        }
 
                         if (nv != -1)
                         {
@@ -476,7 +473,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         break;
                     }
                 }
-                else if (!skipping_line && strncmp(currentChar + 1, "ensuredefined", 13) == 0)
+                else if (strncmp(currentChar + 1, "ensuredefined", 13) == 0)
                 {
                     char* name = nullptr;
                     char* value = nullptr;
@@ -492,8 +489,15 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
                         if (!evaluator.HasVariable(name))
                         {
-                            if (!ProcessDefine(name, value))
-                                return false;
+                            if (processingLine)
+                            {
+                                if (!ProcessDefine(name, value, tokens))
+                                    return false;
+                            }
+                            else
+                            {
+                                macro[MacroStringBuffer(name, uint32(strlen(name)))] = MacroStringBuffer();
+                            }
                         }
 
                         if (nv != -1)
@@ -512,7 +516,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         break;
                     }
                 }
-                else if (!skipping_line && strncmp(currentChar + 1, "undef", 5) == 0)
+                else if (strncmp(currentChar + 1, "undef", 5) == 0)
                 {
                     char* name = GetIdentifier(currentChar + 1 + 5, &currentChar);
                     if (name == nullptr)
@@ -521,7 +525,9 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         return false;
                     }
 
-                    Undefine(name);
+                    if (processingLine)
+                        Undefine(name);
+
                     *currentChar = NewLine; // since it was null'ed in GetIdentifier
                     currentLine = currentChar + 1;
                 }
@@ -534,14 +540,19 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         return false;
                     }
 
-                    bool condition = evaluator.HasVariable(name);
+                    tokens.PushNode();
+                    tokens.RegisterConditionToken(name);
 
-                    condition_t p;
-                    p.original_condition = condition;
-                    p.effective_condition = condition;
-                    p.do_skip_lines = !condition;
-                    pending_elif.push_back(p);
+                    if (processingLine)
+                    {
+                        bool condition = evaluator.HasVariable(name);
 
+                        condition_t p;
+                        p.original_condition = condition;
+                        p.effective_condition = condition;
+                        p.do_skip_lines = !condition;
+                        pending_elif.push_back(p);
+                    }
                     *currentChar = NewLine; // since it was null'ed in GetIdentifier
                     currentLine = currentChar + 1;
                 }
@@ -554,14 +565,19 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                         return false;
                     }
 
-                    bool condition = !evaluator.HasVariable(name);
+                    tokens.PushNode();
+                    tokens.RegisterConditionToken(name);
 
-                    condition_t p;
-                    p.original_condition = condition;
-                    p.effective_condition = condition;
-                    p.do_skip_lines = !condition;
-                    pending_elif.push_back(p);
+                    if (processingLine)
+                    {
+                        bool condition = !evaluator.HasVariable(name);
 
+                        condition_t p;
+                        p.original_condition = condition;
+                        p.effective_condition = condition;
+                        p.do_skip_lines = !condition;
+                        pending_elif.push_back(p);
+                    }
                     *currentChar = NewLine; // since it was null'ed in GetIdentifier
                     currentLine = currentChar + 1;
                 }
@@ -569,15 +585,14 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                 {
                     char* e = GetExpression(currentChar + 1 + 2, &currentChar);
 
+                    tokens.PushNode();
+
                     float v = 0;
-                    if (!evaluator.Evaluate(e, &v))
+                    if (!evaluator.Evaluate(e, &v, tokens) && processingLine)
                     {
                         ReportExprEvalError(src_line_n);
                         return false;
                     }
-
-                    *currentChar = NewLine; // since it was null'ed in GetExpression
-                    currentLine = currentChar + 1;
 
                     bool condition = (v != 0.0f);
 
@@ -586,20 +601,20 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                     p.effective_condition = condition;
                     p.do_skip_lines = !condition;
                     pending_elif.push_back(p);
+
+                    *currentChar = NewLine; // since it was null'ed in GetExpression
+                    currentLine = currentChar + 1;
                 }
                 else if (strncmp(currentChar + 1, "elif", 4) == 0)
                 {
                     char* e = GetExpression(currentChar + 1 + 4, &currentChar);
 
                     float v = 0.0f;
-                    if (!evaluator.Evaluate(e, &v))
+                    if (!evaluator.Evaluate(e, &v, tokens) && processingLine)
                     {
                         ReportExprEvalError(src_line_n);
                         return false;
                     }
-
-                    *currentChar = NewLine; // since it was null'ed in GetExpression
-                    currentLine = currentChar + 1;
 
                     bool condition = (v != 0.0f);
 
@@ -610,18 +625,14 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
                     pending_elif.back().effective_condition = pending_elif.back().effective_condition || condition;
 
-                    if (*currentChar == Zero)
-                    {
-                        currentLine[0] = Zero;
-                        break;
-                    }
+                    *currentChar = NewLine; // since it was null'ed in GetExpression
+                    currentLine = currentChar + 1;
                 }
                 else if (strncmp(currentChar + 1, "else", 4) == 0)
                 {
                     pending_elif.back().do_skip_lines = pending_elif.back().effective_condition;
 
-                    while (*currentChar && *currentChar != NewLine)
-                        ++currentChar;
+                    currentChar = SeekToLineEnding(currentChar);
 
                     if (*currentChar == Zero)
                     {
@@ -635,10 +646,9 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                 {
                     DVASSERT(pending_elif.size());
                     pending_elif.pop_back();
+                    tokens.PopNode();
 
-                    while (*currentChar && *currentChar != NewLine)
-                        ++currentChar;
-
+                    currentChar = SeekToLineEnding(currentChar);
                     if (*currentChar == Zero)
                     {
                         currentLine[0] = Zero;
@@ -647,7 +657,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
                     currentLine = currentChar + 1;
                 }
-                else if (!skipping_line)
+                else if (processingLine)
                 {
                     Logger::Error("Unknown preprocessor directive \"%s\"", currentChar + 1);
                     break;
@@ -661,7 +671,7 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
                     currentChar = ns1 - 1;
 
                 dcheck_pending = false;
-                expand_macros = (*ns1 != NewLine) && (!skipping_line);
+                expand_macros = (*ns1 != NewLine);
             }
         }
         else
@@ -671,8 +681,18 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
 
         if (expand_macros)
         {
-            currentLine = ExpandMacroInLine(currentChar);
-            currentChar = SeekToLineEnding(currentChar) - 1; /* -1 added to compensate increment in loop ¯\_(ツ)_/¯ */
+            if (processingLine)
+            {
+                currentLine = ExpandMacroInLine(currentChar, tokens);
+                currentChar = SeekToLineEnding(currentChar) - 1; /* -1 added to compensate increment in loop ¯\_(ツ)_/¯ */
+            }
+            else
+            {
+                char localBuffer[MaxLocalStringLength]{};
+                PreprocessorHelpers::PerformMacroSubstitution(currentChar, localBuffer, MaxLocalStringLength, macro, tokens);
+                currentChar = SeekToLineEnding(currentChar); /* -1 not added to skip line ¯\_(ツ)_/¯ */
+                dcheck_pending = true;
+            }
         }
     }
 
@@ -682,12 +702,12 @@ bool PreProc::ProcessBuffer(char* inputText, LineVector& lines)
     return true;
 }
 
-bool PreProc::ProcessInplaceInternal(char* src_text, TextBuffer* output)
+bool PreProc::ProcessInplaceInternal(char* src_text, TextBuffer* output, PreprocessorTokenSet& tokens)
 {
     bool success = false;
 
     LineVector lines;
-    if (ProcessBuffer(src_text, lines))
+    if (ProcessBuffer(src_text, lines, tokens))
     {
         GenerateOutput(output, lines);
         success = true;
@@ -696,7 +716,7 @@ bool PreProc::ProcessInplaceInternal(char* src_text, TextBuffer* output)
     return success;
 }
 
-bool PreProc::ProcessInclude(const char* file_name, LineVector& line_)
+bool PreProc::ProcessInclude(const char* file_name, LineVector& line_, PreprocessorTokenSet& tokens)
 {
     bool success = false;
 
@@ -710,7 +730,7 @@ bool PreProc::ProcessInclude(const char* file_name, LineVector& line_)
         const char* prev_file_name = curFileName;
 
         curFileName = file_name;
-        ProcessBuffer(text, line_);
+        ProcessBuffer(text, line_, tokens);
         curFileName = prev_file_name;
         success = true;
     }
@@ -722,7 +742,7 @@ bool PreProc::ProcessInclude(const char* file_name, LineVector& line_)
     return success;
 }
 
-bool PreProc::ProcessDefine(const char* name, const char* value)
+bool PreProc::ProcessDefine(const char* name, const char* value, PreprocessorTokenSet& tokens)
 {
     bool name_valid = IsValidAlphaChar(name[0]);
 
@@ -742,14 +762,14 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
     }
 
     float val = 0.0f;
-    if (evaluator.Evaluate(value, &val))
+    if (evaluator.Evaluate(value, &val, tokens))
         evaluator.SetVariable(name, val);
 
     const char* macroValue = nullptr;
     uint32 macroValueLength = 0;
 
     char localBuffer[MaxMacroValueLength] = {};
-    if (PreprocessorHelpers::PerformMacroSubstitution(value, localBuffer, MaxMacroValueLength, macro))
+    if (PreprocessorHelpers::PerformMacroSubstitution(value, localBuffer, MaxMacroValueLength, macro, tokens))
     {
         macroValueLength = static_cast<uint32>(strlen(localBuffer));
         char* macroValueBuffer = AllocBuffer(macroValueLength + 1);
@@ -761,16 +781,18 @@ bool PreProc::ProcessDefine(const char* name, const char* value)
         macroValue = value;
         macroValueLength = static_cast<uint32>(strlen(value));
     }
-    macro.emplace(MacroStringBuffer(name, static_cast<uint32>(strlen(name))), MacroStringBuffer(macroValue, macroValueLength));
+
+    // TODO : handle redefinition
+    macro[MacroStringBuffer(name, static_cast<uint32>(strlen(name)))] = MacroStringBuffer(macroValue, macroValueLength);
 
     return true;
 }
 
-char* PreProc::ExpandMacroInLine(char* txt)
+char* PreProc::ExpandMacroInLine(char* txt, PreprocessorTokenSet& tokens)
 {
     char* result = txt;
     char localBuffer[MaxLocalStringLength]{};
-    if (PreprocessorHelpers::PerformMacroSubstitution(txt, localBuffer, MaxLocalStringLength, macro))
+    if (PreprocessorHelpers::PerformMacroSubstitution(txt, localBuffer, MaxLocalStringLength, macro, tokens))
     {
         uint32 resultStringLength = static_cast<uint32>(strlen(localBuffer));
         result = AllocBuffer(resultStringLength + 1);

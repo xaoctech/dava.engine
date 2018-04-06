@@ -11,6 +11,7 @@
 #include "UI/UITextFieldDelegate.h"
 #include "UI/UIControlSystem.h"
 #include "UI/Focus/FocusHelpers.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageConvert.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"

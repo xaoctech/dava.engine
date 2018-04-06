@@ -50,11 +50,12 @@ QualitySettingsSystem::QualitySettingsSystem()
     static_assert(MAX_SHADOW_CASCADES == 4, "Max shadow cascades should be 4");
 
     qualityGroups[QualityGroup::Shadow].groupName = FastName("Shadows");
-    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Poor"), ShadowQuality(1, false));
-    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Low"), ShadowQuality(1, true));
-    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Medium"), ShadowQuality(2, true));
-    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("High"), ShadowQuality(3, true));
-    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Ultra"), ShadowQuality(4, true));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Off"), ShadowQuality(0, 0));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Poor"), ShadowQuality(1, 0));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Low"), ShadowQuality(1, 4));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Medium"), ShadowQuality(2, 4));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("High"), ShadowQuality(3, 8));
+    qualityGroups[QualityGroup::Shadow].values.emplace_back(FastName("Ultra"), ShadowQuality(4, 8));
     qualityGroups[QualityGroup::Shadow].currentValue = qualityGroups[QualityGroup::Shadow].values.rbegin()->first;
 
     qualityGroups[QualityGroup::Anisotropy].groupName = FastName("Anisotropy");
@@ -80,10 +81,11 @@ QualitySettingsSystem::QualitySettingsSystem()
     qualityGroups[QualityGroup::Textures].currentValue = qualityGroups[QualityGroup::Textures].values.begin()->first;
 
     qualityGroups[QualityGroup::Scattering].groupName = FastName("Atmospheric Scattering");
+    qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("Off"), ScatteringQuality(0));
     qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("Low"), ScatteringQuality(8));
     qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("High"), ScatteringQuality(16));
     qualityGroups[QualityGroup::Scattering].values.emplace_back(FastName("Ultra"), ScatteringQuality(32));
-    qualityGroups[QualityGroup::Scattering].currentValue = qualityGroups[QualityGroup::Scattering].values.begin()->first;
+    qualityGroups[QualityGroup::Scattering].currentValue = FastName("High");
 
     Load("~res:/quality.yaml");
 

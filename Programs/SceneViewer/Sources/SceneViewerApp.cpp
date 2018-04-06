@@ -56,7 +56,6 @@ SceneViewerApp::SceneViewerApp(DAVA::Engine& engine)
     DAVA::QualitySettingsSystem::Instance()->Load("~res:/SceneViewer/quality.yaml");
 
     DAVA::FilePath::AddResourcesFolder(DAVA::DocumentsDirectorySetup::GetEngineDocumentsPath());
-    QualityPreferences::LoadFromSettings(data.settings);
     data.scenePath = data.settings.GetLastOpenedScenePath();
     DAVA::FilePath::RemoveResourcesFolder(DAVA::DocumentsDirectorySetup::GetEngineDocumentsPath());
 
@@ -83,11 +82,11 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     const Size2i& physicalSize = GetEngineContext()->uiControlSystem->vcs->GetPhysicalScreenSize();
     data.screenAspect = static_cast<float32>(physicalSize.dx) / static_cast<float32>(physicalSize.dy);
 
-    const Size2f windowSize = { 1024.f, 1024.f / data.screenAspect };
+    const Size2f windowSize = { 1024.f, floorf(1024.f / data.screenAspect + 0.5f) };
 
     const char* api = "";
 
-    switch (rhi::HostApi())
+    switch (rhi::HostApi().api)
     {
     case rhi::RHI_GLES2:
         api = "GLES2";
@@ -124,6 +123,8 @@ void SceneViewerApp::OnWindowCreated(DAVA::Window* w)
     servicesProvider->Start();
 
     Renderer::SetDesiredFPS(60);
+
+    QualityPreferences::LoadFromSettings(data.settings);
 
     viewSceneScreen = new ViewSceneScreen(data);
 #ifdef WITH_SCENE_PERFORMANCE_TESTS
@@ -207,7 +208,7 @@ void SceneViewerApp::EndFrame()
     const int x0 = 10;
     const int y0 = 40;
 
-    switch (rhi::HostApi())
+    switch (rhi::HostApi().api)
     {
     case rhi::RHI_DX9:
         backend = "DX9";
@@ -242,7 +243,7 @@ DAVA::KeyedArchive* CreateOptions()
 {
     DAVA::KeyedArchive* appOptions = new DAVA::KeyedArchive();
 
-    appOptions->SetInt32("shader_const_buffer_size", 4 * 1024 * 1024);
+    appOptions->SetInt32("shader_const_buffer_size", 12 * 1024 * 1024);
 
     appOptions->SetInt32("max_index_buffer_count", 4 * 1024);
     appOptions->SetInt32("max_vertex_buffer_count", 4 * 1024);
@@ -256,12 +257,16 @@ DAVA::KeyedArchive* CreateOptions()
     appOptions->SetInt32("max_command_buffer_count", 16 * 1024);
     appOptions->SetInt32("max_packet_list_count", 16 * 1024);
 
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+#if defined(__DAVAENGINE_IPHONE__)
 
     appOptions->SetInt32("renderer", rhi::RHI_METAL);
-    // appOptions->SetInt32("renderer", rhi::RHI_GLES2);
     appOptions->SetInt32("rhi_threaded_frame_count", 2);
     appOptions->SetBool("iPhone_autodetectScreenScaleFactor", true);
+
+#elif defined(__DAVAENGINE_ANDROID__)
+
+    appOptions->SetInt32("renderer", rhi::RHI_GLES2);
+    appOptions->SetInt32("rhi_threaded_frame_count", 2);
 
 #elif defined(__DAVAENGINE_WIN_UAP__)
 
@@ -280,6 +285,7 @@ DAVA::KeyedArchive* CreateOptions()
 #endif
 
     appOptions->SetBool("separate_net_thread", true);
+    appOptions->SetBool("srgb_framebuffer", false);
 
     return appOptions;
 }

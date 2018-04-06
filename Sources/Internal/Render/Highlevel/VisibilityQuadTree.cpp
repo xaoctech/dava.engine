@@ -448,7 +448,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags, RenderHie
     if (clippingFlags && (clipBoxCount > 1) && nodeId) //root node is considered as always pass  - as objects out of worldBox are added here
     {
         uint8 startClipPlane = (currNode.nodeInfo & QuadTreeNode::START_CLIP_PLANE_MASK) >> QuadTreeNode::START_CLIP_PLANE_OFFSET;
-        if (currFrustum->Classify(currNode.bbox, clippingFlags, startClipPlane) == Frustum::EFR_OUTSIDE)
+        if (currCamera->GetFrustum().Classify(currNode.bbox, clippingFlags, startClipPlane) == Frustum::EFR_OUTSIDE)
             return; //node box is outside - return
         currNode.nodeInfo &= ~QuadTreeNode::START_CLIP_PLANE_MASK;
         currNode.nodeInfo |= (uint16(startClipPlane)) << QuadTreeNode::START_CLIP_PLANE_OFFSET;
@@ -478,7 +478,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags, RenderHie
             if ((flags & currVisibilityCriteria) == currVisibilityCriteria)
             {
                 if ((flags & RenderObject::ALWAYS_CLIPPING_VISIBLE)
-                    || currFrustum->IsInside(obj->GetWorldBoundingBox(), clippingFlags, obj->startClippingPlane))
+                    || currCamera->GetFrustum().IsInside(obj->GetWorldBoundingBox(), clippingFlags, obj->startClippingPlane))
                 {
                     visibilityArray.AddObject(obj);
 #if defined(__DAVAENGINE_RENDERSTATS__)
@@ -505,7 +505,6 @@ void QuadTree::Clip(Camera* camera, RenderHierarchy::ClipResult& visibilityArray
     DVASSERT(worldInitialized);
     currCamera = camera;
     currVisibilityCriteria = visibilityCriteria;
-    currFrustum = camera->GetFrustum();
     ProcessNodeClipping(0, 0x3f, visibilityArray);
 }
 

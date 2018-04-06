@@ -4,6 +4,8 @@
 #include "include/math.h"
 #include "include/hdr.h"
 
+#ensuredefined TXAA_YCOCG_SPACE 0
+
 fragment_in
 {
     float2 varTexCoord0 : TEXCOORD0;
@@ -16,7 +18,7 @@ fragment_in
 #endif
 
 #if (ENABLE_TXAA)
-    float4 texClmp : TEXCOORD5;
+    float4 texClmp : TEXCOORD4;
 #endif
 };
 
@@ -100,15 +102,15 @@ float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texC
     float3 historySample = tex2D(history, historyUv).xyz;
     historySample = SRGBToLinear(historySample);
 
-    float3 s00 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, -texelOffset.x)).xyz;
-    float3 s01 = tex2D(hdrImage, texcoord + float2(0, -texelOffset.x)).xyz;
-    float3 s02 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, -texelOffset.x)).xyz;
+    float3 s00 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, -texelOffset.y)).xyz;
+    float3 s01 = tex2D(hdrImage, texcoord + float2(0, -texelOffset.y)).xyz;
+    float3 s02 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, -texelOffset.y)).xyz;
     float3 s10 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, 0)).xyz;
     float3 s11 = tex2D(hdrImage, texcoord + float2(0, 0)).xyz;
     float3 s12 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, 0)).xyz;
-    float3 s20 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, +texelOffset.x)).xyz;
-    float3 s21 = tex2D(hdrImage, texcoord + float2(0, +texelOffset.x)).xyz;
-    float3 s22 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, +texelOffset.x)).xyz;
+    float3 s20 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, +texelOffset.y)).xyz;
+    float3 s21 = tex2D(hdrImage, texcoord + float2(0, +texelOffset.y)).xyz;
+    float3 s22 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, +texelOffset.y)).xyz;
 
     s00 = HDRtoLDR(s00, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
     s01 = HDRtoLDR(s01, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
@@ -123,11 +125,17 @@ float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texC
     float3 minSample = min(s00, min(min(min(s01, s02), min(s10, s11)), min(min(s12, s20), min(s21, s22))));
     float3 maxSample = max(s00, max(max(max(s01, s02), max(s10, s11)), max(max(s12, s20), max(s21, s22))));
     float3 average = 1.0 / 9.0 * (s00 + s01 + s02 + s10 + s11 + s12 + s20 + s21 + s22);
+
+#if TXAA_YCOCG_SPACE
+    float3 currentSample = RGBToYCoCg(s11);
     minSample = RGBToYCoCg(minSample);
     maxSample = RGBToYCoCg(maxSample);
     historySample = RGBToYCoCg(historySample);
+#else
+    float3 currentSample = s11;
+#endif
+
     historySample = clamp(historySample, minSample, maxSample);
-    float3 currentSample = RGBToYCoCg(s11);
 
     float weightMin = 0.15;
     float weightMax = 0.1;
@@ -141,7 +149,11 @@ float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texC
 
     float3 temporal = lerp(historySample, currentSample, weight);
 
+#if TXAA_YCOCG_SPACE
     float3 temporalToRGB = YCoCgToRGB(temporal);
+#else
+    float3 temporalToRGB = temporal;
+#endif
 
     temporalToRGB = LDRtoHDR(temporalToRGB, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
     return temporalToRGB;
@@ -430,9 +442,5 @@ fragment_out fp_main(fragment_in input)
     output.color = float4(color1 + color2, 1.0);
     return output;
 }
-
-#else
-
-#error Invalid technique
 
 #endif

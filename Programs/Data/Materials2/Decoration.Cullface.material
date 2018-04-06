@@ -4,21 +4,25 @@ RenderTechnique:
     RenderState:
         cullMode: "FACE_BACK"
         depthFunc: "CMP_LESS"
-        state: "STATE_CULL | STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
-    RenderPass:
-        Name: "ForwardPass"
-    RenderPassLDR:
-        Name: "LDRForwardPass"
-        Shader: "~res:/Materials2/ShadersLDR/landscape/decoration"
-    RenderWithCombinePass:
-        Name: "ForwardPassWithCombine"
-        UniqueDefines: ["FOWARD_WITH_COMBINE"]
-    RenderPassDeferred:
-        Name: "gBufferPass"
-        Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
-        RenderState:
-            state: "STATE_STENCIL_TEST"
-            stencil:
+        depthWrite: true
+        depthTest: true
+    Passes:
+        ForwardPass:
+            SupportedRenderFlows: ["HDRForward"]
+        LDRForwardPass:
+            SupportedRenderFlows: ["LDRForward"]
+            Shader: "~res:/Materials2/ShadersLDR/landscape/decoration"
+        ForwardPassWithCombine:
+            SupportedRenderFlows: ["TileBasedHDRForward"]
+            UniqueDefines: ["FOWARD_WITH_COMBINE"]
+        ShadowCascadePass:
+            SupportedRenderFlows: ["all"]
+            UniqueDefines: ["WRITE_SHADOW_MAP"]
+        gBufferPass:
+            SupportedRenderFlows: ["HDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
+            Stencil:
+                enabled: true
                 failBack: "STENCILOP_REPLACE"
                 failFront: "STENCILOP_REPLACE"
                 funcBack: "CMP_ALWAYS"
@@ -29,13 +33,12 @@ RenderTechnique:
                 ref: 1
                 zFailBack: "STENCILOP_REPLACE"
                 zFailFront: "STENCILOP_REPLACE"
-    RenderPassDeferredFetch:
-        Name: "gBufferFetchPass"
-        Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
-        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
-        RenderState:
-            state: "STATE_STENCIL_TEST"
-            stencil:
+        gBufferFetchPass:
+            SupportedRenderFlows: ["TileBasedHDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/landscape/decoration-deferred"
+            UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+            Stencil:
+                enabled: true
                 failBack: "STENCILOP_REPLACE"
                 failFront: "STENCILOP_REPLACE"
                 funcBack: "CMP_ALWAYS"

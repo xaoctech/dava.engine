@@ -1,6 +1,7 @@
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/SceneManager/Private/SceneRenderWidget.h"
 #include "Classes/SceneManager/Private/SignalsAccumulator.h"
+#include "Classes/SceneManager/Private/LevelControllerSystem.h"
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 #include "Classes/Qt/TextureBrowser/TextureBrowser.h"
@@ -52,6 +53,7 @@
 #include <Reflection/Reflection.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Render/Renderer.h>
+//#include <Render/2D/Systems/VirtualCoordinatesSystem.h>
 #include <Render/TextureAssetLoader.h>
 #include <Scene3D/Converters/SceneFileConverter.h>
 #include <Scene3D/Level.h>
@@ -1298,11 +1300,11 @@ void SceneManagerModule::OnDrop(QObject* target, QDropEvent* event)
 
         if (!collisionSystem->LandRayTestFromCamera(pos))
         {
-            DAVA::Landscape* landscape = collisionSystem->GetCurrentLandscape();
-            if (landscape != nullptr && landscape->GetHeightmap() != nullptr && landscape->GetHeightmap()->Size() > 0)
-            {
-                collisionSystem->GetCurrentLandscape()->PlacePoint(DAVA::Vector3(), pos);
-            }
+            Vector2 physPoint(event->pos().x(), event->pos().y());
+            SceneCameraSystem* cameraSystem = data->scene->GetSystem<SceneCameraSystem>();
+            Vector3 camPos = cameraSystem->GetCameraPosition();
+            Vector3 camDir = cameraSystem->GetPointDirection(GetEngineContext()->uiControlSystem->vcs->ConvertPhysicalToVirtual(physPoint));
+            pos = camPos + 10 * camDir;
         }
 
         WaitDialogParams params;
@@ -1440,7 +1442,9 @@ DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::F
                     }
                 }
             };
-            scene->streamingSystem->LoadFullLevel(scenePath, callbackFn);
+            LevelControllerSystem* system = new LevelControllerSystem(scene.Get());
+            scene->AddSystem(system);
+            system->LoadLevel(scenePath, callbackFn);
             scene->SetLoaded(true);
         }
         else if (scenePath.GetExtension() == ".prefab")

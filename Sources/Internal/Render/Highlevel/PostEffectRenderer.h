@@ -42,6 +42,7 @@ public:
 
     void SetFrameContext(rhi::HTexture hdrImage, rhi::HTexture destination, const rhi::Viewport& vp);
     void Render(rhi::Handle destination, const rhi::Viewport& viewport);
+    void Render(rhi::Handle hdrImage, rhi::Handle destination, const rhi::Viewport& viewport);
     void InvalidateMaterials();
     void OnWindowSizeChanged(Window* w, Size2f windowSize, Size2f surfaceSize);
 
@@ -85,7 +86,6 @@ public:
         bool enableColorGrading = false;
         bool enableToneMapping = false;
         bool enableHeatMap = false;
-        bool enableTXAA = false;
         bool resetHistory = false;
     };
 
@@ -94,7 +94,7 @@ public:
 
     void Combine(CombineMode mode, rhi::HPacketList pl = rhi::HPacketList());
     void DownsampleLuminance(rhi::HTexture srcTexture, const Size2i& srcTextureSize, int32 deltaPriority = 0);
-    void DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcTextureSize, int32 deltaPriority = 0);
+    void DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcSize, const Size2i& srcTextureSize, int32 deltaPriority = 0);
     void Debug();
 
 private:
@@ -168,7 +168,6 @@ private:
     {
         HISTOGRAM,
         BLOOM,
-        TXAA,
 
         RENDERER_COUNT
     };

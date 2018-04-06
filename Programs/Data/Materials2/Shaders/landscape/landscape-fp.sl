@@ -18,7 +18,7 @@ fragment_in
     float4 texCoord0 : TEXCOORD0;
     float3 texCoord1 : TEXCOORD1;
     float4 shadowTexCoord : TEXCOORD2;
-    float3 toCameraDir : TEXCOORD3;
+    float3 varToCamera : TEXCOORD3;
     float3 worldPosition : TEXCOORD5;
     float4 projectedPosition : TEXCOORD6;
     #if (LANDSCAPE_LOD_MORPHING && LANDSCAPE_MORPHING_COLOR) || (LANDSCAPE_TESSELLATION_COLOR && LANDSCAPE_MICRO_TESSELLATION)
@@ -114,8 +114,8 @@ fragment_out fp_main(fragment_in input)
     float3 linearColor = SRGBToLinear(albedoSample.rgb);
 
     ResolveInputValues resolve;
-    resolve.vLength = length(input.toCameraDir);
-    resolve.v = input.toCameraDir / resolve.vLength;
+    resolve.vLength = length(input.varToCamera);
+    resolve.v = input.varToCamera / resolve.vLength;
 
 #if (VIEW_MODE & RESOLVE_NORMAL_MAP)
     float2 nxy = (2.0 * normalmapSample.xy - 1.0);
@@ -132,7 +132,7 @@ fragment_out fp_main(fragment_in input)
     resolve.ambientOcclusion = saSample.y;
     resolve.directionalLightDirection = lightPosition0.xyz;
     resolve.directionalLightViewSpaceCoords = input.shadowTexCoord;
-    resolve.directionalLightColor = lightColor0.xyz / globalLuminanceScale;
+    resolve.directionalLightColor = lightColor0.xyz / GLOBAL_LUMINANCE_SCALE;
     resolve.directionalLightStaticShadow = ApplyCanvasCheckers(saSample.x, input.texCoord1.xy, shadowaoSize) * normalmapSample.w;
     resolve.worldPosition = input.worldPosition;
     resolve.fogParameters = fogParameters.xyz;
@@ -166,8 +166,11 @@ fragment_out fp_main(fragment_in input)
     float4 randomSample = tex2D(noiseTexture64x64, screenSpaceCoords * viewportSize / 64.0) * 2.0 - 1.0;
 
     ShadowParameters shadow;
-    shadow.cascadesProjectionScale = directionalShadowMapProjectionScale;
-    shadow.cascadesProjectionOffset = directionalShadowMapProjectionOffset;
+    for (int i = 0; i < SHADOW_CASCADES; ++i)
+    {
+        shadow.cascadesProjectionScale[i] = directionalShadowMapProjectionScale[i].xyz;
+        shadow.cascadesProjectionOffset[i] = directionalShadowMapProjectionOffset[i].xyz;
+    }
     shadow.rotationKernel = randomSample.xy;
     shadow.filterRadius = shadowMapParameters.xy;
     shadow.shadowMapSize = shadowMapParameters.zw;

@@ -9,4 +9,6 @@ void LoadFromSettings(Settings&);
 
 /** gets quality preferences from QualitySettingsSystem and saves them to application settings*/
 void SaveToSettings(Settings&);
+
+void ReloadShaders();
 };

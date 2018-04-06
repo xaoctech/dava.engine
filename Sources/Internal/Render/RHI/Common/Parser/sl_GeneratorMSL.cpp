@@ -725,7 +725,7 @@ void MSLGenerator::OutputAttributes(int indent, HLSLAttribute* attribute)
 
         if (attributeName != NULL)
         {
-            writer.WriteLine(indent, attribute->fileName, attribute->line, "[%s]", attributeName);
+            writer.WriteLineWithNumber(indent, attribute->fileName, attribute->line, "[%s]", attributeName);
         }
 
         attribute = attribute->nextAttribute;
@@ -757,8 +757,8 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
         else if (statement->nodeType == HLSLNodeType_Struct)
         {
             HLSLStruct* structure = static_cast<HLSLStruct*>(statement);
-            writer.WriteLine(indent, structure->fileName, structure->line, "struct %s", structure->name);
-            writer.WriteLine(indent, structure->fileName, structure->line, "{");
+            writer.WriteLineWithNumber(indent, structure->fileName, structure->line, "struct %s", structure->name);
+            writer.WriteLineWithNumber(indent, structure->fileName, structure->line, "{");
             HLSLStructField* field = structure->field;
             while (field != NULL)
             {
@@ -846,7 +846,7 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
             HLSLBuffer* buffer = static_cast<HLSLBuffer*>(statement);
             HLSLLiteralExpression* arr_sz = static_cast<HLSLLiteralExpression*>(buffer->field->type.arraySize);
 
-            writer.WriteLine
+            writer.WriteLineWithNumber
             (
             indent, buffer->fileName, buffer->line,
             "struct __%s { float4 data[%i]; };",
@@ -1020,23 +1020,23 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
             }
             else
             {
-                writer.WriteLine(indent, returnStatement->fileName, returnStatement->line, "return;");
+                writer.WriteLineWithNumber(indent, returnStatement->fileName, returnStatement->line, "return;");
             }
         }
         else if (statement->nodeType == HLSLNodeType_DiscardStatement)
         {
             HLSLDiscardStatement* discardStatement = static_cast<HLSLDiscardStatement*>(statement);
-            writer.WriteLine(indent, discardStatement->fileName, discardStatement->line, "discard_fragment();");
+            writer.WriteLineWithNumber(indent, discardStatement->fileName, discardStatement->line, "discard_fragment();");
         }
         else if (statement->nodeType == HLSLNodeType_BreakStatement)
         {
             HLSLBreakStatement* breakStatement = static_cast<HLSLBreakStatement*>(statement);
-            writer.WriteLine(indent, breakStatement->fileName, breakStatement->line, "break;");
+            writer.WriteLineWithNumber(indent, breakStatement->fileName, breakStatement->line, "break;");
         }
         else if (statement->nodeType == HLSLNodeType_ContinueStatement)
         {
             HLSLContinueStatement* continueStatement = static_cast<HLSLContinueStatement*>(statement);
-            writer.WriteLine(indent, continueStatement->fileName, continueStatement->line, "continue;");
+            writer.WriteLineWithNumber(indent, continueStatement->fileName, continueStatement->line, "continue;");
         }
         else if (statement->nodeType == HLSLNodeType_IfStatement)
         {
@@ -1073,7 +1073,7 @@ void MSLGenerator::OutputStatements(int indent, HLSLStatement* statement)
         else if (statement->nodeType == HLSLNodeType_BlockStatement)
         {
             HLSLBlockStatement* blockStatement = static_cast<HLSLBlockStatement*>(statement);
-            writer.WriteLine(indent, blockStatement->fileName, blockStatement->line, "{");
+            writer.WriteLineWithNumber(indent, blockStatement->fileName, blockStatement->line, "{");
             OutputStatements(indent + 1, blockStatement->statement);
             writer.WriteLine(indent, "}");
         }

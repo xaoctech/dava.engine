@@ -46,6 +46,7 @@ fragment_out fp_main(fragment_in input)
         output.color += sphericalHarmonics[6] * (0.315392 * (3.0 * direction.z * direction.z - 1.0));
         output.color += sphericalHarmonics[7] * (1.092548 * direction.x * direction.z);
         output.color += sphericalHarmonics[8] * (0.546274 * (direction.x * direction.x - direction.y * direction.y));
+        output.color = max(output.color, 0.0);
     }
     output.color.xyz = LinearTosRGB(output.color.xyz);
 

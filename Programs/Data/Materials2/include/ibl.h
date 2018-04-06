@@ -132,7 +132,15 @@ float4 ConvoluteDiffuse(float2 texcoord_, Convolution conv)
 
 struct SphericalHarmonics
 {
-    float4 sh[9];
+    float3 sh0;
+    float3 sh1;
+    float3 sh2;
+    float3 sh3;
+    float3 sh4;
+    float3 sh5;
+    float3 sh6;
+    float3 sh7;
+    float3 sh8;
 };
 
 SphericalHarmonics ConvoluteSphericalHarmonics(float dummy /* to trick sl-parser ^_^ */)
@@ -178,31 +186,31 @@ SphericalHarmonics ConvoluteSphericalHarmonics(float dummy /* to trick sl-parser
             for (int x = 0; x < w; ++x)
             {
                 float3 direction = normalize(a0 + a1 * u + a2 * v);
-                float4 radiance = texCUBElod(smp_src, direction, sampledLevel);
-                result.sh[0] += radiance;
-                result.sh[1] += radiance * (direction.y);
-                result.sh[2] += radiance * (direction.z);
-                result.sh[3] += radiance * (direction.x);
-                result.sh[4] += radiance * (direction.x * direction.y);
-                result.sh[5] += radiance * (direction.y * direction.z);
-                result.sh[6] += radiance * ((3.0 * direction.z * direction.z - 1.0));
-                result.sh[7] += radiance * (direction.x * direction.z);
-                result.sh[8] += radiance * ((direction.x * direction.x - direction.y * direction.y));
+                float3 radiance = texCUBElod(smp_src, direction, sampledLevel).xyz;
+                result.sh0 += radiance;
+                result.sh1 += radiance * (direction.y);
+                result.sh2 += radiance * (direction.z);
+                result.sh3 += radiance * (direction.x);
+                result.sh4 += radiance * (direction.x * direction.y);
+                result.sh5 += radiance * (direction.y * direction.z);
+                result.sh6 += radiance * (3.0 * direction.z * direction.z - 1.0);
+                result.sh7 += radiance * (direction.x * direction.z);
+                result.sh8 += radiance * (direction.x * direction.x - direction.y * direction.y);
                 u += du;
             }
             v += dv;
         }
     }
 
-    result.sh[0] *= ((1.0 / 1.0) * 0.282095) * texelSolidAngle;
-    result.sh[1] *= ((2.0 / 3.0) * 0.488603) * texelSolidAngle;
-    result.sh[2] *= ((2.0 / 3.0) * 0.488603) * texelSolidAngle;
-    result.sh[3] *= ((2.0 / 3.0) * 0.488603) * texelSolidAngle;
-    result.sh[4] *= ((1.0 / 4.0) * 1.092548) * texelSolidAngle;
-    result.sh[5] *= ((1.0 / 4.0) * 1.092548) * texelSolidAngle;
-    result.sh[6] *= ((1.0 / 4.0) * 0.315392) * texelSolidAngle;
-    result.sh[7] *= ((1.0 / 4.0) * 1.092548) * texelSolidAngle;
-    result.sh[8] *= ((1.0 / 4.0) * 0.546274) * texelSolidAngle;
+    result.sh0 *= ((1.0 / 1.0) * 0.282095) * texelSolidAngle;
+    result.sh1 *= ((2.0 / 3.0) * 0.488603) * texelSolidAngle;
+    result.sh2 *= ((2.0 / 3.0) * 0.488603) * texelSolidAngle;
+    result.sh3 *= ((2.0 / 3.0) * 0.488603) * texelSolidAngle;
+    result.sh4 *= ((1.0 / 4.0) * 1.092548) * texelSolidAngle;
+    result.sh5 *= ((1.0 / 4.0) * 1.092548) * texelSolidAngle;
+    result.sh6 *= ((1.0 / 4.0) * 0.315392) * texelSolidAngle;
+    result.sh7 *= ((1.0 / 4.0) * 1.092548) * texelSolidAngle;
+    result.sh8 *= ((1.0 / 4.0) * 0.546274) * texelSolidAngle;
 
     return result;
 }
@@ -246,9 +254,7 @@ float4 ConvoluteSpecular(float2 texcoord_, Convolution conv)
         result.xyz += LdotN * texCUBElod(smp_src, l, sampledLevel).xyz;
         result.w += LdotN;
     }
-    result = EncodeRGBM(result / result.w);
+    result = EncodeRGBM(result.xyz / result.w);
     return result;
 }
-#else
-    #error Invalid Shader Configuration
 #endif

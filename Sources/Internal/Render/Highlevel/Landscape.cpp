@@ -109,8 +109,6 @@ const FastName Landscape::TEXTURE_DECORATION_COLOR("decorationcolortexture");
 const FastName Landscape::LANDSCAPE_QUALITY_NAME("Landscape");
 const FastName Landscape::LANDSCAPE_QUALITY_VALUE_HIGH("HIGH");
 
-#define REDUCE_LANDSCAPE_QUALITY 0 /* possible values : 0 1 2 */
-
 const uint32 LANDSCAPE_BATCHES_POOL_SIZE = 32;
 const uint32 LANDSCAPE_MATERIAL_SORTING_KEY = 10;
 
@@ -119,15 +117,15 @@ static const uint32 PATCH_SIZE_QUADS = (PATCH_SIZE_VERTICES - 1);
 
 static const uint32 INSTANCE_DATA_BUFFERS_POOL_SIZE = 9;
 
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT = 3 - REDUCE_LANDSCAPE_QUALITY;
+static const uint32 TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT = 3;
 
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_WIDTH = 4096u >> REDUCE_LANDSCAPE_QUALITY;
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_HEIGHT = 2048u >> REDUCE_LANDSCAPE_QUALITY;
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE = 128u >> REDUCE_LANDSCAPE_QUALITY;
+static const uint32 TERRAIN_VIRTUAL_TEXTURE_WIDTH = 4096u;
+static const uint32 TERRAIN_VIRTUAL_TEXTURE_HEIGHT = 2048u;
+static const uint32 TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE = 128u;
 
-static const uint32 DECORATION_VIRTUAL_TEXTURE_WIDTH = 2048u >> REDUCE_LANDSCAPE_QUALITY;
-static const uint32 DECORATION_VIRTUAL_TEXTURE_HEIGHT = 1024u >> REDUCE_LANDSCAPE_QUALITY;
-static const uint32 DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE = 64u >> REDUCE_LANDSCAPE_QUALITY;
+static const uint32 DECORATION_VIRTUAL_TEXTURE_WIDTH = 2048u;
+static const uint32 DECORATION_VIRTUAL_TEXTURE_HEIGHT = 1024u;
+static const uint32 DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE = 64u;
 
 static const uint32 VT_PAGE_UPDATES_PER_FRAME_DEFAULT_COUNT = 16u;
 static const uint32 VT_PAGE_LOD_COUNT = 3; //macro-, middle- and micro-tiles
@@ -193,16 +191,27 @@ Landscape::Landscape()
 
     type = TYPE_LANDSCAPE;
 
+    quality = (Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward) ? LandscapeQuality::Low : LandscapeQuality::Full;
+    uint32 REDUCE_LANDSCAPE_QUALITY = (quality == LandscapeQuality::Low) ? 1 : 0;
+
     subdivision = new LandscapeSubdivision();
-    decoration = new DecorationData();
 
     VirtualTexture::Descriptor vtDesc;
-    vtDesc.width = TERRAIN_VIRTUAL_TEXTURE_WIDTH;
-    vtDesc.height = TERRAIN_VIRTUAL_TEXTURE_HEIGHT;
-    vtDesc.pageSize = TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE;
-    vtDesc.virtualTextureLayers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } }; /* [albedo + height], [normal + roughness + shadow] */
-    vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
-    vtDesc.mipLevelCount = TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT;
+    vtDesc.width = TERRAIN_VIRTUAL_TEXTURE_WIDTH >> REDUCE_LANDSCAPE_QUALITY;
+    vtDesc.height = TERRAIN_VIRTUAL_TEXTURE_HEIGHT >> REDUCE_LANDSCAPE_QUALITY;
+    vtDesc.pageSize = TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE >> REDUCE_LANDSCAPE_QUALITY;
+    if (quality == LandscapeQuality::Low)
+    {
+        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 }; /* baked image only */
+        vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
+    }
+    else
+    {
+        decoration = new DecorationData();
+        vtDesc.virtualTextureLayers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } }; /* [albedo + height], [normal + roughness + shadow] */
+        vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
+    }
+    vtDesc.mipLevelCount = TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT - REDUCE_LANDSCAPE_QUALITY;
 
     pageManager = new LandscapePageManager(vtDesc);
     terrainVTexture = pageManager->GetVirtualTexture();
@@ -212,11 +221,19 @@ Landscape::Landscape()
         terrainVTexture->GetLayerTexture(l)->samplerState.anisotropyLevel = 1;
     }
 
-    vtDesc.width = DECORATION_VIRTUAL_TEXTURE_WIDTH;
-    vtDesc.height = DECORATION_VIRTUAL_TEXTURE_HEIGHT;
-    vtDesc.pageSize = DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE;
-    vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
-    vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
+    vtDesc.width = DECORATION_VIRTUAL_TEXTURE_WIDTH >> REDUCE_LANDSCAPE_QUALITY;
+    vtDesc.height = DECORATION_VIRTUAL_TEXTURE_HEIGHT >> REDUCE_LANDSCAPE_QUALITY;
+    vtDesc.pageSize = DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE >> REDUCE_LANDSCAPE_QUALITY;
+    if (quality == LandscapeQuality::Low)
+    {
+        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
+        vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
+    }
+    else
+    {
+        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
+        vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
+    }
     vtDesc.mipLevelCount = 1;
 
     vtDecalRenderer = new VTDecalPageRenderer(false);
@@ -247,20 +264,17 @@ Landscape::Landscape()
     renderMode = RENDERMODE_NO_INSTANCING;
     if (rhi::DeviceCaps().isInstancingSupported && rhi::DeviceCaps().isVertexTextureUnitsSupported)
     {
-        if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8A8, rhi::PROG_VERTEX))
+        if (rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R8G8B8A8].fetchable || rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R16G16].fetchable)
         {
             renderMode = RENDERMODE_INSTANCING_MORPHING;
         }
-        else if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX))
+        else if (rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R4G4B4A4].fetchable)
         {
             renderMode = RENDERMODE_INSTANCING;
-        }
-        else if (rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R32F, rhi::PROG_VERTEX))
-        {
-            renderMode = RENDERMODE_INSTANCING;
-            floatHeightTexture = true;
         }
     }
+
+    SelectHeightmapTextureFormat();
 
     EngineSettings* settings = GetEngineContext()->settings;
     EngineSettings::eSettingValue landscapeSetting = settings->GetSetting<EngineSettings::SETTING_LANDSCAPE_RENDERMODE>().Get<EngineSettings::eSettingValue>();
@@ -268,8 +282,6 @@ Landscape::Landscape()
         renderMode = RENDERMODE_NO_INSTANCING;
     else if (landscapeSetting == EngineSettings::LANDSCAPE_INSTANCING && renderMode == RENDERMODE_INSTANCING_MORPHING)
         renderMode = RENDERMODE_INSTANCING;
-
-    isRequireNormal = true; // (QualitySettingsSystem::Instance()->GetCurMaterialQuality(LANDSCAPE_QUALITY_NAME) == LANDSCAPE_QUALITY_VALUE_HIGH);
 
 #if defined(__DAVAENGINE_ANDROID__)
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
@@ -298,9 +310,12 @@ Landscape::Landscape()
     landscapeRuntimeMaterial->SetMaterialName(FastName("Landscape_Runtime_Material"));
     landscapeRuntimeMaterial->SetFXName(NMaterialName::LANDSCAPE);
     landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, terrainVTexture->GetLayerTexture(0));
-    landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
     landscapeRuntimeMaterial->AddTexture(TEXTURE_TERRAIN, terrainVTexture->GetLayerTexture(0));
     landscapeRuntimeMaterial->SetRuntime(true);
+    if (quality == LandscapeQuality::Full)
+    {
+        landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
+    }
     PrepareMaterial(landscapeRuntimeMaterial);
 
     decorationRuntimeMaterial = new NMaterial();
@@ -312,8 +327,7 @@ Landscape::Landscape()
 
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 
-    SetDynamicProperty(DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_SIZE_POW2, &heightmapSizePow2f, pointer_size(&heightmapSizePow2f));
-    SetDynamicProperty(DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_SIZE, &heightmapSizef, pointer_size(&heightmapSizef));
+    SetDynamicProperty(DynamicBindings::PARAM_HEIGHTMAP_SIZE, heightmapSizeProperty.data, pointer_size(heightmapSizeProperty.data));
     SetDynamicProperty(DynamicBindings::PARAM_TESSELLATION_HEIGHT, &tessellationHeight, pointer_size(&tessellationHeight));
 
     Renderer::GetSignals().needRestoreResources.Connect(this, &Landscape::RestoreGeometry);
@@ -548,8 +562,8 @@ void Landscape::AllocateGeometryData()
     uint32 minSubdivLevelSize = (renderMode == RENDERMODE_NO_INSTANCING) ? heightmapSize / RENDER_PARCEL_SIZE_QUADS : 0;
     uint32 minSubdivLevel = uint32(HighestBitIndex(minSubdivLevelSize));
 
-    heightmapSizef = float32(heightmapSize);
-    heightmapSizePow2f = float32(uint32(HighestBitIndex(heightmapSize)));
+    heightmapSizeProperty.x = float32(heightmapSize);
+    heightmapSizeProperty.y = float32(uint32(HighestBitIndex(heightmapSize)));
     heightmapMaxBaseLod = FastLog2(heightmap->Size() / PATCH_SIZE_QUADS) + 1;
 
     subdivision->BuildSubdivision(heightmap, bbox, PATCH_SIZE_QUADS);
@@ -596,7 +610,7 @@ void Landscape::RebuildLandscape()
         landscapeMaterial = new NMaterial();
         landscapeMaterial->SetMaterialName(FastName("Landscape_Material"));
 
-        landscapeRuntimeMaterial->SetParent(landscapeMaterial);
+        PrepareMaterial(landscapeMaterial);
     }
 
     ReleaseGeometryData();
@@ -607,24 +621,14 @@ void Landscape::RebuildLandscape()
 
 void Landscape::PrepareMaterial(NMaterial* material)
 {
-    material->AddFlag(NMaterialFlagName::FLAG_HEIGHTMAP_FLOAT_TEXTURE, floatHeightTexture ? 1 : 0);
-
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING, (renderMode == RENDERMODE_NO_INSTANCING) ? 0 : 1);
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING, (renderMode == RENDERMODE_INSTANCING_MORPHING) ? 1 : 0);
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR, debugDrawMorphing ? 1 : 0);
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_TESSELLATION_COLOR, debugDrawTessellationHeight ? 1 : 0);
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_PATCHES, debugDrawPatches ? 1 : 0);
+    material->AddFlag(NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION, manualHeightInterpolation ? 1 : 0);
+    material->AddFlag(NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT, int32(heightTextureFormat));
     material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_MICRO_TESSELLATION, microtessellation ? LANDSCAPE_TESSELLATION_MODE_FLAG : 0);
-}
-
-void Landscape::UpdateMaterialFlags()
-{
-    landscapeRuntimeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING, (renderMode == RENDERMODE_NO_INSTANCING) ? 0 : 1);
-    landscapeRuntimeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING, (renderMode == RENDERMODE_INSTANCING_MORPHING) ? 1 : 0);
-    landscapeRuntimeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR, debugDrawMorphing ? 1 : 0);
-    landscapeRuntimeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_TESSELLATION_COLOR, debugDrawTessellationHeight ? 1 : 0);
-    landscapeRuntimeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_PATCHES, debugDrawPatches ? 1 : 0);
-    landscapeRuntimeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_MICRO_TESSELLATION, microtessellation ? LANDSCAPE_TESSELLATION_MODE_FLAG : 0);
 }
 
 void Landscape::CreateTextures()
@@ -662,14 +666,15 @@ void Landscape::CreateTextures()
     normalTexture->texDescriptor->pathname = "memoryfile_landscape_normal";
     normalTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
 
+    rhi::TextureFilter textureFilter = manualHeightInterpolation ? rhi::TEXFILTER_NEAREST : rhi::TEXFILTER_LINEAR;
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
-        heightTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
+        heightTexture->SetMinMagFilter(textureFilter, textureFilter, rhi::TEXMIPFILTER_NEAREST);
         normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
     }
     else
     {
-        heightTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+        heightTexture->SetMinMagFilter(textureFilter, textureFilter, rhi::TEXMIPFILTER_NONE);
         normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
     }
 
@@ -713,8 +718,6 @@ void Landscape::CreateTextureData()
 
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
-        DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8A8, rhi::PROG_VERTEX));
-
         heightTextureData.reserve(HighestBitIndex(hmSize));
         normalTextureData.reserve(HighestBitIndex(hmSize));
 
@@ -722,7 +725,7 @@ void Landscape::CreateTextureData()
         uint32 mipLevel = 0;
         while (mipSize)
         {
-            heightTextureData.push_back(Image::Create(mipSize, mipSize, FORMAT_RGBA8888));
+            heightTextureData.push_back(Image::Create(mipSize, mipSize, (heightTextureFormat == rhi::TEXTURE_FORMAT_R8G8B8A8) ? FORMAT_RGBA8888 : FORMAT_RG1616));
             normalTextureData.push_back(Image::Create(mipSize, mipSize, FORMAT_RGBA8888));
 
             heightTextureData.back()->mipmapLevel = mipLevel;
@@ -734,24 +737,10 @@ void Landscape::CreateTextureData()
     }
     else
     {
-        Image* heightImage = nullptr;
-        if (floatHeightTexture)
-        {
-            DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R32F, rhi::PROG_VERTEX));
-            heightImage = Image::Create(hmSize, hmSize, FORMAT_R32F);
-        }
-        else
-        {
-            DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX));
-            heightImage = Image::Create(hmSize, hmSize, FORMAT_RGBA4444);
-        }
-        heightTextureData.push_back(heightImage);
+        DVASSERT(heightTextureFormat == rhi::TEXTURE_FORMAT_R4G4B4A4);
 
-        if (isRequireNormal)
-        {
-            DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX));
-            normalTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
-        }
+        heightTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
+        normalTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
     }
 }
 
@@ -759,13 +748,11 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
 {
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
-        DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R8G8B8A8, rhi::PROG_VERTEX));
-
         uint32 mipCount = uint32(heightTextureData.size());
         for (uint32 mip = 0; mip < mipCount; ++mip)
         {
             Image* hMipImage = heightTextureData[mip];
-            Image* nMipImage = isRequireNormal ? normalTextureData[mip] : nullptr;
+            Image* nMipImage = normalTextureData[mip];
 
             int32 step = 1 << mip;
             int32 mipSize = heightmap->Size() >> mip;
@@ -808,30 +795,27 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
 
                     uint16 h1 = heightmap->GetHeightClamp(x1, y1);
                     uint16 h2 = heightmap->GetHeightClamp(x2, y2);
-                    uint16 hAvg = (h1 + h2) / 2;
+                    uint32 hAvg = uint32(h1 + h2) / 2;
 
                     int32 pixelIndex = (hMipImage->GetWidth() * y + x);
                     uint32* heightPixel = reinterpret_cast<uint32*>(hMipImage->data) + pixelIndex;
-                    *heightPixel = (hAvg << 16) | hAcc;
+                    *heightPixel = (hAvg << 16) | hAcc; //RGBA8888 or RG1616
 
                     //Normal
-                    if (nMipImage)
-                    {
-                        Vector3 normal = CalculateNormal(xx, yy);
-                        Vector3 normal1 = CalculateNormal(x1, y1);
-                        Vector3 normal2 = CalculateNormal(x2, y2);
+                    Vector3 normal = CalculateNormal(xx, yy);
+                    Vector3 normal1 = CalculateNormal(x1, y1);
+                    Vector3 normal2 = CalculateNormal(x2, y2);
 
-                        normal = normal * 0.5f + 0.5f;
-                        uint8 nxAcc = uint8(normal.x * 255.f);
-                        uint8 nyAcc = uint8(normal.y * 255.f);
+                    normal = normal * 0.5f + 0.5f;
+                    uint8 nxAcc = uint8(normal.x * 255.f);
+                    uint8 nyAcc = uint8(normal.y * 255.f);
 
-                        normal = Normalize(normal1 + normal2) * 0.5f + 0.5f;
-                        uint8 nxAvg = uint8(normal.x * 255.f);
-                        uint8 nyAvg = uint8(normal.y * 255.f);
+                    normal = Normalize(normal1 + normal2) * 0.5f + 0.5f;
+                    uint8 nxAvg = uint8(normal.x * 255.f);
+                    uint8 nyAvg = uint8(normal.y * 255.f);
 
-                        uint32* normalPixel = reinterpret_cast<uint32*>(nMipImage->data) + pixelIndex;
-                        *normalPixel = (nyAvg << 24) | (nxAvg << 16) | (nyAcc << 8) | (nxAcc);
-                    }
+                    uint32* normalPixel = reinterpret_cast<uint32*>(nMipImage->data) + pixelIndex;
+                    *normalPixel = (nyAvg << 24) | (nxAvg << 16) | (nyAcc << 8) | (nxAcc);
                 }
             }
         }
@@ -839,35 +823,25 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
     else
     {
         DVASSERT(heightTextureData.size() == 1);
-        DVASSERT(!isRequireNormal || normalTextureData.size() == 1);
+        DVASSERT(normalTextureData.size() == 1);
 
         Image* heightImage = heightTextureData[0];
-        Image* normalImage = isRequireNormal ? normalTextureData[0] : nullptr;
-        DVASSERT(rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R32F, rhi::PROG_VERTEX));
+        Image* normalImage = normalTextureData[0];
 
         for (int32 y = rect.y; y < (rect.y + rect.dy); ++y)
         {
             for (int32 x = rect.x; x < (rect.x + rect.dx); ++x)
             {
                 int32 pixelIndex = (heightImage->GetWidth() * y + x);
-                if (floatHeightTexture)
-                {
-                    float32* heightPixel = reinterpret_cast<float32*>(heightImage->data) + pixelIndex;
-                    *heightPixel = float32(heightmap->GetHeight(x, y)) / Heightmap::MAX_VALUE;
-                }
-                else
-                {
-                    uint16* heightPixel = reinterpret_cast<uint16*>(heightImage->data) + pixelIndex;
-                    *heightPixel = heightmap->GetHeight(x, y);
-                }
 
-                if (normalImage)
-                {
-                    uint16* normalPixel = reinterpret_cast<uint16*>(normalImage->data) + pixelIndex;
+                //Height
+                uint16* heightPixel = reinterpret_cast<uint16*>(heightImage->data) + pixelIndex;
+                *heightPixel = heightmap->GetHeight(x, y);
 
-                    Vector3 normal = CalculateNormal(x, y) * 0.5f + 0.5f;
-                    *normalPixel = (uint8(normal.y * 255.f) << 8) | uint8(normal.x * 255.f);
-                }
+                //Normal
+                uint16* normalPixel = reinterpret_cast<uint16*>(normalImage->data) + pixelIndex;
+                Vector3 normal = CalculateNormal(x, y) * 0.5f + 0.5f;
+                *normalPixel = (uint8(normal.y * 255.f) << 8) | uint8(normal.x * 255.f);
             }
         }
     }
@@ -995,7 +969,7 @@ void Landscape::AddPatchToRender(const LandscapeSubdivision::SubdivisionPatch* s
         AddPatchToRender(subdivPatch->children[2]);
         AddPatchToRender(subdivPatch->children[3]);
     }
-    else
+    else // if (drawLandscapeGeometry) TODO : deal with it
     {
         if (renderMode == RENDERMODE_NO_INSTANCING)
             DrawPatchNoInstancing(subdivPatch);
@@ -1086,11 +1060,8 @@ void Landscape::AllocateGeometryDataNoInstancing()
     rhi::VertexLayout vLayout;
     vLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
     vLayout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 2);
-    if (isRequireNormal)
-    {
-        vLayout.AddElement(rhi::VS_NORMAL, 0, rhi::VDT_FLOAT, 3);
-        vLayout.AddElement(rhi::VS_TANGENT, 0, rhi::VDT_FLOAT, 3);
-    }
+    vLayout.AddElement(rhi::VS_NORMAL, 0, rhi::VDT_FLOAT, 3);
+    vLayout.AddElement(rhi::VS_TANGENT, 0, rhi::VDT_FLOAT, 3);
     vLayoutUIDNoInstancing = rhi::VertexLayout::UniqueId(vLayout);
 
     for (uint32 i = 0; i < LANDSCAPE_BATCHES_POOL_SIZE; i++)
@@ -1137,11 +1108,6 @@ int16 Landscape::AllocateParcelVertexBuffer(uint32 quadX, uint32 quadY, uint32 q
 
     uint32 verticesCount = (quadSize + 1) * (quadSize + 1);
     uint32 vertexSize = sizeof(VertexNoInstancing);
-    if (!isRequireNormal)
-    {
-        vertexSize -= sizeof(Vector3); // (Vertex::normal);
-        vertexSize -= sizeof(Vector3); // (Vertex::tangent);
-    }
 
     uint8* landscapeVertices = new uint8[verticesCount * vertexSize];
     uint32 index = 0;
@@ -1152,14 +1118,11 @@ int16 Landscape::AllocateParcelVertexBuffer(uint32 quadX, uint32 quadY, uint32 q
             VertexNoInstancing* vertex = reinterpret_cast<VertexNoInstancing*>(&landscapeVertices[index * vertexSize]);
             vertex->position = heightmap->GetPoint(x, y, bbox);
 
-            Vector2 texCoord = Vector2(x / heightmapSizef, 1.0f - y / heightmapSizef);
+            Vector2 texCoord = Vector2(x / heightmapSizeProperty.x, 1.0f - y / heightmapSizeProperty.x);
             vertex->texCoord = texCoord;
 
-            if (isRequireNormal)
-            {
-                vertex->normal = CalculateNormal(x, y);
-                vertex->tangent = Normalize(CrossProduct(Vector3(0.f, 1.f, 0.f), vertex->normal));
-            }
+            vertex->normal = CalculateNormal(x, y);
+            vertex->tangent = Normalize(CrossProduct(Vector3(0.f, 1.f, 0.f), vertex->normal));
 
             index++;
         }
@@ -1629,17 +1592,19 @@ void Landscape::DrawLandscapeInstancing()
             decorationPageManager->RejectRequests();
         }
 
-        InstanceDataBuffer* instanceDataBuffer = GetInstanceBuffer(currentTerminatedPatches * INSTANCE_DATA_SIZE);
-        renderBatchArray[0].renderBatch->instanceCount = currentTerminatedPatches;
-        renderBatchArray[0].renderBatch->instanceBuffer = instanceDataBuffer->buffer;
-        activeRenderBatchArray.emplace_back(renderBatchArray[0].renderBatch);
+        // if (drawLandscapeGeometry) TODO : deal with it
+        {
+            InstanceDataBuffer* instanceDataBuffer = GetInstanceBuffer(currentTerminatedPatches * INSTANCE_DATA_SIZE);
+            renderBatchArray[0].renderBatch->instanceCount = currentTerminatedPatches;
+            renderBatchArray[0].renderBatch->instanceBuffer = instanceDataBuffer->buffer;
+            activeRenderBatchArray.emplace_back(renderBatchArray[0].renderBatch);
 
-        instanceDataPtr = static_cast<uint8*>(rhi::MapVertexBuffer(instanceDataBuffer->buffer, 0, currentTerminatedPatches * INSTANCE_DATA_SIZE));
+            instanceDataPtr = static_cast<uint8*>(rhi::MapVertexBuffer(instanceDataBuffer->buffer, 0, currentTerminatedPatches * INSTANCE_DATA_SIZE));
+            AddPatchToRender(currentSubdivisionRoot);
+            rhi::UnmapVertexBuffer(instanceDataBuffer->buffer);
 
-        AddPatchToRender(currentSubdivisionRoot);
-
-        rhi::UnmapVertexBuffer(instanceDataBuffer->buffer);
-        instanceDataPtr = nullptr;
+            instanceDataPtr = nullptr;
+        }
 
         //////////////////////////////////////////////////////////////////////////
         //#decoration
@@ -1697,10 +1662,12 @@ void Landscape::DrawLandscapeInstancing()
 
         //////////////////////////////////////////////////////////////////////////
 
-        renderStats.landscapeTriangles = activeRenderBatchArray[0]->indexCount * activeRenderBatchArray[0]->instanceCount / 3;
-        renderStats.landscapePatches = activeRenderBatchArray[0]->instanceCount;
-
-        activeRenderBatchArray[0]->perfQueryMarker = ProfilerGPUMarkerName::LANDSCAPE;
+        // if (drawLandscapeGeometry) TODO : deal with it
+        {
+            renderStats.landscapeTriangles = activeRenderBatchArray[0]->indexCount * activeRenderBatchArray[0]->instanceCount / 3;
+            renderStats.landscapePatches = activeRenderBatchArray[0]->instanceCount;
+            activeRenderBatchArray[0]->perfQueryMarker = ProfilerGPUMarkerName::LANDSCAPE;
+        }
     }
 }
 
@@ -2338,6 +2305,25 @@ uint32 Landscape::GetMacroLODLevel() const
     return pageManager ? pageManager->GetMacroLODLevel() : 0u;
 }
 
+void Landscape::SelectHeightmapTextureFormat()
+{
+    if (renderMode == RENDERMODE_INSTANCING_MORPHING)
+    {
+        heightTextureFormat = (rhi::HostApi().api == rhi::RHI_METAL) ? rhi::TEXTURE_FORMAT_R16G16 : rhi::TEXTURE_FORMAT_R8G8B8A8;
+    }
+    else if (renderMode == RENDERMODE_INSTANCING)
+    {
+        heightTextureFormat = rhi::TEXTURE_FORMAT_R4G4B4A4;
+    }
+
+    manualHeightInterpolation = rhi::DeviceCaps().textureFormat[heightTextureFormat].filterable;
+
+//GFX_COMPLETE resolve caps for MacOS
+#if defined(__DAVAENGINE_MACOS__)
+    manualHeightInterpolation = true;
+#endif
+}
+
 void Landscape::SetRenderMode(RenderMode newRenderMode)
 {
     //TODO: fix no-instancing render-mode
@@ -2350,8 +2336,21 @@ void Landscape::SetRenderMode(RenderMode newRenderMode)
 
     renderMode = newRenderMode;
 
+    SelectHeightmapTextureFormat();
     RebuildLandscape();
     UpdateMaterialFlags();
+}
+
+void Landscape::UpdateMaterialFlags()
+{
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING, (renderMode == RENDERMODE_NO_INSTANCING) ? 0 : 1);
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING, (renderMode == RENDERMODE_INSTANCING_MORPHING) ? 1 : 0);
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_MICRO_TESSELLATION, microtessellation ? LANDSCAPE_TESSELLATION_MODE_FLAG : 0);
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR, debugDrawMorphing ? 1 : 0);
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION, manualHeightInterpolation ? 1 : 0);
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT, int32(heightTextureFormat));
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_TESSELLATION_COLOR, debugDrawTessellationHeight ? 1 : 0);
+    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_PATCHES, debugDrawPatches ? 1 : 0);
 }
 
 void Landscape::SetDrawMorphing(bool drawMorph)
@@ -2484,11 +2483,16 @@ void Landscape::DebugDraw2D(Window*)
 {
     if (debugDrawVTexture)
     {
-        DVASSERT(terrainVTexture->GetLayersCount() == 2);
+        DVASSERT(terrainVTexture->GetLayersCount() > 0);
         RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 5.0f, 512.f, 256.f));
-        RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(1), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(522.f, 5.0f, 512.f, 256.f));
 
-        DVASSERT(decorationVTexture->GetLayersCount() == 1);
+        if (quality == LandscapeQuality::Full)
+        {
+            DVASSERT(terrainVTexture->GetLayersCount() > 1);
+            RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(1), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(522.f, 5.0f, 512.f, 256.f));
+        }
+
+        DVASSERT(decorationVTexture->GetLayersCount() > 0);
         RenderSystem2D::Instance()->DrawTexture(decorationVTexture->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 266.f, 512.f, 256.f));
     }
 }
@@ -2821,7 +2825,8 @@ void Landscape::RebuildDecoration()
                     decorationBatches[layerIndex][levelIndex].itemsCount += variationItemCount;
             }
 
-            if (!geometryData.empty() && !indexData.empty())
+            uint8 layerMask = decoration->GetLayerMask(layerIndex);
+            if (!geometryData.empty() && !indexData.empty() && layerMask != 0u)
             {
                 rhi::VertexBuffer::Descriptor vbufferDesc;
                 vbufferDesc.initialData = geometryData.data();
@@ -2847,7 +2852,6 @@ void Landscape::RebuildDecoration()
                     Vector4(1.f, 1.f, 0.f, 1.f)
                 };
 
-                uint8 layerMask = decoration->GetLayerMask(layerIndex);
                 Vector4 layerMaskProperty = Vector4(
                 ((layerMask & DecorationData::LAYER_MASK_CHANNEL_R) ? 1.f : 0.f),
                 ((layerMask & DecorationData::LAYER_MASK_CHANNEL_G) ? 1.f : 0.f),

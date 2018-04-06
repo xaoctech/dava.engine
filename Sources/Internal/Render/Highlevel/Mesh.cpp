@@ -129,8 +129,35 @@ void Mesh::SetJointTargets(RenderBatch* batch, const JointTargets& targets)
         jointTargetsData.back().second.quaternions.resize(targetsCount);
         jointTargetsData.back().second.jointsDataCount = targetsCount;
 
+        prevJointTargetsData.back().first = targets;
+        prevJointTargetsData.back().second.positions.resize(targetsCount);
+        prevJointTargetsData.back().second.quaternions.resize(targetsCount);
+        prevJointTargetsData.back().second.jointsDataCount = targetsCount;
+
         jointTargetsDataMap[batch] = dataIndex;
     }
+}
+
+void Mesh::UpdatePreviousState()
+{
+    for (uint32 i = 0; i < jointTargetsData.size(); ++i)
+    {
+        DVASSERT(jointTargetsData.size() == prevJointTargetsData.size());
+
+        JointTargetsData& data = jointTargetsData[i].second;
+        JointTargetsData& prevData = prevJointTargetsData[i].second;
+
+        for (uint32 j = 0; j < data.jointsDataCount; ++j)
+        {
+            DVASSERT(prevData.positions.size() == data.positions.size());
+            DVASSERT(prevData.quaternions.size() == data.quaternions.size());
+
+            prevData.positions[j] = data.positions[j];
+            prevData.quaternions[j] = data.quaternions[j];
+        }
+    }
+
+    RenderObject::UpdatePreviousState();
 }
 
 void Mesh::UpdateJointsTransformsProperties()
@@ -141,15 +168,23 @@ void Mesh::UpdateJointsTransformsProperties()
         if (found != jointTargetsDataMap.end())
         {
             const JointTargetsData& data = jointTargetsData[found->second].second;
+            const JointTargetsData& prevData = prevJointTargetsData[found->second].second;
+
             SetDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_JOINTS_COUNT, &data.jointsDataCount, reinterpret_cast<pointer_size>(&data.jointsDataCount));
+
             SetDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_JOINT_POSITIONS, data.positions.data(), reinterpret_cast<pointer_size>(data.positions.data()));
             SetDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_JOINT_QUATERNIONS, data.quaternions.data(), reinterpret_cast<pointer_size>(data.quaternions.data()));
+
+            SetDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_PREV_JOINT_POSITIONS, prevData.positions.data(), reinterpret_cast<pointer_size>(prevData.positions.data()));
+            SetDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_PREV_JOINT_QUATERNIONS, prevData.quaternions.data(), reinterpret_cast<pointer_size>(prevData.quaternions.data()));
         }
         else
         {
             RemoveDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_JOINTS_COUNT);
             RemoveDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_JOINT_POSITIONS);
             RemoveDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_JOINT_QUATERNIONS);
+            RemoveDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_PREV_JOINT_POSITIONS);
+            RemoveDynamicProperty(rb.renderBatch, DynamicBindings::PARAM_PREV_JOINT_QUATERNIONS);
         }
     }
 }

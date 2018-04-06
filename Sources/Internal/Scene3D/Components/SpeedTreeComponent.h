@@ -93,6 +93,7 @@ protected:
     float32 trunkDamping = 1.0f;
 
     Vector4 wind;
+    Vector4 prevWind;
     Vector4 leafsFlexibility;
 
     SpeedTreeObject* treeObject = nullptr;

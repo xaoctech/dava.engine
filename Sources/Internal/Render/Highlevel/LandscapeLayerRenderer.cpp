@@ -88,7 +88,9 @@ bool LandscapeLayerRenderer::RenderPage(const PageRenderParams& params)
     for (uint32 i = 0; i < static_cast<uint32>(params.pageSrc.size()); ++i)
         Renderer::GetDynamicBindings().SetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_SRC_0 + i), params.pageSrc[i]->handle);
 
-    if (material->PreBuildMaterial(PASS_FORWARD))
+    const FastName& passId = (Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward) ? PASS_FORWARD_LDR : PASS_FORWARD;
+
+    if (material->PreBuildMaterial(passId))
         material->BindParams(quadPacket);
 
     // float fPageSize = static_cast<float>(vTexture->GetPageSize());

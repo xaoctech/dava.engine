@@ -74,9 +74,11 @@ void RenderUpdateSystem::RegisterRenderObject(Entity* entity, RenderObject* obje
 
     DVASSERT(renderObjects.find(object) == renderObjects.end());
 
-    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+    TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+    const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
     object->SetWorldTransformPtr(worldTransformPointer);
     UpdateActiveIndexes(entity, object);
+
     object->RecalculateWorldBoundingBox();
     bool isValid = !object->GetWorldBoundingBox().IsEmpty();
 
@@ -163,8 +165,9 @@ void RenderUpdateSystem::UpdateRenderObject(Entity* entity, RenderObject* object
     if (object == nullptr)
         return;
 
+    TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
     // Update new transform pointer, and mark that transform is changed
-    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+    const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
     object->SetWorldTransformPtr(worldTransformPointer);
     entity->GetScene()->renderSystem->MarkForUpdate(object);
 

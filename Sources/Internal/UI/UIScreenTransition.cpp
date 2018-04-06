@@ -59,7 +59,7 @@ void UIScreenTransition::CreateRenderTargets()
     Texture::RenderTargetTextureKey key;
     key.width = width;
     key.height = height;
-    key.format = rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R5G6B5) ? FORMAT_RGB565 : FORMAT_RGBA8888;
+    key.format = rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R5G6B5].renderable ? FORMAT_RGB565 : FORMAT_RGBA8888;
     key.isDepth = false;
     key.needPixelReadback = false;
     key.textureType = rhi::TEXTURE_TYPE_2D;

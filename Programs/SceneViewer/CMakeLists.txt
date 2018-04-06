@@ -33,6 +33,12 @@ define_source ( SOURCE "Sources" ${PLATFORM_SPECIFIC_FOLDER} )
 set( MIX_APP_DATA               "Data = ${DAVA_ROOT_DIR}/Programs/Data" 
                                 "Data/${PROJECT_NAME} = ${CMAKE_CURRENT_LIST_DIR}/Data" )
 
+if (IOS)
+	set( CMAKE_XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon" )
+	set( CMAKE_XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME "LaunchImage")
+    list( APPEND RESOURCES_LIST ${CMAKE_CURRENT_LIST_DIR}/Platforms/Ios/Images.xcassets )
+endif()
+
 set( IOS_PLISTT                 ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/SceneVieweriPhone-Info.plist )
 
 set( MACOS_XIB                  ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_SPECIFIC_FOLDER}/MainMenu.xib)

@@ -25,7 +25,7 @@ TexturesBlendResult BlendTexturesVertexColor(float2 uvIn, float4 color)
     diffuseColor1.w += color.y;
     float4 normalSample0 = tex2Dgrad(normalmap, uv, uvddx, uvddy);
     float4 normalSample1 = tex2Dgrad(normalmap1, uv, uvddx, uvddy);
-    int weight1 = step(diffuseColor0.w, diffuseColor1.w);
+    float weight1 = step(diffuseColor0.w, diffuseColor1.w);
 
     float4 d1 = lerp(diffuseColor0, diffuseColor1, weight1);
     float4 n1 = lerp(normalSample0, normalSample1, weight1);
@@ -39,9 +39,9 @@ TexturesBlendResult BlendTexturesVertexColor(float2 uvIn, float4 color)
     float4 diffuseColor3 = tex2Dgrad(albedo3, uv, uvddx, uvddy);
     diffuseColor2.w += color.z;
     diffuseColor3.w += color.w;
-    int weight2 = step(diffuseColor2.w, diffuseColor3.w);
+    float weight2 = step(diffuseColor2.w, diffuseColor3.w);
     float4 d2 = lerp(diffuseColor2, diffuseColor3, weight2);
-    int finalWeigth = step(d1.w, d2.w);
+    float finalWeigth = step(d1.w, d2.w);
     res.albedo = lerp(d1, d2, finalWeigth);
 
     float4 normalSample2 = tex2Dgrad(normalmap2, uv, uvddx, uvddy);

@@ -9,7 +9,7 @@ color_mask1 = rgba;
 
 fragment_in
 {
-    float4 uv : TEXCOORD0;
+    float2 uv : TEXCOORD0;
 };
 
 fragment_out
@@ -29,12 +29,12 @@ fragment_out fp_main(fragment_in input)
 {
     fragment_out output;
 
-    float4 blendedAlbedoSample = tex2D(blendedAlbedo, input.uv);
-    float3 blendedNormalSample = tex2D(blendedNormal, input.uv).xyz;
-    float blendedHeightSample = tex2D(blendedHeight, input.uv).x;
+    float4 blendedAlbedoSample = tex2D(blendedAlbedo, input.uv.xy);
+    float3 blendedNormalSample = tex2D(blendedNormal, input.uv.xy).xyz;
+    float blendedHeightSample = tex2D(blendedHeight, input.uv.xy).x;
 
-    float4 srcAlbedoSample = tex2D(dynamicTextureSrc0, input.uv);
-    float4 srcNormalSample = tex2D(dynamicTextureSrc1, input.uv);
+    float4 srcAlbedoSample = tex2D(dynamicTextureSrc0, input.uv.xy);
+    float4 srcNormalSample = tex2D(dynamicTextureSrc1, input.uv.xy);
 
     float alphaValue = blendedAlbedoSample.w;
     float invAlphaValue = 1.0 - alphaValue;

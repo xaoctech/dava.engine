@@ -34,9 +34,6 @@ public:
     template <class T>
     const T& GetAssetKey() const;
 
-    template <class T>
-    Asset<T> GetAs() const;
-
 private:
     DAVA_VIRTUAL_REFLECTION(AssetBase);
 
@@ -50,5 +47,17 @@ template <class T>
 const T& AssetBase::GetAssetKey() const
 {
     return GetAssetKey().Get<T>();
+}
+
+template <typename T>
+Asset<T> AssetAs(const Asset<AssetBase>& asset)
+{
+    return std::dynamic_pointer_cast<T>(asset);
+}
+
+template <typename T>
+T* AssetAs(const AssetBase* asset)
+{
+    return dynamic_cast<T*>(asset);
 }
 };

@@ -61,8 +61,8 @@ struct Convolution
 
 struct ShadowParameters
 {
-    float4x4 cascadesProjectionScale;
-    float4x4 cascadesProjectionOffset;
+    float3 cascadesProjectionScale[4];
+    float3 cascadesProjectionOffset[4];
     float2 filterRadius;
     float2 rotationKernel;
     float2 shadowMapSize;

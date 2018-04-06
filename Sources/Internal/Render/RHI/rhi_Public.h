@@ -20,6 +20,7 @@ struct InitParam
     bool threadedRenderEnabled = false;
     bool vsyncEnabled = true;
     bool useBackBufferExtraSize = false; //dx9
+    bool useSRGBFramebuffer = false;
     uint32 threadedRenderFrameCount = 0;
 
     uint32 maxIndexBufferCount = 0;
@@ -70,13 +71,23 @@ struct ResetParam
 
 struct RenderDeviceCaps
 {
+    struct TextureFormatCaps
+    {
+        bool fetchable = false;
+        bool filterable = false;
+        bool renderable = false;
+    };
+
     uint32 maxAnisotropy = 1;
     uint32 maxSamples = 1;
     uint32 maxTextureSize = 2048;
-    uint32 maxSimultaneousRT = MAX_RENDER_TARGET_COUNT; // GFX_COMPLETE - now overriden only with dx9 and GL
+    uint32 maxRenderTargetCount = MAX_RENDER_TARGET_COUNT; // GFX_COMPLETE - now overriden only with dx9 and GL
+    uint32 maxShaderTextures = 16;
     uint32 maxFPS = 60; // DEPRECATED. Will be removed, use DeviceManager::DisplayInfo::maxFps;
 
     char deviceDescription[128];
+
+    TextureFormatCaps textureFormat[TEXTURE_FORMAT_COUNT] = {};
 
     bool is32BitIndicesSupported = false;
     bool isVertexTextureUnitsSupported = false;
@@ -94,7 +105,7 @@ struct RenderDeviceCaps
         memset(deviceDescription, 0, sizeof(deviceDescription));
     }
 
-    bool isAnisotropicFilteringSupported() const
+    bool IsAnisotropicFilteringSupported() const
     {
         return maxAnisotropy > 1;
     }
@@ -127,8 +138,7 @@ bool NeedRestoreResources();
 
 void Present(); // execute all submitted command-buffers & do flip/present
 
-Api HostApi();
-bool TextureFormatSupported(TextureFormat format, ProgType progType = PROG_FRAGMENT);
+const HostAPI& HostApi();
 const RenderDeviceCaps& DeviceCaps();
 
 //Suspend/Resume function should be called only from valid state, if you see state assert, it means that you have some error in your application flow.
@@ -300,7 +310,6 @@ void UpdateDynamicTexture(HTextureSet textureSetHandle, uint32 isVertex, uint32 
 typedef ResourceHandle<RESOURCE_DEPTHSTENCIL_STATE> HDepthStencilState;
 
 HDepthStencilState AcquireDepthStencilState(const DepthStencilState::Descriptor& desc);
-HDepthStencilState AcquireReverseDepthStencilState(HDepthStencilState ds);
 void ReleaseDepthStencilState(HDepthStencilState ds, bool scheduleDeletion = true);
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -178,7 +178,7 @@ DAVA_TARC_TESTCLASS(PlainTextEditTest)
         QCoreApplication::sendEvent(plainTextEdit, &focusEvent);
 
         EXPECT_CALL(*this, AfterWrappersSync())
-        .WillOnce(Invoke([this] {
+        .WillOnce(Invoke([] {
             PlainTextEditTestModule* inst = PlainTextEditTestModule::instance;
             TEST_VERIFY(inst->model.find("text") != inst->model.end());
             qDebug() << inst->model["text"].Cast<DAVA::String>().c_str();

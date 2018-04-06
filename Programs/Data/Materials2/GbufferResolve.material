@@ -1,21 +1,21 @@
 RenderTechnique:
     Layers: ["ResolveLayer"]
     Shader: "~res:/Materials2/Shaders/gbuffer-resolve"
-    RenderState:
-        state: "STATE_STENCIL_TEST"
-        stencil:
-            failBack: "STENCILOP_KEEP"
-            failFront: "STENCILOP_KEEP"
-            funcBack: "CMP_EQUAL"
-            funcFront: "CMP_EQUAL"
-            mask: 1
-            passBack: "STENCILOP_KEEP"
-            passFront: "STENCILOP_KEEP"
-            ref: 1
-            zFailBack: "STENCILOP_KEEP"
-            zFailFront: "STENCILOP_KEEP"
-    RenderPass:
-        Name: "gBufferResolvePass"
-    RenderPassDeferredFetch:
-        Name: "gBufferFetchPass"
-        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+    Stencil:
+        enabled: true
+        failBack: "STENCILOP_KEEP"
+        failFront: "STENCILOP_KEEP"
+        funcBack: "CMP_EQUAL"
+        funcFront: "CMP_EQUAL"
+        mask: 1
+        passBack: "STENCILOP_KEEP"
+        passFront: "STENCILOP_KEEP"
+        ref: 1
+        zFailBack: "STENCILOP_KEEP"
+        zFailFront: "STENCILOP_KEEP"
+    Passes:
+        gBufferResolvePass:
+            SupportedRenderFlows: ["HDRDeferred"]
+        gBufferFetchPass:
+            UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+            SupportedRenderFlows: ["TileBasedHDRDeferred"]

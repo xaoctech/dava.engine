@@ -331,7 +331,7 @@ static inline uint32 _GetVariable(const char* expression)
 
 //------------------------------------------------------------------------------
 
-bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
+bool ExpressionEvaluator::Evaluate(const char* expression, float32* result, PreprocessorTokenSet& tokens)
 {
     DVASSERT(result != nullptr);
 
@@ -484,6 +484,9 @@ bool ExpressionEvaluator::Evaluate(const char* expression, float32* result)
             DVASSERT(offset < countof(var) - 1);
             strncpy(var, expr, offset);
             var[offset] = '\0';
+
+            tokens.RegisterConditionToken(var);
+
             uint32 vhash = HashValue_N(var, offset);
             std::unordered_map<uint32_t, FuncImpl>::iterator func = FuncImplMap.find(vhash);
 

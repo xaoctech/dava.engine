@@ -134,8 +134,10 @@ DAVA_TESTCLASS (PreprocessorTest)
 
         for (DAVA::uint32 i = 0; i != countof(data); ++i)
         {
+            DAVA::PreprocessorTokenSet tokens;
+
             float res = 0;
-            bool success = ev.Evaluate(data[i].expr, &res);
+            bool success = ev.Evaluate(data[i].expr, &res, tokens);
 
             TEST_VERIFY(success);
             TEST_VERIFY(FLOAT_EQUAL(res, data[i].result))
@@ -148,8 +150,10 @@ DAVA_TESTCLASS (PreprocessorTest)
 
         for (DAVA::uint32 i = 0; i != countof(err_expr); ++i)
         {
+            DAVA::PreprocessorTokenSet tokens;
+
             float res = 0;
-            bool success = ev.Evaluate(err_expr[i], &res);
+            bool success = ev.Evaluate(err_expr[i], &res, tokens);
             char err[256] = "";
 
             TEST_VERIFY(!success);
@@ -238,6 +242,7 @@ DAVA_TESTCLASS (PreprocessorTest)
         {
             DAVA::Logger::Info("pre-proc test %i  \"%s\"...", i, test[i].inputFileName);
 
+            DAVA::PreprocessorTokenSet tokens;
             TestFileCallback fc(BaseDir);
             DAVA::PreProc pp(&fc);
             std::vector<char> output;
@@ -245,7 +250,7 @@ DAVA_TESTCLASS (PreprocessorTest)
             char fname[2048];
             Snprintf(fname, countof(fname), "%s/%s", BaseDir, test[i].resultFileName);
             TEST_VERIFY(ReadTextData(fname, &expected));
-            TEST_VERIFY(pp.ProcessFile(test[i].inputFileName, &output));
+            TEST_VERIFY(pp.ProcessFile(test[i].inputFileName, &output, tokens));
 
             const char* actual_data = output.data();
             const char* expected_data = expected.data();
@@ -279,7 +284,8 @@ DAVA_TESTCLASS (PreprocessorTest)
             DAVA::PreProc pp(&fc);
             std::vector<char> output;
 
-            TEST_VERIFY(pp.ProcessFile(err_test[i], &output) == false);
+            DAVA::PreprocessorTokenSet tokens;
+            TEST_VERIFY(pp.ProcessFile(err_test[i], &output, tokens) == false);
             DAVA::Logger::Info("  OK");
         }
 

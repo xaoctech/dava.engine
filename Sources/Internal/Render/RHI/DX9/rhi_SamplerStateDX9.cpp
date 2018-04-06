@@ -177,7 +177,7 @@ void SetToRHI(Handle hstate)
         _D3D9_Device->SetSamplerState(i, D3DSAMP_MAGFILTER, state->fragmentSampler[i].magFilter);
         _D3D9_Device->SetSamplerState(i, D3DSAMP_MIPFILTER, state->fragmentSampler[i].mipFilter);
 
-        if (rhi::DeviceCaps().isAnisotropicFilteringSupported())
+        if (rhi::DeviceCaps().IsAnisotropicFilteringSupported())
         {
             _D3D9_Device->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, state->fragmentSampler[i].anisotropyLevel);
         }
@@ -193,7 +193,7 @@ void SetToRHI(Handle hstate)
         _D3D9_Device->SetSamplerState(sampler, D3DSAMP_MAGFILTER, state->vertexSampler[i].magFilter);
         _D3D9_Device->SetSamplerState(sampler, D3DSAMP_MIPFILTER, state->vertexSampler[i].mipFilter);
 
-        if (rhi::DeviceCaps().isAnisotropicFilteringSupported())
+        if (rhi::DeviceCaps().IsAnisotropicFilteringSupported())
         {
             _D3D9_Device->SetSamplerState(sampler, D3DSAMP_MAXANISOTROPY, state->vertexSampler[i].anisotropyLevel);
         }

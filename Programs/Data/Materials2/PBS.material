@@ -1,14 +1,14 @@
 RenderTechnique:
     Layers: ["OpaqueRenderLayer"]
     Shader: "~res:/Materials2/Shaders/materials"
-    RenderState:            
+    RenderState:
         cullMode: "FACE_BACK"
         depthFunc: "CMP_LESS"
-        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
+        depthWrite: true
+        depthTest: true
     Passes:
         ForwardPass:
             SupportedRenderFlows: ["HDRForward"]
-            UniqueDefines: ["TEST_DEFINE"]
         LDRForwardPass:
             SupportedRenderFlows: ["LDRForward"]
             Shader: "~res:/Materials2/ShadersLDR/materials"
@@ -30,34 +30,38 @@ RenderTechnique:
             UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
         gBufferPass:
             SupportedRenderFlows: ["HDRDeferred"]
-            Shader: "~res:/Materials2/Shaders/deferred-pbs"    
-            RenderState:
-                state: "STATE_STENCIL_TEST"
-                stencil:
-                    failBack: "STENCILOP_REPLACE"
-                    failFront: "STENCILOP_REPLACE"
-                    funcBack: "CMP_ALWAYS"
-                    funcFront: "CMP_ALWAYS"
-                    mask: 1
-                    passBack: "STENCILOP_REPLACE"
-                    passFront: "STENCILOP_REPLACE"
-                    ref: 1
-                    zFailBack: "STENCILOP_REPLACE"
-                    zFailFront: "STENCILOP_REPLACE"    
+            Shader: "~res:/Materials2/Shaders/deferred-pbs"
+            Stencil:
+                enabled: true
+                failBack: "STENCILOP_REPLACE"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
+                mask: 1
+                passBack: "STENCILOP_REPLACE"
+                passFront: "STENCILOP_REPLACE"
+                ref: 1
+                zFailBack: "STENCILOP_REPLACE"
+                zFailFront: "STENCILOP_REPLACE"
         gBufferFetchPass:
             SupportedRenderFlows: ["TileBasedHDRDeferred"]
-            Shader: "~res:/Materials2/Shaders/deferred-pbs"        
+            Shader: "~res:/Materials2/Shaders/deferred-pbs"
             UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+            Stencil:
+                enabled: true
+                failBack: "STENCILOP_REPLACE"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
+                mask: 1
+                passBack: "STENCILOP_REPLACE"
+                passFront: "STENCILOP_REPLACE"
+                ref: 1
+                zFailBack: "STENCILOP_REPLACE"
+                zFailFront: "STENCILOP_REPLACE"
+        VelocityPass:
+            SupportedRenderFlows: ["HDRDeferred", "TileBasedHDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/velocity-dynamic"
             RenderState:
-                state: "STATE_STENCIL_TEST"
-                stencil:
-                    failBack: "STENCILOP_REPLACE"
-                    failFront: "STENCILOP_REPLACE"
-                    funcBack: "CMP_ALWAYS"
-                    funcFront: "CMP_ALWAYS"
-                    mask: 1
-                    passBack: "STENCILOP_REPLACE"
-                    passFront: "STENCILOP_REPLACE"
-                    ref: 1
-                    zFailBack: "STENCILOP_REPLACE"
-                    zFailFront: "STENCILOP_REPLACE"
+                depthFunc: "CMP_EQUAL"
+                depthWrite: false

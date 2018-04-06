@@ -6,9 +6,8 @@ namespace DAVA
 {
 //! \brief Set view frustum from matrix information
 //! \param viewProjection view * projection matrix
-void Frustum::Build(const Matrix4& viewProjection, bool zeroBaseClipRange)
+void Frustum::Build(const Matrix4& viewProjection, bool zeroBaseClipRange, bool reverseProjection)
 {
-	
 #define SETUP_PLANE(plane, x1, x2, x3, x4) \
 	planeArray[plane].n.x = -(x1); planeArray[plane].n.y = -(x2); \
 	planeArray[plane].n.z = -(x3); planeArray[plane].d = -(x4); \
@@ -43,27 +42,40 @@ void Frustum::Build(const Matrix4& viewProjection, bool zeroBaseClipRange)
 
     if (zeroBaseClipRange)
     {
-        SETUP_PLANE(EFP_NEAR,
-                    viewProjection._02,
-                    viewProjection._12,
-                    viewProjection._22,
-                    viewProjection._32);
+        if (reverseProjection)
+        {
+            SETUP_PLANE(EFP_FAR, viewProjection._02, viewProjection._12, viewProjection._22, viewProjection._32);
+        }
+        else
+        {
+            SETUP_PLANE(EFP_NEAR, viewProjection._02, viewProjection._12, viewProjection._22, viewProjection._32);
+        }
     }
     else
     {
-        SETUP_PLANE(EFP_NEAR,
-                    viewProjection._03 + viewProjection._02,
+        DVASSERT(reverseProjection == false);
+        SETUP_PLANE(EFP_NEAR, viewProjection._03 + viewProjection._02,
                     viewProjection._13 + viewProjection._12,
                     viewProjection._23 + viewProjection._22,
                     viewProjection._33 + viewProjection._32);
     }
 
-    // far
-    SETUP_PLANE(EFP_FAR,
-                viewProjection._03 - viewProjection._02,
-                viewProjection._13 - viewProjection._12,
-                viewProjection._23 - viewProjection._22,
-                viewProjection._33 - viewProjection._32);
+    if (reverseProjection)
+    {
+        SETUP_PLANE(EFP_NEAR,
+                    viewProjection._03 - viewProjection._02,
+                    viewProjection._13 - viewProjection._12,
+                    viewProjection._23 - viewProjection._22,
+                    viewProjection._33 - viewProjection._32);
+    }
+    else
+    {
+        SETUP_PLANE(EFP_FAR,
+                    viewProjection._03 - viewProjection._02,
+                    viewProjection._13 - viewProjection._12,
+                    viewProjection._23 - viewProjection._22,
+                    viewProjection._33 - viewProjection._32);
+    }
 
     planeCount = 6;
 

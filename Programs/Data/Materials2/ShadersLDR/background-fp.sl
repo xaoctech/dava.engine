@@ -1,3 +1,5 @@
+#define LDR_FLOW 1
+
 #include "include/common.h"
 #include "include/shading-options.h"
 #include "include/all-input.h"
@@ -47,8 +49,9 @@ fragment_out fp_main(fragment_in input)
 
 #if (ATMOSPHERE)
 
-    float lightIntensity = dot(lightColor0.xyz, float3(0.2126, 0.7152, 0.0722)) / globalLuminanceScale;
-    float3 value = SampleAtmosphere(0.0, normalizedDir, lightPosition0.xyz, lightIntensity, fogParameters.y, fogParameters.z);
+    float3 sunLuminance = dot(lightColor0.xyz, float3(0.2126, 0.7152, 0.0722)) / GLOBAL_LUMINANCE_SCALE;
+    float3 value = SampleAtmosphere(cameraPosition, normalizedDir, lightPosition0.xyz, sunLuminance, fogParameters.y, fogParameters.z);
+    value = LinearTosRGB(value);
 
 #elif (CUBEMAP_ENVIRONMENT_TEXTURE)
 
@@ -57,7 +60,7 @@ fragment_out fp_main(fragment_in input)
     sampledColor.xyz = DecodeRGBM(sampledColor);
     #endif
 
-    float3 value = sampledColor.xyz * environmentColor.xyz / globalLuminanceScale;
+    float3 value = sampledColor.xyz * environmentColor.xyz / GLOBAL_LUMINANCE_SCALE;
 
 #elif (EQUIRECTANGULAR_ENVIRONMENT_TEXTURE)
 
@@ -66,21 +69,17 @@ fragment_out fp_main(fragment_in input)
     sampledColor.xyz = DecodeRGBM(sampledColor);
     #endif
 
-    float3 value = sampledColor.xyz * environmentColor.xyz / globalLuminanceScale;
+    float3 value = sampledColor.xyz * environmentColor.xyz / GLOBAL_LUMINANCE_SCALE;
 
 #elif (DIRECTIONAL_LIGHT)
 
     float r = smoothstep(1.0, 0.85, length(input.normalizedCoordinates));
-    float3 value = environmentColor.xyz / globalLuminanceScale * r;
+    float3 value = environmentColor.xyz / GLOBAL_LUMINANCE_SCALE * r;
 
 #else
 
-    float3 value = environmentColor.xyz / globalLuminanceScale;
+    float3 value = environmentColor.xyz / GLOBAL_LUMINANCE_SCALE;
 
-#endif
-
-#if (!IB_REFLECTIONS_PREPARE)
-    value = PerformToneMapping(value, cameraDynamicRange, 1.0);
 #endif
 
     fragment_out output;

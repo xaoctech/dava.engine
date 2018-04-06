@@ -1,10 +1,10 @@
-#ifndef __RHI_SHADERSOURCE_H__
-#define __RHI_SHADERSOURCE_H__
+#pragma once
 
 #include "rhi_Type.h"
 #include "Base/BaseTypes.h"    
 #include "Base/FastName.h"
 #include "FileSystem/FilePath.h"
+#include "Render/RHI/Common/Preprocessor/PreprocessorHelpers.h"
 
 namespace DAVA
 {
@@ -79,7 +79,7 @@ public:
     bool Load(Api api, DAVA::File* in);
     bool Save(Api api, DAVA::File* out) const;
 
-    const DAVA::String& GetSourceCode(Api targetApi) const;
+    const DAVA::String& GetSourceCode(const HostAPI& targetApi) const;
     const ShaderPropList& Properties() const;
     const ShaderSamplerList& Samplers() const;
     const VertexLayout& ShaderVertexLayout() const;
@@ -93,6 +93,7 @@ public:
     static void AddIncludeDirectory(const char* dir);
     void Dump() const;
     void PrintSource(const char* source, uint32 sourceSize);
+    void DumpPreprocessorTokens();
 
 private:
     void Reset();
@@ -114,10 +115,11 @@ private:
     ProgType type;
     uint32 codeLineCount;
     VertexLayout vertexLayout;
-    std::vector<ShaderProp> property;
-    std::vector<buf_t> buf;
-    std::vector<ShaderSampler> sampler;
+    DAVA::Vector<ShaderProp> property;
+    DAVA::Vector<buf_t> buf;
+    DAVA::Vector<ShaderSampler> sampler;
     BlendState blending;
+    DAVA::PreprocessorTokenSet tokens;
 };
 
 class ShaderSourceCache
@@ -135,7 +137,7 @@ private:
     entry_t
     {
         FastName uid;
-        uint32 api = 0;
+        HostAPI api = { RHI_API_COUNT, 0, 0 };
         uint32 srcHash = 0;
         ShaderSource* src = nullptr;
     };
@@ -143,7 +145,4 @@ private:
     static std::vector<entry_t> Entry;
     static const uint32 FormatVersion;
 };
-
-} // namespace rhi
-
-#endif // __RHI_SHADERSOURCE_H__
+}

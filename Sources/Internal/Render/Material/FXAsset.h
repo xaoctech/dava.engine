@@ -20,8 +20,10 @@ struct RenderPassDescriptor
     bool supportsRenderFlow[uint32(RenderFlow::Count)]{};
     rhi::DepthStencilState::Descriptor depthStateDescriptor;
     rhi::HDepthStencilState depthStencilState;
+    rhi::HDepthStencilState invDepthStencilState;
     eRenderLayerID renderLayer = RENDER_LAYER_INVALID_ID;
     rhi::CullMode cullMode = rhi::CULL_NONE;
+    rhi::CullMode invCullMode;
     bool hasBlend = false;
     bool wireframe = false;
 };
@@ -35,7 +37,7 @@ struct FXDescriptor
     FXDescriptor(FXDescriptor&& other);
     FXDescriptor& operator=(FXDescriptor&& other);
 
-    enum eType
+    enum eType : uint32
     {
         TYPE_LEGACY = 0,
 

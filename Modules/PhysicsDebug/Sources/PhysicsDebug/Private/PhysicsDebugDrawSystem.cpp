@@ -535,7 +535,8 @@ void MarkRenderObjectsForUpdateRecursively(Scene* scene, Entity* root, const Uno
     auto roIter = entityToRoMap.find(root);
     if (roIter != entityToRoMap.end() && roIter->second != nullptr)
     {
-        const Matrix4* worldTransformPointer = root->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+        TransformComponent* transformComponent = root->GetComponent<TransformComponent>();
+        const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
         roIter->second->SetWorldTransformPtr(worldTransformPointer);
         scene->renderSystem->MarkForUpdate(roIter->second);
     }
@@ -659,7 +660,8 @@ void PhysicsDebugDrawSystem::ProcessFixed(float32 timeElapsed)
             if (ro != nullptr)
             {
                 Entity* entity = (*iter)->GetEntity();
-                const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+                TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+                const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
                 ro->SetWorldTransformPtr(worldTransformPointer);
                 GetScene()->GetRenderSystem()->RenderPermanent(ro);
             }

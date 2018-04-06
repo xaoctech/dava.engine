@@ -278,12 +278,14 @@ public:
 
     static const FastName FLAG_USE_PREVIOUS_LANDSCAPE_LAYER;
 
-    static const FastName FLAG_HEIGHTMAP_FLOAT_TEXTURE;
+    static const FastName FLAG_HEIGHTMAP_INTERPOLATION;
+    static const FastName FLAG_HEIGHTMAP_FORMAT;
 
     static const FastName FLAG_TEXTURE_COUNT;
 
     static const FastName FLAG_TRANSMITTANCE;
     static const FastName FLAG_RGBM_INPUT;
+    static const FastName FLAG_FULL_NORMAL;
 
     static const FastName FLAG_TEST_OCCLUSION;
 

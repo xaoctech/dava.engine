@@ -894,6 +894,7 @@ struct ResetHiddenFlagVisitor : public HLSLTreeVisitor
             VisitBuffer(static_cast<HLSLBuffer*>(statement));
         }
     }
+
     void VisitDeclaration(HLSLDeclaration* node) override
     {
         node->hidden = true;

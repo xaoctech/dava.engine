@@ -655,9 +655,7 @@ int RegExp::_try_match(char* prog, char* progend)
                 ;
             else if (_attributes & attrMultiline)
             {
-                char* p;
-
-                p = (char*)_regex_tcsdec(_input, _src);
+                const char* p = (const char*)_regex_tcsdec(_input, _src);
                 if (_regex_tcsnextc(p) != '\n')
                     goto Lnomatch;
             }

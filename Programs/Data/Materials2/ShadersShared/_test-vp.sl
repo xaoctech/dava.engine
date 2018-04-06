@@ -1,3 +1,10 @@
+float x = 1.0;
+
+#if (0)
+#ensuredefined ONOTOLE 100.0
+float onotole = ONOTOLE;
+#endif
+
 #include "include/common.h"
 
 vertex_in

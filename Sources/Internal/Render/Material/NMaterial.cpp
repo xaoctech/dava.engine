@@ -171,7 +171,7 @@ NMaterial::~NMaterial()
         delete variant.second;
 }
 
-void NMaterial::BindParams(rhi::Packet& target)
+void NMaterial::BindParams(rhi::Packet& target, uint32 bindFlags)
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
@@ -181,10 +181,10 @@ void NMaterial::BindParams(rhi::Packet& target)
     DVASSERT(activeVariantInstance->shader->IsValid()); //should have returned false on PreBuild!
     /*set pipeline state*/
     target.renderPipelineState = activeVariantInstance->shader->GetPiplineState();
-    target.depthStencilState = activeVariantInstance->depthState;
     target.samplerState = activeVariantInstance->samplerState;
     target.textureSet = activeVariantInstance->textureSet;
-    target.cullMode = activeVariantInstance->cullMode;
+    target.depthStencilState = (bindFlags & FLAG_INV_Z) ? activeVariantInstance->invZDepthStzte : activeVariantInstance->depthState;
+    target.cullMode = (bindFlags & FLAG_INV_CULL) ? activeVariantInstance->invCullMode : activeVariantInstance->cullMode;
 
     if (activeVariantInstance->wireFrame)
         target.options |= rhi::Packet::OPT_WIREFRAME;
@@ -959,8 +959,10 @@ void NMaterial::RebuildRenderVariants()
         RenderVariantInstance* variant = new RenderVariantInstance();
         variant->renderLayer = variantDescr.renderLayer;
         variant->depthState = variantDescr.depthStencilState;
+        variant->invZDepthStzte = variantDescr.invDepthStencilState;
         variant->shader = variantDescr.shader;
         variant->cullMode = variantDescr.cullMode;
+        variant->invCullMode = variantDescr.invCullMode;
         variant->wireFrame = variantDescr.wireframe;
         variant->alphablend = variantDescr.hasBlend;
         variant->alphatest = (variantDescr.templateDefines.count(FastName("ALPHATEST")) != 0);

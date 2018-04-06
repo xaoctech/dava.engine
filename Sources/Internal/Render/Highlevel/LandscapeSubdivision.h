@@ -4,10 +4,11 @@
 #include "Base/BaseTypes.h"
 #include "Math/AABBox3.h"
 #include "Base/AllocatorFactory.h"
-#include "Reflection/Reflection.h"
 #include "Base/Introspection.h"
 #include "Base/IntrospectionBase.h"
 #include "MemoryManager/MemoryProfiler.h"
+#include "Reflection/Reflection.h"
+#include "Render/Highlevel/Frustum.h"
 
 namespace DAVA
 {
@@ -151,7 +152,7 @@ private:
     float32 patchBBoxGapMin = 0.f;
     float32 patchBBoxGapMax = 0.f;
 
-    Frustum* frustum = nullptr;
+    Frustum frustum;
     Heightmap* heightmap = nullptr;
 
     AABBox3 subdivisionBBox;

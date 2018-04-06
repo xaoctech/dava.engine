@@ -104,7 +104,7 @@ RenderHelper::~RenderHelper()
         SafeRelease(materials[i]);
 }
 
-RenderHelper::RenderStruct RenderHelper::AllocateRenderStruct(eDrawType drawType)
+RenderHelper::RenderStruct RenderHelper::AllocateRenderStruct(eDrawType drawType, uint32 bindFlags)
 {
     RenderHelper::RenderStruct result;
 
@@ -112,7 +112,7 @@ RenderHelper::RenderStruct RenderHelper::AllocateRenderStruct(eDrawType drawType
     if (!result.valid)
         return result;
 
-    materials[drawType]->BindParams(result.packet);
+    materials[drawType]->BindParams(result.packet, bindFlags);
 
     result.packet.primitiveType = (drawType & FLAG_DRAW_SOLID) ? rhi::PRIMITIVE_TRIANGLELIST : rhi::PRIMITIVE_LINELIST;
 
@@ -152,7 +152,7 @@ void RenderHelper::CommitRenderStruct(rhi::HPacketList packetList, const RenderS
         rhi::AddPacket(packetList, rs.packet);
 }
 
-void RenderHelper::Present(rhi::HPacketList packetList, const Matrix4* viewMatrix, const Matrix4* projectionMatrix)
+void RenderHelper::Present(rhi::HPacketList packetList, const Matrix4* viewMatrix, const Matrix4* projectionMatrix, uint32 bindFlags)
 {
     if (commandQueue.empty())
     {
@@ -165,7 +165,7 @@ void RenderHelper::Present(rhi::HPacketList packetList, const Matrix4* viewMatri
 
     RenderStruct renderStructs[DRAW_TYPE_COUNT];
     for (uint32 i = 0; i < uint32(DRAW_TYPE_COUNT); ++i)
-        renderStructs[i] = AllocateRenderStruct(eDrawType(i));
+        renderStructs[i] = AllocateRenderStruct(eDrawType(i), bindFlags);
 
     DrawCommand* commands = commandQueue.data();
     uint32 commandsCount = uint32(commandQueue.size());
@@ -187,7 +187,7 @@ void RenderHelper::Present(rhi::HPacketList packetList, const Matrix4* viewMatri
             iBuffersElemCount[command.drawType] += currentRenderStruct.iBufferSize;
 
             CommitRenderStruct(packetList, currentRenderStruct);
-            currentRenderStruct = AllocateRenderStruct(command.drawType);
+            currentRenderStruct = AllocateRenderStruct(command.drawType, bindFlags);
         }
 
         if (currentRenderStruct.vBufferOffset + indexCount >= std::numeric_limits<uint16>::max())
@@ -196,7 +196,7 @@ void RenderHelper::Present(rhi::HPacketList packetList, const Matrix4* viewMatri
             iBuffersElemCount[command.drawType] += currentRenderStruct.iBufferSize;
 
             CommitRenderStruct(packetList, currentRenderStruct);
-            currentRenderStruct = AllocateRenderStruct(command.drawType);
+            currentRenderStruct = AllocateRenderStruct(command.drawType, bindFlags);
         }
 
         ColoredVertex* commandVBufferPtr = currentRenderStruct.vBufferPtr;

@@ -214,7 +214,7 @@ bool LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Ve
 
     if (!IsLoadAvailable(descriptor, requestedGPU))
     {
-        Logger::Error("[Texture::LoadImages] Load not available: invalid requested GPU family (%s)", GlobalEnumMap<eGPUFamily>::Instance()->ToString(requestedGPU));
+        Logger::Error("[TextureAssetLoader::LoadImages] Load not available: invalid requested GPU family (%s)", GlobalEnumMap<eGPUFamily>::Instance()->ToString(requestedGPU));
 
         //GFX_COMPLETE -- hack to load hdr textures on devices
         //return false;
@@ -249,7 +249,7 @@ bool LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Ve
 
             if (faceImages.empty())
             {
-                Logger::Error("[Texture::LoadImages] Cannot open file %s", currentfacePath.GetAbsolutePathname().c_str());
+                Logger::Error("[TextureAssetLoader::LoadImages] Cannot open file %s", currentfacePath.GetAbsolutePathname().c_str());
                 return false;
             }
 
@@ -259,7 +259,7 @@ bool LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Ve
             }
             else if (imagesFormat != faceImages.front()->format)
             {
-                Logger::Error("[Texture::LoadImages] Face(%s) has different pixel format(%s)", currentfacePath.GetAbsolutePathname().c_str(),
+                Logger::Error("[TextureAssetLoader::LoadImages] Face(%s) has different pixel format(%s)", currentfacePath.GetAbsolutePathname().c_str(),
                               PixelFormatDescriptor::GetPixelFormatString(faceImages.front()->format));
                 return false;
             }
@@ -307,7 +307,6 @@ bool LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Ve
 
         FilePath multipleMipPathname = descriptor->CreateMultiMipPathnameForGPU(requestedGPU);
         ImageSystem::Load(multipleMipPathname, loadedImages, params);
-
         ImageSystem::EnsurePowerOf2Images(loadedImages);
     }
 
@@ -318,7 +317,7 @@ bool LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Ve
 
     if (!CheckAndFixImageFormat(loadedImages))
     {
-        Logger::Error("[Texture::LoadImages] cannot create texture from images because of wrong image format");
+        Logger::Error("[TextureAssetLoader::LoadImages] cannot create texture from images because of wrong image format");
         return false;
     }
 
@@ -330,7 +329,7 @@ bool LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Ve
 
         if (loadedImages.empty())
         {
-            Logger::Error("[Texture::LoadImages] Can't create mipmaps for GPU (%s) for %s", GlobalEnumMap<eGPUFamily>::Instance()->ToString(requestedGPU), descriptor->pathname.GetStringValue().c_str());
+            Logger::Error("[TextureAssetLoader::LoadImages] Can't create mipmaps for GPU (%s) for %s", GlobalEnumMap<eGPUFamily>::Instance()->ToString(requestedGPU), descriptor->pathname.GetStringValue().c_str());
             return false;
         }
     }
@@ -678,7 +677,7 @@ void TextureAssetLoader::LoadPathKeyAsset(Asset<AssetBase> asset, File* file, bo
 
     if (loaded == false)
     {
-        Logger::Error("[Texture::PureCreate] Cannot create texture. Descriptor: %s, GPU: %s",
+        Logger::Error("[TextureAssetLoader::LoadPathKeyAsset] Cannot create texture. Descriptor: %s, GPU: %s",
                       descriptor->pathname.GetAbsolutePathname().c_str(), GlobalEnumMap<eGPUFamily>::Instance()->ToString(GetPrimaryGPUForLoading()));
 
         MakePink(texture, descriptor->IsCubeMap() ? rhi::TEXTURE_TYPE_CUBE : key.typeHint);
@@ -1008,6 +1007,7 @@ bool TextureAssetLoader::LoadFromImage(const Asset<Texture>& asset, eGPUFamily g
     Vector<RefPtr<Image>> images;
     if (TextureAssetLoaderDetails::LoadImages(asset->texDescriptor, gpu, images) == false)
     {
+        Logger::Warning("[TextureAssetLoader::LoadFromImage] failed for GPU %s", GlobalEnumMap<eGPUFamily>::Instance()->ToString(gpu));
         return false;
     }
 
@@ -1019,7 +1019,7 @@ bool TextureAssetLoader::LoadFromImage(const Asset<Texture>& asset, eGPUFamily g
     {
         Logger::Error
         (
-        "[Texture::CreateFromImage] Cannot create rhi.texture from image. Descriptor: %s, GPU: %s",
+        "[TextureAssetLoader::CreateFromImage] Cannot create rhi.texture from image. Descriptor: %s, GPU: %s",
         asset->texDescriptor->pathname.GetAbsolutePathname().c_str(), GlobalEnumMap<eGPUFamily>::Instance()->ToString(gpu)
         );
         return false;

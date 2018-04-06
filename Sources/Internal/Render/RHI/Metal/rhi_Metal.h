@@ -57,6 +57,8 @@ void SetToRHI(Handle ds, id<MTLRenderCommandEncoder> ce);
 namespace SamplerStateMetal
 {
 void SetToRHI(Handle ss, id<MTLRenderCommandEncoder> ce);
+const SamplerState::Descriptor::Sampler& GetFragmentSampler(Handle ss, uint32 index);
+const SamplerState::Descriptor::Sampler& GetVertexSampler(Handle ss, uint32 index);
 }
 
 namespace ConstBufferMetal

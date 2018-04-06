@@ -148,6 +148,8 @@ public:
         return geoDecalManager;
     }
 
+    bool GetTxaaEnabled() const;
+
 public:
     DAVA_DEPRECATED(rhi::RenderPassConfig& GetMainPassConfig());
 
@@ -160,6 +162,9 @@ private:
 
     void ConfigureActivePass();
 
+    Texture::RenderTargetTextureKey GetFBOConfig() const;
+    void ConfigureFBOs(bool rescale, bool txaa);
+
 private:
     friend class RenderPass;
 
@@ -167,6 +172,7 @@ private:
     Vector<RenderObject*> objectsForPermanentUpdate;
     Vector<RenderObject*> markedObjects;
     Vector<RenderObject*> renderObjectArray;
+    Vector<RenderObject*> velocityUpdatedObjects;
 
     Vector<Light*> allLights;
     Vector<Light*> dynamicLights;
@@ -198,6 +204,9 @@ private:
 
     bool hierarchyInitialized = false;
     bool forceUpdateLights = false;
+
+    Asset<Texture> ldrHistory;
+    Asset<Texture> ldrCurrent;
 };
 
 inline void RenderSystem::SetMainCamera(Camera* _camera)

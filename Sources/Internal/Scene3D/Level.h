@@ -69,7 +69,6 @@ public:
             STATE_REQUESTED,
         };
 
-        uint32 entitiesCount = 0;
         Vector<uint32> entitiesIndices;
         Vector<Asset<LevelEntity>> entitiesLoaded;
 
@@ -112,6 +111,15 @@ public:
     {
         ChunkCoord min;
         ChunkCoord max;
+
+        bool operator==(const ChunkBounds& other) const
+        {
+            return min == other.min && max == other.max;
+        }
+        bool operator!=(const ChunkBounds& other) const
+        {
+            return min != other.min || max != other.max;
+        }
     };
 
     struct EntityInfo
@@ -130,6 +138,8 @@ public:
     {
         const float32 chunkSize = 100.0f; // 100x100 square meters
         ChunkGrid(const AABBox3& worldBounds);
+
+        void SetWorldBounds(const AABBox3& newWorldBounds);
 
         uint32 GetChunkAddress(const ChunkCoord& coord);
         Chunk* GetChunk(uint32 address);

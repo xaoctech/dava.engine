@@ -704,10 +704,19 @@ void SceneCollisionSystem::UpdateCollisionObject(const Selectable& object, bool 
     {
         objectsToUpdateTransform.insert(object.GetContainedObject());
         objectsToUpdateTransform.insert(childObjects.begin(), childObjects.end());
+
+        if (object.CanBeCastedTo<Entity>())
+        {
+            Entity* obj = object.Cast<Entity>();
+            for (int32 i = 0; i < obj->GetChildrenCount(); ++i)
+            {
+                UpdateCollisionObject(Selectable(Any(obj->GetChild(i))), false);
+            }
+        }
         return;
     }
 
-    if (object.CanBeCastedTo<Entity>() && shouldBeRecreated == false)
+    if (object.CanBeCastedTo<Entity>())
     {
         auto entity = object.AsEntity();
         RemoveEntity(entity);
@@ -1121,8 +1130,8 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             if (objType == RenderObject::TYPE_BILLBOARD)
             {
                 const AABBox3& box = renderObject->GetBoundingBox();
-                Matrix4 transform = Matrix4::MakeTranslation(box.GetCenter());
-                result = CreateBox(createCollision, true, transform, toVec3Fn(box.GetSize().x), queryData, userData);
+                Matrix4 transform = entity->GetWorldTransform();
+                result = CreateBox(createCollision, true, transform, toVec3Fn(box.GetSize().x * 0.5f), queryData, userData);
             }
             else if ((objType != RenderObject::TYPE_SPRITE) && (objType != RenderObject::TYPE_VEGETATION))
             {

@@ -2,6 +2,9 @@
 
 #include <Scene3D/Systems/QualitySettingsSystem.h>
 #include <FileSystem/KeyedArchive.h>
+#include <Math/Math2D.h>
+#include <Render/Material/NMaterialManager.h>
+#include <Render/Renderer.h>
 
 namespace QualityPreferences
 {
@@ -27,7 +30,24 @@ void LoadFromSettings(Settings& appSettings)
                 qs->SetCurrentQualityForGroup(group, value->AsFastName());
                 if (group == QualityGroup::RenderFlowType)
                 {
-                    Renderer::SetRenderFlow(qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>());
+                    RenderFlow currentFlow = qs->GetCurrentQualityValue<QualityGroup::RenderFlowType>();
+                    if (Renderer::IsRenderFlowSupported(currentFlow) == false)
+                        currentFlow = RenderFlow::LDRForward;
+
+                    Renderer::SetRenderFlow(currentFlow);
+                }
+
+                if (group == QualityGroup::Shadow)
+                {
+                    ShadowQuality shadowQuality = qs->GetCurrentQualityValue<QualityGroup::Shadow>();
+                    Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::SHADOW_CASCADES, std::min(uint32(MAX_SHADOW_CASCADES), shadowQuality.cascadesCount));
+                    Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::SHADOW_PCF, shadowQuality.PCFsamples);
+                }
+
+                if (group == QualityGroup::Scattering)
+                {
+                    ScatteringQuality scatteringQuality = qs->GetCurrentQualityValue<QualityGroup::Scattering>();
+                    Renderer::GetRuntimeFlags().SetFlag(RuntimeFlags::Flag::ATMOSPHERE_SCATTERING_SAMPLES, scatteringQuality.scatteringSamples);
                 }
             }
         }
@@ -93,6 +113,8 @@ void LoadFromSettings(Settings& appSettings)
                 }
             }
         }
+
+        DAVA::Renderer::GetRuntimeTextures().Reset(DAVA::Size2i(1, 1));
     }
 }
 
@@ -135,5 +157,13 @@ void SaveToSettings(Settings& appSettings)
     }
 
     appSettings.SetQualitySettings(archive);
+}
+
+void ReloadShaders()
+{
+    DAVA::ShaderDescriptorCache::ReloadShaders();
+    DAVA::NMaterialManager::Instance().InvalidateMaterials();
+
+    DAVA::Renderer::GetRuntimeTextures().Reset(DAVA::Size2i(1, 1));
 }
 }

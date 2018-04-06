@@ -257,7 +257,8 @@ const FastName NMaterialFlagName::FLAG_DECORATION_DRAW_LEVELS("DECORATION_DRAW_L
 
 const FastName NMaterialFlagName::FLAG_USE_PREVIOUS_LANDSCAPE_LAYER("USE_PREVIOUS_LANDSCAPE_LAYER");
 
-const FastName NMaterialFlagName::FLAG_HEIGHTMAP_FLOAT_TEXTURE("HEIGHTMAP_FLOAT_TEXTURE");
+const FastName NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION("HEIGHTMAP_INTERPOLATION");
+const FastName NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT("HEIGHTMAP_FORMAT");
 
 const FastName NMaterialFlagName::FLAG_TEXTURE_COUNT("TEXTURE_COUNT");
 
@@ -265,6 +266,7 @@ const FastName NMaterialFlagName::FLAG_TEST_OCCLUSION = FastName("TEST_OCCLUSION
 
 const FastName NMaterialFlagName::FLAG_TRANSMITTANCE("TRANSMITTANCE");
 const FastName NMaterialFlagName::FLAG_FORCED_SHADOW_DIRECTION = FastName("FORCED_SHADOW_DIRECTION");
+const FastName NMaterialFlagName::FLAG_FULL_NORMAL("FULL_NORMAL");
 
 const FastName NMaterialFlagName::FLAG_USE_FRAMEBUFFER_FETCH = FastName("USE_FRAMEBUFFER_FETCH");
 
@@ -309,7 +311,8 @@ Vector<FastName> RUNTIME_ONLY_FLAGS =
   NMaterialFlagName::FLAG_DECORATION,
   NMaterialFlagName::FLAG_DECORATION_DRAW_LEVELS,
 
-  NMaterialFlagName::FLAG_HEIGHTMAP_FLOAT_TEXTURE,
+  NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION,
+  NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT,
 };
 
 bool NMaterialFlagName::IsRuntimeFlag(const FastName& flag)

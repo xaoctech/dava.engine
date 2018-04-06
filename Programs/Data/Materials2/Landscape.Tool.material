@@ -4,7 +4,7 @@ RenderTechnique:
     RenderState:            
         cullMode: "FACE_BACK"
         depthFunc: "CMP_LESS"
-        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL"            
+        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
     RenderPass:
         Name: "ForwardPass"
     RenderPassLDR:

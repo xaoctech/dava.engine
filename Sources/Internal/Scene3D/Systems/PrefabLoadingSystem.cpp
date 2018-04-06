@@ -36,33 +36,27 @@ void PrefabLoadingSystem::RemoveEntity(Entity* entity)
 void PrefabLoadingSystem::AddComponent(Entity* entity, Component* component)
 {
     PrefabComponent* prefabComponent = static_cast<PrefabComponent*>(component);
-    Asset<Prefab> prefab = prefabComponent->GetPrefab();
-    if (prefab != nullptr)
-    {
-        DVASSERT(loadedPrefabs.count(prefabComponent) == 0);
-        Vector<Entity*>& prefabEntities = loadedPrefabs[prefabComponent];
-        prefabEntities = prefab->ClonePrefabEntities();
-        for (Entity* e : prefabEntities)
-        {
-            e->AddComponent(new RuntimeEntityMarkComponent());
-            entity->AddNode(e);
-        }
-    }
+    pendingComponents.insert(prefabComponent);
 }
 
 void PrefabLoadingSystem::RemoveComponent(Entity* entity, Component* component)
 {
     PrefabComponent* prefabComponent = static_cast<PrefabComponent*>(component);
 
+    pendingComponents.erase(prefabComponent);
+
+    PrefabSingleComponent* prefabSingleComponent = GetScene()->GetSingletonComponent<PrefabSingleComponent>();
+    prefabSingleComponent->changedPrefabComponent.erase(prefabComponent);
+
     auto iter = loadedPrefabs.find(prefabComponent);
     if (iter != loadedPrefabs.end())
     {
         const Vector<Entity*>& prefabEntities = iter->second;
 
-        for (Entity* entity : prefabEntities)
+        for (Entity* e : prefabEntities)
         {
-            entity->RemoveNode(entity);
-            SafeRelease(entity);
+            entity->RemoveNode(e);
+            SafeRelease(e);
         }
 
         loadedPrefabs.erase(iter);
@@ -82,10 +76,31 @@ void PrefabLoadingSystem::PrepareForRemove()
     }
 
     loadedPrefabs.clear();
+    PrefabSingleComponent* prefabSingleComponent = GetScene()->GetSingletonComponent<PrefabSingleComponent>();
+    prefabSingleComponent->changedPrefabComponent.clear();
 }
 
 void PrefabLoadingSystem::Process(float32 delta)
 {
+    for (PrefabComponent* component : pendingComponents)
+    {
+        Entity* parentEntity = component->GetEntity();
+        Asset<Prefab> prefab = component->GetPrefab();
+        if (prefab != nullptr)
+        {
+            DVASSERT(loadedPrefabs.count(component) == 0);
+            Vector<Entity*>& prefabEntities = loadedPrefabs[component];
+            prefabEntities = prefab->ClonePrefabEntities();
+            for (Entity* e : prefabEntities)
+            {
+                e->AddComponent(new RuntimeEntityMarkComponent());
+                e->SetVisible(parentEntity->GetVisible());
+                parentEntity->AddNode(e);
+            }
+        }
+    }
+    pendingComponents.clear();
+
     PrefabSingleComponent* prefabSingleComponent = GetScene()->GetSingletonComponent<PrefabSingleComponent>();
 
     for (PrefabComponent* prefabComponent : prefabSingleComponent->changedPrefabComponent)

@@ -239,7 +239,7 @@ void EditorStatisticsSystem::Process(float32 timeElapsed)
 void EditorStatisticsSystem::ClipSelection(Camera* camera, Vector<RenderObject*>& selection,
                                            Vector<RenderObject*>& visibilityArray, uint32 visibilityCriteria)
 {
-    Frustum* frustum = camera->GetFrustum();
+    const Frustum& frustum = camera->GetFrustum();
     uint32 size = static_cast<uint32>(selection.size());
     for (uint32 pos = 0; pos < size; ++pos)
     {
@@ -249,7 +249,7 @@ void EditorStatisticsSystem::ClipSelection(Camera* camera, Vector<RenderObject*>
             continue;
         }
         if ((RenderObject::ALWAYS_CLIPPING_VISIBLE & node->GetFlags()) ||
-            frustum->IsInside(node->GetWorldBoundingBox()))
+            frustum.IsInside(node->GetWorldBoundingBox()))
         {
             visibilityArray.push_back(node);
         }

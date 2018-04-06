@@ -32,11 +32,17 @@ class Landscape : public RenderObject
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_LANDSCAPE)
 
 public:
-    enum eLandscapeTexture
+    enum eLandscapeTexture : uint32
     {
         HEIGHTMAP_TEXTURE,
         TANGENT_TEXTURE,
         TILEMASK_TEXTURE
+    };
+
+    enum LandscapeQuality : uint32
+    {
+        Low,
+        Full,
     };
 
     Landscape();
@@ -172,6 +178,7 @@ public:
     RenderMode GetRenderMode() const;
     void SetRenderMode(RenderMode mode);
     void UpdateMaterialFlags();
+    void SelectHeightmapTextureFormat();
 
     void RecursiveRayTrace(uint32 level, uint32 x, uint32 y, const Ray3& rayInObjectSpace, float32& resultT);
     bool RayTrace(const Ray3& rayInObjectSpace, float32& resultT);
@@ -193,6 +200,9 @@ public:
     void SetTexture(eLandscapeTexture textureSemantic, int32 index, Asset<Texture> texture);
 
     void SetPageUpdateLocked(bool locked);
+    bool GetPageUpdateLocked() const;
+
+    void SetDrawLandscapeGeometryEnabled(bool enabled);
 
 protected:
     void AddPatchToRender(const LandscapeSubdivision::SubdivisionPatch* subdivPatch);
@@ -283,13 +293,13 @@ protected:
     NMaterial* landscapeRuntimeMaterial = nullptr;
     NMaterial* decorationRuntimeMaterial = nullptr;
 
-    float32 heightmapSizef = 0.f;
-    float32 heightmapSizePow2f = 0.f;
+    Vector2 heightmapSizeProperty;
     uint32 heightmapMaxBaseLod = 0;
     uint32 maxTexturingLevel = 10;
     uint32 tessellationLevelCount = 3;
     float32 tessellationHeight = 0.4f;
 
+    LandscapeQuality quality = LandscapeQuality::Full;
     LansdcapeRenderStats renderStats;
 
     RenderMode renderMode = RENDERMODE_NO_INSTANCING;
@@ -304,6 +314,7 @@ protected:
     bool debugDrawDecorationLevels = false;
     bool debugDisableDecoration = false;
     bool lockPagesUpdate = false;
+    bool drawLandscapeGeometry = true;
 
     void DebugDraw2D(Window*);
 
@@ -343,8 +354,6 @@ protected:
 
     uint32 quadsInWidthPow2 = 0;
     uint64 invalidateCallback = 0;
-
-    bool isRequireNormal = false;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Instancing render
@@ -404,7 +413,8 @@ protected:
 
     Asset<Texture> heightTexture = nullptr;
     Asset<Texture> normalTexture = nullptr;
-    bool floatHeightTexture = false;
+    rhi::TextureFormat heightTextureFormat = rhi::TEXTURE_FORMAT_R8G8B8A8;
+    bool manualHeightInterpolation = false;
 
     Vector<Image*> heightTextureData;
     Vector<Image*> normalTextureData;
@@ -548,5 +558,15 @@ inline const Landscape::LansdcapeRenderStats& Landscape::GetRenderStats() const
 inline void Landscape::SetPageUpdateLocked(bool locked)
 {
     lockPagesUpdate = locked;
+}
+
+inline bool Landscape::GetPageUpdateLocked() const
+{
+    return lockPagesUpdate;
+}
+
+inline void Landscape::SetDrawLandscapeGeometryEnabled(bool enabled)
+{
+    drawLandscapeGeometry = enabled;
 }
 }

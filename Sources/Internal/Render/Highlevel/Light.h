@@ -116,6 +116,9 @@ public:
 
     bool IsLocal() const;
 
+    void RecalcBoundingBox() override;
+    void RecalculateWorldBoundingBox() override;
+
 private:
     DAVA_DEPRECATED(void SetAmbientColor(const Color& color));
     DAVA_DEPRECATED(const Color& GetAmbientColor() const);
@@ -127,9 +130,9 @@ private:
 protected:
     Camera* lastUsedCamera = nullptr;
     FilePath environmentMap;
-    uint32 flags = 0;
+    uint32 lightFlags = 0;
     uint32 lastUpdatedFrame = 0;
-    eType type = eType::TYPE_SUN;
+    eType lightType = eType::TYPE_SUN;
     Vector3 position = Vector3(0.0f, 0.0f, 0.0f);
     Vector3 direction = Vector3(0.0f, 0.0f, -1.0f);
     Vector4 resultPositionDirection = Vector4(0.0f, 0.0f, -1.0f, 0.0f);
@@ -156,12 +159,12 @@ protected:
 
 inline Light::eType Light::GetLightType() const
 {
-    return type;
+    return lightType;
 }
 
 inline void Light::SetLightType(eType _type)
 {
-    type = _type;
+    lightType = _type;
 }
 
 inline const Vector3& Light::GetPosition() const

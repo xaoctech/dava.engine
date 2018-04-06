@@ -424,7 +424,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor& descriptor, const
 
     //quality
     args.push_back("-q");
-    if (FORMAT_ETC1 == descriptor.compression[gpuFamily].format)
+    if (FORMAT_ETC1 == descriptor.compression[gpuFamily].format || FORMAT_ETC2_RGBA == descriptor.compression[gpuFamily].format)
     {
         args.push_back(ETC_QUALITY_SETTING[quality]);
     }

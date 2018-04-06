@@ -8,6 +8,7 @@
 
 namespace DAVA
 {
+class VelocityPass;
 /*Draw opaque surface params to g-buffer -> draw decals to g-buffer-> resolve  sun light -> add spot lights -> draw translusent forward stuff*/
 //GFX_COMPLETE - for now at least it looks like mega-passes are ok, just move rendering of similar stuff to "Renderers"
 class HDRDeferredFetchPass : public RenderPass
@@ -36,6 +37,8 @@ private:
 
     rhi::RenderPassConfig deferredPassConfig;
     rhi::RenderPassConfig forwardStuffPassConfig;
+
+    VelocityPass* velocityPass = nullptr;
 
     bool gbuffersInited = false;
 };

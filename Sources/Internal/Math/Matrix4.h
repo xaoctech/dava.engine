@@ -41,6 +41,14 @@ struct Matrix4
         };
     };
 
+    enum ProjectionFlags : uint32
+    {
+        Orthographic = 1 << 0,
+        ZeroBasedClipRange = 1 << 1,
+        ReverseProjection = 1 << 2,
+        InfiniteFarPlane = 1 << 3
+    };
+
     Matrix4();
     Matrix4(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
     Matrix4(float32 _D00, float32 _D01, float32 _D02, float32 _D03,
@@ -60,6 +68,8 @@ struct Matrix4
 
     void BuildOrtho(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, bool zeroBaseClipRange, bool reversePlanes);
     void BuildPerspective(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, bool zeroBaseClipRange, bool reversePlanes);
+
+    void BuildProjection(float32 left, float32 right, float32 bottom, float32 top, float32 near, float32 far, uint32 flags);
 
     //! build look-at matrix for right-handed coordinate system (engine use RH coordinates)
     void BuildLookAtMatrix(const Vector3& _position, const Vector3& _target, const Vector3& _up);
@@ -228,54 +238,18 @@ inline void Matrix4::Zero()
 
 inline void Matrix4::BuildOrtho(float32 l, float32 r, float32 b, float32 t, float32 n, float32 f, bool zeroBaseClipRange, bool reversePlanes)
 {
-    DVASSERT(((reversePlanes == true) && (zeroBaseClipRange == true)) || (reversePlanes == false));
-
-    Zero();
-
-    float32 r_l = r - l;
-    float32 t_b = t - b;
-
-    data[0] = 2.0f / r_l;
-    data[5] = 2.0f / t_b;
-    data[12] = -(r + l) / r_l;
-    data[13] = -(t + b) / t_b;
-
-    if (zeroBaseClipRange)
-    {
-        data[10] = reversePlanes ? (-1.0f / (f - n)) : (-1.0f / (f - n));
-        data[14] = reversePlanes ? (f / (f - n)) : (-n / (f - n));
-    }
-    else
-    {
-        data[10] = -2.0f / (f - n);
-        data[14] = -(f + n) / (f - n);
-    }
-
-    data[15] = 1.0f;
+    uint32 flags = ProjectionFlags::Orthographic;
+    flags |= zeroBaseClipRange ? ProjectionFlags::ZeroBasedClipRange : 0;
+    flags |= reversePlanes ? ProjectionFlags::ReverseProjection : 0;
+    BuildProjection(l, r, b, t, n, f, flags);
 }
 
 inline void Matrix4::BuildPerspective(float32 l, float32 r, float32 b, float32 t, float32 n, float32 f, bool zeroBaseClipRange, bool reversePlanes)
 {
-    DVASSERT(((reversePlanes == true) && (zeroBaseClipRange == true)) || (reversePlanes == false));
-
-    Zero();
-
-    data[0] = 2.0f * n / (r - l);
-    data[5] = 2.0f * n / (t - b);
-    data[8] = (r + l) / (r - l);
-    data[9] = (t + b) / (t - b);
-    data[11] = -1.0f;
-
-    if (zeroBaseClipRange)
-    {
-        data[10] = reversePlanes ? (n / (f - n)) : (-f / (f - n));
-        data[14] = reversePlanes ? (f * n / (f - n)) : (-f * n / (f - n));
-    }
-    else
-    {
-        data[10] = -(f + n) / (f - n);
-        data[14] = -2.0f * f * n / (f - n);
-    }
+    uint32 flags = 0;
+    flags |= zeroBaseClipRange ? ProjectionFlags::ZeroBasedClipRange : 0;
+    flags |= reversePlanes ? ProjectionFlags::ReverseProjection : 0;
+    BuildProjection(l, r, b, t, n, f, flags);
 }
 
 inline void Matrix4::BuildLookAtMatrix(const Vector3& _position, const Vector3& _target, const Vector3& _up)

@@ -601,7 +601,7 @@ Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& VegetationRenderObject::Bu
     return visibleCells;
 }
 
-void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint, Frustum* frustum, uint8 planeMask,
+void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint, const Frustum& frustum, uint8 planeMask,
                                                   AbstractQuadTreeNode<VegetationSpatialData>* node, Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& cellList, bool evaluateVisibility)
 {
     static Array<Vector3, 4> corners;
@@ -611,7 +611,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint, Fr
 
         if (evaluateVisibility)
         {
-            result = frustum->Classify(node->data.bbox, planeMask, node->data.clippingPlane);
+            result = frustum.Classify(node->data.bbox, planeMask, node->data.clippingPlane);
         }
 
         if (Frustum::EFR_OUTSIDE != result)
@@ -721,7 +721,7 @@ float32 VegetationRenderObject::SampleHeight(int16 x, int16 y)
 bool VegetationRenderObject::IsHardwareCapableToRenderVegetation()
 {
     const rhi::RenderDeviceCaps& deviceCaps = rhi::DeviceCaps();
-    bool result = deviceCaps.isVertexTextureUnitsSupported && deviceCaps.is32BitIndicesSupported && rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX);
+    bool result = deviceCaps.isVertexTextureUnitsSupported && deviceCaps.is32BitIndicesSupported /* && rhi::TextureFormatSupported(rhi::TEXTURE_FORMAT_R4G4B4A4, rhi::PROG_VERTEX)*/;
 
     return result;
 }
@@ -1343,7 +1343,7 @@ void VegetationRenderObject::BindDynamicParameters(Camera* camera, RenderBatch* 
 
     if (heightmap != nullptr)
     {
-        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_LANDSCAPE_HEIGHTMAP_SIZE, &heightmapSize, pointer_size(&heightmapSize));
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_HEIGHTMAP_SIZE, &heightmapSize, pointer_size(&heightmapSize));
     }
 }
 

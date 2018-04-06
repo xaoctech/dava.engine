@@ -65,6 +65,7 @@ enum PixelFormat : uint8
     FORMAT_PVR4,
     FORMAT_PVR2,
 
+    FORMAT_RG1616,
     FORMAT_RGBA16161616,
     FORMAT_RGBA32323232,
 

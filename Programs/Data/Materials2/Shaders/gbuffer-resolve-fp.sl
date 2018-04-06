@@ -58,7 +58,7 @@ fragment_out fp_main(fragment_in input)
     resolve.ambientOcclusion = g2.z;
     resolve.directionalLightDirection = lightPosition0.xyz;
     resolve.directionalLightViewSpaceCoords = mul(worldPos, shadowView);
-    resolve.directionalLightColor = lightColor0.xyz / globalLuminanceScale;
+    resolve.directionalLightColor = lightColor0.xyz / GLOBAL_LUMINANCE_SCALE;
     resolve.directionalLightStaticShadow = g2.w;
     resolve.transmittanceSample = resolve.metallness * isTransmittanceMaterial;
     resolve.metallness *= 1.0 - isTransmittanceMaterial;
@@ -93,14 +93,17 @@ fragment_out fp_main(fragment_in input)
     float4 randomSample = tex2D(noiseTexture64x64, (ndcPos.xy * 0.5 + 0.5) * viewportSize / 64.0) * 2.0 - 1.0;
 
     ShadowParameters shadow;
-    shadow.cascadesProjectionScale = directionalShadowMapProjectionScale;
-    shadow.cascadesProjectionOffset = directionalShadowMapProjectionOffset;
+    for (int i = 0; i < SHADOW_CASCADES; ++i)
+    {
+        shadow.cascadesProjectionScale[i] = directionalShadowMapProjectionScale[i].xyz;
+        shadow.cascadesProjectionOffset[i] = directionalShadowMapProjectionOffset[i].xyz;
+    }
     shadow.rotationKernel = randomSample.xy;
     shadow.filterRadius = shadowMapParameters.xy;
     shadow.shadowMapSize = shadowMapParameters.zw;
 
     float3 result = ResolveFinalColor(resolve, surface, shadow);
-    
+
     fragment_out output;
     output.color = float4(result, 1.0);
     return output;

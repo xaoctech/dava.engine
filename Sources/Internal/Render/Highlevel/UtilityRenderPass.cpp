@@ -67,10 +67,22 @@ void RescalePass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask /* = 0x
     if (BeginRenderPass(passConfig))
     {
         SetupCameraParams(renderSystem->GetMainCamera(), renderSystem->GetDrawCamera());
-        Size2i rtSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SCALED_LDR);
+        Size2i rtSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
         scaledRtDimensions = Vector2(float32(rtSize.dx), float32(rtSize.dy));
         //GFX_COMPLETE as binding in BeginRenderPass is trash - everything should be set up before
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_RENDER_TARGET_SIZE, scaledRtDimensions.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+
+        //GFX_COMPLETE fix projection flip for all back-ends
+        if (rhi::HostApi().api == rhi::RHI_METAL)
+        {
+            bool invertProjection = (passConfig.colorBuffer[0].texture != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin);
+            float32 cv = invertProjection ? 1.0f : -1.0f;
+
+            if (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred)
+                cv = -1.f;
+
+            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJECTION_FLIPPED, &cv, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+        }
 
         if (rescaleMaterial->PreBuildMaterial(PASS_RESCALE))
         {

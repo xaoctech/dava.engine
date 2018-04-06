@@ -80,7 +80,7 @@ struct btHashString
     {
         int ret = 0;
 
-        while (!(ret = *(unsigned char*)src - *(unsigned char*)dst) && *dst)
+        while (!(ret = *(const unsigned char*)src - *(const unsigned char*)dst) && *dst)
             ++src, ++dst;
 
         if (ret < 0)

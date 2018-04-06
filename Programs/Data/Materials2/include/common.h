@@ -43,6 +43,8 @@
 #ensuredefined LANDSCAPE_TOOL 0
 #ensuredefined LANDSCAPE_TOOL_MIX 0
 #ensuredefined LANDSCAPE_CURSOR 0
+#ensuredefined HEIGHTMAP_INTERPOLATION 0
+#ensuredefined HEIGHTMAP_FORMAT 0
 
 #ensuredefined HEIGHTMAP_FLOAT_TEXTURE 0
 #ensuredefined LANDSCAPE_PICKING_UV 0
@@ -58,8 +60,6 @@
 #ensuredefined COPY_GBUFFER_1 0
 #ensuredefined COPY_GBUFFER_2 0
 #ensuredefined COPY_GBUFFER_3 0
-
-#ensuredefined EQUIRECTANGULAR_ENVIRONMENT_TEXTURE 0
 
 #ensuredefined COMBINE_INPLACE 0
 #ensuredefined FOWARD_WITH_COMBINE 0
@@ -96,8 +96,6 @@
 #ensuredefined USE_DETAIL_NORMAL_AO 0
 
 #ensuredefined ENABLE_TXAA 0
-
-#ensuredefined USE_DFG_APPROXIMATION 0
 
 #ensuredefined PLACEHOLDER 0
 #ensuredefined PLACEHOLDER 0

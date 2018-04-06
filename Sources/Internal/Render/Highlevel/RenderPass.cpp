@@ -94,7 +94,6 @@ void RenderPass::SetupCameraParams(Camera* mainCamera, Camera* drawCamera, Vecto
     DVASSERT(mainCamera);
 
     bool invertProjection = rhi::IsInvertedProjectionRequired(passConfig.IsRenderTargetPass(), passConfig.IsCubeRenderTargetPass());
-    passConfig.invertCulling = invertProjection ? 1 : 0;
 
     Vector2 offset = enableFrameJittering ? GetCurrentFrameJitterOffset() : Vector2::Zero;
     mainCamera->SetProjectionJitterOffset(offset);
@@ -103,15 +102,31 @@ void RenderPass::SetupCameraParams(Camera* mainCamera, Camera* drawCamera, Vecto
 
     if (mainCamera != drawCamera)
         mainCamera->PrepareDynamicParameters(invertProjection, passConfig.usesReverseDepth, externalClipPlane);
+    bindFlags = 0;
+    if (invertProjection)
+        bindFlags |= NMaterial::FLAG_INV_CULL;
+    if (passConfig.usesReverseDepth)
+        bindFlags |= NMaterial::FLAG_INV_Z;
 }
 
 void RenderPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
 {
     Camera* mainCamera = renderSystem->GetMainCamera();
+
+    Clip(mainCamera, renderSystem);
+    PrepareRenderObjectsToRender(visibilityArray.geometryArray, mainCamera);
+
+    DrawVisibilityArray(renderSystem, visibilityArray, drawLayersMask);
+}
+
+void RenderPass::DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarchy::ClipResult& preparedVisibilityArray, uint32 drawLayersMask /*= 0xFFFFFFFF*/)
+{
+    Camera* mainCamera = renderSystem->GetMainCamera();
     Camera* drawCamera = renderSystem->GetDrawCamera();
     SetupCameraParams(mainCamera, drawCamera);
 
-    PrepareVisibilityArrays(mainCamera, renderSystem);
+    ClearLayersArrays();
+    PrepareLayersArrays(preparedVisibilityArray.geometryArray, mainCamera);
 
     if (BeginRenderPass(passConfig))
     {
@@ -124,28 +139,28 @@ void RenderPass::PrepareVisibilityArrays(Camera* camera, RenderSystem* renderSys
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::RENDER_PASS_PREPARE_ARRAYS)
 
-    visibilityArray.Clear();
-    uint32 currVisibilityCriteria = RenderObject::CLIPPING_VISIBILITY_CRITERIA;
-    if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::ENABLE_STATIC_OCCLUSION))
-        currVisibilityCriteria &= ~RenderObject::VISIBLE_STATIC_OCCLUSION;
-    renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, currVisibilityCriteria);
-
+    Clip(camera, renderSystem);
+    PrepareRenderObjectsToRender(visibilityArray.geometryArray, camera);
     ClearLayersArrays();
-
     PrepareLayersArrays(visibilityArray.geometryArray, camera);
 }
 
-void RenderPass::PrepareLayersArrays(const Vector<RenderObject*> objectsArray, Camera* camera)
+void RenderPass::Clip(Camera* camera, RenderSystem* renderSystem)
+{
+    uint32 currVisibilityCriteria = RenderObject::CLIPPING_VISIBILITY_CRITERIA;
+    if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::ENABLE_STATIC_OCCLUSION))
+        currVisibilityCriteria &= ~RenderObject::VISIBLE_STATIC_OCCLUSION;
+
+    visibilityArray.Clear();
+    renderSystem->GetRenderHierarchy()->Clip(camera, visibilityArray, currVisibilityCriteria);
+}
+
+void RenderPass::PrepareLayersArrays(const Vector<RenderObject*>& objectsArray, Camera* camera)
 {
     size_t size = objectsArray.size();
     for (size_t ro = 0; ro < size; ++ro)
     {
         RenderObject* renderObject = objectsArray[ro];
-        if (renderObject->GetFlags() & RenderObject::CUSTOM_PREPARE_TO_RENDER)
-        {
-            renderObject->PrepareToRender(camera);
-        }
-
         uint32 batchCount = renderObject->GetActiveRenderBatchCount();
         for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
         {
@@ -158,6 +173,15 @@ void RenderPass::PrepareLayersArrays(const Vector<RenderObject*> objectsArray, C
                 layersBatchArrays[material->GetRenderLayerID()].AddRenderBatch(batch);
             }
         }
+    }
+}
+
+void RenderPass::PrepareRenderObjectsToRender(const Vector<RenderObject*>& objectsArray, Camera* camera)
+{
+    for (RenderObject* renderObject : objectsArray)
+    {
+        if (renderObject->GetFlags() & RenderObject::CUSTOM_PREPARE_TO_RENDER)
+            renderObject->PrepareToRender(camera);
     }
 }
 
@@ -185,7 +209,7 @@ void RenderPass::DrawLayers(Camera* camera, uint32 drawLayersMask)
         {
             RenderBatchArray& batchArray = layersBatchArrays[id];
             batchArray.Sort(camera);
-            layer->Draw(camera, batchArray, packetList);
+            layer->Draw(camera, batchArray, packetList, bindFlags);
         }
     }
 }
@@ -194,7 +218,7 @@ void RenderPass::DrawDebug(Camera* camera, RenderSystem* renderSystem)
 {
     if (!renderSystem->GetDebugDrawer()->IsEmpty())
     {
-        renderSystem->GetDebugDrawer()->Present(packetList, &camera->GetMatrix(), &camera->GetProjectionMatrix());
+        renderSystem->GetDebugDrawer()->Present(packetList, &camera->GetMatrix(), &camera->GetProjectionMatrix(), bindFlags);
         renderSystem->GetDebugDrawer()->Clear();
     }
 }
@@ -238,7 +262,12 @@ void RenderPass::ValidateMultisampledTextures(const rhi::RenderPassConfig& confi
 Vector2 RenderPass::GetCurrentFrameJitterOffset() const
 {
     Size2i size = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
-    Vector2 currOffset = ParticlesRandom::SobolSequenceV2Prebult(Engine::Instance()->GetGlobalFrameIndex());
+
+    int32 taaSampleIndex = Renderer::GetOptions()->GetOptionValue(RenderOptions::TAA_SAMPLE_INDEX);
+    if (taaSampleIndex == -1)
+        taaSampleIndex = Engine::Instance()->GetGlobalFrameIndex();
+
+    Vector2 currOffset = ParticlesRandom::SobolSequenceV2Prebult(uint32(taaSampleIndex));
     return Vector2(currOffset.x / float32(size.dx), currOffset.y / float32(size.dy)) * 2.0f;
 }
 

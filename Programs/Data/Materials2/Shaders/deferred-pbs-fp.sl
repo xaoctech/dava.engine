@@ -31,6 +31,11 @@ fragment_out
     float4 depth : SV_TARGET3;
 };
 
+#ensuredefined FULL_NORMAL 0
+#if (FULL_NORMAL)
+uniform sampler2D roughnessTexture;
+#endif
+
 fragment_out fp_main(fragment_in input)
 {
     float4 baseColorSample = tex2D(albedo, input.uv.xy);
@@ -69,21 +74,29 @@ fragment_out fp_main(fragment_in input)
 #else
     float directionalLightStaticShadow = 1.0;
 #endif
+    
+    float metallness = normalMapSample.w;
+    float roughness = normalMapSample.z;
    
 #if (VIEW_MODE & RESOLVE_NORMAL_MAP)
-    float2 xy = (2.0 * normalMapSample.xy - 1.0) * normalScale;
-    float3 nts = float3(xy, sqrt(1.0 - saturate(dot(xy, xy))));
+    float3 nts;
+    {
+    #if (FULL_NORMAL)
+        nts = normalize(2.0 * normalMapSample.xyz - 1.0);
+        roughness = tex2D(roughnessTexture, input.uv.xy).x;
+    #else
+        float2 xy = (2.0 * normalMapSample.xy - 1.0) * normalScale;
+        nts = float3(xy, sqrt(1.0 - saturate(dot(xy, xy))));
+    #endif
+    }
     float3 n = normalize(float3(dot(nts, input.tbnToWorld0), dot(nts, input.tbnToWorld1), dot(nts, input.tbnToWorld2.xyz)));
 #else
     float3 n = normalize(float3(input.tbnToWorld0.z, input.tbnToWorld1.z, input.tbnToWorld2.z));
 #endif
-
+    
 #if (FLIP_BACKFACE_NORMALS)
     n *= sign(input.tbnToWorld2.w);
 #endif
-
-    float metallness = normalMapSample.w;
-    float roughness = normalMapSample.z * roughnessScale;
 
 #if (TRANSMITTANCE)
     float flags = 1.0;
@@ -91,12 +104,11 @@ fragment_out fp_main(fragment_in input)
     float flags = 0.0;
     metallness *= metallnessScale;    
 #endif
-
+    
     fragment_out output;
     output.color = float4(baseColorSample.xyz * baseColorScale.xyz, 1.0 /* UNUSED!!! UNUSED!!! UNUSED!!! */);
-
     output.normal = float4(n * 0.5 + 0.5, flags);
-    output.params = float4(roughness, metallness, saturate((ambientOcclusion + aoBias) * aoScale), directionalLightStaticShadow);
+    output.params = float4(roughness * roughnessScale, metallness, saturate((ambientOcclusion + aoBias) * aoScale), directionalLightStaticShadow);
     output.depth = input.projectedPosition.z / input.projectedPosition.w * ndcToZMapping.x + ndcToZMapping.y;
     return output;
 }

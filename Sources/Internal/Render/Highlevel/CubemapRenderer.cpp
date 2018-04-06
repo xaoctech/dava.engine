@@ -48,7 +48,7 @@ static const Vector4 cubeBasisC[6] =
 };
 
 CubemapRenderer::CubemapRenderer()
-    : HAMMERSLEY_SIZES({ 64, 128, 512, 1024 })
+    : HAMMERSLEY_SIZES({ 64u, 128u, 512u, 1024u })
 {
     cubemapCamera = new Camera();
     cubemapCamera->SetupPerspective(90.0f, 1.0f, 0.1f, 5000.0f);
@@ -63,9 +63,9 @@ CubemapRenderer::CubemapRenderer()
     cubemapFunctionsMaterial = new NMaterial();
     cubemapFunctionsMaterial->SetFXName(FastName("~res:/Materials2/CubemapConvolution.material"));
 
-    cubemapFunctionsMaterial->AddProperty(CUBEMAP_BASIS_A, (const float32*)&cubeBasisA[0], rhi::ShaderProp::TYPE_FLOAT3);
-    cubemapFunctionsMaterial->AddProperty(CUBEMAP_BASIS_B, (const float32*)&cubeBasisB[0], rhi::ShaderProp::TYPE_FLOAT3);
-    cubemapFunctionsMaterial->AddProperty(CUBEMAP_BASIS_C, (const float32*)&cubeBasisC[0], rhi::ShaderProp::TYPE_FLOAT3);
+    cubemapFunctionsMaterial->AddProperty(CUBEMAP_BASIS_A, reinterpret_cast<const float32*>(&cubeBasisA[0]), rhi::ShaderProp::TYPE_FLOAT3);
+    cubemapFunctionsMaterial->AddProperty(CUBEMAP_BASIS_B, reinterpret_cast<const float32*>(&cubeBasisB[0]), rhi::ShaderProp::TYPE_FLOAT3);
+    cubemapFunctionsMaterial->AddProperty(CUBEMAP_BASIS_C, reinterpret_cast<const float32*>(&cubeBasisC[0]), rhi::ShaderProp::TYPE_FLOAT3);
 
     float32 tempFloat = 0;
     cubemapFunctionsMaterial->AddProperty(CUBEMAP_DST_LAST_MIP, &tempFloat, rhi::ShaderProp::TYPE_FLOAT1);
@@ -160,17 +160,17 @@ void CubemapRenderer::ConvoluteDiffuseCubemap(Asset<Texture>& inputTexture, rhi:
     float32 dstMipLevel = 0;
     cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_DST_MIP_LEVEL, &dstMipLevel);
 
-    float32 faceSizeF = (float32)(outputWidth);
+    float32 faceSizeF = float32(outputWidth);
     cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_FACE_SIZE, &faceSizeF);
 
     cubemapFunctionsMaterial->PreBuildMaterial(CUBEMAP_DIFFUSE_CONVOLUTION);
     for (uint32 face = 0; face < 6; ++face)
     {
-        float32 faceF = (float32)face;
+        float32 faceF = float32(face);
         cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_FACE_INDEX, &faceF);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_A, (const float32*)&cubeBasisA[face].x);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_B, (const float32*)&cubeBasisB[face].x);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_C, (const float32*)&cubeBasisC[face].x);
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_A, reinterpret_cast<const float32*>(&cubeBasisA[face].x));
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_B, reinterpret_cast<const float32*>(&cubeBasisB[face].x));
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_C, reinterpret_cast<const float32*>(&cubeBasisC[face].x));
         cubemapFunctionsMaterial->PreBuildMaterial(CUBEMAP_DIFFUSE_CONVOLUTION);
 
         quadRenderer.Render("ConvoluteDiffuseCubemap", cubemapFunctionsMaterial,
@@ -202,15 +202,15 @@ void CubemapRenderer::ConvoluteSpecularCubemap(Asset<Texture>& inputTexture, Ass
 
     for (uint32 face = 0; face < 6; ++face)
     {
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_A, (const float32*)&cubeBasisA[face].x);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_B, (const float32*)&cubeBasisB[face].x);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_C, (const float32*)&cubeBasisC[face].x);
-        float32 faceF = (float32)face;
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_A, reinterpret_cast<const float32*>(&cubeBasisA[face].x));
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_B, reinterpret_cast<const float32*>(&cubeBasisB[face].x));
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_C, reinterpret_cast<const float32*>(&cubeBasisC[face].x));
+        float32 faceF = float32(face);
         cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_FACE_INDEX, &faceF);
 
         for (uint32 mip = 0; mip < outputMipLevels; ++mip)
         {
-            float32 faceSizeF = (float32)(outputTexture->width / (1 << mip));
+            float32 faceSizeF = float32(outputTexture->width / (1 << mip));
             cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_FACE_SIZE, &faceSizeF);
 
             if (faceSizeF >= 64)
@@ -245,7 +245,7 @@ void CubemapRenderer::ConvoluteSpecularCubemap(Asset<Texture>& inputTexture, Ass
 
             quadRenderer.Render("ConvoluteSpecularCubemap", cubemapFunctionsMaterial,
                                 rhi::Viewport(0, 0, outputTexture->width / (1 << mip), outputTexture->height / (1 << mip)),
-                                outputTexture->handle, (rhi::TextureFace)targetFaces[face], mip);
+                                outputTexture->handle, rhi::TextureFace(targetFaces[face]), mip);
         }
     }
 }
@@ -264,10 +264,10 @@ void CubemapRenderer::EdgeFilterCubemap(Asset<Texture>& inputTexture, Asset<Text
 
     for (uint32 face = 0; face < 6; ++face)
     {
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_A, (const float32*)&cubeBasisA[face].x);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_B, (const float32*)&cubeBasisB[face].x);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_C, (const float32*)&cubeBasisC[face].x);
-        float32 faceF = (float32)face;
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_A, reinterpret_cast<const float32*>(&cubeBasisA[face].x));
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_B, reinterpret_cast<const float32*>(&cubeBasisB[face].x));
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_C, reinterpret_cast<const float32*>(&cubeBasisC[face].x));
+        float32 faceF = float32(face);
         cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_FACE_INDEX, &faceF);
 
         for (uint32 mip = 0; mip < outputMipLevels; ++mip)
@@ -294,14 +294,14 @@ void CubemapRenderer::EdgeFilterCubemap(Asset<Texture>& inputTexture, Asset<Text
             float32 dstMipLevel = float32(mip);
             cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_DST_MIP_LEVEL, &dstMipLevel);
 
-            float32 faceSizeF = (float32)(outputTexture->width / (1 << mip));
+            float32 faceSizeF = float32(outputTexture->width / (1 << mip));
             cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_FACE_SIZE, &faceSizeF);
 
             cubemapFunctionsMaterial->PreBuildMaterial(CUBEMAP_DOWNSAMPLE_FILTER);
 
             quadRenderer.Render("EdgeFilterCubemap", cubemapFunctionsMaterial,
                                 rhi::Viewport(0, 0, outputTexture->width / (1 << mip), outputTexture->height / (1 << mip)),
-                                outputTexture->handle, (rhi::TextureFace)targetFaces[face], mip);
+                                outputTexture->handle, rhi::TextureFace(targetFaces[face]), mip);
         }
     }
 }
@@ -322,10 +322,10 @@ void CubemapRenderer::CopyCubemap(const Asset<Texture>& inputTexture,
 
     for (uint32 face = 0; face < 6; ++face)
     {
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_A, (const float32*)&cubeBasisA[face].x);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_B, (const float32*)&cubeBasisB[face].x);
-        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_C, (const float32*)&cubeBasisC[face].x);
-        float32 faceF = (float32)face;
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_A, reinterpret_cast<const float32*>(&cubeBasisA[face].x));
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_B, reinterpret_cast<const float32*>(&cubeBasisB[face].x));
+        cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_BASIS_C, reinterpret_cast<const float32*>(&cubeBasisC[face].x));
+        float32 faceF = float32(face);
         cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_FACE_INDEX, &faceF);
 
         for (uint32 mip = 0; mip < mipCount; ++mip)
@@ -343,14 +343,14 @@ void CubemapRenderer::CopyCubemap(const Asset<Texture>& inputTexture,
 
             DVASSERT(inputMipWidth == outputMipWidth);
 
-            float32 faceSizeF = (float32)(inputMipWidth);
+            float32 faceSizeF = float32(inputMipWidth);
             cubemapFunctionsMaterial->SetPropertyValue(CUBEMAP_FACE_SIZE, &faceSizeF);
 
             cubemapFunctionsMaterial->PreBuildMaterial(CUBEMAP_DOWNSAMPLE_FILTER);
 
             quadRenderer.Render("CopyCubemap", cubemapFunctionsMaterial,
                                 rhi::Viewport(0, 0, outputMipWidth, outputMipWidth),
-                                outputTexture->handle, (rhi::TextureFace)targetFaces[face], mip);
+                                outputTexture->handle, rhi::TextureFace(targetFaces[face]), mip);
         }
     }
 }

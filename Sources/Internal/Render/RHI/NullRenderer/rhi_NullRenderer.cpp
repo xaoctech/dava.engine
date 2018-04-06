@@ -22,19 +22,15 @@ void null_Uninitialize()
 {
 }
 
-Api null_HostApi()
+const HostAPI& null_HostApi()
 {
-    return RHI_NULL_RENDERER;
+    static const HostAPI api = { RHI_NULL_RENDERER, 0, 0 };
+    return api;
 }
 
 bool null_NeedRestoreResources()
 {
     return false;
-}
-
-bool null_TextureFormatSupported(TextureFormat format, ProgType)
-{
-    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -54,6 +50,9 @@ void null_InitContext()
     static const char* NULL_RENDERER_DEVICE = "NullRenderer Device";
 
     std::strncpy(MutableDeviceCaps::Get().deviceDescription, NULL_RENDERER_DEVICE, 127);
+
+    RenderDeviceCaps::TextureFormatCaps formatCaps = { true, true, true };
+    std::fill(std::begin(MutableDeviceCaps::Get().textureFormat), std::end(MutableDeviceCaps::Get().textureFormat), formatCaps);
 }
 
 bool null_ValidateSurface()
@@ -120,7 +119,6 @@ void nullRenderer_Initialize(const InitParam& param)
     DispatchNullRenderer.impl_Uninitialize = null_Uninitialize;
     DispatchNullRenderer.impl_HostApi = null_HostApi;
     DispatchNullRenderer.impl_NeedRestoreResources = null_NeedRestoreResources;
-    DispatchNullRenderer.impl_TextureFormatSupported = null_TextureFormatSupported;
 
     DispatchNullRenderer.impl_InvalidateCache = null_InvalidateCache;
     DispatchNullRenderer.impl_SyncCPUGPU = null_SyncCPUGPU;

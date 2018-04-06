@@ -141,7 +141,7 @@ private:
         String errorMsg;
     };
     Vector<LoadedAssetNode> loadedAssets;
-    UnorderedSet<Any> reloadRequests;
+    UnorderedMap<Any, int64> reloadRequests;
     UnorderedMap<Any, Asset<AssetBase>> toReloadAssets;
 
     Thread* loadingThread = nullptr;

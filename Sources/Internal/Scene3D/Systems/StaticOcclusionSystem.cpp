@@ -117,7 +117,8 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
                 {
                     RenderObject* object = debugDrawComponent->GetRenderObject();
                     // Update new transform pointer, and mark that transform is changed
-                    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+                    TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+                    const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
                     object->SetWorldTransformPtr(worldTransformPointer);
                     GetScene()->renderSystem->MarkForUpdate(object);
                 }

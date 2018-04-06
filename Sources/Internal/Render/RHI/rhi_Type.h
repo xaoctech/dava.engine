@@ -59,6 +59,23 @@ enum Api
     RHI_API_COUNT
 };
 
+struct HostAPI
+{
+    Api api;
+    uint32 majorVersion;
+    uint32 minorVersion;
+
+    bool operator==(const HostAPI& other) const
+    {
+        return (api == other.api) && (majorVersion == other.majorVersion) && (minorVersion == other.minorVersion);
+    }
+
+    bool operator!=(const HostAPI& other) const
+    {
+        return !(*this == other);
+    }
+};
+
 enum class RenderingError : uint32_t
 {
     FailedToCreateDevice,
@@ -358,6 +375,7 @@ enum TextureFormat
 
     TEXTURE_FORMAT_R4G4B4A4,
 
+    TEXTURE_FORMAT_R16G16,
     TEXTURE_FORMAT_A16R16G16B16,
     TEXTURE_FORMAT_A32R32G32B32,
 
@@ -390,9 +408,6 @@ enum TextureFormat
     TEXTURE_FORMAT_EAC_R11G11_UNSIGNED,
     TEXTURE_FORMAT_EAC_R11G11_SIGNED,
 
-    TEXTURE_FORMAT_D16,
-    TEXTURE_FORMAT_D24S8,
-
     TEXTURE_FORMAT_R16F,
     TEXTURE_FORMAT_RG16F,
     TEXTURE_FORMAT_RGBA16F,
@@ -404,8 +419,14 @@ enum TextureFormat
 
     TEXTURE_FORMAT_R11G11B10F,
 
+    TEXTURE_FORMAT_D16,
+    TEXTURE_FORMAT_D24S8,
     TEXTURE_FORMAT_D32F,
+
+    TEXTURE_FORMAT_COUNT
 };
+
+const char* TextureFormatToString(TextureFormat format);
 
 enum TextureFace
 {
@@ -792,7 +813,14 @@ struct Viewport
         , height(h_)
     {
     }
+    Viewport(const Viewport& v) = default;
+    bool operator!=(const Viewport& v) const;
 };
+
+inline bool Viewport::operator!=(const Viewport& v) const
+{
+    return x != v.x || y != v.y || width != v.width || height != v.height;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // render-target state
@@ -850,7 +878,7 @@ struct RenderPassConfig
 
     float depthBias = 0.0f;
     float depthSlopeScale = 0.0f;
-    bool invertCulling = false;
+
     bool usesReverseDepth = false;
 
     bool IsValid() const
@@ -971,7 +999,14 @@ struct ScissorRect
         , height(ah)
     {
     }
+    ScissorRect(const ScissorRect& v) = default;
+    bool operator!=(const ScissorRect& v) const;
 };
+
+inline bool ScissorRect::operator!=(const ScissorRect& v) const
+{
+    return x != v.x || y != v.y || width != v.width || height != v.height;
+}
 
 } // namespace rhi
 

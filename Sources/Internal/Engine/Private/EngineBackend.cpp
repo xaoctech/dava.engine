@@ -323,6 +323,8 @@ void EngineBackend::RunConsole()
         {
             rhi::InitParam rendererParams{};
             rendererParams.threadedRenderFrameCount = options->GetInt32("rhi_threaded_frame_count");
+            rendererParams.useSRGBFramebuffer = options->GetBool("srgb_framebuffer");
+
             if (rendererParams.threadedRenderFrameCount > 1)
             {
                 rendererParams.threadedRenderEnabled = true;
@@ -775,15 +777,19 @@ void EngineBackend::PostUserCloseRequest()
 void EngineBackend::InitRenderer(Window* w)
 {
     rhi::Api renderer = static_cast<rhi::Api>(options->GetInt32("renderer", rhi::RHI_GLES2));
-    DVASSERT(rhi::ApiIsSupported(renderer));
+
+    // DVASSERT(rhi::ApiIsSupported(renderer));
 
     if (!rhi::ApiIsSupported(renderer))
     {
+        options->SetInt32("renderer", rhi::RHI_GLES2);
         renderer = rhi::RHI_GLES2;
     }
 
     rhi::InitParam rendererParams;
     rendererParams.threadedRenderFrameCount = options->GetInt32("rhi_threaded_frame_count");
+    rendererParams.useSRGBFramebuffer = options->GetBool("srgb_framebuffer");
+
     if (rendererParams.threadedRenderFrameCount > 1)
     {
         rendererParams.threadedRenderEnabled = true;

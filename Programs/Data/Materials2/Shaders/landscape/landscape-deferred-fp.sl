@@ -32,10 +32,6 @@ fragment_out
     float4 depth : SV_TARGET3;
 };
 
-#if LANDSCAPE_TOOL
-uniform sampler2D toolTexture;
-#endif
-
 fragment_out fp_main(fragment_in input)
 {
     float4 albedoSample0 = tex2D(albedo, input.texCoord0.xy);

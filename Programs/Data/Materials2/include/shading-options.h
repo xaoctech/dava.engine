@@ -1,27 +1,27 @@
 #ensuredefined DIFFUSE_BURLEY 1
 #ensuredefined USE_DOMINANT_DIRECTION 1
 #ensuredefined USE_SPECULAR_OCCLUSION 1
+#ensuredefined USE_DFG_APPROXIMATION 0
 
 #ensuredefined HAMMERSLEY_SET_SIZE 1024.0
 
 #ensuredefined USE_PRECISE_SRGB_CONVERSION 0
 #ensuredefined USE_PLAUSIBLE_SRGB_CONVERSION 1
 
+#ensuredefined RGBM_ENCODING_RANGE 5.0
+
+#ensuredefined GLOBAL_LUMINANCE_SCALE 25000.0 /* should be synchronized with cpp code */
+
+/* 
+ * Values below does not really affect anything now
+ */
 #ensuredefined PARALLAX_CORRECTED 0
 #ensuredefined PARALLAX_BLEND_ZONE 0.1
-
 #ensuredefined ENABLE_DEFERRED_LIGHTS 1
-
 #ensuredefined ENABLE_POINT_LIGHTS 0
 #ensuredefined MAX_POINT_LIGHTS 10
 #ensuredefined POINT_LIGHTS_BUFFER_SIZE 20
 #ensuredefined POINT_LIGHT_SIZE 0.01
-
-#ensuredefined ENABLE_ATMOSPHERE_SCATTERING 1
-
-#ensuredefined ROUGHNESS_ENCODING_MAX_RANGE 4.0
-
-#ensuredefined RGBM_ENCODING_RANGE 5.0
 
 /*
  * View mode manipulation

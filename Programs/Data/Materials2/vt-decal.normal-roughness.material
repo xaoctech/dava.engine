@@ -8,8 +8,6 @@ RenderTechnique:
         UniqueDefines: []
         UniquePins:
             - ["DECAL_TYPE", 0]
-        RenderState:            
-            fillMode: "FILLMODE_SOLID"
     RenderPassVTFetch:
         Name: "VTFetchPass"
         Layer: "VTDecals"
@@ -17,6 +15,4 @@ RenderTechnique:
         UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
         UniquePins:
             - ["DECAL_TYPE", 0]
-        RenderState:            
-            fillMode: "FILLMODE_SOLID"
 

@@ -5,42 +5,35 @@ RenderTechnique:
     RenderState:
         cullMode: "FACE_BACK"
         depthFunc: "CMP_LESS"
-        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
-    RenderPass:
-        Name: "ForwardPass"
-        SupportedRenderFlows: ["HDRForward"]
-    RenderPassLDR:
-        Name: "LDRForwardPass"
-        SupportedRenderFlows: ["LDR"]
-        Shader: "~res:/Materials2/ShadersLDR/materials"
-    RenderPassWithCombine:
-        Name: "ForwardPassWithCombine"
-        UniqueDefines: ["FOWARD_WITH_COMBINE"]
-        SupportedRenderFlows: ["TileBasedHDRForward"]
-    RenderPassShadowCascade:
-        Name: "ShadowCascadePass"
-        UniqueDefines: ["WRITE_SHADOW_MAP"]
-        SupportedRenderFlows: ["all"]
-    RenderPassShadowCubemap:
-        Name: "PointLightShadowPass"
-        UniqueDefines: ["WRITE_SHADOW_MAP", "WRITE_TO_CUBEMAP"]
-        SupportedRenderFlows: ["all"]
-    RenderPassReflections:
-        Name: "IBReflectionPass"
-        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
-        SupportedRenderFlows: ["HDR"]
-    RenderPassReflectionsLDR:
-        Name: "LDRIBReflectionPass"
-        SupportedRenderFlows: ["LDR"]
-        Shader: "~res:/Materials2/ShadersLDR/materials"
-        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
-    RenderPassDeferred:
-        Name: "gBufferPass"
-        Shader: "~res:/Materials2/Shaders/deferred-pbs" 
-        SupportedRenderFlows: ["HDRDeferred"]
-        RenderState:
-            state: "STATE_STENCIL_TEST"
-            stencil:
+        depthWrite: true
+        depthTest: true
+    Passes:
+        ForwardPass:
+            SupportedRenderFlows: ["HDRForward"]
+        LDRForwardPass:
+            SupportedRenderFlows: ["LDR"]
+            Shader: "~res:/Materials2/ShadersLDR/materials"
+        ForwardPassWithCombine:
+            UniqueDefines: ["FOWARD_WITH_COMBINE"]
+            SupportedRenderFlows: ["TileBasedHDRForward"]
+        ShadowCascadePass:
+            UniqueDefines: ["WRITE_SHADOW_MAP"]
+            SupportedRenderFlows: ["all"]
+        PointLightShadowPass:
+            UniqueDefines: ["WRITE_SHADOW_MAP", "WRITE_TO_CUBEMAP"]
+            SupportedRenderFlows: ["all"]
+        IBReflectionPass:
+            UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+            SupportedRenderFlows: ["HDR"]
+        LDRIBReflectionPass:
+            SupportedRenderFlows: ["LDR"]
+            Shader: "~res:/Materials2/ShadersLDR/materials"
+            UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+        gBufferPass:
+            Shader: "~res:/Materials2/Shaders/deferred-pbs" 
+            SupportedRenderFlows: ["HDRDeferred"]
+            Stencil:
+                enabled: true
                 failBack: "STENCILOP_REPLACE"
                 failFront: "STENCILOP_REPLACE"
                 funcBack: "CMP_ALWAYS"
@@ -51,14 +44,12 @@ RenderTechnique:
                 ref: 1
                 zFailBack: "STENCILOP_REPLACE"
                 zFailFront: "STENCILOP_REPLACE"
-    RenderPassDeferredFetch:
-        Name: "gBufferFetchPass"
-        Shader: "~res:/Materials2/Shaders/deferred-pbs"
-        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
-        SupportedRenderFlows: ["TileBasedHDRDeferred"]
-        RenderState:
-            state: "STATE_STENCIL_TEST"
-            stencil:
+        gBufferFetchPass:
+            Shader: "~res:/Materials2/Shaders/deferred-pbs"
+            UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+            SupportedRenderFlows: ["TileBasedHDRDeferred"]
+            Stencil:
+                enabled: true
                 failBack: "STENCILOP_REPLACE"
                 failFront: "STENCILOP_REPLACE"
                 funcBack: "CMP_ALWAYS"
@@ -69,3 +60,9 @@ RenderTechnique:
                 ref: 1
                 zFailBack: "STENCILOP_REPLACE"
                 zFailFront: "STENCILOP_REPLACE"
+        VelocityPass:
+            SupportedRenderFlows: ["HDRDeferred", "TileBasedHDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/velocity-dynamic"
+            RenderState:
+                depthFunc: "CMP_EQUAL"
+                depthWrite: false

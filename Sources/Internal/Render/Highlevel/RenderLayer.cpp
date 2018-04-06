@@ -90,7 +90,7 @@ uint32 RenderLayer::MakeLayerMask(std::initializer_list<eRenderLayerID> layers)
     return mask;
 }
 
-void RenderLayer::Draw(Camera* camera, const RenderBatchArray& batchArray, rhi::HPacketList packetList)
+void RenderLayer::Draw(Camera* camera, const RenderBatchArray& batchArray, rhi::HPacketList packetList, uint32 flags)
 {
     uint32 size = static_cast<uint32>(batchArray.GetRenderBatchCount());
 
@@ -105,7 +105,7 @@ void RenderLayer::Draw(Camera* camera, const RenderBatchArray& batchArray, rhi::
         {
             batch->BindGeometryData(packet);
             DVASSERT(packet.primitiveCount);
-            mat->BindParams(packet);
+            mat->BindParams(packet, flags);
 
             if (overrideViewport)
             {

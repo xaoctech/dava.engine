@@ -16,6 +16,7 @@
 #include "Scene3D/AssetLoaders/GeometryAssetLoader.h"
 #include "Scene3D/AssetLoaders/MaterialAssetLoader.h"
 #include "Scene3D/AssetLoaders/LevelAssetLoader.h"
+#include "Time/SystemTimer.h"
 
 #if defined(TRACE_ASSET_REQUESTER)
 #include "Debug/Backtrace.h"
@@ -546,13 +547,6 @@ AssetFileInfo AssetManager::GetAssetFileInfo(const Asset<AssetBase>& asset) cons
 
 void AssetManager::UnloadAsset(AssetBase* ptr)
 {
-    Any assetKey = ptr->assetKey;
-    {
-        LockGuard<Mutex> guard(loadedMutex);
-        reloadRequests.erase(assetKey);
-        toReloadAssets.erase(assetKey);
-    }
-
     GetEngineContext()->jobManager->CreateMainJob([this, ptr]() {
         bool sendNotify = false;
         {
@@ -704,7 +698,7 @@ void AssetManager::OnFileEvent(const String& path, FileWatcher::eWatchEvent e)
     for (const Any& key : assetKeys)
     {
         LockGuard<Mutex> guard(loadedMutex);
-        reloadRequests.emplace(key);
+        reloadRequests[key] = SystemTimer::GetMs();
     }
 }
 
@@ -719,7 +713,21 @@ void AssetManager::Process()
         {
             LockGuard<Mutex> guard(loadedMutex);
             weakLoadedAssets = std::move(loadedAssets);
-            reloadRequestsCopy = std::move(reloadRequests);
+
+            int64 nowTimeStamp = SystemTimer::GetMs();
+            auto iter = reloadRequests.begin();
+            while (iter != reloadRequests.end())
+            {
+                if ((nowTimeStamp - iter->second) > 1000)
+                {
+                    reloadRequestsCopy.emplace(iter->first);
+                    iter = reloadRequests.erase(iter);
+                }
+                else
+                {
+                    ++iter;
+                }
+            }
         }
 
         lockedLoadedAssets.reserve(weakLoadedAssets.size());

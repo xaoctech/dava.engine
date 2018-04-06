@@ -10,24 +10,23 @@ class ProgGLES2
 {
 public:
     ProgGLES2(ProgType t);
-    virtual ~ProgGLES2();
+    ~ProgGLES2() = default;
 
     bool Construct(const char* src_data);
     void Destroy();
 
-    unsigned ShaderUid() const;
-    void GetProgParams(unsigned progUid);
-    unsigned SamplerCount() const;
+    uint32 ShaderUid();
+    void GetProgParams(uint32 progUid);
+    uint32 SamplerCount();
 
-    unsigned ConstBufferCount() const;
-    Handle InstanceConstBuffer(unsigned bufIndex) const;
+    uint32 ConstBufferCount();
+    Handle InstanceConstBuffer(uint32 bufIndex);
 
-    void SetupTextureUnits(uint32 baseUnit, GLCommand* commands, uint32& commandsCount) const;
+    void SetupTextureUnits(uint32 baseUnit, GLCommand* commands, uint32& commandsCount);
 
     static void InvalidateAllConstBufferInstances();
 
-    class
-    ConstBuf
+    class ConstBuf
     {
     public:
         struct Desc
@@ -35,81 +34,60 @@ public:
         };
 
         ConstBuf()
-            : glProg(0)
-            , location(-1)
-            , count(0)
-            , data(nullptr)
-            , inst(nullptr)
-            , lastInst(nullptr)
-            , frame(static_cast<uint32>(CurFrame - 1))
+            : frame(static_cast<uint32>(CurFrame - 1))
         {
         }
+
         ~ConstBuf()
         {
             ConstBuf::Destroy();
         }
 
-        bool Construct(uint32 prog, void** lastBoundData, unsigned loc, unsigned count);
+        bool Construct(uint32 prog, float** lastBoundData, uint32 loc, uint32 count);
         void Destroy();
 
-        unsigned ConstCount() const;
-        bool SetConst(unsigned const_i, unsigned count, const float* cdata);
-        bool SetConst(unsigned const_i, unsigned const_sub_i, const float* cdata, unsigned data_count);
+        uint32 ConstCount();
+        bool SetConst(uint32 const_i, uint32 count, const float* cdata);
+        bool SetConst(uint32 const_i, uint32 const_sub_i, const float* cdata, uint32 data_count);
 
-        const void* Instance() const;
-        void SetToRHI(uint32 progUid, const void* instData) const;
+        const void* Instance();
+        void SetToRHI(uint32 progUid, const float* instData);
 
         static void AdvanceFrame();
 
     private:
         void ReallocIfneeded();
 
-        uint32 glProg;
-        uint16 location;
-        #if RHI_GL__USE_UNIFORMBUFFER_OBJECT
-        unsigned ubo;
-        #endif
-
-        uint16 count;
-        float* data;
-        mutable float* inst;
-        mutable void** lastInst;
-        mutable uint32 frame;
-
-        #if RHI_GL__USE_STATIC_CONST_BUFFER_OPTIMIZATION
-        mutable uint32 isStatic : 1;
-        mutable uint32 isUsedInDrawCall : 1;
-        mutable uint32 lastmodifiedFrame;
-        mutable std::vector<float*> altData;
-        mutable std::vector<uint32> altDataAllocationFrame;
-        #endif
-
-        #if RHI_GL__DEBUG_CONST_BUFFERS
-        mutable uint32 isTrueStatic : 1;
-        mutable uint32 instCount;
-        #endif
+        uint32 glProg = 0;
+        uint32 location = uint32(-1);
+        uint32 count = 0;
+        uint32 dataSize = 0;
+        uint32 frame = 0;
+        float* inst = nullptr;
+        float* data = nullptr;
+        float** lastInst = nullptr;
 
         friend class ProgGLES2;
         static uint32 CurFrame;
     };
 
 private:
-    struct
-    ConstBufInfo
+    struct ConstBufInfo
     {
-        unsigned location;
-        unsigned count;
+        uint32 location = DAVA::InvalidIndex;
+        uint32 count = 0;
     };
 
     ConstBufInfo cbuf[MAX_CONST_BUFFER_COUNT];
-    void* cbufLastBoundData[MAX_CONST_BUFFER_COUNT];
-    unsigned texunitLoc[16]; //-V730_NOINIT
+    float* cbufLastBoundData[MAX_CONST_BUFFER_COUNT]{};
 
-    unsigned shader;
-    uint32 prog;
-    const ProgType type;
-    unsigned texunitCount;
-    mutable unsigned texunitInited : 1;
+    uint32 texunitLoc[16]{};
+
+    uint32 shader = 0;
+    uint32 prog = 0;
+    ProgType type = ProgType::PROG_VERTEX;
+    uint32 texunitCount = 0;
+    bool texunitInited = false;
 };
 
 } // namespace rhi

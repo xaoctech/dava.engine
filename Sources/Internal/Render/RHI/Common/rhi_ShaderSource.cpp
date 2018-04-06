@@ -201,7 +201,7 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
         pre_proc.AddDefine(name, value);
     }
 
-    if (pre_proc.Process(srcText, &src))
+    if (pre_proc.Process(srcText, &src, tokens))
     {
         #if RHI_DUMP_SHADERSOURCE
         PrintSource(src.data(), static_cast<uint32>(src.size()));
@@ -249,9 +249,10 @@ bool ShaderSource::Construct(ProgType progType, const char* srcText, const std::
                     }
                 }
 
-                if (maxRenderTarget + 1 >= rhi::DeviceCaps().maxSimultaneousRT)
+                if (maxRenderTarget + 1 > rhi::DeviceCaps().maxRenderTargetCount)
                 {
-                    DAVA::Logger::Error("Fragment shader uses more render targets than current implementation supports.");
+                    DAVA::Logger::Error("Fragment shader (%s) uses more render targets (%u) than current implementation supports (%u)",
+                                        fileName.GetFilename().c_str(), maxRenderTarget + 1, rhi::DeviceCaps().maxRenderTargetCount);
                     return false;
                 }
             }
@@ -1049,6 +1050,13 @@ bool ShaderSource::ProcessMetaData(sl::HLSLTree* ast)
                     ++sampler_reg;
 
                     decl->registerName = ast->AddString(regName);
+
+                    if (sampler_reg + 1 > rhi::DeviceCaps().maxShaderTextures)
+                    {
+                        Logger::Error("Shader (%s) uses more texture units (%u) than current implementation supports (%u)",
+                                      fileName.GetFilename().c_str(), sampler_reg + 1, rhi::DeviceCaps().maxShaderTextures);
+                        return false;
+                    }
                 }
             }
 
@@ -1886,20 +1894,20 @@ bool ShaderSource::Save(Api api, DAVA::File* out) const
 
 //------------------------------------------------------------------------------
 
-const DAVA::String& ShaderSource::GetSourceCode(Api targetApi) const
+const DAVA::String& ShaderSource::GetSourceCode(const HostAPI& targetApi) const
 {
-    DVASSERT(targetApi < countof(code));
+    DVASSERT(targetApi.api < countof(code));
 
-    if (code[targetApi].empty() && (ast != nullptr))
+    if (code[targetApi.api].empty() && (ast != nullptr))
     {
         static sl::Allocator alloc;
 
         bool codeGenerated = false;
         const char* main = (type == PROG_VERTEX) ? "vp_main" : "fp_main";
         sl::Target target = (type == PROG_VERTEX) ? sl::TARGET_VERTEX : sl::TARGET_FRAGMENT;
-        DAVA::String* src = code + targetApi;
+        DAVA::String* src = code + targetApi.api;
 
-        switch (targetApi)
+        switch (targetApi.api)
         {
         case RHI_DX11:
         {
@@ -1918,7 +1926,16 @@ const DAVA::String& ShaderSource::GetSourceCode(Api targetApi) const
         case RHI_GLES2:
         {
             sl::GLESGenerator gles_gen(&alloc);
-            codeGenerated = gles_gen.Generate(ast, target, main, src);
+            sl::GLESGenerator::GLSLVersion version = sl::GLESGenerator::GLSL_100;
+
+#if defined(__DAVAENGINE_WIN32__)
+            if ((targetApi.majorVersion > 3) || (targetApi.majorVersion == 3 && targetApi.minorVersion >= 3))
+                version = sl::GLESGenerator::GLSL_300;
+#elif defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+            if (targetApi.majorVersion >= 3)
+                version = sl::GLESGenerator::GLSL_300;
+#endif
+            codeGenerated = gles_gen.Generate(ast, version, target, main, src);
             break;
         }
 
@@ -1973,7 +1990,7 @@ const DAVA::String& ShaderSource::GetSourceCode(Api targetApi) const
     }
 #endif
 
-    return code[targetApi];
+    return code[targetApi.api];
 }
 
 //------------------------------------------------------------------------------
@@ -2060,7 +2077,10 @@ void ShaderSource::PurgeIncludesCache()
     ShaderSourceFileCallback.ClearCache();
 }
 
-//------------------------------------------------------------------------------
+void ShaderSource::DumpPreprocessorTokens()
+{
+    tokens.PrintInfo();
+}
 
 void ShaderSource::Dump() const
 {
@@ -2130,7 +2150,7 @@ void ShaderSource::PrintSource(const char* source, uint32 sourceSize)
         return;
 
     DAVA::Vector<char> output;
-    output.resize(2 * sourceSize);
+    output.resize(2 * sourceSize + 1024);
     std::fill_n(output.data(), output.size(), 0);
 
     char* ptr = output.data();
@@ -2175,7 +2195,7 @@ const ShaderSource* ShaderSourceCache::Get(FastName uid, uint32 srcHash)
     //    Logger::Info("get-shader-src (host-api = %i)",HostApi());
     //    Logger::Info("  uid= \"%s\"",uid.c_str());
     const ShaderSource* src = nullptr;
-    Api api = HostApi();
+    const HostAPI& api = HostApi();
 
     for (std::vector<entry_t>::const_iterator e = Entry.begin(), e_end = Entry.end(); e != e_end; ++e)
     {
@@ -2199,7 +2219,7 @@ const ShaderSource* ShaderSourceCache::Add(const char* filename, FastName uid, P
     {
         LockGuard<Mutex> guard(shaderSourceEntryMutex);
 
-        uint32 api = HostApi();
+        const HostAPI& api = HostApi();
         uint32 srcHash = DAVA::HashValue_N(srcText, unsigned(strlen(srcText)));
 
         bool doAdd = true;

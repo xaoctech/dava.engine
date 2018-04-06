@@ -49,6 +49,8 @@ public:
     const JointTargets& GetJointTargets(RenderBatch* batch);
     const JointTargetsData& GetJointTargetsData(RenderBatch* batch);
 
+    void UpdatePreviousState() override;
+
     //DEPRECATED
     DAVA_DEPRECATED(void AddPolygonGroup(PolygonGroup* polygonGroup, NMaterial* material));
     DAVA_DEPRECATED(void Load(KeyedArchive* archive, SerializationContext* serializationContext) override);
@@ -59,6 +61,7 @@ protected:
 
     UnorderedMap<RenderBatch*, uint32> jointTargetsDataMap; //RenderBatch -> targets-data index
     Vector<std::pair<JointTargets, JointTargetsData>> jointTargetsData;
+    Vector<std::pair<JointTargets, JointTargetsData>> prevJointTargetsData;
 
     DAVA_VIRTUAL_REFLECTION(Mesh, RenderObject);
 };

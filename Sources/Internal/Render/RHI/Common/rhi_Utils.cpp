@@ -65,6 +65,8 @@ uint32 TextureStride(TextureFormat format, Size2i size, uint32 level)
         return width * 4 * sizeof(uint32);
     case TEXTURE_FORMAT_A16R16G16B16:
         return width * 4 * sizeof(uint16);
+    case TEXTURE_FORMAT_R16G16:
+        return width * 2 * sizeof(uint16);
 
     case TEXTURE_FORMAT_R16F:
         return width * sizeof(float32) / 2;
@@ -115,6 +117,10 @@ uint32 TextureSize(TextureFormat format, uint32 width, uint32 height, uint32 lev
 
     case TEXTURE_FORMAT_R4G4B4A4:
         sz = ext.dx * ext.dy * sizeof(uint16);
+        break;
+
+    case TEXTURE_FORMAT_R16G16:
+        sz = ext.dx * ext.dy * sizeof(uint16) * 2;
         break;
 
     case TEXTURE_FORMAT_A16R16G16B16:
@@ -310,7 +316,7 @@ uint32 NativeColorRGBA(float red, float green, float blue, float alpha)
 
     DVASSERT((r >= 0) && (r <= 0xff) && (g >= 0) && (g <= 0xff) && (b >= 0) && (b <= 0xff) && (a >= 0) && (a <= 0xff));
 
-    switch (HostApi())
+    switch (HostApi().api)
     {
     case RHI_DX9:
         color = static_cast<uint32>(((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF));
@@ -335,7 +341,7 @@ uint32 NativeColorRGBA(uint32 color)
 {
     uint32 c = 0;
 
-    switch (HostApi())
+    switch (HostApi().api)
     {
     case RHI_DX9:
         c = (color & 0xff000000) | ((color & 0x000000ff) << 16) | (color & 0x0000ff00) | ((color & 0x00ff0000) >> 16);
@@ -355,4 +361,61 @@ uint32 NativeColorRGBA(uint32 color)
 
     return c;
 }
+
+const char* TextureFormatToString(TextureFormat format)
+{
+    switch (format)
+    {
+#define CASE_FORMAT(A) case A: return #A;
+        CASE_FORMAT(TEXTURE_FORMAT_R8G8B8A8);
+        CASE_FORMAT(TEXTURE_FORMAT_R8G8B8X8);
+        CASE_FORMAT(TEXTURE_FORMAT_R8G8B8);
+        CASE_FORMAT(TEXTURE_FORMAT_R5G5B5A1);
+        CASE_FORMAT(TEXTURE_FORMAT_R5G6B5);
+        CASE_FORMAT(TEXTURE_FORMAT_R4G4B4A4);
+        CASE_FORMAT(TEXTURE_FORMAT_R16G16);
+        CASE_FORMAT(TEXTURE_FORMAT_A16R16G16B16);
+        CASE_FORMAT(TEXTURE_FORMAT_A32R32G32B32);
+        CASE_FORMAT(TEXTURE_FORMAT_R8);
+        CASE_FORMAT(TEXTURE_FORMAT_R16);
+        CASE_FORMAT(TEXTURE_FORMAT_DXT1);
+        CASE_FORMAT(TEXTURE_FORMAT_DXT3);
+        CASE_FORMAT(TEXTURE_FORMAT_DXT5);
+        CASE_FORMAT(TEXTURE_FORMAT_PVRTC_4BPP_RGBA);
+        CASE_FORMAT(TEXTURE_FORMAT_PVRTC_2BPP_RGBA);
+        CASE_FORMAT(TEXTURE_FORMAT_PVRTC2_4BPP_RGB);
+        CASE_FORMAT(TEXTURE_FORMAT_PVRTC2_4BPP_RGBA);
+        CASE_FORMAT(TEXTURE_FORMAT_PVRTC2_2BPP_RGB);
+        CASE_FORMAT(TEXTURE_FORMAT_PVRTC2_2BPP_RGBA);
+        CASE_FORMAT(TEXTURE_FORMAT_ATC_RGB);
+        CASE_FORMAT(TEXTURE_FORMAT_ATC_RGBA_EXPLICIT);
+        CASE_FORMAT(TEXTURE_FORMAT_ATC_RGBA_INTERPOLATED);
+        CASE_FORMAT(TEXTURE_FORMAT_ETC1);
+        CASE_FORMAT(TEXTURE_FORMAT_ETC2_R8G8B8);
+        CASE_FORMAT(TEXTURE_FORMAT_ETC2_R8G8B8A8);
+        CASE_FORMAT(TEXTURE_FORMAT_ETC2_R8G8B8A1);
+        CASE_FORMAT(TEXTURE_FORMAT_EAC_R11_UNSIGNED);
+        CASE_FORMAT(TEXTURE_FORMAT_EAC_R11_SIGNED);
+        CASE_FORMAT(TEXTURE_FORMAT_EAC_R11G11_UNSIGNED);
+        CASE_FORMAT(TEXTURE_FORMAT_EAC_R11G11_SIGNED);
+        CASE_FORMAT(TEXTURE_FORMAT_D16);
+        CASE_FORMAT(TEXTURE_FORMAT_D24S8);
+        CASE_FORMAT(TEXTURE_FORMAT_R16F);
+        CASE_FORMAT(TEXTURE_FORMAT_RG16F);
+        CASE_FORMAT(TEXTURE_FORMAT_RGBA16F);
+        CASE_FORMAT(TEXTURE_FORMAT_R32F);
+        CASE_FORMAT(TEXTURE_FORMAT_RG32F);
+        CASE_FORMAT(TEXTURE_FORMAT_RGBA32F);
+        CASE_FORMAT(TEXTURE_FORMAT_RGB10A2);
+        CASE_FORMAT(TEXTURE_FORMAT_R11G11B10F);
+        CASE_FORMAT(TEXTURE_FORMAT_D32F);
+#undef CASE_FORMAT
+    default:
+    {
+        static char buffer[256] = {};
+        sprintf(buffer, "Unknown texture format: %u", uint32(format));
+        return buffer;
+    }
+    }
+};
 }

@@ -38,7 +38,7 @@ public:
     RenderHelper();
     ~RenderHelper();
 
-    void Present(rhi::HPacketList packetList, const Matrix4* view, const Matrix4* projection);
+    void Present(rhi::HPacketList packetList, const Matrix4* view, const Matrix4* projection, uint32 bindFlags);
     void Clear();
     bool IsEmpty();
 
@@ -120,7 +120,7 @@ private:
     void FillCircleVBuffer(ColoredVertex* buffer, const Vector3& center, const Vector3& direction, float32 radius, uint32 pointCount, uint32 nativeColor);
     void FillArrowVBuffer(ColoredVertex* buffer, const Vector3& from, const Vector3& to, uint32 nativeColor);
 
-    RenderStruct AllocateRenderStruct(eDrawType);
+    RenderStruct AllocateRenderStruct(eDrawType, uint32 bindFlags);
     void CommitRenderStruct(rhi::HPacketList packetList, const RenderStruct& rs);
 
     uint32 coloredVertexLayoutUID;

@@ -31,16 +31,14 @@ struct PacketList_t
 
     Handle defDepthStencilState;
     Handle defSamplerState;
-    ScissorRect defScissorRect;
-    Viewport defViewportRect;
+    ScissorRect defScissorRect, currScissorRect;
+    Viewport defViewportRect, currViewportRect;
 
     Handle curVertexStream[MAX_VERTEX_STREAM_COUNT];
 
     uint32 setDefaultViewport : 1;
     uint32 restoreDefScissorRect : 1;
     uint32 restoreSolidFill : 1;
-    uint32 invertCulling : 1;
-    uint32 invertZ : 1;
     uint32 restoreDefViewportRect : 1;
 
     // debug
@@ -84,8 +82,6 @@ HRenderPass AllocateRenderPass(const RenderPassConfig& passDesc, uint32 packetLi
         pl->queryBuffer = passDesc.queryBuffer;
         pl->setDefaultViewport = i == 0;
         pl->viewport = passDesc.viewport;
-        pl->invertCulling = passDesc.invertCulling;
-        pl->invertZ = passDesc.usesReverseDepth;
 
         packetList[i] = HPacketList(plh);
     }
@@ -193,9 +189,6 @@ void AddPackets(HPacketList packetList, const Packet* packet, uint32 packetCount
         Handle dsState = (p->depthStencilState != rhi::InvalidHandle) ? p->depthStencilState : pl->defDepthStencilState;
         Handle sState = (p->samplerState != rhi::InvalidHandle) ? p->samplerState : pl->defSamplerState;
 
-        if (pl->invertZ)
-            dsState = AcquireReverseDepthStencilState(HDepthStencilState(dsState));
-
         if (p->renderPipelineState != pl->curPipelineState || p->vertexLayoutUID != pl->curVertexLayout)
         {
             rhi::CommandBuffer::SetPipelineState(cmdBuf, p->renderPipelineState, p->vertexLayoutUID);
@@ -206,7 +199,7 @@ void AddPackets(HPacketList packetList, const Packet* packet, uint32 packetCount
         if (dsState != pl->curDepthStencilState)
         {
             rhi::CommandBuffer::SetDepthStencilState(cmdBuf, dsState);
-            pl->curDepthStencilState = p->depthStencilState;
+            pl->curDepthStencilState = dsState;
         }
         if (sState != pl->curSamplerState)
         {
@@ -215,24 +208,7 @@ void AddPackets(HPacketList packetList, const Packet* packet, uint32 packetCount
         }
         if (p->cullMode != pl->curCullMode)
         {
-            CullMode mode = p->cullMode;
-
-            if (pl->invertCulling)
-            {
-                switch (mode)
-                {
-                case CULL_CW:
-                    mode = CULL_CCW;
-                    break;
-                case CULL_CCW:
-                    mode = CULL_CW;
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            rhi::CommandBuffer::SetCullMode(cmdBuf, mode);
+            rhi::CommandBuffer::SetCullMode(cmdBuf, p->cullMode);
             pl->curCullMode = p->cullMode;
         }
 
@@ -280,24 +256,34 @@ void AddPackets(HPacketList packetList, const Packet* packet, uint32 packetCount
 
         if (p->options & Packet::OPT_OVERRIDE_SCISSOR)
         {
-            rhi::CommandBuffer::SetScissorRect(cmdBuf, p->scissorRect);
-            pl->restoreDefScissorRect = true;
+            if (pl->currScissorRect != p->scissorRect)
+            {
+                rhi::CommandBuffer::SetScissorRect(cmdBuf, p->scissorRect);
+                pl->currScissorRect = p->scissorRect;
+                pl->restoreDefScissorRect = true;
+            }
         }
         else if (pl->restoreDefScissorRect)
         {
             rhi::CommandBuffer::SetScissorRect(cmdBuf, pl->defScissorRect);
             pl->restoreDefScissorRect = false;
+            pl->currScissorRect = pl->defScissorRect;
         }
 
         if (p->options & Packet::OPT_OVERRIDE_VIEWPORT)
         {
-            rhi::CommandBuffer::SetViewport(cmdBuf, p->viewportRect);
-            pl->restoreDefViewportRect = true;
+            if (pl->currViewportRect != p->viewportRect)
+            {
+                rhi::CommandBuffer::SetViewport(cmdBuf, p->viewportRect);
+                pl->currViewportRect = p->viewportRect;
+                pl->restoreDefViewportRect = true;
+            }
         }
         else if (pl->restoreDefViewportRect)
         {
             rhi::CommandBuffer::SetViewport(cmdBuf, pl->defViewportRect);
             pl->restoreDefViewportRect = false;
+            pl->currViewportRect = pl->defViewportRect;
         }
 
         if (p->options & Packet::OPT_WIREFRAME)

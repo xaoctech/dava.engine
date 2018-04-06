@@ -28,6 +28,14 @@ bool PVRUtils::DecompressPVRToRgba(const Image* encodedImage, Image* decodedImag
     {
         retCode = PVRTDecompressETC(encodedImage->data, encodedImage->width, encodedImage->height, decodedImage->data, 0);
     }
+    else if (encodedImage->format == PixelFormat::FORMAT_ETC2_RGBA)
+    {
+        //GFX_COMPLETE
+        //Current libpvr version decompress ETC2 incorrect
+        //We need update 'PVRTexTool' to last version or use 'ETC2Comp', 'Mali Texture Compression Tool', etc.
+        retCode = PVRTDecompressETC(encodedImage->data, encodedImage->width, encodedImage->height, decodedImage->data, 0);
+        retCode = encodedImage->dataSize;
+    }
     else
     {
         Logger::Error("Can't decode PVR: source Image has unknown format %s", GlobalEnumMap<PixelFormat>::Instance()->ToString(encodedImage->format));

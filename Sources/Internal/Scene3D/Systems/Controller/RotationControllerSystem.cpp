@@ -48,8 +48,7 @@ void RotationControllerSystem::AddEntity(Entity* entity)
 
 void RotationControllerSystem::RemoveEntity(Entity* entity)
 {
-    const bool removeResult = FindAndRemoveExchangingWithLast(entities, entity);
-    DVASSERT(removeResult);
+    FindAndRemoveExchangingWithLast(entities, entity);
 }
 
 void RotationControllerSystem::PrepareForRemove()

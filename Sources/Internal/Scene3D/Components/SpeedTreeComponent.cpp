@@ -193,6 +193,7 @@ void SpeedTreeComponent::RebuildObject()
     treeObject->AddMeshBatches(meshLODDescriptors);
 
     treeObject->SetDynamicProperty(DynamicBindings::PARAM_WIND, wind.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+    treeObject->SetDynamicProperty(DynamicBindings::PARAM_PREV_WIND, prevWind.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
     treeObject->SetDynamicProperty(DynamicBindings::PARAM_FLEXIBILITY, leafsFlexibility.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 }
 

@@ -345,16 +345,17 @@ protected:
 
 // Функция создает IntrospectionCollection, типы выводятся автоматически
 template <template <typename, typename> class Container, class T, class A>
-static InspColl* CreateInspColl(Container<T, A>* t, const char* _name, const InspDesc& _desc, const size_t _offset, const MetaInfo* _type, int _flags)
+inline InspColl* CreateInspColl(Container<T, A>* t, const char* _name, const InspDesc& _desc, const size_t _offset, const MetaInfo* _type, int _flags)
 {
     return new InspCollImpl<Container, T, A>(_name, _desc, _offset, _type, _flags);
 }
 
 template <template <typename, typename, typename> class Container, class K, class V, class A>
-static InspColl* CreateInspColl(Container<K, V, A>* t, const char* _name, const InspDesc& _desc, const size_t _offset, const MetaInfo* _type, int _flags)
+inline InspColl* CreateInspColl(Container<K, V, A>* t, const char* _name, const InspDesc& _desc, const size_t _offset, const MetaInfo* _type, int _flags)
 {
     return new InspKeyedCollImpl<Container, K, V, A>(_name, _desc, _offset, _type, _flags);
 }
+// */
 };
 
 #endif

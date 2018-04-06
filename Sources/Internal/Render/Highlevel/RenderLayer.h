@@ -32,7 +32,7 @@ public:
     inline eRenderLayerID GetRenderLayerID() const;
     inline uint32 GetSortingFlags() const;
 
-    virtual void Draw(Camera* camera, const RenderBatchArray& batchArray, rhi::HPacketList packetList);
+    virtual void Draw(Camera* camera, const RenderBatchArray& batchArray, rhi::HPacketList packetList, uint32 flags);
 
     void SetViewportOverride(bool enable, const rhi::Viewport& vp);
 

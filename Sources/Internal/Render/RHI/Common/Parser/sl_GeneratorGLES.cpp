@@ -3,6 +3,8 @@
 #include "sl_Tree.h"
 
 #include "Logger/Logger.h"
+#include "Render/RHI/rhi_Type.h"
+#include "Utils/StringFormat.h"
 
 #include <stdarg.h>
 
@@ -15,6 +17,9 @@ static const char* _builtInSemantics[] =
   "SV_POSITION", "gl_Position",
   "DEPTH", "gl_FragDepth",
 };
+
+static const char* FRAGMENT_OUTPUT_NAME[GLESGenerator::GLSL_VERSION_COUNT] = { "gl_FragColor", "out_FragColor0" };
+static const char* FRAGMENT_MRT_OUTPUT_NAME[GLESGenerator::GLSL_VERSION_COUNT] = { "gl_FragData[%d]", "out_FragColor%d" };
 
 // These are reserved words in GLSL that aren't reserved in HLSL.
 const char* GLESGenerator::ReservedWord[] =
@@ -112,14 +117,21 @@ static const char* GetBuiltInSemantic(const char* semantic)
             return _builtInSemantics[i * 2 + 1];
         }
     }
-    return NULL;
+    return nullptr;
+}
+
+static const char* GetFragmentOutTargetSemantic(uint32_t index)
+{
+    static char buffer[] = "SV_TARGETX";
+    buffer[9] = char('0' + index);
+    return buffer;
 }
 
 int GLESGenerator::GetFunctionArguments(HLSLFunctionCall* functionCall, HLSLExpression* expression[], int maxArguments)
 {
     HLSLExpression* argument = functionCall->argument;
     int numArguments = 0;
-    while (argument != NULL)
+    while (argument != nullptr)
     {
         if (numArguments < maxArguments)
         {
@@ -133,12 +145,6 @@ int GLESGenerator::GetFunctionArguments(HLSLFunctionCall* functionCall, HLSLExpr
 
 GLESGenerator::GLESGenerator(Allocator* allocator)
 {
-    tree = NULL;
-    entryName = NULL;
-    target = TARGET_VERTEX;
-    inAttribPrefix = NULL;
-    outAttribPrefix = NULL;
-    hasError = false;
     matrixRowFunction[0] = 0;
     clipFunction[0] = 0;
     tex2DlodFunction[0] = 0;
@@ -149,96 +155,131 @@ GLESGenerator::GLESGenerator(Allocator* allocator)
     scalarSwizzle3Function[0] = 0;
     scalarSwizzle4Function[0] = 0;
     sinCosFunction[0] = 0;
-    outputPosition = false;
-    mrtUsed = false;
 }
 
-bool GLESGenerator::Generate(const HLSLTree* tree_, Target target_, const char* entryName_, std::string* code)
+bool GLESGenerator::Generate(const HLSLTree* tree_, GLSLVersion _version, Target target_, const char* entryName_, std::string* code)
 {
     DVASSERT(tree_ != nullptr);
 
     tree = tree_;
     entryName = entryName_;
+    version = _version;
     target = target_;
     mrtUsed = false;
 
     writer.Reset(code);
 
     HLSLStruct* fragment_out = tree->FindGlobalStruct("fragment_out");
-    if (fragment_out)
+    if (fragment_out != nullptr)
     {
         for (HLSLStructField* f = fragment_out->field; f; f = f->nextField)
         {
-            if (f->semantic && stricmp(f->semantic, "SV_TARGET1") == 0)
+            if (f->semantic != nullptr)
             {
-                mrtUsed = true;
-                break;
+                for (uint32_t outIndex = 1; outIndex < rhi::MAX_RENDER_TARGET_COUNT; ++outIndex)
+                {
+                    if (stricmp(f->semantic, GetFragmentOutTargetSemantic(outIndex)) == 0)
+                    {
+                        mrtUsed = true;
+                        break;
+                    }
+                }
             }
         }
     }
 
     bool usesClip = tree->GetContainsString("clip");
-    bool usesTex2Dlod = tree->GetContainsString("tex2Dlod");
+    bool usesTex2Dlod = tree->GetContainsString("tex2Dlod") || tree->GetContainsString("texCUBElod");
     bool usesTex2Dbias = tree->GetContainsString("tex2Dbias");
     bool usesTex3Dlod = tree->GetContainsString("tex3Dlod");
     bool usestexCUBEbias = tree->GetContainsString("texCUBEbias");
     bool usesSinCos = tree->GetContainsString("sincos");
     
     
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    
 #if defined(__DAVAENGINE_IPHONE__)
-    writer.WriteLine(0, "#version 100");
-    writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
-    writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
-    writer.WriteLine(0, "#extension GL_OES_standard_derivatives : enable");
-    writer.WriteLine(0, "#extension GL_EXT_shadow_samplers : enable");
-    writer.WriteLine(0, "#define texture2DLod texture2DLodEXT");
-    writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
-    writer.WriteLine(0, "#define shadow2D shadow2DEXT");
+
+    if (version == GLSL_300)
+    {
+        writer.WriteLine(0, "#version 300 es");
+        if (target == TARGET_FRAGMENT)
+            writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
+    }
+    else
+    {
+        writer.WriteLine(0, "#version 100");
+        writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
+        writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
+        writer.WriteLine(0, "#extension GL_OES_standard_derivatives : enable");
+        writer.WriteLine(0, "#extension GL_EXT_shadow_samplers : enable");
+        writer.WriteLine(0, "#define shadow2D shadow2DEXT");
+        if (usesTex2Dlod && (target == TARGET_FRAGMENT))
+        {
+            writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
+            writer.WriteLine(0, "#define texture2DLod texture2DLodEXT");
+            writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
+        }
+
+        writer.WriteLine(0, "#define textureGrad(s, uv, dx, dy) texture2D(s, uv)");
+        writer.WriteLine(0, "#define FramebufferFetch(i) gl_LastFragData[i]");
+    }
+
     writer.WriteLine(0, "#define FP_SHADOW(t) (t)");
-#endif
-
     writer.WriteLine(0, "precision highp float;");
-    
-#else
 
-#if defined(__DAVAENGINE_MACOS__)
+#elif defined(__DAVAENGINE_ANDROID__)
+
+    if (version == GLSL_300)
+    {
+        writer.WriteLine(0, "#version 300 es");
+        if (target == TARGET_FRAGMENT)
+            writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
+    }
+    else
+    {
+        writer.WriteLine(0, "#version 100");
+        writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
+        writer.WriteLine(0, "#extension GL_OES_standard_derivatives : enable");
+        writer.WriteLine(0, "#extension GL_EXT_shadow_samplers : enable");
+        if (target == TARGET_FRAGMENT)
+        {
+            writer.WriteLine(0, "#extension GL_EXT_shader_framebuffer_fetch : enable");
+            writer.WriteLine(0, "#define FramebufferFetch(i) gl_LastFragData[i]");
+        }
+        writer.WriteLine(0, "#define textureCubeLod textureCubeLodEXT");
+        writer.WriteLine(0, "#define shadow2D shadow2DEXT");
+    }
+
+    writer.WriteLine(0, "#define FP_SHADOW(t) (t)");
+    writer.WriteLine(0, "precision highp float;");
+
+#elif defined(__DAVAENGINE_MACOS__)
+
+    DVASSERT(version == GLSL_100);
+
     writer.WriteLine(0, "#version 120");
-#else
-    writer.WriteLine(0, "#version 130");
-#endif
-
     writer.WriteLine(0, "#extension GL_ARB_shader_texture_lod : enable");
-#if !defined(__DAVAENGINE_MACOS__)
-    writer.WriteLine(0, "#extension GL_EXT_shader_texture_lod : enable");
-#endif
-    
-#if defined(__DAVAENGINE_MACOS__)
     writer.WriteLine(0, "#extension GL_EXT_gpu_shader4 : enable");
-    writer.WriteLine(0, "#define textureGrad texture2DGrad");
-#endif
 
+    writer.WriteLine(0, "#define textureGrad texture2DGrad");
     writer.WriteLine(0, "#define highp ");
     writer.WriteLine(0, "#define mediump ");
     writer.WriteLine(0, "#define lowp ");
     writer.WriteLine(0, "#define FP_SHADOW(t) (t).x");
+    writer.WriteLine(0, "#define lerp(a,b,t) ( ( (b) - (a) ) * (t) + (a) )");
+
+#else
+
+    writer.WriteLine(0, (version == GLSL_100) ? "#version 130" : "#version 330");
+    writer.WriteLine(0, "#extension GL_ARB_shader_texture_lod : enable");
+
+    writer.WriteLine(0, "#define highp ");
+    writer.WriteLine(0, "#define mediump ");
+    writer.WriteLine(0, "#define lowp ");
+    writer.WriteLine(0, (version == GLSL_100) ? "#define FP_SHADOW(t) (t).x" : "#define FP_SHADOW(t) (t)");
 
 #endif
 
     writer.WriteLine(0, "#define FP_A8(t)       (t).a");
-
-#if defined(__DAVAENGINE_IPHONE__)
-    writer.WriteLine(0, "#define FramebufferFetch(i) gl_LastFragData[i]");
-#else
-    writer.WriteLine(0, "#define FramebufferFetch(i) vec4(1.0, 0.9, 0.3, 1.0)"); //GFX_COMPLETE - later just test it with caps, for now supress compilation errors
-#endif
-    
-    
-#if defined(__DAVAENGINE_MACOS__)
-    writer.WriteLine(0, "#define lerp(a,b,t) ( ( (b) - (a) ) * (t) + (a) )");
-#endif
-
     writer.WriteLine(0, "");
     writer.WriteLine(0, "// per api bindings");
     writer.WriteLine(0, "#define ndcToUvMapping vec4(0.5, 0.5, 0.5, 0.5)"); // vec4(0.5, -0.5, 0.5, 0.5) - for non GL
@@ -303,7 +344,14 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, Target target_, const char* 
                 if (field->semantic && (stricmp(field->semantic, "POSITION") == 0))
                     tname = "vec4";
 
-                writer.WriteLine(0, "attribute %s attr_%s;", tname, field->name);
+                if (version == GLSL_100)
+                {
+                    writer.WriteLine(0, "attribute %s attr_%s;", tname, field->name);
+                }
+                else
+                {
+                    writer.WriteLine(0, "in %s attr_%s;", tname, field->name);
+                }
             }
         }
         else
@@ -324,7 +372,14 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, Target target_, const char* 
                         prefix = "mediump";
                 }
 
-                writer.WriteLine(0, "varying %s %s var_%s;", prefix, tname, field->name);
+                if (version == GLSL_100)
+                {
+                    writer.WriteLine(0, "varying %s %s var_%s;", prefix, tname, field->name);
+                }
+                else
+                {
+                    writer.WriteLine(0, "in %s %s var_%s;", prefix, tname, field->name);
+                }
             }
         }
     }
@@ -356,16 +411,76 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, Target target_, const char* 
                                 prefix = "mediump";
                         }
 
-                        writer.WriteLine(0, "varying %s %s var_%s;", prefix, tname, field->name);
+                        if (version == GLSL_100)
+                        {
+                            writer.WriteLine(0, "varying %s %s var_%s;", prefix, tname, field->name);
+                        }
+                        else
+                        {
+                            writer.WriteLine(0, "out %s %s var_%s;", prefix, tname, field->name);
+                        }
                     }
                 }
+            }
+        }
+    }
+    else if (version == GLSL_300)
+    {
+        HLSLStruct* fragment_out = tree->FindGlobalStruct("fragment_out");
+        if (fragment_out != nullptr)
+        {
+            Allocator allocator;
+            Array<sl::HLSLFunctionCall*> fbFetchcalls(&allocator);
+            std::set<uint32_t> fbFetchUnits;
+
+            const_cast<HLSLTree*>(tree)->FindFunctionCall("FramebufferFetch", &fbFetchcalls);
+            for (int i = 0; i < fbFetchcalls.GetSize(); ++i)
+            {
+                sl::HLSLFunctionCall* call = fbFetchcalls[i];
+                if ((call->numArguments == 1) && (call->argument->nodeType == HLSLNodeType_LiteralExpression))
+                {
+                    HLSLLiteralExpression* literalExpression = static_cast<HLSLLiteralExpression*>(call->argument);
+                    if (literalExpression->type == HLSLBaseType_Int)
+                        fbFetchUnits.insert(uint32_t(literalExpression->iValue));
+                }
+            }
+
+            for (HLSLStructField* f = fragment_out->field; f; f = f->nextField)
+            {
+                if (f->semantic != nullptr)
+                {
+                    if (stricmp(f->semantic, "SV_TARGET") == 0)
+                    {
+                        const char* qualifier = (fbFetchUnits.count(0u) != 0u) ? "inout" : "out";
+                        writer.WriteLine(0, "layout (location = 0) %s vec4 %s;", qualifier, DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], 0).c_str());
+                        fbFetchUnits.erase(0u);
+                        continue;
+                    }
+
+                    for (uint32_t outIndex = 0; outIndex < rhi::MAX_RENDER_TARGET_COUNT; ++outIndex)
+                    {
+                        if (stricmp(f->semantic, GetFragmentOutTargetSemantic(outIndex)) == 0)
+                        {
+                            const char* qualifier = (fbFetchUnits.count(outIndex) != 0) ? "inout" : "out";
+                            writer.WriteLine(0, "layout (location = %d) %s vec4 %s;", outIndex, qualifier, DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], outIndex).c_str());
+                            fbFetchUnits.erase(outIndex);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //units used only for framebuffer-fetch
+            for (uint32_t unitIndex : fbFetchUnits)
+            {
+                writer.WriteLine(0, "layout (location = %d) inout vec4 %s;", unitIndex, DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], unitIndex).c_str());
             }
         }
     }
 
     OutputStatements(0, statement);
 
-    writer.WriteLine(0, entryFunction->fileName, entryFunction->line, "void main()");
+    writer.WriteLineWithNumber(0, entryFunction->fileName, entryFunction->line, "void main()");
     writer.WriteLine(0, "{");
 
     //GFX_COMPLETE
@@ -381,7 +496,7 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, Target target_, const char* 
             {
                 writer.WriteIdent(1);
                 OutputDeclaration(declaration->type, GetSafeIdentifierName(declaration->name));
-                if (declaration->assignment != NULL)
+                if (declaration->assignment != nullptr)
                 {
                     writer.Write(" = ");
                     OutputExpression(declaration->assignment, &declaration->type);
@@ -415,15 +530,15 @@ const char* GLESGenerator::GetResult() const
 void GLESGenerator::OutputExpressionList(HLSLExpression* expression, HLSLArgument* argument)
 {
     int numExpressions = 0;
-    while (expression != NULL)
+    while (expression != nullptr)
     {
         if (numExpressions > 0)
         {
             writer.Write(", ");
         }
 
-        HLSLType* expectedType = NULL;
-        if (argument != NULL)
+        HLSLType* expectedType = nullptr;
+        if (argument != nullptr)
         {
             expectedType = &argument->type;
             argument = argument->nextArgument;
@@ -465,7 +580,7 @@ void GLESGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             DVASSERT(declaration);
             int reg = -1;
 
-            if (declaration->registerName != NULL)
+            if (declaration->registerName != nullptr)
             {
                 sscanf(declaration->registerName, "s%d", &reg);
             }
@@ -525,7 +640,7 @@ void GLESGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         HLSLUnaryExpression* unaryExpression = static_cast<HLSLUnaryExpression*>(expression);
         const char* op = "?";
         bool pre = true;
-        const HLSLType* dstType = NULL;
+        const HLSLType* dstType = nullptr;
         switch (unaryExpression->unaryOp)
         {
         case HLSLUnaryOp_Negative:
@@ -572,8 +687,8 @@ void GLESGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
     {
         HLSLBinaryExpression* binaryExpression = static_cast<HLSLBinaryExpression*>(expression);
         const char* op = "?";
-        const HLSLType* dstType1 = NULL;
-        const HLSLType* dstType2 = NULL;
+        const HLSLType* dstType1 = nullptr;
+        const HLSLType* dstType2 = nullptr;
         switch (binaryExpression->binaryOp)
         {
         case HLSLBinaryOp_Add:
@@ -690,18 +805,19 @@ void GLESGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
                         {
                             if (mrtUsed)
                             {
-                                if (stricmp(f->semantic, "SV_TARGET0") == 0)
-                                    writer.Write("gl_FragData[0]");
-                                else if (stricmp(f->semantic, "SV_TARGET1") == 0)
-                                    writer.Write("gl_FragData[1]");
-                                else if (stricmp(f->semantic, "SV_TARGET2") == 0)
-                                    writer.Write("gl_FragData[2]");
-                                else if (stricmp(f->semantic, "SV_TARGET3") == 0)
-                                    writer.Write("gl_FragData[3]");
-                                else if (stricmp(f->semantic, "SV_TARGET4") == 0)
-                                    writer.Write("gl_FragData[4]");
-                                else if (stricmp(f->semantic, "SV_TARGET5") == 0)
-                                    writer.Write("gl_FragData[5]");
+                                if (stricmp(f->semantic, "SV_TARGET") == 0)
+                                {
+                                    writer.WriteLine(0, FRAGMENT_MRT_OUTPUT_NAME[version], 0);
+                                }
+
+                                for (uint32_t outIndex = 0; outIndex < rhi::MAX_RENDER_TARGET_COUNT; ++outIndex)
+                                {
+                                    if (stricmp(f->semantic, GetFragmentOutTargetSemantic(outIndex)) == 0)
+                                    {
+                                        writer.WriteLine(0, FRAGMENT_MRT_OUTPUT_NAME[version], outIndex);
+                                        break;
+                                    }
+                                }
 
                                 if (f->type.baseType == HLSLBaseType_Float)
                                     writer.Write(".x");
@@ -712,7 +828,7 @@ void GLESGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
                             }
                             else
                             {
-                                writer.Write("gl_FragColor");
+                                writer.Write(FRAGMENT_OUTPUT_NAME[version]);
                             }
                         }
                         else
@@ -836,6 +952,19 @@ void GLESGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             writer.Write(", 0.0, 1.0)");
             handled = true;
         }
+        else if (version == GLSL_300 && String_Equal(functionName, "FramebufferFetch"))
+        {
+            HLSLExpression* argument[1];
+            if (GetFunctionArguments(functionCall, argument, 1) != 1 || argument[0]->nodeType != HLSLNodeType_LiteralExpression || static_cast<HLSLLiteralExpression*>(argument[0])->type != HLSLBaseType_Int)
+            {
+                Error("FramebufferFetch expects 1 integer argument");
+                return;
+            }
+
+            HLSLLiteralExpression* literalExpression = static_cast<HLSLLiteralExpression*>(argument[0]);
+            writer.Write(DAVA::Format(FRAGMENT_MRT_OUTPUT_NAME[version], literalExpression->iValue).c_str());
+            handled = true;
+        }
 
         if (!handled)
         {
@@ -875,23 +1004,23 @@ void GLESGenerator::OutputIdentifier(const char* name)
     // Remap intrinstic functions.
     if (String_Equal(name, "tex2D"))
     {
-        name = "texture2D";
+        name = (version == GLSL_100) ? "texture2D" : "texture";
     }
     else if (String_Equal(name, "tex2Dcmp"))
     {
-        name = "shadow2D";
+        name = (version == GLSL_100) ? "shadow2D" : "texture";
     }
     else if (String_Equal(name, "tex2Dproj"))
     {
-        name = "texture2DProj";
+        name = (version == GLSL_100) ? "texture2DProj" : "textureProj";
     }
     else if (String_Equal(name, "texCUBE"))
     {
-        name = "textureCube";
+        name = (version == GLSL_100) ? "textureCube" : "texture";
     }
     else if (String_Equal(name, "texCUBElod"))
     {
-        name = "textureCubeLod";
+        name = (version == GLSL_100) ? "textureCubeLod" : "textureLod";
     }
     else if (String_Equal(name, "tex2Dgrad"))
     {
@@ -907,7 +1036,7 @@ void GLESGenerator::OutputIdentifier(const char* name)
     }
     else if (String_Equal(name, "tex2Dlod"))
     {
-        name = "texture2DLod";
+        name = (version == GLSL_100) ? "texture2DLod" : "textureLod";
     }
     else if (String_Equal(name, "texCUBEbias"))
     {
@@ -959,7 +1088,7 @@ void GLESGenerator::OutputIdentifier(const char* name)
 void GLESGenerator::OutputArguments(HLSLArgument* argument)
 {
     int numArgs = 0;
-    while (argument != NULL)
+    while (argument != nullptr)
     {
         if (numArgs > 0)
         {
@@ -1034,7 +1163,7 @@ void GLESGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             {
                 writer.WriteLine(indent, "struct %s {", structure->name);
                 HLSLStructField* field = structure->field;
-                while (field != NULL)
+                while (field != nullptr)
                 {
                     writer.BeginLine(indent + 1, field->fileName, field->line);
                     OutputDeclaration(field->type, field->name);
@@ -1065,11 +1194,11 @@ void GLESGenerator::OutputStatements(int indent, HLSLStatement* statement, const
 
             /*
              // Empty uniform blocks cause compilation errors on NVIDIA, so don't emit them.
-             if (buffer->field != NULL)
+             if (buffer->field != nullptr)
              {
              m_writer.WriteLine(indent, buffer->fileName, buffer->line, "layout (std140) uniform %s {", buffer->name);
              HLSLDeclaration* field = buffer->field;
-             while (field != NULL)
+             while (field != nullptr)
              {
              m_writer.BeginLine(indent + 1, field->fileName, field->line);
              OutputDeclaration(field->type, field->name);
@@ -1117,7 +1246,7 @@ void GLESGenerator::OutputStatements(int indent, HLSLStatement* statement, const
         else if (statement->nodeType == HLSLNodeType_ReturnStatement)
         {
             HLSLReturnStatement* returnStatement = static_cast<HLSLReturnStatement*>(statement);
-            if (returnStatement->expression != NULL)
+            if (returnStatement->expression != nullptr)
             {
                 bool do_out_expr = true;
 
@@ -1139,7 +1268,7 @@ void GLESGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             }
             else
             {
-                writer.WriteLine(indent, returnStatement->fileName, returnStatement->line, "return;");
+                writer.WriteLineWithNumber(indent, returnStatement->fileName, returnStatement->line, "return;");
             }
         }
         else if (statement->nodeType == HLSLNodeType_DiscardStatement)
@@ -1147,30 +1276,30 @@ void GLESGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             HLSLDiscardStatement* discardStatement = static_cast<HLSLDiscardStatement*>(statement);
             if (target == TARGET_FRAGMENT)
             {
-                writer.WriteLine(indent, discardStatement->fileName, discardStatement->line, "discard;");
+                writer.WriteLineWithNumber(indent, discardStatement->fileName, discardStatement->line, "discard;");
             }
         }
         else if (statement->nodeType == HLSLNodeType_BreakStatement)
         {
             HLSLBreakStatement* breakStatement = static_cast<HLSLBreakStatement*>(statement);
-            writer.WriteLine(indent, breakStatement->fileName, breakStatement->line, "break;");
+            writer.WriteLineWithNumber(indent, breakStatement->fileName, breakStatement->line, "break;");
         }
         else if (statement->nodeType == HLSLNodeType_ContinueStatement)
         {
             HLSLContinueStatement* continueStatement = static_cast<HLSLContinueStatement*>(statement);
-            writer.WriteLine(indent, continueStatement->fileName, continueStatement->line, "continue;");
+            writer.WriteLineWithNumber(indent, continueStatement->fileName, continueStatement->line, "continue;");
         }
         else if (statement->nodeType == HLSLNodeType_IfStatement)
         {
             HLSLIfStatement* ifStatement = static_cast<HLSLIfStatement*>(statement);
-            writer.BeginLine(indent, ifStatement->fileName, ifStatement->line);
+            writer.WriteLineWithNumber(indent, ifStatement->fileName, ifStatement->line, "");
             writer.Write("if (");
             OutputExpression(ifStatement->condition, &kBoolType);
             writer.Write(") {");
             writer.EndLine();
             OutputStatements(indent + 1, ifStatement->statement, returnType);
             writer.WriteLine(indent, "}");
-            if (ifStatement->elseStatement != NULL)
+            if (ifStatement->elseStatement != nullptr)
             {
                 writer.WriteLine(indent, "else {");
                 OutputStatements(indent + 1, ifStatement->elseStatement, returnType);
@@ -1195,7 +1324,7 @@ void GLESGenerator::OutputStatements(int indent, HLSLStatement* statement, const
         else if (statement->nodeType == HLSLNodeType_BlockStatement)
         {
             HLSLBlockStatement* blockStatement = static_cast<HLSLBlockStatement*>(statement);
-            writer.WriteLine(indent, blockStatement->fileName, blockStatement->line, "{");
+            writer.WriteLineWithNumber(indent, blockStatement->fileName, blockStatement->line, "{");
             OutputStatements(indent + 1, blockStatement->statement);
             writer.WriteLine(indent, "}");
         }
@@ -1212,7 +1341,7 @@ void GLESGenerator::OutputStatements(int indent, HLSLStatement* statement, const
 HLSLFunction* GLESGenerator::FindFunction(HLSLRoot* root, const char* name)
 {
     HLSLStatement* statement = root->statement;
-    while (statement != NULL)
+    while (statement != nullptr)
     {
         if (statement->nodeType == HLSLNodeType_Function)
         {
@@ -1224,13 +1353,13 @@ HLSLFunction* GLESGenerator::FindFunction(HLSLRoot* root, const char* name)
         }
         statement = statement->nextStatement;
     }
-    return NULL;
+    return nullptr;
 }
 
 HLSLStruct* GLESGenerator::FindStruct(HLSLRoot* root, const char* name)
 {
     HLSLStatement* statement = root->statement;
-    while (statement != NULL)
+    while (statement != nullptr)
     {
         if (statement->nodeType == HLSLNodeType_Struct)
         {
@@ -1242,7 +1371,7 @@ HLSLStruct* GLESGenerator::FindStruct(HLSLRoot* root, const char* name)
         }
         statement = statement->nextStatement;
     }
-    return NULL;
+    return nullptr;
 }
 
 void GLESGenerator::OutputAttribute(const HLSLType& type, const char* semantic, const char* attribType, const char* prefix)
@@ -1253,11 +1382,11 @@ void GLESGenerator::OutputAttribute(const HLSLType& type, const char* semantic, 
         // If the argument is a struct with semantics specified, we need to
         // grab them.
         HLSLStruct* structDeclaration = FindStruct(root, type.typeName);
-        DVASSERT(structDeclaration != NULL);
+        DVASSERT(structDeclaration != nullptr);
         HLSLStructField* field = structDeclaration->field;
-        while (field != NULL)
+        while (field != nullptr)
         {
-            if (field->semantic != NULL && GetBuiltInSemantic(field->semantic) == NULL)
+            if (field->semantic != nullptr && GetBuiltInSemantic(field->semantic) == nullptr)
             {
                 const char* typeName = GetTypeName(field->type);
                 writer.WriteLine(0, "%s %s %s%s;", attribType, typeName, prefix, field->semantic);
@@ -1265,7 +1394,7 @@ void GLESGenerator::OutputAttribute(const HLSLType& type, const char* semantic, 
             field = field->nextField;
         }
     }
-    else if (semantic != NULL && GetBuiltInSemantic(semantic) == NULL)
+    else if (semantic != nullptr && GetBuiltInSemantic(semantic) == nullptr)
     {
         const char* typeName = GetTypeName(type);
         writer.WriteLine(0, "%s %s %s%s;", attribType, typeName, prefix, semantic);
@@ -1276,7 +1405,7 @@ void GLESGenerator::OutputAttributes(HLSLFunction* entryFunction)
 {
     // Write out the input attributes to the shader.
     HLSLArgument* argument = entryFunction->argument;
-    while (argument != NULL)
+    while (argument != nullptr)
     {
         OutputAttribute(argument->type, argument->semantic, "in", inAttribPrefix);
         argument = argument->nextArgument;
@@ -1289,7 +1418,7 @@ void GLESGenerator::OutputAttributes(HLSLFunction* entryFunction)
 void GLESGenerator::OutputSetOutAttribute(const char* semantic, const char* resultName)
 {
     const char* builtInSemantic = GetBuiltInSemantic(semantic);
-    if (builtInSemantic != NULL)
+    if (builtInSemantic != nullptr)
     {
         if (String_Equal(builtInSemantic, "gl_Position"))
         {
@@ -1345,13 +1474,13 @@ void GLESGenerator::OutputDeclaration(HLSLDeclaration* declaration)
     else if (IsSamplerType(declaration->type))
     {
         int reg = -1;
-        if (declaration->registerName != NULL)
+        if (declaration->registerName != nullptr)
         {
             sscanf(declaration->registerName, "s%d", &reg);
         }
         DVASSERT(reg != -1);
 
-        const char* samplerType = NULL;
+        const char* samplerType = nullptr;
 
         if (declaration->type.baseType == HLSLBaseType_Sampler2D)
         {
@@ -1385,7 +1514,7 @@ void GLESGenerator::OutputDeclaration(HLSLDeclaration* declaration)
     else
     {
         OutputDeclaration(declaration->type, GetSafeIdentifierName(declaration->name));
-        if (declaration->assignment != NULL)
+        if (declaration->assignment != nullptr)
         {
             writer.Write(" = ");
             if (declaration->type.array)

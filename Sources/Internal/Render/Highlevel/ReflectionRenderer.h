@@ -40,7 +40,7 @@ public:
 
     void SetDebugDrawProbe(ReflectionProbe* probe);
 
-    Asset<Texture> GetSpecularConvolution2();
+    Asset<Texture> GetGlobalProbeSpecularConvolution();
 
 private:
     struct SphericalHarmonicsUpdate
@@ -86,6 +86,10 @@ private:
     void RenderReflectionProbe(ReflectionProbe* probe);
     void DrawDebugInfo();
 
+    Asset<Texture> GetTemporaryFramebuffer();
+    Asset<Texture> GetTemporaryFramebufferDepth();
+    Asset<Texture> GetDownsampledFramebuffer();
+
 private:
     RenderSystem* renderSystem = nullptr;
     RenderPass* reflectionPass = nullptr;
@@ -94,10 +98,13 @@ private:
     ReflectionProbe* debugDrawProbe = nullptr;
     Vector<ReflectionProbe*> localReflectionProbes;
     Vector<ReflectionProbeToUpdate> probesForUpdate;
-    Asset<Texture> temporaryFramebuffer;
-    Asset<Texture> temporaryFramebufferDepth;
-    Asset<Texture> downsampledFramebuffer; // temporary convolution textures
-    Asset<Texture> globalProbeSpecularConvolution;
+    struct
+    {
+        Asset<Texture> temporaryFramebuffer;
+        Asset<Texture> temporaryFramebufferDepth;
+        Asset<Texture> downsampledFramebuffer; // temporary convolution textures
+        Asset<Texture> globalProbeSpecularConvolution;
+    } sharedTextures;
 
     Vector<SphericalHarmonicsUpdate> shUpdateQueue;
     List<Asset<Texture>> textureCache[CUBEMAP_QUALITY_LEVELS];

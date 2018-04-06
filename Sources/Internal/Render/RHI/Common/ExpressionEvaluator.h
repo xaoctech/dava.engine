@@ -10,7 +10,7 @@ public:
     ExpressionEvaluator();
     ~ExpressionEvaluator();
 
-    bool Evaluate(const char* expression, float32* out);
+    bool Evaluate(const char* expression, float32* out, PreprocessorTokenSet& tokens);
 
     bool SetVariable(const char* var, float32 value);
     void RemoveVariable(const char* var);

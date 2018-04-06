@@ -42,11 +42,9 @@ struct TextureMetal_t : public ResourceImpl<TextureMetal_t, Texture::Descriptor>
     uint32 mappedSlice;
     id<MTLTexture> uid;
     id<MTLTexture> uid2;
-    Texture::Descriptor creationDesc;
     uint32 is_mapped : 1;
     uint32 is_renderable : 1;
     uint32 is_cubemap : 1;
-    uint32 need_restoring : 1;
 };
 RHI_IMPL_RESOURCE(TextureMetal_t, Texture::Descriptor);
 
@@ -85,6 +83,10 @@ static MTLPixelFormat MetalTextureFormat(TextureFormat format)
         return MTLPixelFormatB5G6R5Unorm;
     case TEXTURE_FORMAT_R4G4B4A4:
         return MTLPixelFormatABGR4Unorm;
+    case TEXTURE_FORMAT_R16G16:
+        return MTLPixelFormatRG16Unorm;
+    case TEXTURE_FORMAT_A16R16G16B16:
+        return MTLPixelFormatRGBA16Unorm;
     case TEXTURE_FORMAT_R8:
         return MTLPixelFormatA8Unorm;
     case TEXTURE_FORMAT_PVRTC_4BPP_RGBA:
@@ -226,8 +228,6 @@ static bool _Construct(TextureMetal_t* tex, const Texture::Descriptor& texDesc)
 
     id<MTLTexture> uid = [_Metal_Device newTextureWithDescriptor:desc];
 
-    [desc release];
-
     if (uid != nil)
     {
         [uid retain];
@@ -297,6 +297,7 @@ static bool _Construct(TextureMetal_t* tex, const Texture::Descriptor& texDesc)
             desc2.mipmapLevelCount = 1;
             desc2.sampleCount = texDesc.sampleCount;
             desc2.textureType = texDesc.sampleCount > 1 ? MTLTextureType2DMultisample : MTLTextureType2D;
+            desc2.usage = desc.usage;
 
             id<MTLTexture> uid2 = [_Metal_Device newTextureWithDescriptor:desc2];
 
@@ -322,8 +323,7 @@ static bool _Construct(TextureMetal_t* tex, const Texture::Descriptor& texDesc)
         success = false;
     }
 
-    tex->need_restoring = texDesc.needRestore;
-    tex->creationDesc = texDesc;
+    [desc release];
 
     return success;
 }
@@ -674,55 +674,15 @@ void SetupDispatch(Dispatch* dispatch)
 void SetToRHIFragment(Handle tex, unsigned unitIndex, id<MTLRenderCommandEncoder> ce)
 {
     TextureMetal_t* self = TextureMetalPool::Get(tex);
+    DVASSERT(DeviceCaps().textureFormat[self->format].fetchable, DAVA::Format("Texture format '%s' is non-fetchable", TextureFormatToString(self->format)).c_str());
 
     [ce setFragmentTexture:self->uid atIndex:unitIndex];
-
-    //_CheckAllTextures();
-    /*
-#if RHI_METAL__USE_PURGABLE_STATE
-    if (self->need_restoring)
-    {
-        MTLPurgeableState s = [self->uid setPurgeableState:MTLPurgeableStateKeepCurrent];
-
-        DVASSERT(s != MTLPurgeableStateKeepCurrent);
-        if (s == MTLPurgeableStateEmpty)
-        {
-            if (!self->NeedRestore())
-            {
-                self->MarkNeedRestore();
-                DAVA::Logger::Info("tex-lost  %ux%u  ps= %i", self->width, self->height, int(s));
-            }
-        }
-        //-        [self->uid setPurgeableState:s];
-    }
-#endif
-*/
-    /*
-    if( self->need_restoring && !self->NeedRestore() )
-    {
-        MTLPurgeableState s = [self->uid setPurgeableState:MTLPurgeableStateKeepCurrent];
-
-        if (s == MTLPurgeableStateEmpty)
-        {
-            Texture::Descriptor desc = self->creationDesc;
-
-            _Destroy( self );
-            memset( desc.initialData, 0, sizeof(desc.initialData) );
-            _Construct( self, desc );
-
-            self->MarkNeedRestore();
-            DAVA::Logger::Info("tex-%u lost  (%ux%u)", RHI_HANDLE_INDEX(tex), self->width, self->height );
-        }
-    }
-
-    if (!self->NeedRestore())
-        [ce setFragmentTexture:self->uid atIndex:unitIndex];    
-*/
 }
 
 void SetToRHIVertex(Handle tex, unsigned unitIndex, id<MTLRenderCommandEncoder> ce)
 {
     TextureMetal_t* self = TextureMetalPool::Get(tex);
+    DVASSERT(DeviceCaps().textureFormat[self->format].fetchable, DAVA::Format("Texture format '%s' is non-fetchable", TextureFormatToString(self->format)).c_str());
 
     [ce setVertexTexture:self->uid atIndex:unitIndex];
 }
@@ -731,6 +691,8 @@ void SetAsRenderTarget(Handle tex, MTLRenderPassDescriptor* desc, unsigned targe
 {
     TextureMetal_t* self = TextureMetalPool::Get(tex);
     DVASSERT(self->uid);
+    DVASSERT(DeviceCaps().textureFormat[self->format].renderable, DAVA::Format("Texture format '%s' is non-renderable", TextureFormatToString(self->format)).c_str());
+
     desc.colorAttachments[target_i].texture = self->uid;
 }
 
@@ -744,6 +706,7 @@ void SetAsResolveRenderTarget(Handle tex, MTLRenderPassDescriptor* desc)
 void SetAsDepthStencil(Handle tex, MTLRenderPassDescriptor* desc)
 {
     TextureMetal_t* self = TextureMetalPool::Get(tex);
+    DVASSERT(DeviceCaps().textureFormat[self->format].renderable, DAVA::Format("Texture format '%s' is non-renderable", TextureFormatToString(self->format)).c_str());
 
     desc.depthAttachment.texture = self->uid;
     desc.stencilAttachment.texture = self->uid2;
@@ -766,7 +729,7 @@ void MarkAllNeedRestore()
 {
     for (TextureMetalPool::Iterator t = TextureMetalPool::Begin(), t_end = TextureMetalPool::End(); t != t_end; ++t)
     {
-        if (t->need_restoring)
+        if (t->NeedRestore())
             t->MarkNeedRestore();
     }
 }
@@ -777,13 +740,10 @@ ReCreateAll()
     for (TextureMetalPool::Iterator t = TextureMetalPool::Begin(), t_end = TextureMetalPool::End(); t != t_end; ++t)
     {
         TextureMetal_t* self = &(*t);
-        Texture::Descriptor desc = t->creationDesc;
-
         _Destroy(self);
-        memset(desc.initialData, 0, sizeof(desc.initialData));
-        _Construct(self, desc);
+        _Construct(self, self->CreationDesc());
 
-        if (self->need_restoring)
+        if (self->NeedRestore())
             self->MarkNeedRestore();
     }
 }

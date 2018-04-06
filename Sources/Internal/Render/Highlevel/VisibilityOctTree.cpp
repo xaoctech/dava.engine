@@ -158,7 +158,7 @@ void VisibilityOctTree::RemoveRenderObject(RenderObject* renderObject)
         voxelIndex--;
     }
 
-    uint32 index = FindAndRemoveExchangingWithLast(roIndices, renderObject);
+    uint32 index = FindAndRemoveExchangingWithLastIndex(roIndices, renderObject);
     roIndices[index]->SetTreeNodeIndex(index);
     DVASSERT(index != static_cast<uint32>(-1));
 }
@@ -211,7 +211,6 @@ void VisibilityOctTree::Clip(Camera* _camera, RenderHierarchy::ClipResult& visib
 {
     camera = _camera;
     visibilityCriteria = _visibilityCriteria;
-    frustum = camera->GetFrustum();
 
     visibleObjects.Clear();
     VoxelCoord rootCoord;
@@ -247,7 +246,7 @@ void VisibilityOctTree::InternalClip(VoxelCoord voxelCoord, const AABBox3& nodeB
     if (clipMask)
     {
         uint8 startClippingPlane = static_cast<uint8>(currentNode.startClippingPlane);
-        frustumRes = frustum->Classify(nodeBox, clipMask, startClippingPlane);
+        frustumRes = camera->GetFrustum().Classify(nodeBox, clipMask, startClippingPlane);
         currentNode.startClippingPlane = startClippingPlane;
         if (frustumRes == Frustum::EFR_OUTSIDE)
             return;
@@ -287,7 +286,7 @@ void VisibilityOctTree::InternalClip(VoxelCoord voxelCoord, const AABBox3& nodeB
 
                 if ((flags & visibilityCriteria) == visibilityCriteria)
                 {
-                    if ((flags & RenderObject::ALWAYS_CLIPPING_VISIBLE) || frustum->IsInside(renderObject->GetWorldBoundingBox(), clipMask, renderObject->startClippingPlane))
+                    if ((flags & RenderObject::ALWAYS_CLIPPING_VISIBLE) || camera->GetFrustum().IsInside(renderObject->GetWorldBoundingBox(), clipMask, renderObject->startClippingPlane))
                     {
                         visibleObjects.Set(roIndex, true);
                         //Logger::Debug("oa: %d", renderObject->GetTreeNodeIndex());
@@ -562,7 +561,7 @@ void VisibilityOctTree::InternalDebugDraw(VoxelCoord voxelCoord, const Matrix4& 
                     childCoord.z = voxelCoord.z * 2 + zdiv;
 
                     Frustum::eFrustumResult frustumRes = Frustum::EFR_INSIDE;
-                    frustumRes = frustum->Classify(childBox);
+                    frustumRes = camera->GetFrustum().Classify(childBox);
 
                     if (frustumRes != Frustum::EFR_OUTSIDE)
                         InternalDebugDraw(childCoord, worldMatrix, childBox, renderHelper);

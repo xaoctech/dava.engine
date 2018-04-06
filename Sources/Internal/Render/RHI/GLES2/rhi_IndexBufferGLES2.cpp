@@ -8,6 +8,7 @@
 using DAVA::Logger;
 
 #include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 namespace rhi
 {
@@ -314,12 +315,12 @@ SetToRHI(Handle ib)
 
         _GLES2_LastSetIndices = static_cast<uint8*>(self->mappedData);
 
-        GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+        glState.SetBufferBinding(OpenGLState::ElementArrayBuffer, 0);
         _GLES2_LastSetIB = 0;
     }
     else
     {
-        GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self->uid));
+        glState.SetBufferBinding(OpenGLState::ElementArrayBuffer, self->uid);
         _GLES2_LastSetIB = self->uid;
         _GLES2_LastSetIndices = nullptr;
 

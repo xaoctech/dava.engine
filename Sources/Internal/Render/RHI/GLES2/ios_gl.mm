@@ -56,9 +56,16 @@ bool ios_gl_check_layer()
     return NO;
 }
 
-void ios_gl_init(void* nativeLayer)
+void ios_gl_init(void* nativeLayer, bool srgbFramebuffer)
 {
     _GLES2_Native_Window = nativeLayer;
+
+    if (srgbFramebuffer)
+    {
+        NSDictionary* drawableProperties = @{ kEAGLDrawablePropertyColorFormat : kEAGLColorFormatSRGBA8 };
+        CAEAGLLayer* layer = static_cast<CAEAGLLayer*>(_GLES2_Native_Window);
+        [layer setDrawableProperties:drawableProperties];
+    }
 
     renderingAPI = kEAGLRenderingAPIOpenGLES3;
     _GLES2_Context = [[EAGLContext alloc] initWithAPI:renderingAPI];

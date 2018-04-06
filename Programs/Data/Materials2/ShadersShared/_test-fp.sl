@@ -1,10 +1,20 @@
-
 color_mask = rgba;
 
+#if (1)
 blending
 {
-    src = one dst = one
+    src = one
+    dst = one
 }
+#endif
+
+#if (0)
+    #ensuredefined SOME_VARIABLE 1
+    #if (SOME_VARIABLE)
+    #endif
+#elif (0)
+float t;
+#endif
 
 fragment_in
 {
@@ -26,23 +36,20 @@ uniform sampler2D gBuffer2;
 [auto][global] property float2 viewportOffset;
 [auto][global] property float2 renderTargetSize;
 [material][instance] property float testprop;
-
-float4 blablabla = float4(0.1, 0.2, 0.3, 0.4);
-
 [material][jpos] property float4 colorsArr[10] : "bigarray"; // (x, y, z, scale)
 
 float4 bar(float2 texturePos)
 {
     float4 g2 = tex2D(gBuffer2, texturePos);
-    float4 c7 = FramebufferFetch(7);
-    float4 c17 = FramebufferFetch(17);
+    float4 c7 = FramebufferFetch(1);
+    float4 c17 = FramebufferFetch(2);
 
     return (g2 + c7 + c17) * 0.33;
 }
 
 float4 foo(float4 inVal, float2 texturePosition)
 {
-    float4 fbCol = FramebufferFetch(13);
+    float4 fbCol = FramebufferFetch(3);
     float4 g1 = tex2D(gBuffer1, texturePosition);
     return (inVal + fbCol + g1 + bar(texturePosition)) * 0.25;
 }
@@ -53,9 +60,9 @@ fragment_out fp_main(fragment_in input)
     float2 texPos = ndcPos.xy * ndcToUvMapping.xy + ndcToUvMapping.zw;
     texPos = (texPos * viewportSize + viewportOffset) / renderTargetSize;
 
-    float4 g0 = tex2D(gBuffer0, texPos) + blablabla;
-    float4 fbCol = FramebufferFetch(17);
-    float4 fbCol2 = FramebufferFetch(3);
+    float4 g0 = tex2D(gBuffer0, texPos);
+    float4 fbCol = FramebufferFetch(3);
+    float4 fbCol2 = FramebufferFetch(1);
 
     float4 blendedCol = foo(fbCol + fbCol2, texPos);
     for (int i = 0; i < 10; ++i)

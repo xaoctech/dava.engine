@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Math/AABBox3.h>
+#include <Base/DynamicBitset.h>
 
 namespace DAVA
 {
@@ -51,6 +52,8 @@ private:
     Vector<uint32> leafIndices;
     Vector<Vector<DecalRenderObject*>> leafs;
     Vector<uint32> freeLeafs;
+
+    DynamicBitset testedDecals;
 };
 
 inline bool VTDecalManager::VTSpaceBox::IsInside(uint32 x, uint32 y)

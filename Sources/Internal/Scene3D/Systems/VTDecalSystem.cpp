@@ -28,7 +28,9 @@ void VTDecalSystem::Process(float32 timeElapsed)
                 VTDecalComponent* decalComponent = entity->GetComponent<VTDecalComponent>();
 
                 // Update new transform pointer, and mark that transform is changed
-                const Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
+                TransformComponent* transformComponent = GetTransformComponent(entity);
+                const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
+
                 RenderObject* object = decalComponent->renderObject;
                 if (NULL != object)
                 {
@@ -72,7 +74,8 @@ void VTDecalSystem::AddEntity(Entity* entity)
     {
         ScopedPtr<DecalRenderObject> renderObject(new DecalRenderObject());
         renderObject->SetDomain(DecalRenderObject::DOMAIN_VT);
-        const Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
+        TransformComponent* transformComponent = GetTransformComponent(entity);
+        const Matrix4* worldTransformPointer = transformComponent->GetWorldTransformPtr();
         renderObject->SetWorldTransformPtr(worldTransformPointer);
         renderObject->SetMaterial(component->GetMaterial());
         renderObject->SetDecalSize(component->GetLocalSize());

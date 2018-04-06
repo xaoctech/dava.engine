@@ -2,6 +2,7 @@
 
 #include "UI/Private/Android/MovieViewControl.Android.h"
 #include "UI/UIControlSystem.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 
 #if defined(__DAVAENGINE_ANDROID__)
 

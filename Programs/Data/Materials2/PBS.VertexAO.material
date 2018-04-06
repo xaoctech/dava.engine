@@ -5,34 +5,35 @@ RenderTechnique:
     RenderState:            
         depthFunc: "CMP_LESS"
         cullMode: "FACE_BACK"
-        state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE"
-    RenderPass0:
-        Name: "ForwardPass"
-    RenderPass1:
-        Name: "LDRForwardPass"
-        Shader: "~res:/Materials2/ShadersLDR/materials"
-    RenderPass2:
-        Name: "ForwardPassWithCombine"
-        UniqueDefines: ["FOWARD_WITH_COMBINE"]
-    RenderPass3:
-        Name: "ShadowCascadePass"
-        UniqueDefines: ["WRITE_SHADOW_MAP"]
-    RenderPass4:
-        Name: "PointLightShadowPass"
-        UniqueDefines: ["WRITE_SHADOW_MAP", "WRITE_TO_CUBEMAP"]
-    RenderPass5:
-        Name: "IBReflectionPass"
-        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
-    RenderPass6:
-        Name: "LDRIBReflectionPass"
-        Shader: "~res:/Materials2/ShadersLDR/materials"
-        UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
-    RenderPass7:
-        Name: "gBufferPass"
-        Shader: "~res:/Materials2/Shaders/deferred-pbs"        
-        RenderState:
-            state: "STATE_STENCIL_TEST"
-            stencil:
+        depthTest: true
+        depthWrite: true
+    Passes:
+        ForwardPass:
+            SupportedRenderFlows: ["HDRForward"]
+        LDRForwardPass:
+            SupportedRenderFlows: ["LDRForward"]
+            Shader: "~res:/Materials2/ShadersLDR/materials"
+        ForwardPassWithCombine:
+            SupportedRenderFlows: ["TileBasedHDRForward"]
+            UniqueDefines: ["FOWARD_WITH_COMBINE"]
+        ShadowCascadePass:
+            SupportedRenderFlows: ["all"]
+            UniqueDefines: ["WRITE_SHADOW_MAP"]
+        PointLightShadowPass:
+            SupportedRenderFlows: ["all"]
+            UniqueDefines: ["WRITE_SHADOW_MAP", "WRITE_TO_CUBEMAP"]
+        IBReflectionPass:
+            SupportedRenderFlows: ["HDR"]
+            UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+        LDRIBReflectionPass:
+            SupportedRenderFlows: ["LDR"]
+            Shader: "~res:/Materials2/ShadersLDR/materials"
+            UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
+        gBufferPass:
+            SupportedRenderFlows: ["HDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/deferred-pbs"        
+            Stencil:
+                enabled: true
                 failBack: "STENCILOP_REPLACE"
                 failFront: "STENCILOP_REPLACE"
                 funcBack: "CMP_ALWAYS"
@@ -43,13 +44,12 @@ RenderTechnique:
                 ref: 1
                 zFailBack: "STENCILOP_REPLACE"
                 zFailFront: "STENCILOP_REPLACE"
-    RenderPass8:
-        Name: "gBufferFetchPass"
-        Shader: "~res:/Materials2/Shaders/deferred-pbs"        
-        UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
-        RenderState:
-            state: "STATE_STENCIL_TEST"
-            stencil:
+        gBufferFetchPass:
+            SupportedRenderFlows: ["TileBasedHDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/deferred-pbs"        
+            UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
+            Stencil:
+                enabled: true
                 failBack: "STENCILOP_REPLACE"
                 failFront: "STENCILOP_REPLACE"
                 funcBack: "CMP_ALWAYS"
@@ -60,3 +60,9 @@ RenderTechnique:
                 ref: 1
                 zFailBack: "STENCILOP_REPLACE"
                 zFailFront: "STENCILOP_REPLACE"
+        VelocityPass:
+            SupportedRenderFlows: ["HDRDeferred", "TileBasedHDRDeferred"]
+            Shader: "~res:/Materials2/Shaders/velocity-dynamic"
+            RenderState:
+                depthFunc: "CMP_EQUAL"
+                depthWrite: false

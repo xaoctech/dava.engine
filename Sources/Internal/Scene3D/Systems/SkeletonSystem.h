@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_SKELETON_SYSTEM_H__
-#define __DAVAENGINE_SKELETON_SYSTEM_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Entity/SceneSystem.h"
@@ -11,6 +10,7 @@ class SkeletonComponent;
 class Mesh;
 class RenderSystem;
 class RenderHelper;
+class Entity;
 
 class SkeletonSystem : public SceneSystem
 {
@@ -43,5 +43,3 @@ private:
 };
 
 } //ns
-
-#endif

@@ -8,6 +8,7 @@
 using DAVA::Logger;
 
 #include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 namespace rhi
 {
@@ -260,7 +261,7 @@ void SetToRHI(Handle vb)
     VertexBufferGLES2_t* self = VertexBufferGLES2Pool::Get(vb);
 
     DVASSERT(!self->isMapped);
-    GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, self->uid));
+    glState.SetBufferBinding(OpenGLState::ArrayBuffer, self->uid);
     _GLES2_LastSetVB = self->uid;
 
     if (self->updatePending)

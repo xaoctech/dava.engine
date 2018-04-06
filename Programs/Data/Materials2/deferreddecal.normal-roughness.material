@@ -11,7 +11,7 @@ RenderTechnique:
         RenderState:            
             depthFunc: "CMP_GEQUAL"
             cullMode: "FACE_FRONT"
-            state: "STATE_DEPTH_TEST | STATE_CULL"
+            state: "STATE_DEPTH_TEST"
     RenderPassDeferredFetch:
         Name: "gBufferFetchPass"
         Layer: "DeferredDecals"
@@ -22,4 +22,4 @@ RenderTechnique:
         RenderState:            
             depthFunc: "CMP_GEQUAL"
             cullMode: "FACE_FRONT"
-            state: "STATE_DEPTH_TEST | STATE_CULL"
+            state: "STATE_DEPTH_TEST"

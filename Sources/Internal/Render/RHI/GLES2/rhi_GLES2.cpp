@@ -15,6 +15,7 @@ using DAVA::Logger;
 #include <cstring>
 
 #include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 GLuint _GLES2_Bound_FrameBuffer = 0;
 GLuint _GLES2_Default_FrameBuffer = 0;
@@ -23,7 +24,7 @@ void* _GLES2_Context = nullptr;
 void (*_GLES2_AcquireContext)() = nullptr;
 void (*_GLES2_ReleaseContext)() = nullptr;
 void (*_GLES2_Present)() = nullptr;
-int _GLES2_APIVersion = 0;
+rhi::HostAPI _GLES2_API = { rhi::RHI_GLES2, 0, 0 };
 int _GLES2_DefaultFrameBuffer_Width = 0;
 int _GLES2_DefaultFrameBuffer_Height = 0;
 GLuint _GLES2_LastSetIB = 0;
@@ -31,17 +32,24 @@ DAVA::uint8* _GLES2_LastSetIndices = nullptr;
 GLuint _GLES2_LastSetVB = 0;
 GLuint _GLES2_LastSetTex0 = 0;
 GLenum _GLES2_LastSetTex0Target = GL_TEXTURE_2D;
-int _GLES2_LastActiveTexture = -1;
 bool _GLES2_IsDebugSupported = true;
 bool _GLES2_IsGlDepth24Stencil8Supported = true;
 bool _GLES2_IsGlDepthNvNonLinearSupported = false;
 bool _GLES2_IsSeamlessCubmapSupported = false;
 bool _GLES2_UseUserProvidedIndices = false;
 bool _GLES2_TimeStampQuerySupported = false;
+bool _GLES2_MultipleRenderTargets = false;
+bool _GLES2_EmbeddedProfile = false;
 volatile bool _GLES2_ValidateNeonCalleeSavedRegisters = false;
 
-typedef void (*PFNGLCLIPCONTROLPROC_T)(GLenum origin, GLenum depth);
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_MACOS__)
+void impl_glClipControl(unsigned int, unsigned int)
+{
+} //stub for linker
+#else
+typedef void(GLAPIENTRY* PFNGLCLIPCONTROLPROC_T)(GLenum, GLenum);
 PFNGLCLIPCONTROLPROC_T impl_glClipControl = nullptr;
+#endif
 
 #if defined(__DAVAENGINE_ANDROID__) && defined(__DAVAENGINE_ARM_7__)
 volatile GLCallRegisters gl_call_registers;
@@ -51,8 +59,7 @@ volatile GLCallRegisters gl_call_registers;
 
 namespace rhi
 {
-//==============================================================================
-
+OpenGLState glState;
 Dispatch DispatchGLES2 = {};
 
 static bool ATC_Supported = false;
@@ -70,102 +77,157 @@ static bool PackedFloat_Supported = false;
 
 //------------------------------------------------------------------------------
 
-static Api gles2_HostApi()
+static const HostAPI& gles2_HostApi()
 {
-    return RHI_GLES2;
+    return _GLES2_API;
 }
 
 //------------------------------------------------------------------------------
 
-static bool gles2_TextureFormatSupported(TextureFormat format, ProgType)
+static void gles_CheckTexturesFormats()
 {
-    bool supported = false;
+    //GFX_COMPLETE review caps for non ES
+    bool ES30Compatible = (_GLES2_EmbeddedProfile && _GLES2_API.majorVersion >= 3) || !_GLES2_EmbeddedProfile;
+    bool ES32Compatible = (_GLES2_EmbeddedProfile && ((_GLES2_API.majorVersion == 3 && _GLES2_API.minorVersion >= 2) || (_GLES2_API.majorVersion > 3))) || !_GLES2_EmbeddedProfile;
 
-    switch (format)
+    for (uint32 format = 0; format < uint32(TEXTURE_FORMAT_COUNT); ++format)
     {
-    case TEXTURE_FORMAT_R8G8B8A8:
-    case TEXTURE_FORMAT_R8G8B8:
-    case TEXTURE_FORMAT_R5G5B5A1:
-    case TEXTURE_FORMAT_R5G6B5:
-    case TEXTURE_FORMAT_R4G4B4A4:
-    case TEXTURE_FORMAT_R8:
-    case TEXTURE_FORMAT_R16:
-    case TEXTURE_FORMAT_RGB10A2:
-        supported = true;
-        break;
+        RenderDeviceCaps::TextureFormatCaps& formatCaps = MutableDeviceCaps::Get().textureFormat[format];
+        switch (format)
+        {
+        //unorm formats
+        case TEXTURE_FORMAT_R8G8B8A8:
+        case TEXTURE_FORMAT_R8G8B8:
+        case TEXTURE_FORMAT_R5G5B5A1:
+        case TEXTURE_FORMAT_R5G6B5:
+        case TEXTURE_FORMAT_R4G4B4A4:
+            formatCaps.fetchable = true;
+            formatCaps.renderable = true;
+            formatCaps.filterable = true;
+            break;
 
-    case TEXTURE_FORMAT_DXT1:
-    case TEXTURE_FORMAT_DXT3:
-    case TEXTURE_FORMAT_DXT5:
-        supported = DXT_Supported;
-        break;
+        case TEXTURE_FORMAT_R8:
+        case TEXTURE_FORMAT_R16:
+        case TEXTURE_FORMAT_R16G16:
+            formatCaps.fetchable = true;
+            formatCaps.filterable = RG_Supported;
+            formatCaps.renderable = RG_Supported;
+            break;
 
-    case TEXTURE_FORMAT_A16R16G16B16:
-    case TEXTURE_FORMAT_A32R32G32B32:
-        supported = Short_Int_Supported;
-        break;
+        case TEXTURE_FORMAT_RGB10A2:
+            formatCaps.fetchable = true;
+            formatCaps.filterable = ES30Compatible;
+            formatCaps.renderable = ES30Compatible;
+            break;
 
-    case TEXTURE_FORMAT_RGBA16F:
-        supported = Half_Supported;
-        break;
+        case TEXTURE_FORMAT_A16R16G16B16:
+        case TEXTURE_FORMAT_A32R32G32B32:
+            formatCaps.fetchable = Short_Int_Supported;
+            break;
 
-    case TEXTURE_FORMAT_RGBA32F:
-        supported = Float_Supported;
-        break;
+        //float formats
+        case TEXTURE_FORMAT_R16F:
+        case TEXTURE_FORMAT_RG16F:
+            formatCaps.fetchable = (Half_Supported && RG_Supported);
+            formatCaps.filterable = formatCaps.fetchable;
+            formatCaps.renderable = formatCaps.fetchable;
+            break;
 
-    case TEXTURE_FORMAT_R16F:
-    case TEXTURE_FORMAT_RG16F:
-        supported = Half_Supported && RG_Supported;
-        break;
+        case TEXTURE_FORMAT_RGBA16F:
+            formatCaps.fetchable = Half_Supported;
+            formatCaps.filterable = formatCaps.fetchable;
+            formatCaps.renderable = formatCaps.fetchable;
+            break;
 
-    case TEXTURE_FORMAT_R32F:
-    case TEXTURE_FORMAT_RG32F:
-        supported = Float_Supported && RG_Supported;
-        break;
+        case TEXTURE_FORMAT_R32F:
+        case TEXTURE_FORMAT_RG32F:
+            formatCaps.fetchable = (Float_Supported && RG_Supported);
+            formatCaps.renderable = formatCaps.fetchable && ES32Compatible;
+            formatCaps.filterable = !_GLES2_EmbeddedProfile;
+            break;
 
-    case TEXTURE_FORMAT_PVRTC_4BPP_RGBA:
-    case TEXTURE_FORMAT_PVRTC_2BPP_RGBA:
-        supported = PVRTC_Supported;
-        break;
+        case TEXTURE_FORMAT_RGBA32F:
+            formatCaps.fetchable = Float_Supported;
+            formatCaps.renderable = formatCaps.fetchable && ES32Compatible;
+            formatCaps.filterable = !_GLES2_EmbeddedProfile;
+            break;
 
-    case TEXTURE_FORMAT_PVRTC2_4BPP_RGB:
-    case TEXTURE_FORMAT_PVRTC2_4BPP_RGBA:
-    case TEXTURE_FORMAT_PVRTC2_2BPP_RGB:
-    case TEXTURE_FORMAT_PVRTC2_2BPP_RGBA:
-        supported = PVRTC2_Supported;
-        break;
+        case TEXTURE_FORMAT_R11G11B10F:
+            formatCaps.fetchable = PackedFloat_Supported;
+            formatCaps.filterable = formatCaps.fetchable;
+            formatCaps.renderable = formatCaps.fetchable && ES32Compatible;
+            break;
 
-    case TEXTURE_FORMAT_ATC_RGB:
-    case TEXTURE_FORMAT_ATC_RGBA_EXPLICIT:
-    case TEXTURE_FORMAT_ATC_RGBA_INTERPOLATED:
-        supported = ATC_Supported;
-        break;
+        //compressed formats
+        case TEXTURE_FORMAT_DXT1:
+        case TEXTURE_FORMAT_DXT3:
+        case TEXTURE_FORMAT_DXT5:
+            formatCaps.fetchable = DXT_Supported;
+            formatCaps.filterable = DXT_Supported;
+            break;
 
-    case TEXTURE_FORMAT_ETC1:
-        supported = ETC1_Supported;
-        break;
+        case TEXTURE_FORMAT_PVRTC_4BPP_RGBA:
+        case TEXTURE_FORMAT_PVRTC_2BPP_RGBA:
+            formatCaps.fetchable = PVRTC_Supported;
+            formatCaps.filterable = PVRTC_Supported;
+            break;
 
-    case TEXTURE_FORMAT_ETC2_R8G8B8:
-    case TEXTURE_FORMAT_ETC2_R8G8B8A8:
-    case TEXTURE_FORMAT_ETC2_R8G8B8A1:
-        supported = ETC2_Supported;
-        break;
+        case TEXTURE_FORMAT_PVRTC2_4BPP_RGB:
+        case TEXTURE_FORMAT_PVRTC2_4BPP_RGBA:
+        case TEXTURE_FORMAT_PVRTC2_2BPP_RGB:
+        case TEXTURE_FORMAT_PVRTC2_2BPP_RGBA:
+            formatCaps.fetchable = PVRTC2_Supported;
+            formatCaps.filterable = PVRTC_Supported;
+            break;
 
-    case TEXTURE_FORMAT_EAC_R11_UNSIGNED:
-    case TEXTURE_FORMAT_EAC_R11_SIGNED:
-    case TEXTURE_FORMAT_EAC_R11G11_UNSIGNED:
-    case TEXTURE_FORMAT_EAC_R11G11_SIGNED:
-        supported = EAC_Supported;
-        break;
+        case TEXTURE_FORMAT_ATC_RGB:
+        case TEXTURE_FORMAT_ATC_RGBA_EXPLICIT:
+        case TEXTURE_FORMAT_ATC_RGBA_INTERPOLATED:
+            formatCaps.fetchable = ATC_Supported;
+            formatCaps.filterable = ATC_Supported;
+            break;
 
-    case TEXTURE_FORMAT_R11G11B10F:
-        supported = PackedFloat_Supported;
+        case TEXTURE_FORMAT_ETC1:
+            formatCaps.fetchable = ETC1_Supported;
+            formatCaps.filterable = ATC_Supported;
+            break;
 
-    default:
-        supported = false;
+        case TEXTURE_FORMAT_ETC2_R8G8B8:
+        case TEXTURE_FORMAT_ETC2_R8G8B8A8:
+        case TEXTURE_FORMAT_ETC2_R8G8B8A1:
+            formatCaps.fetchable = ETC2_Supported;
+            formatCaps.filterable = ATC_Supported;
+            break;
+
+        case TEXTURE_FORMAT_EAC_R11_UNSIGNED:
+        case TEXTURE_FORMAT_EAC_R11_SIGNED:
+        case TEXTURE_FORMAT_EAC_R11G11_UNSIGNED:
+        case TEXTURE_FORMAT_EAC_R11G11_SIGNED:
+            formatCaps.fetchable = EAC_Supported;
+            formatCaps.filterable = EAC_Supported;
+            break;
+
+        //depth
+        case TEXTURE_FORMAT_D16:
+        case TEXTURE_FORMAT_D24S8:
+            formatCaps.renderable = true;
+            formatCaps.filterable = !_GLES2_EmbeddedProfile;
+            formatCaps.fetchable = !_GLES2_EmbeddedProfile;
+            break;
+
+        case TEXTURE_FORMAT_D32F:
+            formatCaps.renderable = ES30Compatible || !_GLES2_EmbeddedProfile;
+            formatCaps.fetchable = formatCaps.renderable;
+            formatCaps.filterable = !_GLES2_EmbeddedProfile;
+            break;
+
+        default:
+            formatCaps.fetchable = false;
+            formatCaps.filterable = false;
+            formatCaps.renderable = false;
+            break;
+        }
     }
-
-    return supported;
 }
 
 static void gles_check_GL_extensions()
@@ -204,6 +266,7 @@ static void gles_check_GL_extensions()
         _GLES2_IsDebugSupported = strstr(ext, "GL_KHR_debug") != nullptr;
         _GLES2_IsGlDepthNvNonLinearSupported = strstr(ext, "GL_DEPTH_COMPONENT16_NONLINEAR_NV") != nullptr;
         _GLES2_IsSeamlessCubmapSupported = strstr(ext, "GL_ARB_seamless_cube_map") != nullptr;
+        _GLES2_MultipleRenderTargets = strstr(ext, "ARB_draw_buffers") != nullptr || strstr(ext, "EXT_draw_buffers") != nullptr || (strstr(ext, "ATI_draw_buffers") != nullptr);
 
         if (strstr(ext, "EXT_texture_filter_anisotropic") != nullptr)
         {
@@ -224,31 +287,25 @@ static void gles_check_GL_extensions()
         MutableDeviceCaps::Get().isPerfQuerySupported = strstr(ext, "EXT_timer_query") != nullptr || _GLES2_TimeStampQuerySupported;
     }
 
-    bool checkForMaxRT = false;
-
-    _GLES2_APIVersion = 2;
-    int minorVersion = 0;
+    _GLES2_API.majorVersion = 2;
+    _GLES2_API.minorVersion = 0;
     const char* version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     if (!IsEmptyString(version))
     {
         const char* dotChar = strchr(version, '.');
         if (dotChar && dotChar != version && *(dotChar + 1))
         {
-            _GLES2_APIVersion = atoi(dotChar - 1);
-            minorVersion = atoi(dotChar + 1);
+            _GLES2_API.majorVersion = atoi(dotChar - 1);
+            _GLES2_API.minorVersion = atoi(dotChar + 1);
         }
 
-        DAVA::Logger::Info("OpenGL version: %s (%u.%u)", version, _GLES2_APIVersion, minorVersion);
-        
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
-        // Hardcoded for now to support 2.x with extensions on desktops
-        // TODO : enable full support for OpenGL 3.x and higher on desktops
-        _GLES2_APIVersion = 3;
-#endif
+        DAVA::Logger::Info("OpenGL version: %s (%u.%u)", version, _GLES2_API.majorVersion, _GLES2_API.minorVersion);
 
         if (strstr(version, "OpenGL ES"))
         {
-            if (_GLES2_APIVersion >= 3)
+            _GLES2_EmbeddedProfile = true;
+
+            if (_GLES2_API.majorVersion >= 3)
             {
                 MutableDeviceCaps::Get().isDepthTextureSupported = true;
                 MutableDeviceCaps::Get().is32BitIndicesSupported = true;
@@ -256,7 +313,8 @@ static void gles_check_GL_extensions()
                 MutableDeviceCaps::Get().isInstancingSupported = true;
                 Short_Int_Supported = true;
                 PackedFloat_Supported = true;
-                checkForMaxRT = true;
+                EAC_Supported = ETC2_Supported = true;
+                _GLES2_MultipleRenderTargets = true;
             }
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -277,6 +335,9 @@ static void gles_check_GL_extensions()
             GET_GL_FUNC(glGetQueryObjectuiv, "EXT");
             GET_GL_FUNC(glQueryCounter, "EXT");
             GET_GL_FUNC(glGetQueryObjectui64v, "EXT");
+
+            GET_GL_FUNC(glReadBuffer, "NV");
+            GET_GL_FUNC(glDrawBuffers, "EXT");
 #endif
         }
         else
@@ -284,45 +345,45 @@ static void gles_check_GL_extensions()
             MutableDeviceCaps::Get().is32BitIndicesSupported = true;
             MutableDeviceCaps::Get().isVertexTextureUnitsSupported = true;
             MutableDeviceCaps::Get().isFramebufferFetchSupported = false;
-            MutableDeviceCaps::Get().isInstancingSupported |= (_GLES2_APIVersion > 3) && (minorVersion > 3);
-            MutableDeviceCaps::Get().isReverseDepthSupported |= (_GLES2_APIVersion > 4) && (minorVersion > 5);
+            MutableDeviceCaps::Get().isInstancingSupported |= (_GLES2_API.majorVersion > 3) && (_GLES2_API.minorVersion > 3);
+            MutableDeviceCaps::Get().isReverseDepthSupported |= (_GLES2_API.majorVersion > 4) && (_GLES2_API.minorVersion > 5);
 
-            if (_GLES2_APIVersion >= 3)
+            if (_GLES2_API.majorVersion >= 3)
             {
-                if ((_GLES2_APIVersion > 3) || (minorVersion >= 2))
+                if ((_GLES2_API.majorVersion > 3) || (_GLES2_API.minorVersion >= 2))
                     _GLES2_IsSeamlessCubmapSupported = true;
 
-                if ((_GLES2_APIVersion > 3) || (minorVersion >= 3))
+                if ((_GLES2_API.majorVersion > 3) || (_GLES2_API.minorVersion >= 3))
                 {
                     _GLES2_TimeStampQuerySupported = true;
                     MutableDeviceCaps::Get().isPerfQuerySupported = true;
                 }
+
+                _GLES2_MultipleRenderTargets = true;
             }
+
             Short_Int_Supported = true;
         }
 
-        Float_Supported |= _GLES2_APIVersion >= 3;
-        Half_Supported |= _GLES2_APIVersion >= 3;
-        RG_Supported |= _GLES2_APIVersion >= 3;
-        checkForMaxRT = true;
+        Float_Supported |= _GLES2_API.majorVersion >= 3;
+        Half_Supported |= _GLES2_API.majorVersion >= 3;
+        RG_Supported |= _GLES2_API.majorVersion >= 3;
     }
 
-    if (checkForMaxRT)
+    if (_GLES2_MultipleRenderTargets)
     {
-    #if !defined(GL_MAX_DRAW_BUFFERS) && defined(GL_MAX_DRAW_BUFFERS_ARB)
-        #define GL_MAX_DRAW_BUFFERS GL_MAX_DRAW_BUFFERS_ARB
-    #endif
-    #if !defined(GL_MAX_DRAW_BUFFERS)
-        #define GL_MAX_DRAW_BUFFERS 0x8824
-    #endif
         GLint maxDrawBuffers = 0;
-        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
-        MutableDeviceCaps::Get().maxSimultaneousRT = uint32(maxDrawBuffers);
+        GL_CALL(glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers));
+        MutableDeviceCaps::Get().maxRenderTargetCount = uint32(std::max(1, maxDrawBuffers));
     }
     else
     {
-        MutableDeviceCaps::Get().maxSimultaneousRT = 1;
+        MutableDeviceCaps::Get().maxRenderTargetCount = 1;
     }
+
+    GLint maxTextures = 0;
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextures);
+    MutableDeviceCaps::Get().maxShaderTextures = static_cast<uint32>(maxTextures);
 
     if (MutableDeviceCaps::Get().isReverseDepthSupported)
     {
@@ -336,7 +397,12 @@ static void gles_check_GL_extensions()
         impl_glClipControl = &glClipControl;
         
 #endif
+        
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_MACOS__)
+        MutableDeviceCaps::Get().isReverseDepthSupported = false;
+#else
         MutableDeviceCaps::Get().isReverseDepthSupported = (impl_glClipControl != nullptr);
+#endif
     }
 
 #ifdef __DAVAENGINE_WIN32__
@@ -398,7 +464,7 @@ static void gles_check_GL_extensions()
 
     // allow multisampling only on NVIDIA Tegra GPU
     // and if functions were loaded
-    if (runningOnTegra && (_GLES2_APIVersion >= 3) && (glRenderbufferStorageMultisample != nullptr) && (glBlitFramebuffer != nullptr))
+    if (runningOnTegra && (_GLES2_API.majorVersion >= 3) && (glRenderbufferStorageMultisample != nullptr) && (glBlitFramebuffer != nullptr))
 #endif
     {
         GL_CALL(glGetIntegerv(GL_MAX_SAMPLES, &maxSamples));
@@ -409,6 +475,9 @@ static void gles_check_GL_extensions()
     GLint maxTextureSize = 1024;
     GL_CALL(glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize));
     MutableDeviceCaps::Get().maxTextureSize = maxTextureSize;
+
+    gles_CheckTexturesFormats();
+
     DAVA::Logger::Info("GL_MAX_TEXTURE_SIZE -> %d", maxTextureSize);
 }
 
@@ -574,7 +643,7 @@ void gles2_Initialize(const InitParam& param)
     _GLES2_ReleaseContext = (param.releaseContextFunc) ? param.releaseContextFunc : &macos_gl_release_context;
     _GLES2_Present = (param.presentFunc) ? param.presentFunc : &macos_gl_end_frame;
 #elif defined(__DAVAENGINE_IPHONE__)
-    ios_gl_init(param.window);
+    ios_gl_init(param.window, param.useSRGBFramebuffer);
     _GLES2_AcquireContext = (param.acquireContextFunc) ? param.acquireContextFunc : &ios_gl_acquire_context;
     _GLES2_ReleaseContext = (param.releaseContextFunc) ? param.releaseContextFunc : &ios_gl_release_context;
     _GLES2_Present = (param.presentFunc) ? param.presentFunc : &ios_gl_end_frame;
@@ -633,7 +702,6 @@ void gles2_Initialize(const InitParam& param)
     DispatchGLES2.impl_Reset = &gles2_Reset;
     DispatchGLES2.impl_Uninitialize = &gles2_Uninitialize;
     DispatchGLES2.impl_HostApi = &gles2_HostApi;
-    DispatchGLES2.impl_TextureFormatSupported = &gles2_TextureFormatSupported;
     DispatchGLES2.impl_NeedRestoreResources = &gles2_NeedRestoreResources;
     DispatchGLES2.impl_InvalidateCache = &gles2_InvalidateCache;
     DispatchGLES2.impl_SyncCPUGPU = &gles2_SynchronizeCPUGPU;
@@ -645,7 +713,6 @@ void gles2_Initialize(const InitParam& param)
     SetDispatchTable(DispatchGLES2);
 
     gles_check_GL_extensions();    
-    
 
 #if ENABLE_DEBUG_OUTPUT
     gles2_enable_debug_output();
@@ -739,7 +806,7 @@ GLint GetGLRenderTargetFormat(rhi::TextureFormat rhiFormat)
 }
 
 #if defined(__DAVAENGINE_IPHONE__)
-#define IMPL_GET_ENUM_VALUE(Name, OldValue, NewValue) GLenum Name() { return (_GLES2_APIVersion >= 3) ? NewValue : OldValue; }
+#define IMPL_GET_ENUM_VALUE(Name, OldValue, NewValue) GLenum Name() { return (_GLES2_API.majorVersion >= 3) ? NewValue : OldValue; }
 #else
 #define IMPL_GET_ENUM_VALUE(Name, OldValue, NewValue) GLenum Name() { return NewValue; }
 #endif
@@ -823,6 +890,14 @@ bool GetGLTextureFormat(rhi::TextureFormat rhiFormat, GLint* internalFormat, GLi
         *internalFormat = GL_RGB;
         *format = GL_RGB;
         *type = GL_UNSIGNED_SHORT_5_6_5;
+        *compressed = false;
+        success = true;
+        break;
+
+    case TEXTURE_FORMAT_R16G16:
+        *internalFormat = GL_RG;
+        *format = GL_RG;
+        *type = GL_UNSIGNED_SHORT;
         *compressed = false;
         success = true;
         break;

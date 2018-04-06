@@ -68,6 +68,10 @@ Level::ChunkGrid::ChunkGrid(const AABBox3& worldBounds_)
     chunkData.resize(chunkXCount * chunkYCount);
 }
 
+void Level::ChunkGrid::SetWorldBounds(const AABBox3& newWorldBounds)
+{
+}
+
 Level::ChunkBounds Level::ChunkGrid::ProjectBoxOnGrid(const AABBox3& entityBox)
 {
     ChunkBounds bounds;

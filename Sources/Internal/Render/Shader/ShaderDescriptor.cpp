@@ -2,6 +2,7 @@
 #include "Render/RHI/rhi_ShaderCache.h"
 #include "Render/RenderBase.h"
 #include "Logger/Logger.h"
+#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {
@@ -229,6 +230,12 @@ void ShaderDescriptor::UpdateConfigFromSource(rhi::ShaderSource* vSource, rhi::S
     }
     vertexSamplerList = vSource->Samplers();
     fragmentSamplerList = fSource->Samplers();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(ShaderDescriptor)
+{
+    ReflectionRegistrator<ShaderDescriptor>::Begin()
+    .End();
 }
 
 template <>

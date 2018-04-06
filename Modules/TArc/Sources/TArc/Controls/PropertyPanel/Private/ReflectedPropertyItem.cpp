@@ -143,6 +143,11 @@ int32 ReflectedPropertyItem::LookupChildPosition(const std::shared_ptr<PropertyN
         {
             positionCandidate++;
         }
+
+        if (candidateParent->propertyType == PropertyNode::SelfRoot || nextParent->propertyType == PropertyNode::SelfRoot)
+        {
+            positionCandidate++;
+        }
     }
 
     return positionCandidate;

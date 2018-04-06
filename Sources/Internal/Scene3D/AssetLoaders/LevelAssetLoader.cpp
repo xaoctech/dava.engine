@@ -60,14 +60,12 @@ AABBox3 ComputeEntitiesBoxesAndWorldExtents(Scene* scene, Vector<AABBox3>& boxes
     AABBox3 worldMaxExtents;
     uint32 size = scene->GetChildrenCount();
     boxes.resize(size);
-    Logger::Debug<Level>("Compute bboxes: %d", boxes.size());
     for (uint32 index = 0; index < size; ++index)
     {
         boxes[index] = scene->GetChild(index)->GetWTMaximumBoundingBoxSlow();
 
         AABBox3& box = boxes[index];
-        if ((AABBOX_INFINITY == box.min.x && AABBOX_INFINITY == box.min.y && AABBOX_INFINITY == box.min.z)
-            && (-AABBOX_INFINITY == box.max.x && -AABBOX_INFINITY == box.max.y && -AABBOX_INFINITY == box.max.z))
+        if (box.IsEmpty())
         {
             TransformComponent* transform = scene->GetChild(index)->GetComponent<TransformComponent>();
             if (transform)
@@ -77,10 +75,7 @@ AABBox3 ComputeEntitiesBoxesAndWorldExtents(Scene* scene, Vector<AABBox3>& boxes
             }
         }
 
-        worldMaxExtents.AddAABBox(boxes[index]);
-        Logger::Debug<Level>("%0.1f, %0.1f, %0.1f, %0.1f, %0.1f, %0.1f",
-                             boxes[index].min.x, boxes[index].min.y, boxes[index].min.z,
-                             boxes[index].max.x, boxes[index].max.y, boxes[index].max.z);
+        worldMaxExtents.AddAABBox(box);
     }
     return worldMaxExtents;
 }
@@ -187,13 +182,13 @@ void WriteEntities(File* file, Scene* scene, SerializationContext* serialization
         Level::EntityInfo& entityInfo = infoArray[entityIndex];
 
         const AABBox3& box = entitiesBoxes[entityIndex];
-        entityInfo.boundMinX = (int16)box.min.x;
-        entityInfo.boundMinY = (int16)box.min.y;
-        entityInfo.boundMinZ = (int16)box.min.z;
+        entityInfo.boundMinX = static_cast<int16>(std::floor(box.min.x));
+        entityInfo.boundMinY = static_cast<int16>(std::floor(box.min.y));
+        entityInfo.boundMinZ = static_cast<int16>(std::floor(box.min.z));
 
-        entityInfo.boundMaxX = (int16)box.max.x;
-        entityInfo.boundMaxX = (int16)box.max.y;
-        entityInfo.boundMaxZ = (int16)box.max.z;
+        entityInfo.boundMaxX = static_cast<int16>(std::ceil(box.max.x));
+        entityInfo.boundMaxY = static_cast<int16>(std::ceil(box.max.y));
+        entityInfo.boundMaxZ = static_cast<int16>(std::ceil(box.max.z));
     }
 
     // Write entityInfo table in right position.

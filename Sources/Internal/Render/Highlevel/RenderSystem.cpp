@@ -31,6 +31,9 @@
 #include "Logger/Logger.h"
 #include "Debug/ProfilerGPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineContext.h"
+#include "Asset/AssetManager.h"
 
 #if (!__DAVAENGINE_IPHONE__) && (!__DAVAENGINE_ANDROID__)
     #define ENABLE_DEBUG_DRAW 1
@@ -47,6 +50,7 @@ RenderSystem::RenderSystem()
     renderHierarchy = new QuadTree(10);
     vtDecalManager = new VTDecalManager(40); //GFX_COMPLETE - make it at least configurable
     markedObjects.reserve(100);
+    velocityUpdatedObjects.reserve(100);
     debugDrawer = new RenderHelper();
     postEffectRenderer = new PostEffectRenderer();
     cubemapRenderer = new CubemapRenderer();
@@ -388,6 +392,9 @@ void RenderSystem::Update(float32 timeElapsed)
 
             if (obj->GetTreeNodeIndex() != QuadTree::INVALID_TREE_NODE_INDEX)
                 renderHierarchy->ObjectUpdated(obj);
+
+            velocityUpdatedObjects.push_back(obj);
+            obj->AddFlag(RenderObject::VELOCITY_UPDATE);
         }
 
         obj->RemoveFlag(RenderObject::NEED_UPDATE | RenderObject::MARKED_FOR_UPDATE);
@@ -432,8 +439,8 @@ void RenderSystem::ConfigureActivePass()
     if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D))
     {
         renderConfig.rescale = true;
-        renderConfig.scaledViewport.dx = renderConfig.viewport.dx * 0.5f;
-        renderConfig.scaledViewport.dy = renderConfig.viewport.dy * 0.5f;
+        renderConfig.scaledViewport.dx = floorf(renderConfig.viewport.dx * 0.5f + 0.5f);
+        renderConfig.scaledViewport.dy = floorf(renderConfig.viewport.dy * 0.5f + 0.5f);
     }
     else
     {
@@ -441,7 +448,7 @@ void RenderSystem::ConfigureActivePass()
         renderConfig.scaledViewport.dy = renderConfig.viewport.dy;
     }
 
-    renderConfig.rescale = QualitySettingsSystem::Instance()->GetForceRescale();
+    renderConfig.rescale |= QualitySettingsSystem::Instance()->GetForceRescale() || GetTxaaEnabled();
 
     if (Renderer::GetCurrentRenderFlow() != currentRenderFlow)
     {
@@ -505,16 +512,22 @@ void RenderSystem::ConfigureActivePass()
 
     config.priority = renderConfig.basePriority; // +PRIORITY_SERVICE_3D;
 
+    ConfigureFBOs(renderConfig.rescale, GetTxaaEnabled());
     if (renderConfig.rescale)
     {
-        config.colorBuffer[0].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_SCALED_LDR);
+        uint32 ldrBuffer = (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred) ? 5u : 0u;
+        config.colorBuffer[ldrBuffer].texture = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT));
+
         config.depthStencilBuffer.texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
         activeRenderPass->SetViewport(renderConfig.scaledViewport);
     }
     else
     {
         activeRenderPass->SetViewport(renderConfig.viewport);
-        config.colorBuffer[0].texture = renderConfig.colorTarget;
+
+        uint32 ldrBuffer = (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred) ? 5u : 0u;
+        config.colorBuffer[ldrBuffer].texture = renderConfig.colorTarget;
+
         config.depthStencilBuffer.texture = renderConfig.depthTarget;
     }
 
@@ -524,11 +537,60 @@ void RenderSystem::ConfigureActivePass()
     config.antialiasingType = rhi::DeviceCaps().SupportsAntialiasingType(aaType) ? aaType : rhi::AntialiasingType::NONE;
 }
 
+Texture::RenderTargetTextureKey RenderSystem::GetFBOConfig() const
+{
+    Size2i sizei = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
+    Texture::RenderTargetTextureKey key;
+    key.width = sizei.dx;
+    key.height = sizei.dy;
+    key.sampleCount = 1;
+    key.textureType = rhi::TEXTURE_TYPE_2D;
+    key.isDepth = false;
+    key.needPixelReadback = false;
+    key.ensurePowerOf2 = false;
+    key.format = PixelFormat::FORMAT_RGBA8888;
+
+    return key;
+}
+
+void RenderSystem::ConfigureFBOs(bool rescale, bool txaa)
+{
+    // Set ldr_current and ldr_history here because ConfigureActivePass called after the moment when current and history had been set.
+    if (rescale && ldrCurrent == nullptr)
+    {
+        ldrCurrent = GetEngineContext()->assetManager->GetAsset<Texture>(GetFBOConfig(), AssetManager::SYNC);
+        Renderer::GetDynamicBindings().SetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT), ldrCurrent->handle);
+    }
+    else if (!rescale && ldrCurrent != nullptr)
+    {
+        ldrCurrent.reset();
+    }
+
+    if (txaa && ldrHistory == nullptr)
+    {
+        ldrHistory = GetEngineContext()->assetManager->GetAsset<Texture>(GetFBOConfig(), AssetManager::SYNC);
+        Renderer::GetDynamicBindings().SetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_HISTORY), ldrHistory->handle);
+    }
+    else if (!txaa && ldrHistory != nullptr)
+    {
+        ldrHistory.reset();
+    }
+}
+
+bool RenderSystem::GetTxaaEnabled() const
+{
+    return (Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred || Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred) &&
+    (QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Antialiasing>() == rhi::AntialiasingType::TEMPORAL_REPROJECTION);
+}
+
 void RenderSystem::Render()
 {
-    bool taaEnabled =
-    (Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) &&
-    (QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Antialiasing>() == rhi::AntialiasingType::TEMPORAL_REPROJECTION);
+    bool taaEnabled = GetTxaaEnabled();
+
+    if (ldrHistory != nullptr)
+        Renderer::GetDynamicBindings().SetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_HISTORY), ldrHistory->handle);
+    if (ldrCurrent != nullptr)
+        Renderer::GetDynamicBindings().SetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT), ldrCurrent->handle);
 
     ConfigureActivePass();
     lightShadowSystem.Render(this);
@@ -568,6 +630,9 @@ void RenderSystem::Render()
     if (renderConfig.rescale)
     {
         rescalePass->Draw(this);
+
+        if (GetTxaaEnabled())
+            std::swap(ldrCurrent, ldrHistory);
     }
 
 #if LOG_CAMERA_POSITION // set 1 to setup camera position and target
@@ -580,6 +645,13 @@ void RenderSystem::Render()
         Logger::Debug("cameraTarget = DAVA::Vector3(%.3ff, %.3ff, %.3ff);", cameraTarget.x, cameraTarget.y, cameraTarget.z);
     }
 #endif
+
+    for (RenderObject* ro : velocityUpdatedObjects)
+    {
+        ro->UpdatePreviousState();
+        ro->RemoveFlag(RenderObject::VELOCITY_UPDATE);
+    }
+    velocityUpdatedObjects.clear();
 }
 
 void RenderSystem::SetAntialiasingAllowed(bool allow)

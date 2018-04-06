@@ -851,7 +851,7 @@ DAVA::float32 ObjectPlacementTool::GetMinScale() const
 
 void ObjectPlacementTool::SetMinScale(const DAVA::float32& v)
 {
-    params.minScaleRandom = v;
+    params.minScaleRandom = std::max(v, 0.01f);
     params.maxScaleRandom = std::max(params.minScaleRandom, params.maxScaleRandom);
 }
 

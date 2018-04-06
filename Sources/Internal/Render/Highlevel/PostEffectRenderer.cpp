@@ -28,113 +28,6 @@ public:
     virtual void InvalidateMaterials(){};
 };
 
-class TXAARenderer : public HelperRenderer
-{
-public:
-    TXAARenderer()
-    {
-        blitMaterial = new NMaterial();
-        blitMaterial->SetFXName(FastName("~res:/Materials2/PostEffect.material"));
-
-        blitMaterial->AddProperty(FastName("srcRectOffset"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
-        blitMaterial->AddProperty(FastName("srcRectSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
-        blitMaterial->AddProperty(FastName("srcTexSize"), Vector2::Zero.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
-        blitMaterial->AddFlag(FastName("TECH_COPY"), 1);
-
-        textureSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER).dx;
-        invRtSize = 1.0f / static_cast<float32>(textureSize);
-
-        Texture::RenderTargetTextureKey config;
-        config.width = textureSize;
-        config.height = textureSize;
-        config.sampleCount = 1;
-        config.textureType = rhi::TEXTURE_TYPE_2D;
-        config.isDepth = false;
-        config.needPixelReadback = false;
-        config.ensurePowerOf2 = false;
-        config.format = PixelFormat::FORMAT_RGBA8888;
-
-        AssetManager* assetManager = GetEngineContext()->assetManager;
-        dst = assetManager->GetAsset<Texture>(config, AssetManager::SYNC);
-        src = assetManager->GetAsset<Texture>(config, AssetManager::SYNC);
-    }
-
-    void Render(rhi::Handle dest, rhi::Viewport viewport)
-    {
-        std::swap(src, dst);
-
-        QuadRenderer::Options options;
-        options.srcRect = Rect2f(0.f, 0.f, float32(viewport.width), float32(viewport.height));
-        options.dstRect = Rect2f(float32(viewport.x), float32(viewport.y), float32(viewport.width), float32(viewport.height));
-
-        float32 size = float32(textureSize);
-        options.srcTexSize = Vector2(size, size);
-        options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
-
-        options.srcTexture = src->handle;
-        options.dstTexture = dest;
-
-        options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
-        options.material = blitMaterial;
-        options.renderPassPriority = -1;
-        options.renderPassName = "BlitTXAA";
-        quad.Render(options);
-
-        //options.srcRect = Rect2f(0.f, 0.f, size, size);
-        //options.dstRect = { 5.0f, 5.0f, 128.0f, 128.0f };
-        //quad.Render(options);
-
-        //options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
-        //options.dstRect = { 133.0f, 5.0f, 128.0f, 128.0f };
-        //quad.Render(options);
-
-        //options.srcRect = Rect2f(0.f, 0.f, 2048.0f, 2048.0f);
-        //options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
-        //options.dstRect = { 5.0f, 5.0f, 256.0f, 256.0f };
-        //quad.Render(options);
-    }
-
-    void ReleaseResources()
-    {
-        src.reset();
-        dst.reset();
-    }
-
-    ~TXAARenderer()
-    {
-        ReleaseResources();
-        SafeRelease(blitMaterial);
-    }
-
-    Asset<Texture> GetSrc() const
-    {
-        return src;
-    }
-
-    Asset<Texture> GetDst() const
-    {
-        return dst;
-    }
-
-    uint32 GetTextureSize() const
-    {
-        return textureSize;
-    }
-
-    float32 GetInvTextureSize() const
-    {
-        return invRtSize;
-    }
-
-private:
-    Asset<Texture> dst;
-    Asset<Texture> src;
-    uint32 textureSize = 0;
-    NMaterial* blitMaterial = nullptr;
-    QuadRenderer quad;
-    float32 invRtSize = -1.0f;
-};
-
 class HistogramRenderer : public HelperRenderer
 {
 public:
@@ -323,7 +216,6 @@ PostEffectRenderer::PostEffectRenderer()
 {
     for (HelperRenderer*& r : renderers)
         r = nullptr;
-    renderers[RendererType::TXAA] = new TXAARenderer();
 
     // renderers[RendererType::HISTOGRAM] = new HistogramRenderer();
     // renderers[RendererType::BLOOM] = new BloomRenderer;
@@ -408,7 +300,11 @@ PostEffectRenderer::PostEffectRenderer()
         {
             materials[i]->AddProperty(FastName("mulAdd"), float2.data, rhi::ShaderProp::Type::TYPE_FLOAT2);
         }
-        materials[i]->PreBuildMaterial(PASS_FORWARD);
+
+        if (i != MaterialType::LUMINANCE_COMBINED || rhi::DeviceCaps().isFramebufferFetchSupported)
+        {
+            materials[i]->PreBuildMaterial(PASS_FORWARD);
+        }
     }
 
     if (nullptr != Engine::Instance()->PrimaryWindow())
@@ -422,14 +318,16 @@ PostEffectRenderer::PostEffectRenderer()
     settings.colorGradingTable = assetManager->GetAsset<Texture>(Texture::PathKey("~res:/Textures/colorgrading.png"), AssetManager::SYNC);
     settings.heatmapTable = assetManager->GetAsset<Texture>(Texture::PathKey("~res:/Textures/heatmap.png"), AssetManager::SYNC);
     settings.lightMeterTable = assetManager->GetAsset<Texture>(Texture::PathKey("~res:/Textures/lightmeter.png"), AssetManager::SYNC);
+    settings.lightMeterTable->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
 
     rhi::SamplerState::Descriptor linearDesc;
+    rhi::TextureFilter samplerFilter = rhi::DeviceCaps().textureFormat[rhi::TEXTURE_FORMAT_R16F].filterable ? rhi::TEXFILTER_LINEAR : rhi::TEXFILTER_NEAREST;
     for (uint32 i = 0; i < rhi::MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT; ++i)
     {
         linearDesc.fragmentSampler[i].addrU = rhi::TEXADDR_CLAMP;
         linearDesc.fragmentSampler[i].addrV = rhi::TEXADDR_CLAMP;
-        linearDesc.fragmentSampler[i].magFilter = rhi::TEXFILTER_LINEAR;
-        linearDesc.fragmentSampler[i].minFilter = rhi::TEXFILTER_LINEAR;
+        linearDesc.fragmentSampler[i].magFilter = samplerFilter;
+        linearDesc.fragmentSampler[i].minFilter = samplerFilter;
         linearDesc.fragmentSampler[i].mipFilter = rhi::TEXMIPFILTER_NONE;
         linearDesc.fragmentSampler[i].anisotropyLevel = 1;
     }
@@ -438,8 +336,8 @@ PostEffectRenderer::PostEffectRenderer()
     {
         linearDesc.vertexSampler[i].addrU = rhi::TEXADDR_CLAMP;
         linearDesc.vertexSampler[i].addrV = rhi::TEXADDR_CLAMP;
-        linearDesc.vertexSampler[i].magFilter = rhi::TEXFILTER_LINEAR;
-        linearDesc.vertexSampler[i].minFilter = rhi::TEXFILTER_LINEAR;
+        linearDesc.vertexSampler[i].magFilter = samplerFilter;
+        linearDesc.vertexSampler[i].minFilter = samplerFilter;
         linearDesc.vertexSampler[i].mipFilter = rhi::TEXMIPFILTER_NONE;
         linearDesc.vertexSampler[i].anisotropyLevel = 1;
     }
@@ -501,6 +399,14 @@ void PostEffectRenderer::Render(rhi::Handle destination, const rhi::Viewport& vi
     // TODO : enable bloom again some day
 }
 
+void PostEffectRenderer::Render(rhi::Handle hdrImage, rhi::Handle destination, const rhi::Viewport& viewport)
+{
+    SetFrameContext(rhi::HTexture(hdrImage), rhi::HTexture(destination), viewport);
+    GetAverageLuminance();
+    Combine(CombineMode::Separate);
+    Debug();
+}
+
 void PostEffectRenderer::GetAverageLuminance()
 {
     static const char* renderPassName = "avgLuminance";
@@ -522,7 +428,7 @@ void PostEffectRenderer::GetAverageLuminance()
     DownsampleLuminance(allRenderer.averageColorArray.front(), baseSize);
 }
 
-void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcTextureSize, int32 deltaPriority)
+void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, const Size2i& srcSize, const Size2i& srcTextureSize, int32 deltaPriority)
 {
     if (settings.resetHistory)
     {
@@ -558,7 +464,7 @@ void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, co
         if (i == 1)
         {
             options.srcTexture = srcTexture;
-            options.srcRect = Rect2f(0.f, 0.f, float32(srcTextureSize.dx), float32(srcTextureSize.dy));
+            options.srcRect = Rect2f(0.f, 0.f, float32(srcSize.dx), float32(srcSize.dy));
             options.srcTexSize = Vector2(float32(srcTextureSize.dx), float32(srcTextureSize.dy));
         }
         else
@@ -732,14 +638,12 @@ void PostEffectRenderer::GetHistogram()
 void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
 {
     bool txaaEnabled =
-    (Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) &&
+    ((Renderer::GetCurrentRenderFlow() == RenderFlow::HDRDeferred) || (Renderer::GetCurrentRenderFlow() == RenderFlow::TileBasedHDRDeferred)) &&
     (QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Antialiasing>() == rhi::AntialiasingType::TEMPORAL_REPROJECTION);
 
     BloomRenderer* bloomRenderer = static_cast<BloomRenderer*>(renderers[RendererType::BLOOM]);
     rhi::HTexture bloomTexture = (bloomRenderer != nullptr) ? bloomRenderer->blurChain[0].blur.handle : rhi::HTexture();
     rhi::HTexture lumTexture = (mode == CombineMode::Separate) ? allRenderer.luminanceHistory : allRenderer.luminanceTexture;
-
-    TXAARenderer* txaa = static_cast<TXAARenderer*>(renderers[RendererType::TXAA]);
 
     NMaterial* material = materials[MaterialType::COMBINE];
     material->SetPropertyValue(FastName("lightMeterMaskWeight"), &settings.lightMeterTableWeight);
@@ -750,20 +654,21 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
     material->SetFlag(FastName("ENABLE_TXAA"), txaaEnabled);
 
     QuadRenderer::Options options;
-    if (txaaEnabled && txaa != nullptr)
+    if (txaaEnabled)
     {
-        float32 offset = txaa->GetInvTextureSize();
-        Vector2 texelOffset(offset, offset);
-        material->SetPropertyValue(FastName("texelOffset"), texelOffset.data);
+        Size2i sizei = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
+        Vector2 dstSize(static_cast<float32>(sizei.dx), static_cast<float32>(sizei.dy));
+        Vector2 invSize(1.0f / dstSize.x, 1.0f / dstSize.y);
+        material->SetPropertyValue(FastName("texelOffset"), invSize.data);
 
-        float32 dstSize = float32(txaa->GetTextureSize());
-        options.dstTexSize = Vector2(dstSize, dstSize);
-        options.srcRect = Rect2f(0.f, 0.f, float32(dstSize), float32(dstSize));
+        options.dstTexSize = dstSize;
+        options.srcRect = Rect2f(0.f, 0.f, dstSize.x, dstSize.y);
 
         options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
-        options.dstRect = Rect2f(0.0f, 0.0f, float32(dstSize), float32(dstSize));
+        options.dstRect = Rect2f(0.0f, 0.0f, dstSize.x, dstSize.y);
         options.dstRect = Rect2f(float32(frameContext.viewport.x), float32(frameContext.viewport.y), float32(frameContext.viewport.width), float32(frameContext.viewport.height));
-        options.dstTexture = txaa->GetDst()->handle;
+
+        options.dstTexture = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT));
     }
     else
     {
@@ -812,9 +717,9 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
             uint32 textureIndex = 0;
             fragmentTextures[textureIndex++] = hdrRenderer.hdrTarget;
 
-            if (txaaEnabled && (txaa != nullptr))
+            if (txaaEnabled)
             {
-                fragmentTextures[textureIndex++] = txaa->GetSrc()->handle;
+                fragmentTextures[textureIndex++] = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_HISTORY));
                 fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
             }
 
@@ -831,8 +736,20 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
         options.material = material;
         options.textureSet = RhiUtils::TextureSet({ lumTexture }, fragmentTextures);
         options.renderPassPriority = 4;
+
         bool invertProjection = (options.dstTexture != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin);
         float32 cv = invertProjection ? 1.0f : -1.0f;
+
+        //GFX_COMPLETE fix projection flip for all back-ends
+        if (rhi::HostApi().api == rhi::RHI_METAL)
+        {
+            RenderFlow flow = Renderer::GetCurrentRenderFlow();
+            bool halfRes = QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_HALF_RESOLUTION_3D);
+
+            if ((flow != RenderFlow::TileBasedHDRDeferred) || (flow == RenderFlow::TileBasedHDRDeferred && (!halfRes || txaaEnabled)))
+                cv = 1.f;
+        }
+
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PROJECTION_FLIPPED, &cv, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 
         quadRenderer.Render(options);
@@ -873,8 +790,6 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
     {
         hdrRenderer.debugPickerIndex = 0;
     }
-    if (txaa != nullptr && txaaEnabled)
-        txaa->Render(frameContext.destination, frameContext.viewport);
 }
 
 void PostEffectRenderer::BuildDebugPickerLuminance()
@@ -1176,7 +1091,7 @@ void PostEffectRenderer::DumpAverageTexture(int32 index)
 
 void PostEffectRenderer::InitResources(const Size2i& newSize)
 {
-    if (sharedResourcesCreated == false)
+    if ((sharedResourcesCreated == false) && (Renderer::GetCurrentRenderFlow() != RenderFlow::LDRForward))
     {
         hdrTargetSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER);
 
@@ -1223,7 +1138,7 @@ void PostEffectRenderer::InitResources(const Size2i& newSize)
         sharedResourcesCreated = true;
     }
 
-    if (newSize != lastWindowSize)
+    if (sharedResourcesCreated && (newSize != lastWindowSize))
     {
         int32 baseDownsampleChainSize = NextPowerOf2(std::min(newSize.dx, newSize.dy));
         int32 lastDownsampleChainSize = allRenderer.averageColorSize.empty() ? 0 : (static_cast<int32>(allRenderer.averageColorSize.front()) * 2);

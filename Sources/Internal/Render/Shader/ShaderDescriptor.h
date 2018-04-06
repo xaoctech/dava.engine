@@ -109,6 +109,8 @@ private:
 
     bool valid;
     friend class ShaderAssetLoader;
+
+    DAVA_VIRTUAL_REFLECTION(ShaderDescriptor, AssetBase);
 };
 
 inline bool ShaderDescriptor::IsValid()

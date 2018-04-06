@@ -13,6 +13,9 @@ public:
     void InvalidateMaterial();
     void PrepareToRender(Camera* camera) override;
 
+    void RecalcBoundingBox() override;
+    void RecalculateWorldBoundingBox() override;
+
 private:
     RefPtr<RenderBatch> renderBatch;
     ScopedPtr<NMaterial> backgroundMaterial;

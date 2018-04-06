@@ -22,6 +22,7 @@ public:
     void Process(float32 delta) override;
 
 private:
+    UnorderedSet<PrefabComponent*> pendingComponents;
     UnorderedMap<PrefabComponent*, Vector<Entity*>> loadedPrefabs;
 
     DAVA_VIRTUAL_REFLECTION(PrefabLoadingSystem, SceneSystem);

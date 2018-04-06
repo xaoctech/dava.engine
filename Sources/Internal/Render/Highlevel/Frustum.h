@@ -18,7 +18,7 @@ namespace DAVA
     The answer is simple: I assume that culling code can differ for OGL, DX matrices. Let's see when we'll add DirectX am I right.  
 */
 class RenderHelper;
-class Frustum : public BaseObject
+class Frustum
 {
 public:
     enum eFrustumPlane
@@ -41,7 +41,7 @@ public:
 public:
     //! \brief Set view frustum from matrix information
     //! \param viewProjection view * projection matrix
-    void Build(const Matrix4& viewProjection, bool zeroBaseClipRange);
+    void Build(const Matrix4& viewProjection, bool zeroBaseClipRange, bool reverseProjection);
 
     //! \brief Check axial aligned bounding box visibility
     //! \param min bounding box minimum point

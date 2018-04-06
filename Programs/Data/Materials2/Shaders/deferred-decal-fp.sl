@@ -160,7 +160,7 @@ fragment_out fp_main(fragment_in input)
     params.rain_intensity = rain_intensity;
     params.ripples = params_ripples;
     params.flow = params_flow;
-    params.time = globalTime;
+    params.time = globalTime.x;
 
     float4 inNormal = tex2D(gBuffer1_copy, texPos);
     float4 inParams = tex2D(gBuffer2_copy, texPos);

@@ -1,5 +1,7 @@
 #include "include/common.h"
 #include "include/shading-options.h"
+#include "include/all-input.h"
+#include "include/heightmap.h"
 
 #if LANDSCAPE_USE_INSTANCING
 
@@ -15,10 +17,10 @@ vertex_in
     [instance] float4 data6 : TEXCOORD3; // texture coords offset + scale for vt-page1
     [instance] float4 data7 : TEXCOORD4; // neighbour page blend
 
-        #if LANDSCAPE_LOD_MORPHING
+#if LANDSCAPE_LOD_MORPHING
     [instance] float4 data8 : TEXCOORD5; // neighbour patch morph
     [instance] float2 data9 : TEXCOORD6; // patch lod + morph
-        #endif
+#endif
 };
     
 #else
@@ -54,22 +56,12 @@ vertex_out
 #endif
 };
 
-
-#if LANDSCAPE_USE_INSTANCING
-uniform sampler2D heightmap;
-uniform sampler2D tangentmap;
 #if LANDSCAPE_MICRO_TESSELLATION
 uniform sampler2D terraintexture;
 #endif
-#endif
-
-[auto][instance] property float4x4 worldViewProjMatrix;
-[auto][instance] property float4x4 worldInvTransposeMatrix;
 
 #if LANDSCAPE_USE_INSTANCING
 [auto][a] property float3 boundingBoxSize;
-[auto][a] property float heightmapSize;
-[auto][a] property float heightmapSizePow2;
 [auto][a] property float tessellationHeight;
 #endif
 
@@ -95,6 +87,9 @@ vertex_out vp_main(vertex_in input)
     in_pos += edgeShiftDirection * edgeShift;
 
     float2 relativePosition = patchOffsetScale.xy + in_pos.xy * patchOffsetScale.z; //[0.0, 1.0]
+
+    float morphAmount = 0.0;
+    float sampleLod = 0.0;
     
 #if LANDSCAPE_LOD_MORPHING
 
@@ -108,39 +103,17 @@ vertex_out vp_main(vertex_in input)
     float zeroLodMul = 1.0 - min(1.0, zeroLod.x + zeroLod.y);
 
     //Calculate fetch parameters
-    float sampleLod = max((baseLod + lodOffset) * zeroLodMul, 0.0);
-    float samplePixelOffset = 0.5 * pow(2.0, sampleLod - heightmapSizePow2);
-    float4 heightmapSample = tex2Dlod(heightmap, float2(relativePosition + samplePixelOffset), sampleLod);
-
-    //Calculate morphed height.
-    float morphAmount = dot(edgeMask, neighbourPatchMorph) + patchMorph * edgeMaskNull;
-    // float h0 = dot(heightmapSample.xy, float2(0.0038910506, 0.9961089494)); // 'accurate' height
-    // float h1 = dot(heightmapSample.zw, float2(0.0038910506, 0.9961089494)); // 'averaged' height
-    // float height = lerp(h1, h0, morphAmount);
-
-    // This code make the same thing as the code above, but potentially using fewer multiplications
-    float2 hmSampleMorphed = lerp(heightmapSample.zw, heightmapSample.xy, morphAmount);
-    float height = dot(hmSampleMorphed, float2(0.0038910506, 0.9961089494));
-
-    float4 tangentmapSample = tex2Dlod(tangentmap, float2(relativePosition + samplePixelOffset), sampleLod);
-    float2 nxy = lerp(tangentmapSample.zw, tangentmapSample.xy, morphAmount);
+    sampleLod = max((baseLod + lodOffset) * zeroLodMul, 0.0);
+    morphAmount = dot(edgeMask, neighbourPatchMorph) + patchMorph * edgeMaskNull;
     
     #if LANDSCAPE_MORPHING_COLOR
     output.vertexColor = float4(1.0 - morphAmount, morphAmount, 1.0, 1.0);
     #endif
 
-#else
-    #if HEIGHTMAP_FLOAT_TEXTURE
-    float height = tex2Dlod(heightmap, float2(relativePosition + 0.5 / heightmapSize), 0.0).r;
-    #else
-    float4 heightmapSample = tex2Dlod(heightmap, float2(relativePosition + 0.5 / heightmapSize), 0.0);
-    float height = dot(heightmapSample, float4(0.0002288853, 0.0036621653, 0.0585946441, 0.9375143053));
-    #endif
-
-    float4 tangentmapSample = tex2Dlod(tangentmap, float2(relativePosition + 0.5 / heightmapSize), 0.0);
-    float2 nxy = float2(dot(tangentmapSample.xy, float2(0.0588235294, 0.9411764706)),
-                        dot(tangentmapSample.zw, float2(0.0588235294, 0.9411764706))); //4444-format to 88    
 #endif
+
+    float height = SampleHeightMorphed(relativePosition, morphAmount, sampleLod);
+    float2 nxy = SampleTangentMorphed(relativePosition, morphAmount, sampleLod);
 
     output.texCoord0.xy = input.data5.xy + in_pos.xy * input.data5.zw;
     output.texCoord0.zw = input.data6.xy + in_pos.xy * input.data6.zw;

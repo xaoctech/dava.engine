@@ -65,10 +65,10 @@ class RenderVariantInstance
     friend class NMaterial;
     Asset<ShaderDescriptor> shader = nullptr;
 
-    rhi::HDepthStencilState depthState;
+    rhi::HDepthStencilState depthState, invZDepthStzte;
     rhi::HSamplerState samplerState;
     rhi::HTextureSet textureSet;
-    rhi::CullMode cullMode = rhi::CULL_CCW;
+    rhi::CullMode cullMode, invCullMode;
 
     Vector<rhi::HConstBuffer> vertexConstBuffers;
     Vector<rhi::HConstBuffer> fragmentConstBuffers;
@@ -109,6 +109,13 @@ class NMaterial : public DataNode, public AssetListener
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_NMATERIAL)
 
 public:
+    enum eBindFlags
+    {
+        FLAG_INV_Z = 1 << 0,
+        FLAG_INV_CULL = 1 << 1,
+        FLAG_INSTANCE = 1 << 2,
+    };
+
     NMaterial(FXDescriptor::eType type = FXDescriptor::TYPE_LEGACY);
     ~NMaterial();
 
@@ -195,7 +202,7 @@ public:
 
     void ReleaseConfigTextures(uint32 index);
 
-    void BindParams(rhi::Packet& target);
+    void BindParams(rhi::Packet& target, uint32 bindFlags = 0);
 
     // returns true if has variant for this pass, false otherwise
     // if material doesn't support pass active variant will be not changed

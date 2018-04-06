@@ -7,6 +7,7 @@
 #include "Debug/DVAssert.h"
 #include "Logger/Logger.h"
 #include "_gl.h"
+#include "rhi_OpenGLState.h"
 
 namespace rhi
 {
@@ -54,7 +55,7 @@ public:
     GLenum mappedFace = 0;
 
     void* mappedData = nullptr;
-    SamplerState::Descriptor::Sampler samplerState;
+    SamplerState::Descriptor::Sampler usedSamplerState;
     GLint fbo = 0;
     GLint attachmentID = 0;
 
@@ -86,6 +87,7 @@ TextureGLES2_t::TextureGLES2_t()
 bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
 {
     DVASSERT(desc.levelCount);
+    DVASSERT(!desc.isRenderTarget || DeviceCaps().textureFormat[desc.format].renderable, DAVA::Format("Texture format '%s' is non-renderable", TextureFormatToString(desc.format)).c_str());
 
     bool success = false;
     UpdateCreationDesc(desc);
@@ -170,7 +172,7 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
         GLCommand cmd2[4 + countof(desc.initialData)] =
         {
           { GLCommand::GEN_TEXTURES, { 1, reinterpret_cast<uint64>(glObjects) } },
-          { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } }
+          { GLCommand::SET_ACTIVE_TEXTURE, { 0 } }
         };
 
         if (desc.autoGenMipmaps && !desc.isRenderTarget)
@@ -274,8 +276,8 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
                 uint32 cmd3Count = 2;
                 GLCommand cmd3[4 + 6 * 16] =
                 {
+                  { GLCommand::SET_ACTIVE_TEXTURE, { 0 } },
                   { GLCommand::BIND_TEXTURE, { GL_TEXTURE_CUBE_MAP, uint64(&(this->uid)) } },
-                  { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } }
                 };
 
                 for (uint32 m = 0; m != desc.levelCount; ++m)
@@ -348,8 +350,8 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
                 uint32 cmd3Count = 2;
                 GLCommand cmd3[4 + 3 * 16] =
                 {
+                  { GLCommand::SET_ACTIVE_TEXTURE, { 0 } },
                   { GLCommand::BIND_TEXTURE, { GL_TEXTURE_2D, uint64(&(this->uid)) } },
-                  { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
                 };
 
                 for (uint32 m = 0; m != desc.levelCount; ++m)
@@ -620,7 +622,7 @@ static void gles2_Texture_Unmap(Handle tex)
 
         GLCommand cmd[] =
         {
-          { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
+          { GLCommand::SET_ACTIVE_TEXTURE, { 0 } },
           { GLCommand::BIND_TEXTURE, { ttarget, uint64(&(self->uid)) } },
           { GLCommand::TEX_IMAGE2D, { target, self->mappedLevel, uint64(int_fmt), uint64(sz.dx), uint64(sz.dy), 0, uint64(fmt), type, uint64(textureDataSize), reinterpret_cast<uint64>(self->mappedData), compressed } },
           { GLCommand::RESTORE_TEXTURE0, {} }
@@ -690,7 +692,7 @@ void gles2_Texture_Update(Handle tex, const void* data, uint32 level, TextureFac
 
         GLCommand cmd[] =
         {
-          { GLCommand::SET_ACTIVE_TEXTURE, { GL_TEXTURE0 + 0 } },
+          { GLCommand::SET_ACTIVE_TEXTURE, { 0 } },
           { GLCommand::BIND_TEXTURE, { ttarget, uint64(&(self->uid)) } },
           { GLCommand::TEX_IMAGE2D, { target, uint64(level), uint64(int_fmt), uint64(sz.dx), uint64(sz.dy), 0, uint64(fmt), type, uint64(textureDataSize), reinterpret_cast<uint64>(data), compressed } },
           { GLCommand::RESTORE_TEXTURE0, {} }
@@ -743,8 +745,7 @@ bool gles2_Texture_NeedRestore(Handle tex)
 
 //==============================================================================
 
-struct
-SamplerStateGLES2_t
+struct SamplerStateGLES2_t
 {
     SamplerState::Descriptor::Sampler fragmentSampler[MAX_FRAGMENT_TEXTURE_SAMPLER_COUNT];
     uint32 fragmentSamplerCount;
@@ -902,25 +903,25 @@ void SetupDispatch(Dispatch* dispatch)
 
 void InvalidateCache()
 {
-    _GLES2_LastActiveTexture = -1;
 }
 
 void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
 {
     TextureGLES2_t* self = TextureGLES2Pool::Get(tex);
+
+    DVASSERT(DeviceCaps().textureFormat[self->format].fetchable,
+             DAVA::Format("Texture format '%s' is non-fetchable", TextureFormatToString(self->format)).c_str());
+
     bool fragment = base_i != DAVA::InvalidIndex;
     uint32 sampler_i = (base_i == DAVA::InvalidIndex) ? unit_i : base_i + unit_i;
     GLenum target = (self->isCubeMap) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
     const SamplerState::Descriptor::Sampler* sampler = (fragment) ? _CurSamplerState->fragmentSampler + unit_i : _CurSamplerState->vertexSampler + unit_i;
 
-    if (uint32(_GLES2_LastActiveTexture) != GL_TEXTURE0 + sampler_i)
-    {
-        GL_CALL(glActiveTexture(GL_TEXTURE0 + sampler_i));
-        _GLES2_LastActiveTexture = GL_TEXTURE0 + sampler_i;
-    }
+    DVASSERT(sampler_i < DeviceCaps().maxShaderTextures);
 
-    GL_CALL(glBindTexture(target, self->uid));
+    glState.SetActiveTexture(sampler_i);
+    glState.BindTexture(target, self->uid);
 
     if (sampler_i == 0)
     {
@@ -929,8 +930,12 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
     }
 
     // GFX_COMPLETE: Боже что это и почему это тут?
-    if ((self->forceSetSamplerState || memcmp(&(self->samplerState), sampler, sizeof(rhi::SamplerState::Descriptor::Sampler))) && !self->isRenderBuffer)
+    if (!self->isRenderBuffer && (self->forceSetSamplerState || (memcmp(&self->usedSamplerState, sampler, sizeof(rhi::SamplerState::Descriptor::Sampler)) != 0)))
     {
+        DVASSERT(DeviceCaps().textureFormat[self->format].filterable ||
+                 ((sampler->minFilter != TEXFILTER_LINEAR) && (sampler->magFilter != TEXFILTER_LINEAR) && (sampler->minFilter != TEXMIPFILTER_LINEAR)),
+                 DAVA::Format("Texture format '%s' is non-filterable", TextureFormatToString(self->format)).c_str());
+
         GL_CALL(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, _TextureMinMipFilterGLES2(TextureFilter(sampler->minFilter), TextureMipFilter(sampler->mipFilter))));
         GL_CALL(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, _TextureFilterGLES2(TextureFilter(sampler->magFilter))));
 
@@ -943,20 +948,22 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
             GL_CALL(glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, GetComparisonFunctionValue(static_cast<CmpFunc>(sampler->comparisonFunction))));
         }
 
-        if (rhi::DeviceCaps().isAnisotropicFilteringSupported())
+        if (rhi::DeviceCaps().IsAnisotropicFilteringSupported())
         {
             DVASSERT(sampler->anisotropyLevel >= 1);
             DVASSERT(sampler->anisotropyLevel <= rhi::DeviceCaps().maxAnisotropy);
             GL_CALL(glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, sampler->anisotropyLevel));
         }
 
-        self->samplerState = *sampler;
+        self->usedSamplerState = *sampler;
         self->forceSetSamplerState = false;
     }
 }
 
 uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32* level, uint32 colorCount, Handle depthStencil)
 {
+    DVASSERT(colorCount <= DeviceCaps().maxRenderTargetCount);
+
     GLuint fb = 0;
 
     for (const FramebufferGLES2_t& f : framebufferCache)
@@ -988,6 +995,8 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
         for (uint32 i = 0; i != colorCount; ++i)
         {
             TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
+
+            DVASSERT(DeviceCaps().textureFormat[tex->format].renderable, DAVA::Format("Texture format '%s' is non-renderable", TextureFormatToString(tex->format)).c_str());
 
             if (tex->isRenderBuffer)
             {
@@ -1061,13 +1070,20 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
             }
         }
 
-        if (_GLES2_APIVersion >= 3)
+        if (_GLES2_MultipleRenderTargets)
         {
             GLenum b[MAX_RENDER_TARGET_COUNT] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
             GL_CALL(glDrawBuffers(colorCount, b));
 
             if (colorCount == 0)
-                GL_CALL(glReadBuffer(GL_NONE));
+            {
+#ifdef __DAVAENGINE_ANDROID__
+                if (glReadBuffer)
+#endif
+                {
+                    GL_CALL(glReadBuffer(GL_NONE));
+                }
+            }
         }
 
         int status = 0;
@@ -1099,7 +1115,24 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
         }
         else
         {
-            DAVA::Logger::Error("glCheckFramebufferStatus = %08X", status);
+            DAVA::Logger::Error("Failed to create framebuffer, status: %08X", status);
+            for (uint32 i = 0; i < colorCount; ++i)
+            {
+                if (color[i] != InvalidHandle)
+                {
+                    TextureGLES2_t* col = TextureGLES2Pool::Get(color[i]);
+                    DAVA::Logger::Error("Color%u: %s, %ux%u, face: %u, level: %u", i, TextureFormatToString(col->format), col->width, col->height, uint32(face[i]), level[i]);
+                }
+                else
+                {
+                    DAVA::Logger::Error("Color%u: none", i);
+                }
+            }
+            if (depthStencil != InvalidHandle)
+            {
+                TextureGLES2_t* ds = TextureGLES2Pool::Get(depthStencil);
+                DAVA::Logger::Error("Depth: %s, %ux%u", TextureFormatToString(ds->format), ds->width, ds->height);
+            }
             DVASSERT(status == GL_FRAMEBUFFER_COMPLETE);
         }
 

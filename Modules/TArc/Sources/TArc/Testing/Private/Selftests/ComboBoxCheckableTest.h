@@ -152,7 +152,7 @@ DAVA_TARC_TESTCLASS(ComboBoxCheckableTest)
 
                 ChangeItemState(2);
                 EXPECT_CALL(*this, AfterWrappersSync())
-                .WillOnce(Invoke([this]() {
+                .WillOnce(Invoke([]() {
                     ComboBoxCheckableTestModule* inst = ComboBoxCheckableTestModule::instance;
                     TEST_VERIFY(inst->model.value == ComboBoxCheckableTestModule::eTestedFlags::all);
                 }));

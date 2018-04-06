@@ -162,14 +162,9 @@ bool NeedRestoreResources()
     return (*_Impl.impl_NeedRestoreResources)();
 }
 
-Api HostApi()
+const HostAPI& HostApi()
 {
     return (*_Impl.impl_HostApi)();
-}
-
-bool TextureFormatSupported(TextureFormat format, ProgType progType)
-{
-    return (*_Impl.impl_TextureFormatSupported)(format, progType);
 }
 
 const RenderDeviceCaps& DeviceCaps()

@@ -4,12 +4,15 @@
 #include "Render/Highlevel/CubemapRenderer.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderPass.h"
+#include "Render/Highlevel/ReflectionProbe.h"
 #include "Render/Material/NMaterialManager.h"
+#include "Asset/Asset.h"
 #include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 #include "Render/RhiUtils.h"
 #include "Logger/Logger.h"
+#include "Base/BaseTypes.h"
 
 namespace DAVA
 {
@@ -40,30 +43,11 @@ ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
     reflectionPass->AddRenderLayer(new RenderLayer(RENDER_LAYER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_TRANSLUCENT));
     reflectionPass->AddRenderLayer(new RenderLayer(RENDER_LAYER_AFTER_TRANSLUCENT_ID, RenderLayer::LAYER_SORTING_FLAGS_AFTER_TRANSLUCENT));
 
-    Texture::RenderTargetTextureKey key;
-    key.width = HIGH_RES_FBO_CUBEMAP_SIZE;
-    key.height = HIGH_RES_FBO_CUBEMAP_SIZE;
-    key.format = ReflectionsIntermediateTextureFormat;
-    key.textureType = rhi::TEXTURE_TYPE_CUBE;
-    key.isDepth = false;
-
-    temporaryFramebuffer = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
-    temporaryFramebuffer->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
-
-    key.isDepth = true;
-    temporaryFramebufferDepth = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
-
-    downsampledFramebuffer = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsIntermediateTextureFormat);
-    downsampledFramebuffer->SetDebugInfo("downsampledFramebuffer");
-    globalProbeSpecularConvolution = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTargetTextureFormat);
-    globalProbeSpecularConvolution->SetDebugInfo("globalProbeSpecularConvolution");
-
     for (uint32 qualityLevel = 0; qualityLevel < CUBEMAP_QUALITY_LEVELS; ++qualityLevel)
     {
         for (uint32 t = 0; t < maxCacheCubemapOnEachLevel[qualityLevel]; ++t)
         {
             Asset<Texture> texture = CreateCubeTextureForReflection(cacheCubemapFaceSize[qualityLevel].first, cacheCubemapFaceSize[qualityLevel].second, ReflectionsTargetTextureFormat);
-            texture->SetDebugInfo(Format("Quality level %d", qualityLevel));
             textureCache[qualityLevel].push_back(texture);
             allCacheTextures.push_back(texture);
         }
@@ -89,10 +73,60 @@ ReflectionRenderer::ReflectionRenderer(RenderSystem* renderSystem_)
 ReflectionRenderer::~ReflectionRenderer()
 {
     NMaterialManager::Instance().UnregisterInvalidateCallback(invalidateCallback);
+
     SafeDelete(reflectionPass);
     DVASSERT(globalReflectionProbe == nullptr);
     DVASSERT(localReflectionProbes.empty() == true);
     SafeRelease(debugDrawProbe);
+}
+
+Asset<Texture> ReflectionRenderer::GetTemporaryFramebuffer()
+{
+    if (sharedTextures.temporaryFramebuffer == nullptr)
+    {
+        Texture::RenderTargetTextureKey key;
+        key.width = HIGH_RES_FBO_CUBEMAP_SIZE;
+        key.height = HIGH_RES_FBO_CUBEMAP_SIZE;
+        key.format = ReflectionsIntermediateTextureFormat;
+        key.isDepth = false;
+        key.textureType = rhi::TEXTURE_TYPE_CUBE;
+        sharedTextures.temporaryFramebuffer = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+        sharedTextures.temporaryFramebuffer->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+    }
+    return sharedTextures.temporaryFramebuffer;
+}
+
+Asset<Texture> ReflectionRenderer::GetTemporaryFramebufferDepth()
+{
+    if (sharedTextures.temporaryFramebufferDepth == nullptr)
+    {
+        Texture::RenderTargetTextureKey key;
+        key.width = HIGH_RES_FBO_CUBEMAP_SIZE;
+        key.height = HIGH_RES_FBO_CUBEMAP_SIZE;
+        key.format = ReflectionsIntermediateTextureFormat;
+        key.isDepth = true;
+        key.textureType = rhi::TEXTURE_TYPE_CUBE;
+        sharedTextures.temporaryFramebufferDepth = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
+    }
+    return sharedTextures.temporaryFramebufferDepth;
+}
+
+Asset<Texture> ReflectionRenderer::GetDownsampledFramebuffer()
+{
+    if (sharedTextures.downsampledFramebuffer == nullptr)
+    {
+        sharedTextures.downsampledFramebuffer = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsIntermediateTextureFormat);
+    }
+    return sharedTextures.downsampledFramebuffer;
+}
+
+Asset<Texture> ReflectionRenderer::GetGlobalProbeSpecularConvolution()
+{
+    if (sharedTextures.globalProbeSpecularConvolution == nullptr)
+    {
+        sharedTextures.globalProbeSpecularConvolution = CreateCubeTextureForReflection(HIGH_RES_FBO_CUBEMAP_SIZE, CONVOLUTION_MIP_COUNT, ReflectionsTargetTextureFormat);
+    }
+    return sharedTextures.globalProbeSpecularConvolution;
 }
 
 Asset<Texture> ReflectionRenderer::CreateCubeTextureForReflection(uint32 size, uint32 mipCount, PixelFormat format)
@@ -191,11 +225,6 @@ void ReflectionRenderer::SaveCubemap(const FilePath & filePath, Texture * cubema
     texDescriptor.Save(texDescriptorFilePath);
 }*/
 
-Asset<Texture> ReflectionRenderer::GetSpecularConvolution2()
-{
-    return globalProbeSpecularConvolution;
-}
-
 void ReflectionRenderer::EnumerateMaterials(Set<NMaterial*>& materials)
 {
     Vector<RenderObject*>& renderObjectArray = renderSystem->GetRenderObjectArray();
@@ -215,9 +244,9 @@ void ReflectionRenderer::AllocateProbeTexture(ReflectionProbe* probe)
 
     if (probe->GetReflectionType() == ReflectionProbe::ProbeType::GLOBAL)
     {
-        probe->SetCurrentTexture(globalProbeSpecularConvolution);
+        probe->SetCurrentTexture(GetGlobalProbeSpecularConvolution());
     }
-    else if ((probe->GetCurrentTexture() == globalProbeSpecularConvolution) || (probe->GetCurrentTexture() == nullptr))
+    else if ((probe->GetCurrentTexture() == GetGlobalProbeSpecularConvolution()) || (probe->GetCurrentTexture() == nullptr))
     {
         uint32 qualityLevel = probe->GetNextQualityLevel();
         DVASSERT(qualityLevel < CUBEMAP_QUALITY_LEVELS);
@@ -233,12 +262,12 @@ void ReflectionRenderer::AllocateProbeTexture(ReflectionProbe* probe)
 void ReflectionRenderer::ReleaseProbeTexture(ReflectionProbe* probe)
 {
     Asset<Texture> probeTexture = probe->GetCurrentTexture();
-    if (probe->IsStaticProbe() || (probeTexture == nullptr) || (probeTexture == globalProbeSpecularConvolution))
+    if (probe->IsStaticProbe() || (probeTexture == nullptr) || (probeTexture == GetGlobalProbeSpecularConvolution()))
         return;
 
     uint32 probeQualityLevel = probe->GetActiveQualityLevel();
     textureCache[probeQualityLevel].push_back(probeTexture);
-    probe->SetCurrentTexture(globalProbeSpecularConvolution);
+    probe->SetCurrentTexture(GetGlobalProbeSpecularConvolution());
 }
 
 void ReflectionRenderer::RenderReflectionProbe(ReflectionProbe* probe)
@@ -256,10 +285,10 @@ void ReflectionRenderer::RenderReflectionProbe(ReflectionProbe* probe)
     SphericalHarmonicsUpdate shUpdate = EnqueueSphericalHarmonicsUpdate(probe);
 
     Vector3 capturePosition = probe->GetPosition() + probe->GetCapturePosition();
-    cmr->RenderCubemap(renderSystem, reflectionPass, capturePosition, temporaryFramebuffer, temporaryFramebufferDepth, layerFilter);
-    cmr->EdgeFilterCubemap(temporaryFramebuffer, downsampledFramebuffer, CONVOLUTION_MIP_COUNT);
-    cmr->ConvoluteSphericalHarmonics(downsampledFramebuffer, shUpdate.targetTexture);
-    cmr->ConvoluteSpecularCubemap(downsampledFramebuffer, target, target->GetMipLevelsCount());
+    cmr->RenderCubemap(renderSystem, reflectionPass, capturePosition, GetTemporaryFramebuffer(), GetTemporaryFramebufferDepth(), layerFilter);
+    cmr->EdgeFilterCubemap(GetTemporaryFramebuffer(), GetDownsampledFramebuffer(), CONVOLUTION_MIP_COUNT);
+    cmr->ConvoluteSphericalHarmonics(GetDownsampledFramebuffer(), shUpdate.targetTexture);
+    cmr->ConvoluteSpecularCubemap(GetDownsampledFramebuffer(), target, target->GetMipLevelsCount());
 }
 
 void ReflectionRenderer::UpdateProbeMaterialBindings(ReflectionProbe* probe)

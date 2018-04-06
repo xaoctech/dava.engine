@@ -328,7 +328,6 @@ void Scene::CreateSystems()
         return;
     }
 
-    AddSystem(new StreamingSystem(this));
     AddSystem(new PrefabLoadingSystem(this));
     AddSystem(new ActionCollectSystem(this));
     AddSystem(new StaticOcclusionSystem(this));
@@ -676,7 +675,6 @@ void Scene::InitLegacyPointers()
     staticOcclusionDebugDrawSystem = GetSystem<StaticOcclusionDebugDrawSystem>();
     particleEffectDebugDrawSystem = GetSystem<ParticleEffectDebugDrawSystem>();
     geoDecalSystem = GetSystem<GeoDecalSystem>();
-    streamingSystem = GetSystem<StreamingSystem>();
 }
 
 void Scene::ProcessChangedTags()
@@ -1035,7 +1033,8 @@ void Scene::Update(float32 timeElapsed)
     GetSingletonComponent<LightmapSingleComponent>()->Clear();
     GetSingletonComponent<VTSingleComponent>()->Clear();
 
-    sceneGlobalTime += timeElapsed;
+    sceneGlobalTime.y = sceneGlobalTime.x;
+    sceneGlobalTime.x += timeElapsed;
 }
 
 void Scene::Draw()
@@ -1049,15 +1048,11 @@ void Scene::Draw()
     static Vector4 vDef(1.0f, 1.0f, 1.0f, 1.0f);
 
     const float32* shadowDataPtr = defShadowColor.color;
-    const float32* waterDataPtr = defWaterClearColor.color;
     if (sceneGlobalMaterial && sceneGlobalMaterial->HasLocalProperty(DAVA::NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM))
         shadowDataPtr = sceneGlobalMaterial->GetLocalPropValue(DAVA::NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM);
-    if (sceneGlobalMaterial && sceneGlobalMaterial->HasLocalProperty(DAVA::NMaterialParamName::WATER_CLEAR_COLOR))
-        waterDataPtr = sceneGlobalMaterial->GetLocalPropValue(DAVA::NMaterialParamName::WATER_CLEAR_COLOR);
 
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_COLOR, shadowDataPtr, reinterpret_cast<pointer_size>(shadowDataPtr));
-    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WATER_CLEAR_COLOR, waterDataPtr, reinterpret_cast<pointer_size>(waterDataPtr));
-    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_GLOBAL_TIME, &sceneGlobalTime, reinterpret_cast<pointer_size>(&sceneGlobalTime));
+    Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_GLOBAL_TIME, sceneGlobalTime.data, reinterpret_cast<pointer_size>(sceneGlobalTime.data));
 
     //GFX_COMPLETE - Actually bad idea to draw shadow with identity
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_VIEW, Matrix4::IDENTITY.data, DynamicBindings::UPDATE_SEMANTIC_ALWAYS);

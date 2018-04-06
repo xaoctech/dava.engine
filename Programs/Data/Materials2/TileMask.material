@@ -1,2 +1,8 @@
-ForwardPassShader: "~res:/Materials2/Shaders/landscape/vt-page-pbs-tiled"
-
+RenderTechnique:
+    Passes:
+        ForwardPass:
+            SupportedRenderFlows: ["HDR", "TileBasedHDR"]
+            Shader: "~res:/Materials2/Shaders/landscape/vt-page-pbs-tiled"
+        LDRForwardPass:
+            SupportedRenderFlows: ["LDR"]
+            Shader: "~res:/Materials2/ShadersLDR/landscape/vt-page-pbs-tiled"
