@@ -47,6 +47,7 @@ RenderWidget::RenderWidget(IWindowDelegate* widgetDelegate, uint32 width, uint32
 #endif
     }
 
+    renderWidgetImpl->setObjectName(BackendWidgetName);
     setFocusProxy(renderWidgetImpl);
     QVBoxLayout* boxLayout = new QVBoxLayout(this);
     boxLayout->setSpacing(0);
@@ -109,6 +110,8 @@ void RenderWidget::InitCustomRenderParams(rhi::InitParam& params)
 {
     renderWidgetBackend->InitCustomRenderParams(params);
 }
+
+QString RenderWidget::BackendWidgetName = QStringLiteral("dava_render_widget_backend");
 
 } // namespace DAVA
 

@@ -290,6 +290,11 @@ QList<QWidget*> TArcTestClass::LookupWidget(const WindowKey& wndKey, const QStri
     return GetWindow(wndKey)->findChildren<QWidget*>(objectName);
 }
 
+QWidget* TArcTestClass::GetRenderWidgetTestTarget()
+{
+    return GetContextManager()->GetRenderWidget()->findChild<QWidget*>(RenderWidget::BackendWidgetName);
+}
+
 void TArcTestClass::CreateTestedModules()
 {
 }
