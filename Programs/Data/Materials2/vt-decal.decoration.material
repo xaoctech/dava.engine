@@ -1,0 +1,9 @@
+RenderTechnique:
+    MaterialType: Decal
+    Layers: ["VTDecals"]
+    RenderPassVTDecoration:
+        Name: "VTDecorationPass"        
+        Shader: "~res:/Materials2/Shaders/landscape/vt-decal"
+        UniqueDefines: ["DECORATION"]
+        UniquePins:
+            - ["DECAL_TYPE", 0]

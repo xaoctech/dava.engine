@@ -103,7 +103,7 @@ fragment_out fp_main(fragment_in input)
 #if DECORATION
     {
         float4 mixMask = normalize(indexMask) * tilemaskSample;
-        float decorationIndex = dot(indexMask, tileDecorationIDs / 256.0);
+        float decorationIndex = dot(indexMask, tileDecorationIDs / 255.0);
         float4 decorationMask = float4(decorationIndex, dot(mixMask, indexMask), maxHeight, 0.0);
         
     #if USE_PREVIOUS_LANDSCAPE_LAYER

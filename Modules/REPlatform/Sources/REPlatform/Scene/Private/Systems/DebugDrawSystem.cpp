@@ -25,6 +25,7 @@
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/DecalComponent.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
+#include <Scene3D/Components/VTDecalComponent.h>
 #include <Scene3D/Components/PostEffectDebugComponent.h>
 #include <Scene3D/Scene.h>
 
@@ -41,6 +42,7 @@ DebugDrawSystem::DebugDrawSystem(Scene* scene)
     drawComponentFunctionsMap[Type::Instance<WindComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawWindNode);
     drawComponentFunctionsMap[Type::Instance<GeoDecalComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
     drawComponentFunctionsMap[Type::Instance<DecalComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
+    drawComponentFunctionsMap[Type::Instance<VTDecalComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
     drawComponentFunctionsMap[Type::Instance<LightComponent>()] = Bind(&DebugDrawSystem::DrawLightNode, this, DAVA::_1, false);
     drawComponentFunctionsMap[Type::Instance<PostEffectDebugComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawPostEffects);
 }
@@ -600,6 +602,15 @@ void DebugDrawSystem::DrawDecals(Entity* entity)
     for (uint32 i = 0; i < componentsCount; ++i)
     {
         DecalComponent* decal = entity->GetComponent<DecalComponent>(i);
+        DVASSERT(decal != nullptr);
+        const Vector3& size = decal->GetLocalSize();
+        DrawDecal(entity->GetWorldTransform(), AABBox3(-size, size), GeoDecalManager::Mapping::PLANAR);
+    }
+
+    componentsCount = entity->GetComponentCount<VTDecalComponent>();
+    for (uint32 i = 0; i < componentsCount; ++i)
+    {
+        VTDecalComponent* decal = entity->GetComponent<VTDecalComponent>(i);
         DVASSERT(decal != nullptr);
         const Vector3& size = decal->GetLocalSize();
         DrawDecal(entity->GetWorldTransform(), AABBox3(-size, size), GeoDecalManager::Mapping::PLANAR);

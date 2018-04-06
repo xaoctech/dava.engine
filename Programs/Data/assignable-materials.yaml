@@ -30,6 +30,9 @@ VTDecal:
  -
   name: "VT Decal NormalRoughness only"
   path: Materials2/vt-decal.normal-roughness.material
+ -
+  name: "VT Decal Decoration only"
+  path: Materials2/vt-decal.decoration.material
 
 Legacy:
  -

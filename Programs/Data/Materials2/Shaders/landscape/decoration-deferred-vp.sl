@@ -112,7 +112,7 @@ vertex_out vp_main(vertex_in input)
     float4 decarationSample = tex2Dlod(decorationtexture, decorTexCoord, 0.0);
 
     int decorationIndex = int(decorationindex);
-    int decorationMaskIndex = int(decarationSample.r * 256.0 + 0.5);
+    int decorationMaskIndex = int(decarationSample.r * 255.0 + 0.5);
     float decoration = ((decorationIndex == decorationMaskIndex) ? 1.0 : 0.0) * decarationSample.g;
 
     float3 pivotObjectSpace = float3(relativePosition - 0.5, height) * boundingBoxSize;

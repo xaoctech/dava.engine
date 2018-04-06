@@ -272,6 +272,7 @@ public:
     static const FastName FLAG_LANDSCAPE_MICRO_TESSELLATION;
     static const FastName FLAG_DECORATION;
     static const FastName FLAG_DECORATION_DRAW_LEVELS;
+    static const FastName FLAG_DECORATION_DECAL_MASK;
 
     static const FastName FLAG_USE_PREVIOUS_LANDSCAPE_LAYER;
 
