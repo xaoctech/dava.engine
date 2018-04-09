@@ -1,10 +1,13 @@
 #include "REPlatform/Scene/Systems/PathSystem.h"
 #include "REPlatform/Scene/Systems/SelectionSystem.h"
+#include "REPlatform/Scene/SceneEditor2.h"
 
 #include "REPlatform/DataNodes/Settings/GlobalSceneSettings.h"
 
 #include "REPlatform/Commands/RECommandNotificationObject.h"
 #include "REPlatform/Commands/InspMemberModifyCommand.h"
+#include "REPlatform/Commands/SetFieldValueCommand.h"
+#include "REPlatform/Commands/TransformCommand.h"
 #include "REPlatform/Commands/WayEditCommands.h"
 
 #include <TArc/Core/Deprecated.h>
@@ -240,6 +243,32 @@ void PathSystem::OnEdgeDeleted(PathComponent* path, PathComponent::Waypoint* way
         SafeDelete(iter->second);
         edgeComponentCache.erase(iter);
     }
+}
+
+void PathSystem::BakeWaypoints()
+{
+    SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
+    scene->BeginBatch("Bake waypoints");
+
+    for (Entity* path : pathes)
+    {
+        const Matrix4& worldTransform = path->GetWorldTransform();
+        PathComponent* component = path->GetComponent<PathComponent>();
+        for (PathComponent::Waypoint* point : component->GetPoints())
+        {
+            Vector3 newPosition = point->position * worldTransform;
+            Reflection::Field field;
+            field.ref = Reflection::Create(point).GetField("waypointPosition");
+            scene->Exec(std::make_unique<SetFieldValueCommand>(field, newPosition));
+        }
+
+        for (Entity* parentEntity = path; parentEntity != nullptr && parentEntity != scene; parentEntity = parentEntity->GetParent())
+        {
+            scene->Exec(std::make_unique<TransformCommand>(Selectable(Any(parentEntity)), parentEntity->GetLocalTransform(), Matrix4::IDENTITY));
+        }
+    }
+
+    scene->EndBatch();
 }
 
 void PathSystem::Draw()

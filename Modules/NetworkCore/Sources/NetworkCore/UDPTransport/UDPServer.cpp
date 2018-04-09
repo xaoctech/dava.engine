@@ -172,9 +172,16 @@ bool UDPServer::Update(uint32 timeout)
         Logger::FrameworkDebug("CLIENT_DISCONNECTED: host:%d port:%d", peer->address.host, peer->address.port);
         auto peerIt = peerStorage.find(peer);
         DVASSERT(peerIt != peerStorage.end());
-        disconnectSignal.Emit(peerIt->second.GetToken());
-        tokenIndex.erase(peerIt->second.GetToken());
+        const FastName& token = peerIt->second.GetToken();
+        disconnectSignal.Emit(token);
         peerStorage.erase(peerIt);
+        tokenIndex.erase(token);
+        auto pendingTokenIt = pendingTokens.find(token);
+        if (pendingTokenIt != pendingTokens.end())
+        {
+            AddTokenToIndex(token, pendingTokenIt->second);
+            pendingTokens.erase(pendingTokenIt);
+        }
         break;
     }
 
@@ -304,16 +311,25 @@ void UDPServer::OnReceiveToken(const Responder& responder, const uint8* data, si
     const TokenPacketHeader* header = reinterpret_cast<const TokenPacketHeader*>(data);
     String tokenString(header->token, TokenPacketHeader::TOKEN_LENGTH);
     FastName token(tokenString);
+    ENetPeer* peer = responder.GetPeer();
+    if (tokenIndex.find(token) != tokenIndex.end())
+    {
+        pendingTokens[token] = peer;
+    }
+    else
+    {
+        AddTokenToIndex(token, peer);
+    }
+}
 
-    auto findIt = peerStorage.find(responder.GetPeer());
+void UDPServer::AddTokenToIndex(const FastName& token, ENetPeer* peer)
+{
+    auto findIt = peerStorage.find(peer);
     DVASSERT(findIt != peerStorage.end());
     findIt->second.SetToken(token);
-    auto emplaceRet = tokenIndex.emplace(token, responder.GetPeer());
-    if (!emplaceRet.second)
-    {
-        emplaceRet.first->second = responder.GetPeer();
-    }
-    tokenConfirmationSignal.Emit(responder);
+    auto emplaceRet = tokenIndex.emplace(token, peer);
+    DVASSERT(emplaceRet.second);
+    tokenConfirmationSignal.Emit(findIt->second);
 }
 
 void UDPServer::SetValidToken(const FastName& token)

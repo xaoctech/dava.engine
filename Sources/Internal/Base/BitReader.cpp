@@ -4,8 +4,8 @@
 namespace DAVA
 {
 BitReader::BitReader(const void* sourceBuffer, size_t sourceBufferSize)
-    : buffer(static_cast<const uint32*>(sourceBuffer))
-    , totalBitCount(static_cast<uint32>(sourceBufferSize / sizeof(uint32) + ((sourceBufferSize % sizeof(uint32)) != 0)) * 32)
+    : buffer(static_cast<const AccumulatorType*>(sourceBuffer))
+    , totalBitCount(static_cast<uint32>(sourceBufferSize / AccumulatorTypeByteSize + ((sourceBufferSize % AccumulatorTypeByteSize) != 0)) * AccumulatorTypeBitSize)
 {
     DVASSERT(buffer != nullptr);
     DVASSERT(sourceBufferSize > 0);
@@ -15,7 +15,7 @@ BitReader::BitReader(const void* sourceBuffer, size_t sourceBufferSize)
 
 uint32 BitReader::ReadBits(uint32 bits)
 {
-    DVASSERT(0 < bits && bits <= 32);
+    DVASSERT(0 < bits && bits <= AccumulatorTypeBitSize);
     //DVASSERT(bitsRead + bits <= totalBitCount);
 
     if (bitsRead + bits > totalBitCount)
@@ -26,16 +26,16 @@ uint32 BitReader::ReadBits(uint32 bits)
 
     uint32 result = 0;
     bitsRead += bits;
-    if (bitIndex + bits <= 32)
+    if (bitIndex + bits <= AccumulatorTypeBitSize)
     {
         result = accum >> bitIndex;
-        if (bits != 32)
+        if (bits != AccumulatorTypeBitSize)
         {
             result &= (1 << bits) - 1;
         }
 
         bitIndex += bits;
-        if (bitIndex == 32)
+        if (bitIndex == AccumulatorTypeBitSize)
         {
             if (bitsRead < totalBitCount)
             {
@@ -50,9 +50,9 @@ uint32 BitReader::ReadBits(uint32 bits)
 
         accum = buffer[++wordIndex];
 
-        const uint32 bitsB = bits - (32 - bitIndex);
+        const uint32 bitsB = bits - (AccumulatorTypeBitSize - bitIndex);
         const uint32 mask = (1 << bitsB) - 1;
-        result |= (accum & mask) << (32 - bitIndex);
+        result |= (accum & mask) << (AccumulatorTypeBitSize - bitIndex);
 
         bitIndex = bitsB;
     }
@@ -70,7 +70,7 @@ void BitReader::ReadAlignmentBits()
 
 uint32 BitReader::GetBytesRead() const
 {
-    return wordIndex * 4 + bitIndex / 8 + ((bitIndex % 8) != 0);
+    return wordIndex * AccumulatorTypeByteSize + bitIndex / 8 + ((bitIndex % 8) != 0);
 }
 
 uint32 BitReader::GetBitsRead() const

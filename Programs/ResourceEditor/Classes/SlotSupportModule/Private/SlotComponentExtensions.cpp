@@ -9,6 +9,7 @@
 #include <REPlatform/DataNodes/SlotTemplatesData.h>
 #include <REPlatform/Scene/SceneEditor2.h>
 #include <REPlatform/Scene/Systems/EditorSlotSystem.h>
+#include <REPlatform/Scene/Systems/SelectionSystem.h>
 
 #include <TArc/Controls/CommonStrings.h>
 #include <TArc/Controls/ComboBox.h>

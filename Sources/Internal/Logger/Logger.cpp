@@ -17,6 +17,10 @@ namespace
 const size_t defaultBufferSize{ 4096 };
 }
 
+#if defined(__DAVAENGINE_WIN32__)
+void Win32AttachStdoutToConsole(bool attach);
+#endif
+
 String ConvertCFormatListToString(const char8* format, va_list pargs)
 {
     String dynamicbuf;
@@ -105,6 +109,10 @@ Logger::~Logger()
     {
         delete logOutput;
     }
+
+#if defined(__DAVAENGINE_WIN32__)
+    Win32AttachStdoutToConsole(false);
+#endif
 }
 
 Logger::eLogLevel Logger::GetLogLevel() const
@@ -440,11 +448,18 @@ void Logger::CustomLog(eLogLevel ll, const char8* text) const
 void Logger::EnableConsoleMode()
 {
     consoleModeEnabled = true;
+#if defined(__DAVAENGINE_WIN32__)
+    Win32AttachStdoutToConsole(true);
+#endif
 }
 
 void Logger::ConsoleLog(DAVA::Logger::eLogLevel ll, const char8* text) const
 {
+// On mac and linux ConsoleLog and PlatformLog use the same facility for log output.
+// So do nothing in ConsoleLog to prevent log messages duplication.
+#if !defined(__DAVAENGINE_MACOS__) && !defined(__DAVAENGINE_LINUX__)
     printf("[%s] %s", GetLogLevelString(ll), text);
+#endif
 }
 
 void Logger::Output(eLogLevel ll, const char8* formatedMsg) const
@@ -459,16 +474,13 @@ void Logger::Output(const FilePath& customLogFilename, eLogLevel ll, const char8
     // only if log level is acceptable
     if (ll >= logLevel)
     {
+        PlatformLog(ll, formatedMsg);
         if (consoleModeEnabled)
         {
             ConsoleLog(ll, formatedMsg);
 #ifdef __DAVAENGINE_WINDOWS__
             PlatformLog(ll, formatedMsg);
 #endif
-        }
-        else
-        {
-            PlatformLog(ll, formatedMsg);
         }
 
         if (!customLogFilename.IsEmpty())

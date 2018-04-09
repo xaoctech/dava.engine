@@ -119,6 +119,7 @@ private:
     ENetHost* server;
     UnorderedMap<ENetPeer*, UDPResponder> peerStorage;
     UnorderedMap<FastName, ENetPeer*> tokenIndex;
+    UnorderedMap<FastName, ENetPeer*> pendingTokens;
 
     Signal<const Responder&> connectSignal;
     Signal<const Responder&> tokenConfirmationSignal;
@@ -131,6 +132,7 @@ private:
     std::unique_ptr<TrafficLogger> trafficLogger;
 
     void OnReceiveToken(const Responder& responder, const uint8* data, size_t size);
+    void AddTokenToIndex(const FastName& token, ENetPeer* peer);
 
     uint8* buffer;
 };

@@ -30,8 +30,8 @@ if [ "${cmd}" == "stop" ]; then
         done
     fi
 
-    server_state=$(kubectl describe pod ${pod} | grep '^    State' | awk '{print $2}')
-    if [ "${server_state}" == "Terminated" ]; then
+    server_state=($(kubectl describe pod ${pod} | grep '^    State' | awk '{print $2}'))
+    if [ "${server_state[0]}" == "Terminated" ]; then
         (>&2 echo "[${pod}]: Server crashed")
         (>&2 echo "[${pod}]: To attach to debug container use the command:")
         (>&2 echo "[${pod}]:    $ kubectl exec -it ${pod} -c debug /bin/bash")

@@ -1,40 +1,25 @@
-#if 0
-
 #include <UnitTests/UnitTests.h>
 
 #include <Concurrency/Thread.h>
 #include <Engine/Engine.h>
 #include <FeatureManager/FeatureManager.h>
-#include <FeatureManager/FeatureManagerUtils.h>
 #include <FileSystem/FileSystem.h>
 
 using namespace DAVA;
 
 DAVA_TESTCLASS (FeatureManagerTest)
 {
-    void DownloadConfig()
-    {
-        GetEngineContext()->fileSystem->DeleteFile("~doc:/FeatureManagerTest/feature_config.yaml");
-
-        FeatureManagerUtils* featureManagerUtils = GetEngineContext()->featureManagerUtils;
-        featureManagerUtils->InitLocalFeatureServer(String(LOCAL_FRAMEWORK_SOURCE_PATH) + "/Programs/UnitTests/Data/FeatureManager/");
-        featureManagerUtils->DownloadConfig();
-        featureManagerUtils->ShutdownLocalFeatureServer();
-    }
-
     DAVA_TEST (InitManager)
     {
-        DownloadConfig();
         FeatureManager* manager = GetEngineContext()->featureManager;
-        manager->InitFromConfig("~doc:/feature_config.yaml");
+        manager->InitFromConfig("~res:/FeatureManager/feature_config.yaml");
         manager->Dump();
     }
 
     DAVA_TEST (GetFeatureValue)
     {
-        DownloadConfig();
         FeatureManager* manager = GetEngineContext()->featureManager;
-        manager->InitFromConfig("~doc:/feature_config.yaml");
+        manager->InitFromConfig("~res:/FeatureManager/feature_config.yaml");
 
         Any f1 = manager->GetFeatureValue(FastName("feature1"));
         TEST_VERIFY(f1.IsEmpty() == false && f1.Get<bool>() == true);
@@ -80,4 +65,3 @@ DAVA_TESTCLASS (FeatureManagerTest)
     }
 };
 
-#endif

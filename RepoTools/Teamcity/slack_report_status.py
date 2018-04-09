@@ -14,6 +14,7 @@ arg_parser.add_argument('result', choices=['success', 'failure'], help='Build re
 arg_parser.add_argument('--teamcity-env-build-failed', default = 'true', choices=['true', 'false'], help='If true, "successful" result is ignored. This flag is needed because teamcity does not support "run if build failed" build step. [env.build_failed]')
 arg_parser.add_argument('--build-id', type=int, required=True, help='Teamcity unique build-id, used to generate link to build. [teamcity.build.id]')
 arg_parser.add_argument('--configuration-name', required=True, help='Teamcity configuration name. [system.teamcity.buildConfName]')
+arg_parser.add_argument('--branch-name', help='Branch name for Slack message. [teamcity.build.branch]')
 args = arg_parser.parse_args()
 
 if args.result == 'failure' and args.teamcity_env_build_failed == 'false':
@@ -25,6 +26,9 @@ if args.result == 'success':
 else:
 	color = "#D00000"
 	string_result = "Failure"
+
+if args.branch_name:
+	string_result += " in branch %s" % (args.branch_name)
 
 r = requests.post('https://hooks.slack.com/services/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', timeout = 10, json={"text": "%s: %s" % (args.configuration_name, string_result),
 	"attachments": 

@@ -3,6 +3,7 @@
 #include "Reflection/ReflectedMeta.h"
 #include "NetworkCore/UDPTransport/Private/ENetUtils.h"
 #include "Logger/Logger.h"
+#include "Base/BitReader.h"
 
 namespace DAVA
 {
@@ -61,6 +62,7 @@ void NetworkClientConnectionSingleComponent::StoreRecvPacket(uint8 channel, cons
 {
     DVASSERT(channel < PacketParams::CHANNELS_COUNT);
     ClientRecvPacket packet(size);
+    packet.reserve(size + BitReader::AccumulatorTypeByteSize);
     Memcpy(packet.data(), data, size);
     recvPacketsByChannels[channel].push_back(std::move(packet));
 }

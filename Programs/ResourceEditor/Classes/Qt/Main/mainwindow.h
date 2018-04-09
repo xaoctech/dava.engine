@@ -94,6 +94,7 @@ public slots:
     void OnTilemaskEditor();
     void OnNotPassableTerrain();
     void OnWayEditor();
+    void OnBakeWaypoints();
 
     void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();

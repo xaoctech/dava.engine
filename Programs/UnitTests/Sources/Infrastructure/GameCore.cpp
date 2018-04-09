@@ -121,9 +121,7 @@ int DAVAMain(Vector<String> cmdline)
 #endif
 
     FileSystem* fileSystem = e.GetContext()->fileSystem;
-
     DAVA::DocumentsDirectorySetup::SetApplicationDocDirectory(fileSystem, "UnitTests");
-
     CommandLineParser::Instance()->SetFlags(cmdline);
 
     GameCore g(e);

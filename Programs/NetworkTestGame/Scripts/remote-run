@@ -34,7 +34,7 @@ dir=${2:-dev}
 secret=${3:-secret.tfvars}
 
 ssh_opts="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-server=34.241.135.221
+server=18.184.36.67
 
 hosts=(`aws/aws-ips ${dir} ${secret}`)
 

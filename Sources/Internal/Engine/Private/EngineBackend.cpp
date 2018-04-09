@@ -29,7 +29,6 @@
 #include "DLC/Downloader/DownloadManager.h"
 #include "Engine/EngineSettings.h"
 #include "FeatureManager/FeatureManager.h"
-#include "FeatureManager/FeatureManagerUtils.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/KeyedArchive.h"
 #include "FileSystem/LocalizationSystem.h"
@@ -901,7 +900,6 @@ void EngineBackend::CreateSubsystems(const Vector<String>& modules)
     // Create subsystems
     context->allocatorFactory = new AllocatorFactory();
     context->featureManager = new FeatureManager();
-    context->featureManagerUtils = new FeatureManagerUtils();
     context->random = new Random();
     ParticleForcesUtils::GenerateNoise();
     ParticleForcesUtils::GenerateSphereRandomVectors();
@@ -1121,8 +1119,6 @@ void EngineBackend::DestroySubsystems()
     SafeDelete(context->logger);
 
     SafeDelete(context->imageConverter);
-
-    SafeDelete(context->featureManagerUtils);
 
     delete context->featureManager;
     context->featureManager = nullptr;

@@ -164,8 +164,10 @@ void SnapshotUtils::ApplySnapshot(SnapshotComponent* snapshotComponent, Componen
 
     for (size_t i = 0; i < fieldsCount; ++i)
     {
-        fields[i].valueWrapper->SetValue(compObj, snapshotComponent->fields[i].value);
-        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- " << fields[i].key << " = " << snapshotComponent->fields[i].value << "\n");
+        const ReflectedComponentField& reflCompField = fields[i];
+        SnapshotField& snapField = snapshotComponent->fields[i];
+        reflCompField.valueWrapper->SetValue(compObj, snapField.value);
+        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- " << reflCompField.key << " = " << snapField.value << "\n");
     }
 }
 

@@ -26,11 +26,10 @@ NetworkServerConnectionsSingleComponent::NetworkServerConnectionsSingleComponent
 void NetworkServerConnectionsSingleComponent::AddConnectedToken(const FastName& token)
 {
     auto ret = connectedTokens.insert(token);
-    if (!ret.second)
+    if (ret.second)
     {
-        RemoveConnectedToken(token);
+        justConnectedTokens.push_back(token);
     }
-    justConnectedTokens.push_back(token);
 }
 
 void NetworkServerConnectionsSingleComponent::RemoveConnectedToken(const FastName& token)

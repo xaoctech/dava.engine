@@ -152,6 +152,7 @@ int DAVAMain(DAVA::Vector<DAVA::String> cmdline)
         "PackManager"
     };
 
+    GetEngineContext()->logger->EnableConsoleMode();
     e.Init(runmode, modules, appOptions);
 
     CheckDeviceInfoValid();
