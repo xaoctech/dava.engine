@@ -58,6 +58,9 @@ struct FSMTest02
         Logger::Info("%s StopEmbeddedWebServer()", __FUNCTION__);
         StopEmbeddedWebServer();
         Logger::Info("%s done", __FUNCTION__);
+
+        const FilePath packDir("~doc:/UnitTests/DLCManagerTest/packs/");
+        GetEngineContext()->fileSystem->DeleteDirectory(packDir, true);
     }
 
     void OnRequestUpdateCheckOrder(const DAVA::DLCManager::IRequest& r)
@@ -356,7 +359,7 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         const DLCManager::IRequest* r = dlcManager.RequestPack("1"); // pack "1" have one dependent pack "0"
         TEST_VERIFY(r != nullptr);
 
-        FileSystem* fs = FileSystem::Instance();
+        FileSystem* fs = GetEngineContext()->fileSystem;
 
         const FilePath destPath = documentRootDir + "superpack_for_unittests.dvpk";
         const FilePath srcPath = "~res:/TestData/DLCManagerFullTest/superpack_for_unittests.dvpk";
@@ -383,7 +386,7 @@ DAVA_TESTCLASS (DLCManagerFullTest)
         hints.retryConnectMilliseconds = 3000;
 
         const FilePath packDir("~doc:/UnitTests/DLCManagerTest/packs/");
-        FileSystem::Instance()->DeleteDirectory(packDir, true);
+        fs->DeleteDirectory(packDir, true);
 
         try
         {

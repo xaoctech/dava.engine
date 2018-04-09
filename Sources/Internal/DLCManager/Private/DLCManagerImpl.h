@@ -191,6 +191,8 @@ public:
     bool CountError(int32 errCode);
     void FireNetworkReady(bool nextState);
 
+    uint32 instanceIndex = 0;
+
     ProfilerCPU profiler;
 
 private:
@@ -239,6 +241,8 @@ private:
     bool IsProfilingEnabled() const;
     String DumpToJsonProfilerTrace();
     static PackRequest* CastToPackRequest(const IRequest* request);
+
+    static uint32 lastCreatedIndexId;
 
     enum class ScanState : uint32
     {

@@ -232,8 +232,13 @@ void UI3DView::SetDrawToFrameBuffer(bool enable)
 {
     drawToFrameBuffer = enable;
 
-    if (!enable)
+    if (enable)
     {
+        RemoveComponent<UISceneComponent>();
+    }
+    else
+    {
+        GetOrCreateComponent<UISceneComponent>();
         SafeRelease(frameBuffer);
     }
 }

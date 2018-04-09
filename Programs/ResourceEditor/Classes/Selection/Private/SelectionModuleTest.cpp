@@ -7,12 +7,15 @@
 #include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/DataNodes/SelectableGroup.h>
 #include <REPlatform/DataNodes/SelectionData.h>
+#include <REPlatform/DataNodes/Settings/GlobalSceneSettings.h>
 #include <REPlatform/Global/GlobalOperations.h>
 #include <REPlatform/Scene/SceneEditor2.h>
 #include <REPlatform/Scene/Systems/SelectionSystem.h>
 
 #include <TArc/Core/ContextAccessor.h>
-#include <TArc/Testing/TArcUnitTests.h>
+#include "TArc/Testing/TArcTestClass.h"
+#include "TArc/Testing/TArcUnitTests.h"
+#include "TArc/Testing/MockDefine.h"
 
 #include <Engine/Qt/RenderWidget.h>
 #include <Render/Highlevel/Camera.h>

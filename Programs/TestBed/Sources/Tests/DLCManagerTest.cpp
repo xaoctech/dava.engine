@@ -31,29 +31,38 @@ DLCManagerTest::~DLCManagerTest()
 
 void DLCManagerTest::TextFieldOnTextChanged(DAVA::UITextField* textField, const DAVA::WideString& newText, const DAVA::WideString& /*oldText*/)
 {
-    if (editUrl == textField)
+    if (one.editUrl == textField)
     {
-        urlToServerSuperpack = DAVA::UTF8Utils::EncodeToUTF8(newText);
+        urlToServerSuperpack1 = DAVA::UTF8Utils::EncodeToUTF8(newText);
     }
-    UpdateDescription();
+    if (two.editUrl == textField)
+    {
+        urlToServerSuperpack2 = DAVA::UTF8Utils::EncodeToUTF8(newText);
+    }
+    UpdateDescription(one);
+    UpdateDescription(two);
 }
 
-void DLCManagerTest::UpdateDescription()
+void DLCManagerTest::UpdateDescription(GuiGroup& group)
 {
     using namespace DAVA;
 
     const FilePath publicDocsPath = GetEngineContext()->fileSystem->GetPublicDocumentsPath();
-    folderWithDownloadedPacks = publicDocsPath + "DLCManagerTest/packs/";
+    folderWithDownloadedPacks1 = publicDocsPath + "DLCManagerTest/packs1/";
+    folderWithDownloadedPacks2 = publicDocsPath + "DLCManagerTest/packs2/";
 
-    const String packName = editPackName->GetUtf8Text();
+    const FilePath& dir = (&group == &one) ? folderWithDownloadedPacks1 : folderWithDownloadedPacks2;
+    const String& url = (&group == &one) ? urlToServerSuperpack1 : urlToServerSuperpack2;
+
+    const String packName = group.editPackName->GetUtf8Text();
     const String message = Format("status:\n\"%s\" - name of pack you want to download\n"
                                   "directory to download packs:\n%s\n"
                                   "Url to superpack.dvpk:\n%s\n",
                                   packName.c_str(),
-                                  folderWithDownloadedPacks.GetAbsolutePathname().c_str(),
-                                  urlToServerSuperpack.c_str());
+                                  dir.GetAbsolutePathname().c_str(),
+                                  url.c_str());
 
-    textStatusOutput->SetUtf8Text(message);
+    group.textStatusOutput->SetUtf8Text(message);
 }
 
 void DLCManagerTest::LoadResources()
@@ -62,100 +71,120 @@ void DLCManagerTest::LoadResources()
     profiler.Start();
     BaseScreen::LoadResources();
 
+    secondDLC = DLCManager::Create();
+
     const Color greyColor = Color(0.4f, 0.4f, 0.4f, 1.f);
 
     ScopedPtr<FTFont> font(FTFont::Create("~res:/TestBed/Fonts/korinna.ttf"));
 
-    editPackName = new UITextField(Rect(5, 10, 500, 40));
-    editPackName->SetFont(font);
-    editPackName->SetFontSize(20.f);
-    editPackName->SetUtf8Text("test_pack");
-    editPackName->SetFontSize(14);
-    editPackName->GetOrCreateComponent<UIDebugRenderComponent>();
-    editPackName->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));
-    editPackName->SetInputEnabled(true);
-    editPackName->GetOrCreateComponent<UIFocusComponent>();
-    editPackName->SetDelegate(this);
-    editPackName->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    AddControl(editPackName);
+    auto InitGuiGroup = [this](const Color& greyColor, const ScopedPtr<FTFont>& font, const float32 dx, const float32 dy, GuiGroup& group)
+    {
+        auto editPackName = new UITextField(Rect(dx + 5, dy + 10, 500, 40));
+        editPackName->SetFont(font);
+        editPackName->SetFontSize(20.f);
+        editPackName->SetUtf8Text("test_pack");
+        editPackName->SetFontSize(14);
+        editPackName->GetOrCreateComponent<UIDebugRenderComponent>();
+        editPackName->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));
+        editPackName->SetInputEnabled(true);
+        editPackName->GetOrCreateComponent<UIFocusComponent>();
+        editPackName->SetDelegate(this);
+        editPackName->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
+        AddControl(editPackName);
+        group.editPackName = editPackName;
 
-    editUrl = new UITextField(Rect(5, 80, 500, 40));
-    editUrl->SetFont(font);
-    editUrl->SetFontSize(14);
-    editUrl->SetText(UTF8Utils::EncodeToWideString(urlToServerSuperpack));
-    editUrl->GetOrCreateComponent<UIDebugRenderComponent>();
-    editUrl->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));
-    editUrl->SetInputEnabled(true);
-    editUrl->GetOrCreateComponent<UIFocusComponent>();
-    editUrl->SetDelegate(this);
-    editUrl->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
-    AddControl(editUrl);
+        const String& url = &group == &one ? urlToServerSuperpack1 : urlToServerSuperpack2;
 
-    progressRed = new UIControl(Rect(5, 150, 500, 5));
-    progressRed->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Red);
-    AddControl(progressRed);
+        auto editUrl = new UITextField(Rect(dx + 5, dy + 50, 500, 40));
+        editUrl->SetFont(font);
+        editUrl->SetFontSize(14);
+        editUrl->SetText(UTF8Utils::EncodeToWideString(url));
+        editUrl->GetOrCreateComponent<UIDebugRenderComponent>();
+        editUrl->SetTextColor(Color(0.0, 1.0, 0.0, 1.0));
+        editUrl->SetInputEnabled(true);
+        editUrl->GetOrCreateComponent<UIFocusComponent>();
+        editUrl->SetDelegate(this);
+        editUrl->SetTextAlign(ALIGN_LEFT | ALIGN_VCENTER);
+        AddControl(editUrl);
+        group.editUrl = editUrl;
 
-    progressGreen = new UIControl(Rect(5, 150, 0, 5));
-    progressGreen->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Green);
-    AddControl(progressGreen);
+        auto progressRed = new UIControl(Rect(dx + 5, dy + 100, 500, 5));
+        progressRed->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Red);
+        AddControl(progressRed);
+        group.progressRed = progressRed;
 
-    textStatusOutput = new UIStaticText(Rect(5, 190, 500, 500));
-    textStatusOutput->SetFont(font);
-    textStatusOutput->SetFontSize(20.f);
-    textStatusOutput->SetTextColor(Color::White);
-    textStatusOutput->SetMultiline(true);
-    textStatusOutput->SetUtf8Text("status output: ");
-    textStatusOutput->GetOrCreateComponent<UIDebugRenderComponent>();
-    textStatusOutput->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
-    AddControl(textStatusOutput);
+        auto progressGreen = new UIControl(Rect(dx + 5, dy + 100, 0, 5));
+        progressGreen->GetOrCreateComponent<UIDebugRenderComponent>()->SetDrawColor(Color::Green);
+        AddControl(progressGreen);
+        group.progressGreen = progressGreen;
 
-    buttonInitDLC = new UIButton(Rect(600, 10, 100, 40));
-    buttonInitDLC->GetOrCreateComponent<UIDebugRenderComponent>();
-    buttonInitDLC->SetStateFont(0xFF, font);
-    buttonInitDLC->SetStateFontSize(0xFF, 20.f);
-    buttonInitDLC->SetStateFontColor(0xFF, Color::White);
-    buttonInitDLC->SetStateText(0xFF, L"Init");
-    buttonInitDLC->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
-    buttonInitDLC->AddEvent(EVENT_TOUCH_DOWN, Message(this, &DLCManagerTest::OnInitClicked));
-    AddControl(buttonInitDLC);
+        auto textStatusOutput = new UIStaticText(Rect(dx + 5, dy + 120, 500, 150));
+        textStatusOutput->SetFont(font);
+        textStatusOutput->SetFontSize(14.f);
+        textStatusOutput->SetTextColor(Color::White);
+        textStatusOutput->SetMultiline(true);
+        textStatusOutput->SetUtf8Text("status output: ");
+        textStatusOutput->GetOrCreateComponent<UIDebugRenderComponent>();
+        textStatusOutput->SetTextAlign(ALIGN_LEFT | ALIGN_TOP);
+        AddControl(textStatusOutput);
+        group.textStatusOutput = textStatusOutput;
 
-    buttonLoadPack = new UIButton(Rect(600, 80, 100, 40));
-    buttonLoadPack->GetOrCreateComponent<UIDebugRenderComponent>();
-    buttonLoadPack->SetStateFont(0xFF, font);
-    buttonLoadPack->SetStateFontSize(0xFF, 20.f);
-    buttonLoadPack->SetStateFontColor(0xFF, Color::White);
-    buttonLoadPack->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
-    buttonLoadPack->SetStateFontColor(STATE_DISABLED, greyColor);
-    buttonLoadPack->SetStateText(0xFF, L"Load");
-    buttonLoadPack->AddEvent(EVENT_TOUCH_DOWN, Message(this, &DLCManagerTest::OnLoadClicked));
-    buttonLoadPack->SetDisabled(true);
-    AddControl(buttonLoadPack);
+        auto buttonInitDLC = new UIButton(Rect(dx + 600, dy + 10, 100, 40));
+        buttonInitDLC->GetOrCreateComponent<UIDebugRenderComponent>();
+        buttonInitDLC->SetStateFont(0xFF, font);
+        buttonInitDLC->SetStateFontSize(0xFF, 20.f);
+        buttonInitDLC->SetStateFontColor(0xFF, Color::White);
+        buttonInitDLC->SetStateText(0xFF, L"Init");
+        buttonInitDLC->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
+        buttonInitDLC->AddEvent(EVENT_TOUCH_DOWN, Message(this, &DLCManagerTest::OnInitClicked));
+        AddControl(buttonInitDLC);
+        group.buttonInitDLC = buttonInitDLC;
 
-    buttonRemovePack = new UIButton(Rect(600, 150, 100, 40));
-    buttonRemovePack->GetOrCreateComponent<UIDebugRenderComponent>();
-    buttonRemovePack->SetStateFont(0xFF, font);
-    buttonRemovePack->SetStateFontSize(0xFF, 20.f);
-    buttonRemovePack->SetStateFontColor(0xFF, Color::White);
-    buttonRemovePack->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
-    buttonRemovePack->SetStateText(0xFF, L"Delete");
-    buttonRemovePack->SetStateFontColor(STATE_DISABLED, greyColor);
-    buttonRemovePack->AddEvent(EVENT_TOUCH_DOWN, Message(this, &DLCManagerTest::OnDeleteClicked));
-    buttonRemovePack->SetDisabled(true);
-    AddControl(buttonRemovePack);
+        auto buttonLoadPack = new UIButton(Rect(dx + 600, dy + 50, 100, 40));
+        buttonLoadPack->GetOrCreateComponent<UIDebugRenderComponent>();
+        buttonLoadPack->SetStateFont(0xFF, font);
+        buttonLoadPack->SetStateFontSize(0xFF, 20.f);
+        buttonLoadPack->SetStateFontColor(0xFF, Color::White);
+        buttonLoadPack->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
+        buttonLoadPack->SetStateFontColor(STATE_DISABLED, greyColor);
+        buttonLoadPack->SetStateText(0xFF, L"Load");
+        buttonLoadPack->AddEvent(EVENT_TOUCH_DOWN, Message(this, &DLCManagerTest::OnLoadClicked));
+        buttonLoadPack->SetDisabled(true);
+        AddControl(buttonLoadPack);
+        group.buttonLoadPack = buttonLoadPack;
 
-    buttonPauseResume = new UIButton(Rect(600, 220, 100, 40));
-    buttonPauseResume->GetOrCreateComponent<UIDebugRenderComponent>();
-    buttonPauseResume->SetStateFont(0xFF, font);
-    buttonPauseResume->SetStateFontSize(0xFF, 20.f);
-    buttonPauseResume->SetStateFontColor(0xFF, Color::White);
-    buttonPauseResume->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
-    buttonPauseResume->SetStateText(0xFF, L"Pause");
-    buttonPauseResume->SetStateFontColor(STATE_DISABLED, greyColor);
-    buttonPauseResume->AddEvent(EVENT_TOUCH_DOWN, Message(this, &DLCManagerTest::OnOffRequestingClicked));
-    buttonPauseResume->SetDisabled(true);
-    AddControl(buttonPauseResume);
+        auto buttonRemovePack = new UIButton(Rect(dx + 600, dy + 120, 100, 40));
+        buttonRemovePack->GetOrCreateComponent<UIDebugRenderComponent>();
+        buttonRemovePack->SetStateFont(0xFF, font);
+        buttonRemovePack->SetStateFontSize(0xFF, 20.f);
+        buttonRemovePack->SetStateFontColor(0xFF, Color::White);
+        buttonRemovePack->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
+        buttonRemovePack->SetStateText(0xFF, L"Delete");
+        buttonRemovePack->SetStateFontColor(STATE_DISABLED, greyColor);
+        buttonRemovePack->AddEvent(EVENT_TOUCH_DOWN, Message(this, &DLCManagerTest::OnDeleteClicked));
+        buttonRemovePack->SetDisabled(true);
+        AddControl(buttonRemovePack);
+        group.buttonRemovePack = buttonRemovePack;
 
-    UpdateDescription();
+        auto buttonPauseResume = new UIButton(Rect(dx + 600, dy + 190, 100, 40));
+        buttonPauseResume->GetOrCreateComponent<UIDebugRenderComponent>();
+        buttonPauseResume->SetStateFont(0xFF, font);
+        buttonPauseResume->SetStateFontSize(0xFF, 20.f);
+        buttonPauseResume->SetStateFontColor(0xFF, Color::White);
+        buttonPauseResume->SetStateFontColor(STATE_PRESSED_INSIDE, Color::Green);
+        buttonPauseResume->SetStateText(0xFF, L"Pause");
+        buttonPauseResume->SetStateFontColor(STATE_DISABLED, greyColor);
+        buttonPauseResume->AddEvent(EVENT_TOUCH_DOWN, Message(this, &DLCManagerTest::OnOffRequestingClicked));
+        buttonPauseResume->SetDisabled(true);
+        AddControl(buttonPauseResume);
+        group.buttonPauseResume = buttonPauseResume;
+    };
+
+    InitGuiGroup(greyColor, font, 0, 0, one);
+    InitGuiGroup(greyColor, font, 0, 300, two);
+
+    UpdateDescription(one);
+    UpdateDescription(two);
 }
 
 void DLCManagerTest::UnloadResources()
@@ -163,28 +192,37 @@ void DLCManagerTest::UnloadResources()
     using namespace DAVA;
     profiler.Stop();
 
+    auto ClearGuiGroup = [this](GuiGroup& group) {
+        SafeRelease(group.buttonPauseResume);
+        SafeRelease(group.buttonRemovePack);
+        SafeRelease(group.editPackName);
+        SafeRelease(group.buttonLoadPack);
+        SafeRelease(group.textStatusOutput);
+        SafeRelease(group.progressRed);
+        SafeRelease(group.progressGreen);
+        SafeRelease(group.editUrl);
+        SafeRelease(group.buttonInitDLC);
+    };
+
+    ClearGuiGroup(one);
+    ClearGuiGroup(two);
+
+    BaseScreen::UnloadResources();
+
     DLCManager& dm = *engine.GetContext()->dlcManager;
     dm.Deinitialize();
 
-    SafeRelease(buttonPauseResume);
-    SafeRelease(buttonRemovePack);
-    SafeRelease(editPackName);
-    SafeRelease(buttonLoadPack);
-    SafeRelease(textStatusOutput);
-    SafeRelease(progressRed);
-    SafeRelease(progressGreen);
-    SafeRelease(editUrl);
-    SafeRelease(buttonInitDLC);
-
-    BaseScreen::UnloadResources();
+    secondDLC->Deinitialize();
+    DLCManager::Destroy(secondDLC);
+    secondDLC = nullptr;
 }
 
 void DLCManagerTest::Update(DAVA::float32)
 {
     using namespace DAVA;
-    static DLCManager::Progress progress_;
+    DLCManager::Progress progress_;
     DLCManager& dm = *engine.GetContext()->dlcManager;
-    {
+    auto UpdateProgress = [this](DLCManager& dm, DLCManager::Progress progress_) {
         //DAVA_PROFILER_CPU_SCOPE_CUSTOM(__FUNCTION__, &profiler);
         DLCManager::Progress progress = dm.GetProgress();
         if (progress.isRequestingEnabled && progress.alreadyDownloaded != progress_.alreadyDownloaded)
@@ -192,19 +230,26 @@ void DLCManagerTest::Update(DAVA::float32)
             //Logger::Info("progress: %d %d", static_cast<uint32>(progress.total), static_cast<uint32>(progress.alreadyDownloaded));
             progress_ = progress;
         }
-    }
+    };
+
+    UpdateProgress(dm, one.progress);
+    UpdateProgress(*secondDLC, two.progress);
 }
 
-void DLCManagerTest::UpdateProgress(DAVA::float32 progress)
+void DLCManagerTest::UpdateProgress(GuiGroup& group, DAVA::float32 progress)
 {
-    auto rect = progressRed->GetRect();
+    auto rect = group.progressRed->GetRect();
     rect.dx = rect.dx * progress;
-    progressGreen->SetRect(rect);
+    group.progressGreen->SetRect(rect);
 }
 
 void DLCManagerTest::OnRequestUpdated(const DAVA::DLCManager::IRequest& request)
 {
     using namespace DAVA;
+
+    DLCManager& dm = request.GetDLCManager();
+    GuiGroup& group = (&dm == secondDLC) ? two : one;
+
     const String& packName = request.GetRequestedPackName();
     // change total download progress
     uint64 requestFileSize = request.GetSize();
@@ -212,9 +257,10 @@ void DLCManagerTest::OnRequestUpdated(const DAVA::DLCManager::IRequest& request)
     float32 requestProgress = requestFileSize > 0 ? static_cast<float32>(requestDownloadedSize) / requestFileSize : 1;
 
     std::stringstream ss;
+    int32 dlcIndex = (&group == &one) ? 0 : 1;
+    ss << "DLC(" << dlcIndex << ") ";
     ss << packName << ": " << (requestProgress * 100) << '%';
 
-    DLCManager& dm = *engine.GetContext()->dlcManager;
     auto p = dm.GetProgress();
     if (p.total > 0)
     {
@@ -222,14 +268,15 @@ void DLCManagerTest::OnRequestUpdated(const DAVA::DLCManager::IRequest& request)
     }
 
     std::string str = ss.str();
-    textStatusOutput->SetUtf8Text(str);
 
-    Logger::Info("DLC %s", str.c_str());
+    group.textStatusOutput->SetUtf8Text(str);
 
-    UpdateProgress(requestProgress);
+    Logger::Info("%s", str.c_str());
+
+    UpdateProgress(group, requestProgress);
 }
 
-void DLCManagerTest::OnNetworkReady(bool isReady)
+void DLCManagerTest::OnNetworkReady1(bool isReady)
 {
     using namespace DAVA;
     // To visualize on MacOS DownloadManager::Instance()->SetDownloadSpeedLimit(100000);
@@ -238,7 +285,19 @@ void DLCManagerTest::OnNetworkReady(bool isReady)
     ss << "network ready = " << std::boolalpha << isReady;
     Logger::Info("%s", ss.str().c_str());
 
-    textStatusOutput->SetUtf8Text("loading: " + ss.str());
+    one.textStatusOutput->SetUtf8Text("loading: " + ss.str());
+}
+
+void DLCManagerTest::OnNetworkReady2(bool isReady)
+{
+    using namespace DAVA;
+    // To visualize on MacOS DownloadManager::Instance()->SetDownloadSpeedLimit(100000);
+    // on MacOS slowly connect and then fast downloading
+    std::stringstream ss;
+    ss << "network ready = " << std::boolalpha << isReady;
+    Logger::Info("%s", ss.str().c_str());
+
+    two.textStatusOutput->SetUtf8Text("loading: " + ss.str());
 }
 
 static std::ostream& operator<<(std::ostream& stream, DAVA::DLCManager::InitStatus status)
@@ -272,23 +331,44 @@ static std::ostream& operator<<(std::ostream& stream, DAVA::DLCManager::ErrorOri
     return stream;
 }
 
-void DLCManagerTest::OnInitializeFinished(size_t numDownloaded, size_t numTotalFiles)
+void DLCManagerTest::OnInitializeFinished1(size_t numDownloaded, size_t numTotalFiles)
 {
-    buttonRemovePack->SetDisabled(false);
-    buttonLoadPack->SetDisabled(false);
-    buttonPauseResume->SetDisabled(false);
+    one.buttonRemovePack->SetDisabled(false);
+    one.buttonLoadPack->SetDisabled(false);
+    one.buttonPauseResume->SetDisabled(false);
 
     DAVA::DLCManager& dm = *engine.GetContext()->dlcManager;
     std::stringstream ss;
     ss << "initialize finished: num_downloaded = " << numDownloaded << " num_total = " << numTotalFiles
        << "\ninit_status: " << dm.GetInitStatus() << std::endl;
-    textStatusOutput->SetUtf8Text(ss.str());
+    one.textStatusOutput->SetUtf8Text(ss.str());
 }
 
-void DLCManagerTest::OnErrorSignal(DAVA::DLCManager::ErrorOrigin errType, DAVA::int32 errnoVal, const DAVA::String& msg)
+void DLCManagerTest::OnInitializeFinished2(size_t numDownloaded, size_t numTotalFiles)
+{
+    two.buttonRemovePack->SetDisabled(false);
+    two.buttonLoadPack->SetDisabled(false);
+    two.buttonPauseResume->SetDisabled(false);
+
+    DAVA::DLCManager& dm = *secondDLC;
+    std::stringstream ss;
+    ss << "initialize finished: num_downloaded = " << numDownloaded << " num_total = " << numTotalFiles
+       << "\ninit_status: " << dm.GetInitStatus() << std::endl;
+    two.textStatusOutput->SetUtf8Text(ss.str());
+}
+
+void DLCManagerTest::OnErrorSignal1(DAVA::DLCManager::ErrorOrigin errType, DAVA::int32 errnoVal, const DAVA::String& msg)
 {
     std::stringstream ss;
-    ss << "on_error_signal: msg: " << errType << " " << msg << " signal: " << errnoVal << " (" << strerror(errnoVal) << ")\n";
+    ss << "sdl_1 on_error_signal: msg: " << errType << " " << msg << " signal: " << errnoVal << " (" << strerror(errnoVal) << ")\n";
+    //DAVA::String prev = logPring->GetUtf8Text();
+    //logPring->SetUtf8Text(prev + ss.str());
+}
+
+void DLCManagerTest::OnErrorSignal2(DAVA::DLCManager::ErrorOrigin errType, DAVA::int32 errnoVal, const DAVA::String& msg)
+{
+    std::stringstream ss;
+    ss << "sdl_2 on_error_signal: msg: " << errType << " " << msg << " signal: " << errnoVal << " (" << strerror(errnoVal) << ")\n";
     //DAVA::String prev = logPring->GetUtf8Text();
     //logPring->SetUtf8Text(prev + ss.str());
 }
@@ -296,26 +376,29 @@ void DLCManagerTest::OnErrorSignal(DAVA::DLCManager::ErrorOrigin errType, DAVA::
 void DLCManagerTest::OnInitClicked(DAVA::BaseObject* sender, void* data, void* callerData)
 {
     using namespace DAVA;
-    DLCManager& dm = *engine.GetContext()->dlcManager;
+    GuiGroup& group = sender == one.buttonInitDLC ? one : two;
+    DLCManager& dm = (sender == one.buttonInitDLC) ? *engine.GetContext()->dlcManager : *secondDLC;
 
     dm.Deinitialize();
 
-    textStatusOutput->SetUtf8Text("done: start init");
+    group.textStatusOutput->SetUtf8Text("done: start init");
 
     dm.networkReady.DisconnectAll();
-    dm.networkReady.Connect(this, &DLCManagerTest::OnNetworkReady);
-    dm.initializeFinished.Connect(this, &DLCManagerTest::OnInitializeFinished);
-    dm.error.Connect(this, &DLCManagerTest::OnErrorSignal);
+    dm.networkReady.Connect(this, (&dm == secondDLC) ? &DLCManagerTest::OnNetworkReady2 : &DLCManagerTest::OnNetworkReady1);
+    dm.initializeFinished.Connect(this, (&dm == secondDLC) ? &DLCManagerTest::OnInitializeFinished2 : &DLCManagerTest::OnInitializeFinished1);
+    dm.error.Connect(this, (&dm == secondDLC) ? &DLCManagerTest::OnErrorSignal2 : &DLCManagerTest::OnErrorSignal1);
 
     DLCManager::Hints hints;
     FilePath publicDocsPath = GetEngineContext()->fileSystem->GetPublicDocumentsPath();
     hints.logFilePath = publicDocsPath.GetStringValue() + "dlc_manager_testbed.log";
 
-    dm.Initialize(folderWithDownloadedPacks, urlToServerSuperpack, hints);
+    dm.Initialize((&dm == secondDLC) ? folderWithDownloadedPacks2 : folderWithDownloadedPacks1,
+                  (&dm == secondDLC) ? urlToServerSuperpack2 : urlToServerSuperpack1,
+                  hints);
 
     dm.SetRequestingEnabled(true);
 
-    textStatusOutput->SetUtf8Text("done: start initialize PackManager");
+    group.textStatusOutput->SetUtf8Text("done: start initialize PackManager");
 }
 
 void DLCManagerTest::OnIOErrorClicked(BaseObject*, void*, void*)
@@ -333,38 +416,37 @@ void DLCManagerTest::OnDeleteClicked(BaseObject* sender, void* data, void* calle
 {
     using namespace DAVA;
 
-    UpdateProgress(0.f);
+    GuiGroup& group = sender == one.buttonRemovePack ? one : two;
+    DLCManager& dm = (sender == one.buttonRemovePack) ? *engine.GetContext()->dlcManager : *secondDLC;
 
-    DLCManager& dm = *engine.GetContext()->dlcManager;
+    UpdateProgress(group, 0.f);
 
-    String packName = editPackName->GetUtf8Text();
+    String packName = group.editPackName->GetUtf8Text();
     dm.RemovePack(packName);
-    textStatusOutput->SetUtf8Text("done: remove dvpk:" + packName);
+    group.textStatusOutput->SetUtf8Text("done: remove dvpk:" + packName);
 }
 
 void DLCManagerTest::OnListPacksClicked(BaseObject* sender, void* data, void* callerData)
 {
     using namespace DAVA;
-    DLCManager& dm = *engine.GetContext()->dlcManager;
-    std::stringstream ss;
-    String s = ss.str();
-
-    textStatusOutput->SetText(UTF8Utils::EncodeToWideString(s));
 }
 
 void DLCManagerTest::OnOffRequestingClicked(DAVA::BaseObject* sender, void* data, void* callerData)
 {
     using namespace DAVA;
-    DLCManager& dm = *engine.GetContext()->dlcManager;
+
+    GuiGroup& group = (sender == one.buttonPauseResume) ? one : two;
+    DLCManager& dm = (sender == one.buttonPauseResume) ? *engine.GetContext()->dlcManager : *secondDLC;
+
     if (dm.IsRequestingEnabled())
     {
         dm.SetRequestingEnabled(false);
-        buttonPauseResume->SetStateText(0xFF, L"Resume");
+        group.buttonPauseResume->SetStateText(0xFF, L"Resume");
     }
     else
     {
         dm.SetRequestingEnabled(true);
-        buttonPauseResume->SetStateText(0xFF, L"Pause");
+        group.buttonPauseResume->SetStateText(0xFF, L"Pause");
     }
 }
 
@@ -372,12 +454,13 @@ void DLCManagerTest::OnLoadClicked(DAVA::BaseObject* sender, void* data, void* c
 {
     using namespace DAVA;
 
-    DLCManager& dm = *engine.GetContext()->dlcManager;
+    GuiGroup& group = (sender == one.buttonLoadPack) ? one : two;
+    DLCManager& dm = (sender == one.buttonLoadPack) ? *engine.GetContext()->dlcManager : *secondDLC;
 
     dm.requestUpdated.DisconnectAll();
     dm.requestUpdated.Connect(this, &DLCManagerTest::OnRequestUpdated);
 
-    const String packName = editPackName->GetUtf8Text();
+    const String packName = group.editPackName->GetUtf8Text();
 
     try
     {
@@ -386,17 +469,17 @@ void DLCManagerTest::OnLoadClicked(DAVA::BaseObject* sender, void* data, void* c
             const DLCManager::IRequest* p = dm.RequestPack(packName);
             if (p != nullptr && p->IsDownloaded())
             {
-                textStatusOutput->SetUtf8Text("already downloaded: " + packName);
+                group.textStatusOutput->SetUtf8Text("already downloaded: " + packName);
                 return;
             }
         }
 
-        textStatusOutput->SetUtf8Text("loading: " + packName);
+        group.textStatusOutput->SetUtf8Text("loading: " + packName);
         dm.RequestPack(packName);
     }
     catch (Exception& ex)
     {
-        textStatusOutput->SetUtf8Text(ex.what());
+        group.textStatusOutput->SetUtf8Text(ex.what());
     }
 }
 
@@ -405,6 +488,8 @@ void DLCManagerTest::OnExitButton(BaseObject* obj, void* data, void* callerData)
     using namespace DAVA;
     DLCManager& pm = *engine.GetContext()->dlcManager;
     pm.Deinitialize();
+
+    secondDLC->Deinitialize();
 
     BaseScreen::OnExitButton(obj, data, callerData);
 }

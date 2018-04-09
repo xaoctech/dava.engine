@@ -1,10 +1,13 @@
 #include "REPlatform/Scene/Systems/PathSystem.h"
 #include "REPlatform/Scene/Systems/SelectionSystem.h"
+#include "REPlatform/Scene/SceneEditor2.h"
 
 #include "REPlatform/DataNodes/Settings/GlobalSceneSettings.h"
 
 #include "REPlatform/Commands/RECommandNotificationObject.h"
 #include "REPlatform/Commands/InspMemberModifyCommand.h"
+#include "REPlatform/Commands/SetFieldValueCommand.h"
+#include "REPlatform/Commands/TransformCommand.h"
 #include "REPlatform/Commands/WayEditCommands.h"
 
 #include <TArc/Core/Deprecated.h>
