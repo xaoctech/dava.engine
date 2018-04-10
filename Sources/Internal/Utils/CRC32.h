@@ -24,6 +24,9 @@ public:
     // Calculate CRC32 for the whole file.
     static uint32 ForFile(const FilePath& pathName);
 
+    // Calculate CRC32 for content of file without DVPL Footer
+    static uint32 ForDVPLFileContent(const FilePath& pathName);
+
 private:
     uint32 crc32;
 };

@@ -155,6 +155,8 @@ public:
 
     Info GetInfo() const final;
 
+    FileInfo GetFileInfo(const FilePath& path) const final;
+
     const FilePath& GetLocalPacksDirectory() const;
 
     const String& GetSuperPackUrl() const;

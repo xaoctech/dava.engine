@@ -24,8 +24,9 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
-import android.os.StatFs;
 import android.provider.Settings.Secure;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Display;
 
@@ -42,41 +43,49 @@ public class DeviceInfo {
         phoneStateListener = new PhoneStateListener();
     }
 
+    @SuppressWarnings("unused")
     public static String GetVersion()
     {
         return Build.VERSION.RELEASE;
     }
 
+    @SuppressWarnings("unused")
     public static String GetManufacturer()
     {
         return Build.MANUFACTURER;
     }
 
+    @SuppressWarnings("unused")
     public static String GetModel()
     {
         return Build.MODEL;
     }
 
+    @SuppressWarnings("unused")
     public static String GetLocale()
     {
         return Locale.getDefault().getDisplayLanguage(Locale.US);
     }
 
+    @SuppressWarnings("unused")
     public static String GetRegion()
     {
         return DavaActivity.instance().getResources().getConfiguration().locale.getCountry();
     }
 
+    @SuppressWarnings("unused")
     public static String GetTimeZone()
     {
         return TimeZone.getDefault().getID();
     }
 
+    @NonNull
+    @SuppressWarnings("unused")
     public static String GetUDID()
     {
         String aid;
         aid = Secure.getString(DavaActivity.instance().getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
-        Object obj = null;
+        Object obj;
         try {
             ((MessageDigest) (obj = MessageDigest.getInstance("MD5"))).update(aid.getBytes(), 0, aid.length());
 
@@ -88,7 +97,8 @@ public class DeviceInfo {
 
         return obj.toString().toLowerCase();
     }
-    
+
+    @SuppressWarnings("unused")
     public static String GetName()
     {
         String serial = android.os.Build.SERIAL;
@@ -96,7 +106,8 @@ public class DeviceInfo {
             serial = "ErrorGetSerialNumber";
         return serial;
     }
-    
+
+    @SuppressWarnings("unused")
     public static int GetZBufferSize()
     {
         if (DavaActivity.instance() != null)
@@ -107,24 +118,27 @@ public class DeviceInfo {
             return GLConfigChooser.GetDepthBufferSize();
         }
     }
-    
+
+    @SuppressWarnings("unused")
     public static byte GetGpuFamily()
     {
         return gpuFamily;
     }
-    
+
+    @SuppressWarnings("unused")
     public static String GetHTTPProxyHost()
     {
         return System.getProperty("http.proxyHost");
     }
-    
+
+    @SuppressWarnings("unused")
     public static int GetHTTPProxyPort()
     {
         String portStr = System.getProperty("http.proxyPort");
-        int proxyPort = Integer.parseInt((portStr != null ? portStr : "0"));
-        return proxyPort;
+        return Integer.parseInt((portStr != null ? portStr : "0"));
     }
-    
+
+    @SuppressWarnings("unused")
     public static String GetHTTPNonProxyHosts()
     {
         return System.getProperty("http.nonProxyHosts");
@@ -132,19 +146,27 @@ public class DeviceInfo {
     
     private static Point GetDefaultDisplaySize()
     {
-        Display display = null;
+        Display display;
         display = DavaActivity.instance().getWindowManager().getDefaultDisplay();
     	Point size = new Point();
-    	display.getRealSize(size);
+    	if (Build.VERSION.SDK_INT >= 17)
+        {
+            display.getRealSize(size);
+        } else
+        {
+            display.getSize(size);
+        }
         return size;
     }
-        
+
+    @SuppressWarnings("unused")
     public static int GetDefaultDisplayWidth()
     {
     	Point size = GetDefaultDisplaySize();
     	return size.x;
     }
-    
+
+    @SuppressWarnings("unused")
     public static int GetDefaultDisplayHeight()
     {
     	Point size = GetDefaultDisplaySize();
@@ -158,11 +180,15 @@ public class DeviceInfo {
     private static final int NETWORK_TYPE_WIMAX = 4;
     private static final int NETWORK_TYPE_ETHERNET = 5;
     private static final int NETWORK_TYPE_BLUETOOTH = 6;
-    
+
+    @SuppressWarnings("unused")
     public static int GetNetworkType() {
-        NetworkInfo info;
+        NetworkInfo info = null;
         ConnectivityManager cm = (ConnectivityManager)DavaActivity.instance().getSystemService(Context.CONNECTIVITY_SERVICE);
-        info = cm.getActiveNetworkInfo();
+        if (cm != null)
+        {
+            info = cm.getActiveNetworkInfo();
+        }
 
         if (info == null || !info.isConnected())
             return NETWORK_TYPE_NOT_CONNECTED;
@@ -183,16 +209,20 @@ public class DeviceInfo {
         return NETWORK_TYPE_UNKNOWN;
     }
     
-    private static final int MaxSignalLevel = 100; 
-    
+    private static final int MaxSignalLevel = 100;
+
+    @SuppressWarnings("unused")
     public static int GetSignalStrength(int networkType) {
         switch (networkType) {
         case NETWORK_TYPE_WIFI: {
             WifiManager wifiManager = (WifiManager)DavaActivity.instance().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            return WifiManager.calculateSignalLevel(wifiInfo.getRssi(), MaxSignalLevel);
+            if (wifiManager != null)
+            {
+                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                return WifiManager.calculateSignalLevel(wifiInfo.getRssi(), MaxSignalLevel);
+            }
+            return NETWORK_TYPE_NOT_CONNECTED;
         }
-        
         case NETWORK_TYPE_MOBILE: {
             //Get the GSM Signal Strength, valid values are (0-31, 99) as defined in TS 27.007 8.5
             int sign = phoneStateListener.GetSignalStrength();
@@ -200,7 +230,6 @@ public class DeviceInfo {
                 return -1;
             return (int)(MaxSignalLevel * sign / 31.f);
         }
-        
         case NETWORK_TYPE_ETHERNET:
             return MaxSignalLevel;
         }
@@ -211,12 +240,12 @@ public class DeviceInfo {
     {
         public final String path;
 
-        public final boolean readOnly;
-        public final boolean removable;
-        public final boolean emulated;
+        final boolean readOnly;
+        final boolean removable;
+        final boolean emulated;
 
-        public final long capacity;
-        public final long freeSpace;
+        final long capacity;
+        final long freeSpace;
 
         StorageInfo(String path, boolean readOnly, boolean removable, boolean emulated, long capacity, long freeSpace)
         {
@@ -229,98 +258,177 @@ public class DeviceInfo {
         }
     }
     
-    private static class StorageCapacity
+    static class StorageCapacity
     {
-        public long capacity = 0;
-        public long free = 0;
+        long capacity = 0;
+        long free = 0;
     }
 
-    private static StorageCapacity getCapacityAndFreeSpace(String path)
+    @Nullable
+    static StorageCapacity getCapacityAndFreeSpace(String path)
     {
-        StatFs statFs = new StatFs(path);
-
-        StorageCapacity sc = new StorageCapacity();
-        
-        fillCapacityAndFreeSpace(statFs, sc);
-        return sc;
-    }
-
-    
-    @SuppressWarnings("deprecation")
-    private static void fillCapacityAndFreeSpace(StatFs statFs,
-            StorageCapacity st) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) // 4.2
+        File f = new File(path);
+        if (f.exists())
         {
-            st.capacity = statFs.getBlockCountLong() * statFs.getBlockSizeLong();
-            st.free = statFs.getAvailableBlocksLong() * statFs.getBlockSizeLong();
-        } else
-        {
-            // do not remove (long) conversion may return negative values
-            st.capacity = (long)statFs.getBlockCount() * (long)statFs.getBlockSize();
-            st.free = (long)statFs.getAvailableBlocks() * (long)statFs.getBlockSize();
+            StorageCapacity s = new StorageCapacity();
+            s.capacity = f.getTotalSpace();
+            s.free = f.getFreeSpace();
+            return s;
         }
+        return null;
     }
-    
+
+    @NonNull
+    @SuppressWarnings("unused")
     public static StorageInfo GetInternalStorageInfo()
     {
         String path = Environment.getDataDirectory().getPath();
-        path += "/";
         StorageCapacity st = getCapacityAndFreeSpace(path);
-        return new StorageInfo(path, false, false, false, st.capacity, st.free);
+        if (st == null)
+        {
+            Log.e(TAG, "can't determine internal storage free space and capacity");
+            st = new StorageCapacity();
+            st.free = 0;
+            st.capacity = 0;
+        }
+        return new StorageInfo(path + "/", false, false, false, st.capacity, st.free);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static boolean IsPrimaryExternalStoragePresent()
     {
-        String state = Environment.getExternalStorageState();
-        if (state.equals(Environment.MEDIA_MOUNTED) || state.equals(Environment.MEDIA_MOUNTED_READ_ONLY))
+        if (Build.VERSION.SDK_INT >= 19) {
+            Context ctx = DavaActivity.instance().getApplicationContext();
+            File[] files = ctx.getExternalFilesDirs(null);
+            // acording to docs: https://developer.android.com/reference/android/os/Environment.html#isExternalStorageRemovable(java.io.File)
+            // only first element of array is "primary external"
+            if (files.length > 0) {
+                File f = files[0];
+                if (f != null) {
+                    String dir = f.getPath();
+                    StorageCapacity capacity = getCapacityAndFreeSpace(dir);
+                    return capacity != null;
+                }
+            }
+            return false;
+        } else
         {
-            return true;
+            String state = Environment.getExternalStorageState();
+            return state.equals(Environment.MEDIA_MOUNTED) || state.equals(Environment.MEDIA_MOUNTED_READ_ONLY);
         }
-
-        return false;
     }
 
+    @NonNull
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static StorageInfo GetPrimaryExternalStorageInfo()
     {
         if (IsPrimaryExternalStoragePresent())
         {
-            Context ctx = null;
-            ctx = DavaActivity.instance().getApplicationContext();
-
+            Context ctx = DavaActivity.instance().getApplicationContext();
             // start from KitKat(4.4) you can write to this external path
-            // without permission, but you need permission to get
-            // capacity info
-            File f = ctx.getExternalFilesDir(null);
-            if (f != null)
+            if (Build.VERSION.SDK_INT >= 19) {
+                File[] files = ctx.getExternalFilesDirs(null);
+                if (files.length > 0)
+                {
+                    File f = files[0];
+                    if (f != null)
+                    {
+                        ExternalPathState extPathState = new ExternalPathState(f, true);
+                        if (extPathState.validated)
+                        {
+                            boolean readonly = extPathState.readonly;
+                            boolean removable = extPathState.removable;
+                            boolean emulated = extPathState.emulated;
+                            StorageCapacity capacity = extPathState.storageCapacity;
+
+                            return new StorageInfo(extPathState.absolutePath + "/", readonly,
+                                    removable, emulated, capacity.capacity, capacity.free);
+                        }
+                    }
+                }
+            } else
             {
-                String path = f.getPath();
-                path += "/";
-
-                try
+                File f = ctx.getExternalFilesDir(null);
+                if (f != null)
                 {
+                    String path = f.getPath();
                     StorageCapacity st = getCapacityAndFreeSpace(path);
-                    boolean isRemovable = Environment.isExternalStorageRemovable();
-                    boolean isEmulated = Environment.isExternalStorageEmulated();
-                    boolean isReadOnly = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED_READ_ONLY);
-
-                    return new StorageInfo(path, isReadOnly, isRemovable, isEmulated, st.capacity, st.free);
-                } catch (RuntimeException ex)
-                {
-                    Log.e(TAG, "no permission to get capacity and free space(READ_EXTERNAL_STORAGE): " + ex.toString());
+                    if (st != null)
+                    {
+                        boolean isRemovable = Environment.isExternalStorageRemovable();
+                        boolean isEmulated = Environment.isExternalStorageEmulated();
+                        String state = Environment.getExternalStorageState();
+                        if (state.equals(Environment.MEDIA_MOUNTED_READ_ONLY) ||
+                                state.equals(Environment.MEDIA_MOUNTED))
+                        {
+                            boolean isReadOnly = state.equals(Environment.MEDIA_MOUNTED_READ_ONLY);
+                            return new StorageInfo(path + "/", isReadOnly, isRemovable, isEmulated, st.capacity, st.free);
+                        }
+                    }
                 }
             }
         }
 
-        return new StorageInfo("", false, false, false, -1, -1);
+        return new StorageInfo("", false, false, false, 0, 0);
     }
 
+    @SuppressWarnings("unused")
     public static StorageInfo[] GetSecondaryExternalStoragesList()
     {
-        List<StorageInfo> infos = new ArrayList<StorageInfo>();
+        List<StorageInfo> infos = new ArrayList<>();
 
-        HashSet<String> paths = new HashSet<String>();
-        paths.add(Environment.getExternalStorageDirectory().getPath());
+        HashSet<String> paths = new HashSet<>();
 
+        StorageInfo primaryStorageInfo = GetPrimaryExternalStorageInfo();
+
+        paths.add(primaryStorageInfo.path);
+
+        if (Build.VERSION.SDK_INT >= 19) // KitKat 4.4
+        {
+            collectExternalFileDirs(infos, paths);
+        } else
+        {
+            collectAllExternalFileDirsLegacyCode(infos, paths);
+        }
+
+        StorageInfo[] arr = new StorageInfo[infos.size()];
+        infos.toArray(arr);
+        return arr;
+    }
+
+    private static void collectExternalFileDirs(List<StorageInfo> infos, HashSet<String> paths) {
+        if (Build.VERSION.SDK_INT >= 19) // KitKat 4.4
+        {
+            Context ctx = DavaActivity.instance().getApplicationContext();
+            File[] files = ctx.getExternalFilesDirs(null);
+            for (File f : files)
+            {
+                if (f != null && f != files[0]) // skip first element (primary element)
+                {
+                    ExternalPathState extPathState = new ExternalPathState(f, false);
+                    if (extPathState.validated)
+                    {
+                        boolean readonly = extPathState.readonly;
+                        boolean removable = extPathState.removable;
+                        boolean emulated = extPathState.emulated;
+                        StorageCapacity sc = extPathState.storageCapacity;
+
+                        String path = extPathState.absolutePath + "/";
+                        if(paths.contains(path))
+                        {
+                            continue;
+                        }
+
+                        paths.add(path);
+                        infos.add(new StorageInfo(path, readonly,
+                                removable, emulated, sc.capacity, sc.free));
+                    }
+                }
+            }
+        }
+    }
+
+    private static void collectAllExternalFileDirsLegacyCode(List<StorageInfo> infos, HashSet<String> paths) {
         BufferedReader reader = null;
         try
         {
@@ -352,24 +460,14 @@ public class DeviceInfo {
 
                     if (fileSystem.equals("vfat") || mountPoint.startsWith("/mnt") || mountPoint.startsWith("/storage"))
                     {
-                        mountPoint += "/";
-                        paths.add(mountPoint);
-
-                        StatFs statFs = null;
-                        try
-                        {
-                            statFs = new StatFs(mountPoint);
-                        }
-                        catch (Exception e)
+                        StorageCapacity sc = getCapacityAndFreeSpace(mountPoint);
+                        if (sc == null)
                         {
                             continue;
                         }
 
-                        StorageCapacity sc = new StorageCapacity();
-                        
-                        fillCapacityAndFreeSpace(statFs, sc);
-
-                        infos.add(new StorageInfo(mountPoint, readonly, true, false, sc.capacity, sc.free));
+                        paths.add(mountPoint);
+                        infos.add(new StorageInfo(mountPoint+"/", readonly, true, false, sc.capacity, sc.free));
                     }
                 }
             }
@@ -396,14 +494,78 @@ public class DeviceInfo {
                 }
             }
         }
-
-        StorageInfo[] arr = new StorageInfo[infos.size()];
-        infos.toArray(arr);
-        return arr;
     }
 
+    @SuppressWarnings("unused")
     public static String GetCarrierName()
     {
         return phoneStateListener.GetCarrierName();
+    }
+
+    private static class ExternalPathState {
+        boolean validated;
+        boolean readonly;
+        boolean removable;
+        boolean emulated;
+        StorageCapacity storageCapacity;
+        String absolutePath;
+
+        ExternalPathState(File f, boolean isPrimary) {
+            absolutePath = f.getAbsolutePath();
+            storageCapacity = getCapacityAndFreeSpace(absolutePath);
+            if (storageCapacity != null)
+            {
+                readonly = false;
+
+                String state;
+                if (Build.VERSION.SDK_INT >= 21)
+                {
+                    emulated = Environment.isExternalStorageEmulated(f);
+                    removable = Environment.isExternalStorageRemovable(f);
+                    state = Environment.getExternalStorageState(f);
+                } else
+                {
+                    if (isPrimary)
+                    {
+                        emulated = Environment.isExternalStorageEmulated();
+                        removable = Environment.isExternalStorageRemovable();
+                    } else
+                    {
+                        emulated = false;
+                        removable = true;
+                    }
+
+                    if (Build.VERSION.SDK_INT >= 19)
+                    {
+                        state = Environment.getStorageState(f);
+                    } else
+                    {
+                        state = Environment.getExternalStorageState();
+                    }
+
+                }
+
+                if (state.equals(Environment.MEDIA_NOFS) ||
+                        state.equals(Environment.MEDIA_BAD_REMOVAL) ||
+                        state.equals(Environment.MEDIA_REMOVED) ||
+                        state.equals(Environment.MEDIA_CHECKING) ||
+                        state.equals(Environment.MEDIA_EJECTING) ||
+                        state.equals(Environment.MEDIA_UNMOUNTED) ||
+                        state.equals(Environment.MEDIA_UNKNOWN))
+                {
+                    validated = false;
+                    return;
+                }
+
+                if (state.equals(Environment.MEDIA_MOUNTED_READ_ONLY))
+                {
+                    readonly = true;
+                }
+                validated = true;
+            } else
+            {
+                validated = false;
+            }
+        }
     }
 }

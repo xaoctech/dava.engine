@@ -1864,6 +1864,71 @@ DLCManager::Info DLCManagerImpl::GetInfo() const
     return info;
 }
 
+DLCManager::FileInfo DLCManager::GetFileInfo(const FilePath& /*path*/) const
+{
+    return FileInfo{};
+}
+
+DLCManager::FileInfo DLCManagerImpl::GetFileInfo(const FilePath& path) const
+{
+    FileInfo fileInfo;
+
+    if (!IsInitialized())
+    {
+        return fileInfo;
+    }
+
+    if (HasLocalMeta())
+    {
+        // no information for local(static files in APK) files
+        const PackMetaData& meta = GetLocalMeta();
+        const FileNamesTree& tree = meta.GetFileNamesTree();
+        if (tree.Find(fileInfo.relativePathInMeta))
+        {
+            fileInfo.isLocalFile = true;
+            fileInfo.isKnownFile = true;
+        }
+    }
+
+    if (HasRemoteMeta())
+    {
+        const PackMetaData& meta = GetRemoteMeta();
+        const FileNamesTree& remoteFilesTree = meta.GetFileNamesTree();
+
+        fileInfo.relativePathInMeta = path.StartsWith("~res:/") ? path.GetRelativePathname("~res:/") : path.GetRelativePathname();
+
+        if (remoteFilesTree.Find(fileInfo.relativePathInMeta))
+        {
+            fileInfo.isRemoteFile = true;
+            fileInfo.isKnownFile = true;
+
+            const auto it = mapFileData.find(fileInfo.relativePathInMeta);
+            if (it != end(mapFileData))
+            {
+                const PackFormat::FileTableEntry* entry = it->second;
+
+                fileInfo.indexOfPackInMeta = entry->metaIndex;
+                const PackMetaData::PackInfo& packInfo = meta.GetPackInfo(entry->metaIndex);
+                fileInfo.packName = packInfo.packName;
+
+                const size_t indexInString = uncompressedFileNames.find(fileInfo.relativePathInMeta);
+                DVASSERT(indexInString != String::npos);
+                const String& str = uncompressedFileNames;
+                const size_t numOfNullChars = std::count(begin(str), begin(str) + indexInString + 1, '\0');
+                const uint32 fileIndex = static_cast<uint32>(numOfNullChars); // will match index of string and index of file in filesTable
+
+                fileInfo.indexOfFileInMeta = fileIndex;
+                fileInfo.hashCompressedInMeta = entry->compressedCrc32;
+                fileInfo.hashUncompressedInMeta = entry->originalCrc32;
+                fileInfo.sizeCompressedInMeta = entry->compressedSize;
+                fileInfo.sizeUncompressedInMeta = entry->originalSize;
+                fileInfo.isDlcMngThinkFileReady = IsFileReady(fileIndex);
+            }
+        }
+    }
+    return fileInfo;
+}
+
 bool DLCManagerImpl::IsRequestingEnabled() const
 {
     DVASSERT(Thread::IsMainThread());

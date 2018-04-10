@@ -90,6 +90,16 @@ String UIDataBindingDefaultFunctions::FloatToStrWithPrecision(float32 a, int32 p
     return Format("%.*f", precision, a);
 }
 
+String UIDataBindingDefaultFunctions::Float64ToStr(float64 a)
+{
+    return Format("%f", a);
+}
+
+String UIDataBindingDefaultFunctions::Float64ToStrWithPrecision(float64 a, int32 precision)
+{
+    return Format("%.*f", precision, a);
+}
+
 String UIDataBindingDefaultFunctions::Vector2ToStr(const Vector2& value)
 {
     return Format("%.2f, %.2f", value.x, value.y);

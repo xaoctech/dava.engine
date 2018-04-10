@@ -672,7 +672,11 @@ Any LuaToAny(lua_State* L, int32 index, const Type* preferredType /*= nullptr*/)
         }
         else
         {
-            return CASTTYPE(float64, lua_tonumber(L, index));
+            // Workaround: Detect integer value from Lua (before Lua 5.3)
+            float64 n = static_cast<float64>(lua_tonumber(L, index));
+            float64 fractPart, intPart;
+            fractPart = modf(n, &intPart);
+            return fractPart != 0.0 ? Any(n) : Any(static_cast<int32>(intPart));
         }
     case LUA_TSTRING:
         if (preferredType)
@@ -766,7 +770,21 @@ Any LuaToAny(lua_State* L, int32 index, const Type* preferredType /*= nullptr*/)
                     table->SetBool(key, lua_toboolean(L, -1) != 0);
                     break;
                 case LUA_TNUMBER:
-                    table->SetFloat64(key, static_cast<float64>(lua_tonumber(L, -1)));
+                    {
+                        // Workaround: Detect integer value from Lua (before Lua 5.3)
+                        float64 n = static_cast<float64>(lua_tonumber(L, -1));
+                        float64 fractPart, intPart;
+                        fractPart = modf(n, &intPart);
+                        if (fractPart != 0.f)
+                        {
+                            table->SetFloat64(key, n);
+                        }
+                        else
+                        {
+                            table->SetInt32(key, static_cast<int32>(intPart));
+                        }
+                    }
+                    
                     break;
                 case LUA_TSTRING:
                     table->SetString(key, lua_tostring(L, -1));

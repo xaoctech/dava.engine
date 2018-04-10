@@ -1,15 +1,16 @@
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyPathEditor.h"
 
-#include "Modules/ProjectModule/ProjectData.h"
+#include "Application/QEGlobal.h"
 #include "Model/ControlProperties/ValueProperty.h"
+#include "Modules/ProjectModule/ProjectData.h"
 #include "Utils/QtDavaConvertion.h"
 
 #include <Base/Any.h>
 
-#include <TArc/Utils/Utils.h>
 #include <TArc/Core/ContextAccessor.h>
-#include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/OperationInvoker.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>
+#include <TArc/Utils/Utils.h>
 
 #include <QtTools/FileDialogs/FileDialog.h>
 
@@ -17,13 +18,15 @@
 #include <FileSystem/FileSystem.h>
 
 #include <QAction>
-#include <QLineEdit>
 #include <QApplication>
-#include <QMap>
+#include <QDesktopServices>
+#include <QFileDialog>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QLineEdit>
+#include <QMap>
+#include <QMenu>
 #include <QToolButton>
-#include <QFileDialog>
 
 ModernPropertyPathEditor::ModernPropertyPathEditor(const std::shared_ptr<ModernPropertyContext>& context, ValueProperty* property,
                                                    const QList<QString>& extensions_, const QString& resourceSubDir_, bool allowAnyExtension_)
@@ -39,10 +42,24 @@ ModernPropertyPathEditor::ModernPropertyPathEditor(const std::shared_ptr<ModernP
     QObject::connect(line, &QLineEdit::editingFinished, this, &ModernPropertyPathEditor::OnEditingFinished);
     QObject::connect(line, &QLineEdit::textChanged, this, &ModernPropertyPathEditor::OnTextChanged);
 
+    chooseAction = new QAction("Choose file", GetParentWidget());
+    QObject::connect(chooseAction, &QAction::triggered, this, &ModernPropertyPathEditor::OnChooseAction);
+    openFileAction = new QAction("Open file", GetParentWidget());
+    QObject::connect(openFileAction, &QAction::triggered, this, &ModernPropertyPathEditor::OnOpenFileAction);
+    openFolderAction = new QAction("Open folder", GetParentWidget());
+    QObject::connect(openFolderAction, &QAction::triggered, this, &ModernPropertyPathEditor::OnOpenFolderAction);
+
+    menu = new QMenu();
+    menu->addAction(chooseAction);
+    menu->addAction(openFileAction);
+    menu->addAction(openFolderAction);
+
     button = new QToolButton(GetParentWidget());
     button->setProperty("property", true);
+    button->setPopupMode(QToolButton::ToolButtonPopupMode::MenuButtonPopup);
+    button->setMenu(menu);
+    button->setDefaultAction(chooseAction);
     button->setText("...");
-    QObject::connect(button, &QToolButton::clicked, this, &ModernPropertyPathEditor::OnButtonClicked);
 
     layout = new QHBoxLayout();
     layout->setMargin(0);
@@ -53,12 +70,7 @@ ModernPropertyPathEditor::ModernPropertyPathEditor(const std::shared_ptr<ModernP
     OnPropertyChanged();
 }
 
-ModernPropertyPathEditor::~ModernPropertyPathEditor()
-{
-    delete line;
-    delete button;
-    delete layout;
-}
+ModernPropertyPathEditor::~ModernPropertyPathEditor() = default;
 
 void ModernPropertyPathEditor::AddToGrid(QGridLayout* grid, int row, int col, int colSpan)
 {
@@ -85,7 +97,40 @@ void ModernPropertyPathEditor::ResetProperty()
     ModernPropertyDefaultEditor::ResetProperty();
 }
 
-void ModernPropertyPathEditor::OnButtonClicked()
+void ModernPropertyPathEditor::OnOpenFileAction()
+{
+    using namespace DAVA;
+
+    QString pathText = line->text();
+
+    DAVA::FilePath filePath = QStringToString(pathText);
+
+    QString path = QString::fromStdString(filePath.GetAbsolutePathname());
+
+    if (path.endsWith(".yaml", Qt::CaseInsensitive))
+    {
+        GetInvoker()->Invoke(QEGlobal::OpenDocumentByPath.ID, path);
+    }
+    else
+    {
+        QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
+    }
+}
+
+void ModernPropertyPathEditor::OnOpenFolderAction()
+{
+    using namespace DAVA;
+
+    QString pathText = line->text();
+
+    DAVA::FilePath filePath = QStringToString(pathText);
+
+    QString path = QString::fromStdString(filePath.GetDirectory().GetAbsolutePathname());
+
+    QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
+}
+
+void ModernPropertyPathEditor::OnChooseAction()
 {
     using namespace DAVA;
 

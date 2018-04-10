@@ -33,7 +33,7 @@ class ModernComponentSectionWidget : public ModernSectionWidget
 {
     Q_OBJECT
 public:
-    ModernComponentSectionWidget(DAVA::ContextAccessor* accessor, DAVA::UI* ui, ControlNode* controlNode, const DAVA::Type* componentType);
+    ModernComponentSectionWidget(DAVA::ContextAccessor* accessor, DAVA::OperationInvoker* invoker, DAVA::UI* ui, ControlNode* controlNode, const DAVA::Type* componentType);
     ~ModernComponentSectionWidget() override;
 
     void AttachComponentPropertiesSection(ComponentPropertiesSection* section, RootProperty* root);

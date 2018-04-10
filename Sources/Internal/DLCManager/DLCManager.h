@@ -233,6 +233,26 @@ public:
     };
     /** Check if manager is initialized and return info */
     virtual Info GetInfo() const = 0;
+
+    /** Debug functionality to collect all data for interesting file in DLC */
+    struct FileInfo
+    {
+        String relativePathInMeta;
+        String packName;
+        uint32 indexOfFileInMeta = 0;
+        uint32 indexOfPackInMeta = 0;
+        uint32 hashCompressedInMeta = 0;
+        uint32 hashUncompressedInMeta = 0;
+        uint32 sizeCompressedInMeta = 0;
+        uint32 sizeUncompressedInMeta = 0;
+        bool isKnownFile = false;
+        bool isLocalFile = false;
+        bool isRemoteFile = false;
+        bool isDlcMngThinkFileReady = false;
+    };
+
+    /** very slow method for debugging only */
+    virtual FileInfo GetFileInfo(const FilePath& path) const;
 };
 
 } // end namespace DAVA

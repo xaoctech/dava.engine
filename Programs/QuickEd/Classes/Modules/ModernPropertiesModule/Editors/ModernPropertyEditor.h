@@ -16,21 +16,24 @@ namespace DAVA
 class Any;
 class UIControl;
 class ContextAccessor;
+class OperationInvoker;
 }
 
 class ModernPropertyContext final
 {
 public:
-    ModernPropertyContext(RootProperty* root, DAVA::ContextAccessor* accessor, QWidget* parent);
+    ModernPropertyContext(RootProperty* root, DAVA::ContextAccessor* accessor, DAVA::OperationInvoker* invoker, QWidget* parent);
     ~ModernPropertyContext();
 
     RootProperty* GetRoot() const;
     DAVA::ContextAccessor* GetAccessor() const;
+    DAVA::OperationInvoker* GetInvoker() const;
     QWidget* GetParent() const;
 
 private:
     DAVA::RefPtr<RootProperty> root;
     DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::OperationInvoker* invoker = nullptr;
     QWidget* parent = nullptr;
 };
 
@@ -54,6 +57,7 @@ protected:
 
     RootProperty* GetRootProperty() const;
     DAVA::ContextAccessor* GetAccessor() const;
+    DAVA::OperationInvoker* GetInvoker() const;
     QWidget* GetParentWidget() const;
 
     virtual void ResetProperty();

@@ -406,7 +406,7 @@ void ParticleEmitter::SaveToYaml(const FilePath& filename)
 {
     configPath = filename;
 
-    YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
+    YamlNode* rootYamlNode = YamlNode::CreateMapNode(false);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
 
