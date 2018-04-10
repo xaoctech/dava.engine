@@ -27,8 +27,9 @@ else:
 	color = "#D00000"
 	string_result = "Failure"
 
+string_result_long = string_result
 if args.branch_name:
-	string_result += " in branch %s" % (args.branch_name)
+	string_result_long += " in branch %s" % (args.branch_name)
 
 r = requests.post('https://hooks.slack.com/services/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', timeout = 10, json={"text": "%s: %s" % (args.configuration_name, string_result),
 	"attachments": 
@@ -38,7 +39,7 @@ r = requests.post('https://hooks.slack.com/services/T4JFYSEE5/B74MTCZ2T/VKww8UzF
 		"color": color,
 		"fields": [
 		{
-			"title": string_result ,
+			"title": string_result_long ,
 			"value": "<https://teamcity2.wargaming.net/viewLog.html?buildId=%d|Build link>" % args.build_id,
 			"short": True
 		}

@@ -31,6 +31,7 @@
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
 #include <NetworkCore/Scene3D/Systems/NetworkIdSystem.h>
+#include <NetworkCore/LagCompensatedAction.h>
 #include <NetworkPhysics/NetworkPhysicsUtils.h>
 #include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
 #include <Physics/PhysicsSystem.h>
@@ -50,6 +51,87 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerAttackSystem)
     .Method("ProcessFixed", &ShooterPlayerAttackSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 14.0f)]
     .End();
 }
+
+// Invokes lag compensated raycast attack
+class LagCompensatedRaycastAttack : public DAVA::LagCompensatedAction
+{
+public:
+    LagCompensatedRaycastAttack(DAVA::Entity* player, const DAVA::Vector3& origin, const DAVA::Vector3& direction)
+        : player(player)
+        , origin(origin)
+        , direction(direction)
+    {
+    }
+
+    const physx::PxRaycastHit* GetHitInfo()
+    {
+        if (collision)
+        {
+            return &hit;
+        }
+
+        return nullptr;
+    }
+
+private:
+    const DAVA::ComponentMask* GetLagCompensatedComponentsForEntity(DAVA::Entity* e) override
+    {
+        using namespace DAVA;
+
+        DVASSERT(e != nullptr);
+
+        if (e != player)
+        {
+            // Only rewind entities that have dynamic body or cct components
+            const CapsuleCharacterControllerComponent* cctComponent = e->GetComponent<CapsuleCharacterControllerComponent>();
+            const DynamicBodyComponent* dynamicBodyComponent = e->GetComponent<DynamicBodyComponent>();
+            if (cctComponent != nullptr || dynamicBodyComponent != nullptr)
+            {
+                static const ComponentMask lagCompensatedComponentsMask = ComponentUtils::MakeMask<NetworkTransformComponent>();
+                return &lagCompensatedComponentsMask;
+            }
+        }
+
+        return nullptr;
+    }
+
+    void Action(DAVA::Scene& scene) override
+    {
+        // Invoke raycast
+        // All CCTs should already been rewound if we're on a server
+        QueryFilterCallback filterCallback(player, RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
+        collision = GetRaycastHit(*(player->GetScene()), origin, direction, SHOOTER_MAX_SHOOTING_DISTANCE, &filterCallback, hit);
+    }
+
+    void OnComponentsInPast(DAVA::Scene& scene, const DAVA::Vector<DAVA::Entity*>& entities) override
+    {
+        UpdatePhysicsEntities(scene);
+    }
+
+    void OnComponentsInPresent(DAVA::Scene& scene, const DAVA::Vector<DAVA::Entity*>& entities) override
+    {
+        UpdatePhysicsEntities(scene);
+    }
+
+    void UpdatePhysicsEntities(DAVA::Scene& scene)
+    {
+        using namespace DAVA;
+
+        PhysicsSystem* physicsSystem = scene.GetSystem<PhysicsSystem>();
+        DVASSERT(physicsSystem != nullptr);
+
+        // Sync transforms so that raycast uses new positions
+        physicsSystem->SyncTransformToPhysx();
+    }
+
+private:
+    DAVA::Entity* player;
+    const DAVA::Vector3 origin;
+    const DAVA::Vector3 direction;
+
+    bool collision = false;
+    physx::PxRaycastHit hit;
+};
 
 ShooterPlayerAttackSystem::ShooterPlayerAttackSystem(DAVA::Scene* scene)
     : DAVA::BaseSimulationSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterRoleComponent, ShooterStateComponent>())
@@ -262,53 +344,27 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
 
         aimingEntity->GetComponent<ShooterStateComponent>()->raycastAttackFrameId = clientFrameId;
 
+        NetworkReplicationComponent* replicationComponent = aimingEntity->GetComponent<NetworkReplicationComponent>();
+        DVASSERT(replicationComponent != nullptr);
+        NetworkPlayerID playerId = replicationComponent->GetNetworkPlayerID();
+
+        LagCompensatedRaycastAttack raycastAttack(aimingEntity, shootStart, shootDirection);
+
+        if (optionsComp->isEnemyRewound)
+        {
+            raycastAttack.Invoke(*GetScene(), playerId, clientFrameId);
+        }
+        else
+        {
+            raycastAttack.InvokeWithoutLagCompensation(*GetScene());
+        }
+
         if (IsServer(GetScene()))
         {
-            NetworkTimeSingleComponent* timeSingleComponent = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
-            DVASSERT(timeSingleComponent != nullptr);
-            const uint32 frameId = timeSingleComponent->GetFrameId();
-            
-            physx::PxRaycastHit hit;
-            bool collision = false;
-
-            if (optionsComp->isEnemyRewound)
+            const physx::PxRaycastHit* hit = raycastAttack.GetHitInfo();
+            if (hit != nullptr)
             {
-                // Hit in past
-
-                PhysicsSystem* physics = GetScene()->GetSystem<PhysicsSystem>();
-                DVASSERT(physics != nullptr);
-
-                NetworkReplicationComponent* replicationComponent = aimingEntity->GetComponent<NetworkReplicationComponent>();
-                DVASSERT(replicationComponent != nullptr);
-
-                const FastName& token = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>()->GetToken(replicationComponent->GetNetworkPlayerID());
-                DVASSERT(token.IsValid());
-
-                int32 fdiff = timeSingleComponent->GetClientViewDelay(token, clientFrameId);
-                if (fdiff < 0)
-                {
-                    Logger::Error("client view delay is negative");
-                    return;
-                }
-
-                uint32 numFramesToRollBack = std::min(10, fdiff);
-                uint32 pastFrameId = clientFrameId == 0 ? frameId : clientFrameId - numFramesToRollBack;
-
-                QueryFilterCallback filterCallback(aimingEntity, RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
-                ComponentMask possibleComponents = ComponentUtils::MakeMask<CapsuleCharacterControllerComponent>() | ComponentUtils::MakeMask<DynamicBodyComponent>();
-                collision = NetworkPhysicsUtils::GetRaycastHitInPast(*aimingEntity->GetScene(), possibleComponents, shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, pastFrameId, &filterCallback, hit);
-            }
-            else
-            {
-                // Hit in present
-
-                QueryFilterCallback filterCallback(aimingEntity, RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
-                collision = GetRaycastHit(*aimingEntity->GetScene(), shootStart, shootDirection, SHOOTER_MAX_SHOOTING_DISTANCE, &filterCallback, hit);
-            }
-
-            if (collision)
-            {
-                Component* bodyComponent = static_cast<Component*>(hit.actor->userData);
+                Component* bodyComponent = static_cast<Component*>(hit->actor->userData);
                 if (bodyComponent->GetType()->Is<DynamicBodyComponent>())
                 {
                     Entity* entity = bodyComponent->GetEntity();
@@ -317,11 +373,11 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
                     HealthComponent* healthComponent = entity->GetComponent<HealthComponent>();
                     if (healthComponent)
                     {
-                        CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(hit.shape);
+                        CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(hit->shape);
                         if (shapeComponent->GetJointName().IsValid() && shapeComponent->GetJointName().size() > 0)
-                        {                            
+                        {
                             uint32 damage = GetBodyPartDamage(shapeComponent->GetJointName());
-                            healthComponent->DecHealth(damage, frameId);
+                            healthComponent->DecHealth(damage, clientFrameId);
                         }
                     }
                 }

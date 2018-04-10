@@ -71,6 +71,9 @@ public:
     uint32 GetComponentCount() const;
     inline const ComponentMask& GetAvailableComponentMask() const;
 
+    /** Return index of this component among all entity components with the same type. */
+    uint32 GetComponentInnerIndex(const Component* component) const;
+
     // working with children
     virtual void AddNode(Entity* node);
     virtual void RemoveNode(Entity* node);

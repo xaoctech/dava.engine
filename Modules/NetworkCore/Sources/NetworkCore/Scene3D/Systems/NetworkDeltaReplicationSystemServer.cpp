@@ -145,8 +145,8 @@ void NetworkDeltaReplicationSystemServer::OnReceive(const FastName& token, const
     DVASSERT(offset == data.size());
 
     const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
-        ResponderData& responderData = responderDataList[playerID];
-        std::copy(ackPacket.sequenceIds.begin(), ackPacket.sequenceIds.end(), std::back_inserter(responderData.acks));
+    ResponderData& responderData = responderDataList[playerID];
+    std::copy(ackPacket.sequenceIds.begin(), ackPacket.sequenceIds.end(), std::back_inserter(responderData.acks));
 }
 
 void NetworkDeltaReplicationSystemServer::ProcessAckPackets(ResponderData& responderData)

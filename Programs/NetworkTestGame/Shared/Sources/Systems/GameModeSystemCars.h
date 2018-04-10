@@ -29,7 +29,6 @@ public:
     void OnClientConnected(const DAVA::FastName& token);
 
 private:
-
     DAVA::UnorderedSet<DAVA::Entity*> cars;
     DAVA::UnorderedSet<DAVA::Entity*> switches;
     DAVA::float32 countdown = 0.f;

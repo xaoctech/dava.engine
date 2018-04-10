@@ -296,7 +296,7 @@ void SnapshotSystemBase::Watch(Entity* entity, Component* component)
         const Type* componentType = component->GetType();
 
         uint32 componentId = ComponentUtils::GetRuntimeId(componentType);
-        uint32 componentIndex = GetComponentIndex(entity, component);
+        uint32 componentIndex = entity->GetComponentInnerIndex(component);
         SnapshotComponentKey componentKey(componentId, componentIndex);
 
         // get appropriate component snapshot
@@ -378,7 +378,7 @@ void SnapshotSystemBase::Unwatch(Entity* entity, Component* component)
     DVASSERT(component->GetEntity() == entity);
 
     uint32 componentId = ComponentUtils::GetRuntimeId(component->GetType());
-    uint32 componentIndex = GetComponentIndex(entity, component);
+    uint32 componentIndex = entity->GetComponentInnerIndex(component);
 
     SnapshotComponentKey componentKey(componentId, componentIndex);
 
@@ -422,26 +422,4 @@ Any SnapshotSystemBase::ApplyQuantization(const Any& value, uint32 compression, 
 
     return ret;
 }
-
-uint32 SnapshotSystemBase::GetComponentIndex(Entity* entity, Component* component)
-{
-    uint32 index = 0;
-
-    if (entity != nullptr)
-    {
-        const Type* componentType = component->GetType();
-
-        for (;; ++index)
-        {
-            Component* c = entity->GetComponent(componentType, index);
-            if (c == component || c == nullptr)
-            {
-                break;
-            }
-        }
-    }
-
-    return index;
-}
-
 } // namespace DAVA

@@ -253,7 +253,6 @@ void NetworkInputSystem::SendLastBuckets()
         statsComp->StartFrameRTTMeasurement(header.frameId);
     }
 }
-
 };
 
 #endif

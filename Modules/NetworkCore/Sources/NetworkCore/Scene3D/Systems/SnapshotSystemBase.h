@@ -38,7 +38,6 @@ protected:
     void Unwatch(Entity* entity, Component* component);
 
     [[deprecated]] Any ApplyQuantization(const Any& value, uint32 compression, float32 precision);
-    [[deprecated]] uint32 GetComponentIndex(Entity* entity, Component* component);
 
     virtual bool NeedToBeTracked(Entity* entity);
     virtual bool NeedToBeTracked(Component* component, const NetworkReplicationComponent* nrc);

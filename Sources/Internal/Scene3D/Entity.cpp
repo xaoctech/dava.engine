@@ -168,6 +168,27 @@ void Entity::SetParent(Entity* _parent)
     GetComponent<TransformComponent>()->SetParent(parent);
 }
 
+uint32 Entity::GetComponentInnerIndex(const Component* component) const
+{
+    DVASSERT(component != nullptr);
+
+    uint32 index = 0;
+
+    const Type* componentType = component->GetType();
+    DVASSERT(componentType != nullptr);
+
+    for (;; ++index)
+    {
+        const Component* c = GetComponent(componentType, index);
+        if (c == component || c == nullptr)
+        {
+            break;
+        }
+    }
+
+    return index;
+}
+
 void Entity::AddNode(Entity* node)
 {
     if (node)
