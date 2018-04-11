@@ -31,7 +31,7 @@ void DecorationData::ReloadDecoration()
     ReleaseInternalData();
 
     ScopedPtr<Scene> scene(new Scene(Scene::SceneSystemsPolicy::WithoutSystems));
-    if (SceneFileV2::ERROR_NO_ERROR != scene->LoadScene(decorationPath))
+    if (!decorationPath.IsEmpty() && SceneFileV2::ERROR_NO_ERROR != scene->LoadScene(decorationPath))
         return;
 
     layersCount = scene->GetChildrenCount();
@@ -189,6 +189,15 @@ void DecorationData::Load(KeyedArchive* archive, SerializationContext* serializa
     }
 
     paramsChanged = true;
+}
+
+void DecorationData::CopyParameters(const DecorationData* from)
+{
+    decorationPath = from->decorationPath;
+    layersCount = from->layersCount;
+    baseLevel = from->baseLevel;
+    levelCount = from->levelCount;
+    layersParams = from->layersParams;
 }
 
 uint32 DecorationData::GetLayersCount() const

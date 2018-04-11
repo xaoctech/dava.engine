@@ -302,10 +302,13 @@ void CollectDecorationPathname(Scene* scene, const FilePath& dataSourceFolder, S
     Landscape* landscape = FindLandscape(scene);
     if (landscape != nullptr)
     {
-        DecorationData* data = landscape->GetDecorationData();
-        if (data != nullptr)
+        for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
         {
-            exportedObjects.emplace_back(SceneExporter::OBJECT_SCENE, data->GetDecorationPath().GetRelativePathname(dataSourceFolder));
+            const Landscape::LandscapeSettings* settings = landscape->GetSettings(LandscapeQuality(q));
+            if (!settings->decorationData.GetDecorationPath().IsEmpty())
+            {
+                exportedObjects.emplace_back(SceneExporter::OBJECT_SCENE, settings->decorationData.GetDecorationPath().GetRelativePathname(dataSourceFolder));
+            }
         }
     }
 }

@@ -47,6 +47,8 @@ void VTDecalPageRenderer::SetVTDecalManager(VTDecalManager* manager)
 
 void VTDecalPageRenderer::InitTerrainBlendTargets(const PageRenderParams& params)
 {
+    blendTargetsTerrain.clear();
+
     //GFX_COMPLETE - packing data
     blendTargetsTerrain.push_back(RefPtr<Texture>(Texture::CreateFBO(params.pageSize, params.pageSize, FORMAT_RGBA8888)));
     blendTargetsTerrain.push_back(RefPtr<Texture>(Texture::CreateFBO(params.pageSize, params.pageSize, FORMAT_RGBA8888)));
@@ -88,11 +90,10 @@ bool VTDecalPageRenderer::RenderPage(const PageRenderParams& params)
 
     if (useBlendTarget)
     {
+        DVASSERT(params.component == LandscapePageRenderer::eLandscapeComponent::COMPONENT_TERRAIN);
         DVASSERT(layerCount == 2); //in case of intermediate blend we need to have exect layouts
-        if (blendTargetsTerrain.empty())
+        if (blendTargetsTerrain.empty() || params.pageSize != blendTargetTerrainSize)
             InitTerrainBlendTargets(params);
-        else
-            DVASSERT(params.pageSize == blendTargetTerrainSize); //no re-init yet
 
         DVASSERT(blendTargetsTerrain.size() == 3); //a bit of paranoia
 

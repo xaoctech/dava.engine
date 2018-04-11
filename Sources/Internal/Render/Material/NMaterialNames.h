@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_NMATERIAL_NAMES_H__
-#define __DAVAENGINE_NMATERIAL_NAMES_H__
+#pragma once
 
 #include "Base/FastName.h"
 
@@ -271,7 +270,6 @@ public:
     static const FastName FLAG_LANDSCAPE_PATCHES;
     static const FastName FLAG_LANDSCAPE_MICRO_TESSELLATION;
     static const FastName FLAG_DECORATION;
-    static const FastName FLAG_DECORATION_DRAW_LEVELS;
     static const FastName FLAG_DECORATION_DECAL_MASK;
 
     static const FastName FLAG_USE_PREVIOUS_LANDSCAPE_LAYER;
@@ -332,5 +330,3 @@ public:
     static const FastName DEFAULT_QUALITY_NAME;
 };
 };
-
-#endif /* defined(__DAVAENGINE_NMATERIAL_NAMES_H__) */

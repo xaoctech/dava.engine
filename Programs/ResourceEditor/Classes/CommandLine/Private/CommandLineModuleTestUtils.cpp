@@ -166,7 +166,6 @@ Entity* CreateLandscapeEnity(const FilePath& scenePathname)
     //setup textures
     NMaterial* material = landscape->GetPageMaterials(0, 0); // GFX_COMPLETE
     DVASSERT(material != nullptr);
-    material->SetQualityGroup(Landscape::LANDSCAPE_QUALITY_NAME);
     material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_USED, true);
     material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER, true);
     material->AddFlag(NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER, true);

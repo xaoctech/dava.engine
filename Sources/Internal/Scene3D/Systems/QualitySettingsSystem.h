@@ -16,6 +16,7 @@ enum QualityGroup : uint32
     Shadow,
     Scattering,
     Antialiasing,
+    Terrain,
 
     Count,
 };
@@ -81,29 +82,15 @@ struct QualityGroupValueClass<QualityGroup::RenderFlowType>
 {
     using ValueClass = RenderFlow;
 };
+template <>
+struct QualityGroupValueClass<QualityGroup::Terrain>
+{
+    using ValueClass = LandscapeQuality;
+};
 
 struct MaterialQuality
 {
     FastName qualityName;
-};
-
-struct LandscapeQuality
-{
-    union
-    {
-        struct
-        {
-            float32 normalMaxHeightError;
-            float32 normalMaxPatchRadiusError;
-            float32 normalMaxAbsoluteHeightError;
-
-            float32 zoomMaxHeightError;
-            float32 zoomMaxPatchRadiusError;
-            float32 zoomMaxAbsoluteHeightError;
-        };
-        std::array<float32, 6> metricsArray;
-    };
-    bool morphing;
 };
 
 class QualitySettingsComponent;
@@ -159,15 +146,6 @@ public:
     void SetCurSFXQuality(const FastName& name);
     FilePath GetSFXQualityConfigPath(const FastName& name) const;
     FilePath GetSFXQualityConfigPath(size_t index) const;
-
-    // landscape
-    size_t GetLandscapeQualityCount() const;
-    FastName GetLandscapeQualityName(size_t index) const;
-
-    FastName GetCurLandscapeQuality() const;
-    void SetCurLandscapeQuality(const FastName& name);
-
-    const LandscapeQuality* GetLandscapeQuality(const FastName& name) const;
 
     // particles
     const ParticlesQualitySettings& GetParticlesQualitySettings() const;

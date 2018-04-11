@@ -101,12 +101,14 @@ inline bool IsPowerOf2(T value)
     return value != 0 && ((value & (value - 1)) == 0);
 }
 
-inline int32 NextPowerOf2(int32 x)
+template <typename T>
+inline T NextPowerOf2(T x)
 {
-    if (IsPowerOf2(x))
+    static_assert(std::is_integral<T>::value, "NextPowerOf2 works only with integral types");
+    if (IsPowerOf2<T>(x))
         return x;
 
-    int32 ret = 1;
+    T ret = 1;
 
     while (ret < x)
     {

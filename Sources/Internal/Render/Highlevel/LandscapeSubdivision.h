@@ -17,7 +17,7 @@ class Heightmap;
 class Camera;
 class KeyedArchive;
 
-class LandscapeSubdivision : public InspBase
+class LandscapeSubdivision
 {
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_LANDSCAPE)
 
@@ -61,7 +61,7 @@ public:
         bool isTerminated = false;
     };
 
-    struct SubdivisionMetrics : public InspBase
+    struct SubdivisionMetrics : public ReflectionBase
     {
         float32 normalFov = 70.f;
         float32 zoomFov = 6.5f;
@@ -79,7 +79,7 @@ public:
         void Save(KeyedArchive* archive) const;
         void Load(KeyedArchive* archive);
 
-        DAVA_VIRTUAL_REFLECTION(SubdivisionMetrics, InspBase);
+        DAVA_VIRTUAL_REFLECTION(SubdivisionMetrics, ReflectionBase);
     };
 
     void BuildSubdivision(Heightmap* heightmap, const AABBox3& bbox, uint32 patchSizeQuads);
@@ -158,8 +158,6 @@ private:
     AABBox3 subdivisionBBox;
 
     friend class LandscapeSystem;
-
-    DAVA_VIRTUAL_REFLECTION(LandscapeSubdivision, InspBase);
 };
 
 inline uint32 LandscapeSubdivision::GetLevelSize(uint32 level)

@@ -448,3 +448,10 @@ ENUM_DECLARE(DAVA::RenderFlow)
     ENUM_ADD_DESCR(DAVA::RenderFlow::TileBasedHDRDeferred, "TileBasedHDRDeferred");
     ENUM_ADD_DESCR(DAVA::RenderFlow::TileBasedHDRForward, "TileBasedHDRForward");
 }
+
+ENUM_DECLARE(DAVA::LandscapeQuality)
+{
+    ENUM_ADD_DESCR(DAVA::LandscapeQuality::Low, "Low");
+    ENUM_ADD_DESCR(DAVA::LandscapeQuality::Medium, "Medium");
+    ENUM_ADD_DESCR(DAVA::LandscapeQuality::Full, "Full");
+}

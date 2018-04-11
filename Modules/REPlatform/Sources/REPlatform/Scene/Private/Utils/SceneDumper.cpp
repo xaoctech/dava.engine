@@ -143,11 +143,16 @@ void SceneDumper::DumpRenderObject(RenderObject* renderObject, Set<FilePath>& li
     {
         Landscape* landscape = static_cast<Landscape*>(renderObject);
         links.insert(landscape->GetHeightmapPathname());
-        DAVA::DecorationData* data = landscape->GetDecorationData();
-        if (data != nullptr)
+
+        for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
         {
-            links.insert(data->GetDecorationPath());
+            const Landscape::LandscapeSettings* settings = landscape->GetSettings(LandscapeQuality(q));
+            if (!settings->decorationData.GetDecorationPath().IsEmpty())
+            {
+                links.insert(settings->decorationData.GetDecorationPath());
+            }
         }
+
         break;
     }
     case RenderObject::TYPE_VEGETATION:

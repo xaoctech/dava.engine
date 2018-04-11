@@ -19,6 +19,8 @@ public:
     void Save(KeyedArchive* archive, SerializationContext* serializationContext);
     void Load(KeyedArchive* archive, SerializationContext* serializationContext);
 
+    void CopyParameters(const DecorationData* from);
+
     //// Getters/Setters
     uint32 GetLayersCount() const;
     const FastName& GetLayerName(uint32 layer) const;

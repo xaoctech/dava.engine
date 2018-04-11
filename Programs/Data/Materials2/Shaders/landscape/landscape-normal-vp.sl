@@ -32,8 +32,6 @@ params.y - brushRadius
 */
 [material][a] property float4 params = float4(0.0, 0.0, 0.0, 0.0);
 
-[auto][a] property float4x4 worldViewProjMatrix;
-
 uniform sampler2D landscapeSourceHeightMap;
 
 float HeightToObjectHeight(float h, float landMaxH)

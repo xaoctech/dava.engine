@@ -24,8 +24,10 @@ public:
         Vector2 uvScale1;
     };
 
-    LandscapePageManager(const VirtualTexture::Descriptor& descriptor);
+    LandscapePageManager(const VirtualTexture::Descriptor& descriptor = VirtualTexture::Descriptor());
     ~LandscapePageManager();
+
+    void ResetVirtualTexture(const VirtualTexture::Descriptor& descriptor = VirtualTexture::Descriptor());
 
     bool AddPageRenderer(LandscapePageRenderer* pageRenderer);
     bool RemovePageRenderer(LandscapePageRenderer* pageRenderer);

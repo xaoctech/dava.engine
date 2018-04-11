@@ -21,13 +21,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LandscapeSubdivision::SubdivisionMetrics)
     .End();
 }
 
-DAVA_VIRTUAL_REFLECTION_IMPL(LandscapeSubdivision)
-{
-    ReflectionRegistrator<LandscapeSubdivision>::Begin()
-    .Field("metrics", &LandscapeSubdivision::metrics)[M::DisplayName("Metrics")]
-    .End();
-}
-
 template <>
 bool AnyCompare<LandscapeSubdivision::SubdivisionMetrics>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)
 {

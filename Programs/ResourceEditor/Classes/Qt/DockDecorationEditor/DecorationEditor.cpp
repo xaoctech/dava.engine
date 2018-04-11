@@ -86,7 +86,7 @@ void DecorationEditor::OnSelectionChanged(const DAVA::Any& selection)
                 DAVA::Landscape* landscape = DAVA::GetLandscape(obj.AsEntity());
                 if (landscape)
                 {
-                    decorationData = landscape->GetDecorationData();
+                    decorationData = landscape->GetCurrentDecorationData();
                     subdivision = landscape->GetSubdivision();
                 }
             }

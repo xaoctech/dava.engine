@@ -18,13 +18,25 @@ namespace DAVA
 
 LandscapePageManager::LandscapePageManager(const VirtualTexture::Descriptor& descriptor)
 {
-    vTexture = new VirtualTexture(descriptor);
-    pageTexelOffset = 0.5f * (1 << descriptor.mipLevelCount);
+    ResetVirtualTexture(descriptor);
 }
 
 LandscapePageManager::~LandscapePageManager()
 {
     SafeDelete(vTexture);
+}
+
+void LandscapePageManager::ResetVirtualTexture(const VirtualTexture::Descriptor& descriptor)
+{
+    SafeDelete(vTexture);
+
+    if (descriptor.width != 0u && descriptor.height != 0 && descriptor.pageSize != 0)
+    {
+        vTexture = new VirtualTexture(descriptor);
+        pageTexelOffset = 0.5f * (1 << descriptor.mipLevelCount);
+    }
+
+    Invalidate();
 }
 
 bool LandscapePageManager::AddPageRenderer(LandscapePageRenderer* pageRenderer)
@@ -74,6 +86,8 @@ void LandscapePageManager::RequestPage(uint32 level, uint32 x, uint32 y, float32
 
 LandscapePageManager::PageMapping LandscapePageManager::GetSuitablePage(uint32 level, uint32 x, uint32 y)
 {
+    DVASSERT(vTexture != nullptr);
+
     uint32 pLevel = level;
     uint32 px = x;
     uint32 py = y;
@@ -114,6 +128,11 @@ LandscapePageManager::PageMapping LandscapePageManager::GetSuitablePage(uint32 l
 
 void LandscapePageManager::ProcessRequests(const LandscapeSubdivision* subdivision, uint32 maxPageUpdates, LandscapePageRenderer::eLandscapeComponent component)
 {
+    if (updateRequests.empty())
+        return;
+
+    DVASSERT(vTexture != nullptr);
+
     LandscapePageRenderer::PageRenderParams pageRenderParams;
     pageRenderParams.pageSrc.resize(vTexture->GetIntermediateBufffersLayersCount());
     pageRenderParams.pageDst.resize(vTexture->GetIntermediateBufffersLayersCount());
@@ -181,7 +200,8 @@ bool LandscapePageManager::InvalidatePage(uint32 level, uint32 x, uint32 y)
     auto found = residentPages.find(pageKey);
     if (found != residentPages.cend())
     {
-        vTexture->FreePage(found->second.pageID);
+        if (vTexture != nullptr)
+            vTexture->FreePage(found->second.pageID);
         residentPages.erase(found);
 
         return true;
@@ -194,7 +214,9 @@ void LandscapePageManager::Invalidate()
 {
     residentPages.clear();
     updateRequests.clear();
-    vTexture->FreePages();
+
+    if (vTexture != nullptr)
+        vTexture->FreePages();
 }
 
 bool LandscapePageManager::TryFreePage(float32 pagePriority)
