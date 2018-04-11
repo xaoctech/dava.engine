@@ -430,6 +430,8 @@ DAVA::ModifiablePropertyLineBase* ParticleEffectPropertiesWidget::GetEmitterLine
         return dynamic_cast<DAVA::ModifiablePropertyLineBase*>(emitter->emissionRange.Get());
     case EE_RADUS:
         return dynamic_cast<DAVA::ModifiablePropertyLineBase*>(emitter->radius.Get());
+    case EE_INNER_RADIUS:
+        return dynamic_cast<DAVA::ModifiablePropertyLineBase*>(emitter->innerRadius.Get());
     case EE_SIZE:
         return dynamic_cast<DAVA::ModifiablePropertyLineBase*>(emitter->size.Get());
     case EE_COLOR_OVER_LIFE:

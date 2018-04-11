@@ -110,6 +110,7 @@ public:
         EE_EMISSION_VECTOR = 0,
         EE_EMISSION_RANGE,
         EE_RADUS,
+        EE_INNER_RADIUS,
         EE_SIZE,
         EE_COLOR_OVER_LIFE,
         EE_TOTAL

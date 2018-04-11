@@ -117,6 +117,9 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
     emitterRadius = new TimeLineWidget(this);
     InitWidget(emitterRadius);
 
+    emitterInnerRadius = new TimeLineWidget(this);
+    InitWidget(emitterInnerRadius);
+
     emitterAngle = new TimeLineWidget(this);
     InitWidget(emitterAngle);
 
@@ -268,6 +271,10 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
     if (!emitterRadius->GetValue(0, radius.GetPropsPtr()))
         return;
 
+    DAVA::PropLineWrapper<DAVA::float32> innerRadius;
+    if (!emitterInnerRadius->GetValue(0, innerRadius.GetPropsPtr()))
+        return;
+
     DAVA::PropLineWrapper<DAVA::Color> colorOverLife;
     if (!emitterColorWidget->GetValues(colorOverLife.GetPropsPtr()))
         return;
@@ -294,6 +301,7 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
                                emissionVector.GetPropLine(),
                                emissionVelocityVectorProps.GetPropLine(),
                                radius.GetPropLine(),
+                               innerRadius.GetPropLine(),
                                propAngle.GetPropLine(),
                                propAngleVariation.GetPropLine(),
                                colorOverLife.GetPropLine(),
@@ -423,6 +431,15 @@ void ParticleEmitterPropertiesWidget::UpdateProperties()
 
     if (!needUpdateTimeLimits)
     {
+        minTime = emitterInnerRadius->GetMinBoundary();
+        maxTime = emitterInnerRadius->GetMaxBoundary();
+    }
+    emitterInnerRadius->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize);
+    emitterInnerRadius->AddLine(0, DAVA::PropLineWrapper<DAVA::float32>(DAVA::PropertyLineHelper::GetValueLine(emitter->innerRadius)).GetProps(), Qt::blue, "inner radius");
+    emitterInnerRadius->SetMinLimits(0.0f);
+
+    if (!needUpdateTimeLimits)
+    {
         minTime = emitterAngle->GetMinBoundary();
         maxTime = emitterAngle->GetMaxBoundary();
     }
@@ -471,6 +488,7 @@ void ParticleEmitterPropertiesWidget::RestoreVisualState(DAVA::KeyedArchive* vis
     emitterEmissionVector->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_VECTOR_PROPS"));
     emissionVelocityVector->SetVisualState(visualStateProps->GetArchive("EMITTER_EMISSION_VEL_VECTOR_PROPS"));
     emitterRadius->SetVisualState(visualStateProps->GetArchive("EMITTER_RADIUS_PROPS"));
+    emitterInnerRadius->SetVisualState(visualStateProps->GetArchive("EMITTER_INNER_RADIUS_PROPS"));
     emitterAngle->SetVisualState(visualStateProps->GetArchive("EMITTER_ANGLE_PROPS"));
     emitterSize->SetVisualState(visualStateProps->GetArchive("EMITTER_SIZE_PROPS"));
 }
@@ -497,6 +515,10 @@ void ParticleEmitterPropertiesWidget::StoreVisualState(DAVA::KeyedArchive* visua
     props->DeleteAllKeys();
     emitterRadius->GetVisualState(props);
     visualStateProps->SetArchive("EMITTER_RADIUS_PROPS", props);
+
+    props->DeleteAllKeys();
+    emitterInnerRadius->GetVisualState(props);
+    visualStateProps->SetArchive("EMITTER_INNER_RADIUS_PROPS", props);
 
     props->DeleteAllKeys();
     emitterAngle->GetVisualState(props);

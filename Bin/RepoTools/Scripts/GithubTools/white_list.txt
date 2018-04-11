@@ -73,6 +73,7 @@
 /Modules/Version
 /Modules/VisualScript
 /Modules/VisualScriptEditor
+/Platforms
 /Programs
 !/Programs/REPlugins/TerrainConverter
 !/Programs/NetworkTestGame/Data

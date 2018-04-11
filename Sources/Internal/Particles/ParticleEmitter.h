@@ -91,6 +91,7 @@ public:
     RefPtr<PropertyLine<Vector3>> emissionVelocityVector;
     RefPtr<PropertyLine<float32>> emissionRange;
     RefPtr<PropertyLine<float32>> radius;
+    RefPtr<PropertyLine<float32>> innerRadius;
     RefPtr<PropertyLine<float32>> emissionAngle;
     RefPtr<PropertyLine<float32>> emissionAngleVariation;
     RefPtr<PropertyLine<Color>> colorOverLife;
