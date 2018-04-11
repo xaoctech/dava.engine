@@ -58,7 +58,7 @@ const Array<Color, modsCount> ChartPainterSystem::chartColors =
 } };
 
 ChartPainterSystem::ChartPainterSystem(Scene* scene, float32 maxFrametime_)
-    : SceneSystem(scene)
+    : SceneSystem(scene, DAVA::ComponentUtils::MakeMask<OverdrawTesterComponent>())
     , maxFrametime(maxFrametime_)
     , textColor(rhi::NativeColorRGBA(1.0f, 1.0f, 1.0f, 1.0f))
 {

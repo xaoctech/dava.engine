@@ -184,7 +184,7 @@ DAVA_TESTCLASS (CompressionTest)
                 { -0.123456f, -0.987654f },
                 { 0.333333f, 0.777777f },
             };
-            FloatQuantizer(__LINE__, testItems, COUNT_OF(testItems), &qparam);
+            FloatQuantizer(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &qparam);
         }
         {
             const float32 precision = 0.01f;
@@ -198,7 +198,7 @@ DAVA_TESTCLASS (CompressionTest)
                 { -0.123456f, -0.987654f },
                 { 0.333333f, 0.777777f },
             };
-            FloatQuantizer(__LINE__, testItems, COUNT_OF(testItems), &qparam);
+            FloatQuantizer(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &qparam);
         }
     }
 
@@ -269,7 +269,7 @@ DAVA_TESTCLASS (CompressionTest)
                 { -7, -1 },
                 { 1, 7 },
             };
-            IntCompressor(__LINE__, testItems, COUNT_OF(testItems), &cparam);
+            IntCompressor(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &cparam);
         }
         {
             M::IntCompressParam cparam(1000, 1000);
@@ -278,7 +278,7 @@ DAVA_TESTCLASS (CompressionTest)
                 { 0, 1000 },
                 { 255, 648 },
             };
-            IntCompressor(__LINE__, testItems, COUNT_OF(testItems), &cparam);
+            IntCompressor(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &cparam);
         }
         {
             M::Int64CompressParam cparam(1000, 1000);
@@ -287,7 +287,7 @@ DAVA_TESTCLASS (CompressionTest)
                 { 0, 1000 },
                 { 255, 648 },
             };
-            IntCompressor(__LINE__, testItems, COUNT_OF(testItems), &cparam);
+            IntCompressor(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &cparam);
         }
         {
             M::Int64CompressParam cparam(100'000'000'000, 100'000'000'000);
@@ -299,7 +299,7 @@ DAVA_TESTCLASS (CompressionTest)
                 { -30'000'000'000, -345 },
                 { 30'000'000'000, 345 },
             };
-            IntCompressor(__LINE__, testItems, COUNT_OF(testItems), &cparam);
+            IntCompressor(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &cparam);
         }
     }
 
@@ -471,19 +471,19 @@ DAVA_TESTCLASS (CompressionTest)
         };
         {
             M::QuaternionQuantizeParam qparam(0.01f);
-            QuaternionQuantizer(__LINE__, testItems, COUNT_OF(testItems), &qparam);
+            QuaternionQuantizer(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &qparam);
         }
         {
             M::QuaternionQuantizeParam qparam(0.001f);
-            QuaternionQuantizer(__LINE__, testItems, COUNT_OF(testItems), &qparam);
+            QuaternionQuantizer(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &qparam);
         }
         {
             M::QuaternionQuantizeParam qparam(0.0001f);
-            QuaternionQuantizer(__LINE__, testItems, COUNT_OF(testItems), &qparam);
+            QuaternionQuantizer(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &qparam);
         }
         {
             M::QuaternionQuantizeParam qparam(0.00001f);
-            QuaternionQuantizer(__LINE__, testItems, COUNT_OF(testItems), &qparam);
+            QuaternionQuantizer(__LINE__, testItems, static_cast<uint32>(COUNT_OF(testItems)), &qparam);
         }
     }
 

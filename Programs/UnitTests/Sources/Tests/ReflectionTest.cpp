@@ -769,10 +769,14 @@ DAVA_TESTCLASS (ReflectionTest)
         SimpleStruct* s = new SimpleStruct();
         SimpleStruct** ss = &s;
 
-        // `SimpleStruct**` can't be cast to `SimpleStruct*`
-        DAVA::ReflectedObject ptrptrObj(ss);
-        SimpleStruct* s_tmp = ptrptrObj.GetPtr<SimpleStruct>();
-        TEST_VERIFY(s_tmp == nullptr);
+        {
+            DAVA::UnitTests::AssertsHandlersGuardNoAssert guard;
+
+            // `SimpleStruct**` can't be cast to `SimpleStruct*`
+            DAVA::ReflectedObject ptrptrObj(ss);
+            SimpleStruct* s_tmp = ptrptrObj.GetPtr<SimpleStruct>();
+            TEST_VERIFY(s_tmp == nullptr);
+        }
 
         // ReflectedObject pointer can be get as void*
         DAVA::Reflection r = DAVA::Reflection::Create(DAVA::ReflectedObject(s));

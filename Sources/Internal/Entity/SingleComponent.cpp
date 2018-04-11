@@ -6,7 +6,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SingleComponent)
 {
-    ReflectionRegistrator<SingleComponent>::Begin()
+    ReflectionRegistrator<SingleComponent>::Begin()[M::CantBeCreatedManualyComponent()]
     .End();
 }
 

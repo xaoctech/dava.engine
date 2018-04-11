@@ -31,29 +31,6 @@ static FailBehaviour AssertMessageSavingHandler(const AssertInfo& assertInfo)
     return FailBehaviour::Continue;
 }
 
-// Guard to run test functions without previous handlers and to put them back when testing is over
-class AssertsHandlersGuard final
-{
-public:
-    AssertsHandlersGuard()
-        : previousHandlers(GetAllHandlers())
-    {
-        RemoveAllHandlers();
-    }
-
-    ~AssertsHandlersGuard()
-    {
-        RemoveAllHandlers();
-        for (const Handler& handler : previousHandlers)
-        {
-            AddHandler(handler);
-        }
-    }
-
-private:
-    const Vector<Handler> previousHandlers;
-};
-
 DAVA_TESTCLASS (DVAssertTestClass)
 {
     BEGIN_FILES_COVERED_BY_TESTS()
@@ -63,7 +40,7 @@ DAVA_TESTCLASS (DVAssertTestClass)
 
     DAVA_TEST (AssertTestFunction)
     {
-        AssertsHandlersGuard previousHandlersGuard;
+        UnitTests::AssertsHandlersGuard previousHandlersGuard;
 
         AddHandler(FirstHandler);
         AddHandler(SecondHandler);
@@ -101,7 +78,7 @@ DAVA_TESTCLASS (DVAssertTestClass)
 
     DAVA_TEST (AlwaysAssertTestFunction)
     {
-        AssertsHandlersGuard previousHandlersGuard;
+        UnitTests::AssertsHandlersGuard previousHandlersGuard;
 
         AddHandler(FirstHandler);
         AddHandler(SecondHandler);
@@ -129,7 +106,7 @@ DAVA_TESTCLASS (DVAssertTestClass)
 
     DAVA_TEST (AssertMessageTestFunction)
     {
-        AssertsHandlersGuard previousHandlersGuard;
+        UnitTests::AssertsHandlersGuard previousHandlersGuard;
 
         AddHandler(AssertMessageSavingHandler);
 

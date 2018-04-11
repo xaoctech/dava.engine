@@ -256,6 +256,8 @@ public:
     QString immediateFilterText;
     LazyUpdater* immediateFilterUpdater = nullptr;
 
+    DAVA::QtDelayedExecutor executor;
+
     const QString& GetFilter() const
     {
         return filterModel->GetFilter();
@@ -755,7 +757,7 @@ void SceneTreeModule::OnSceneSelectionChanged(const DAVA::Any& value)
     }
 
     sceneTreeData->selectionModel->select(itemSelection, QItemSelectionModel::ClearAndSelect);
-    executor.DelayedExecute([sceneTreeData]() {
+    sceneTreeData->executor.DelayedExecute([sceneTreeData]() {
         sceneTreeData->filterModel->Refilter();
     });
 }

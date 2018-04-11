@@ -54,12 +54,8 @@ void UIEntityMarkerTest::LoadResources()
         return;
     }
 
-    scene->AddSystem(new RotationControllerSystem(scene),
-                     ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<RotationControllerComponent>(),
-                     Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
-    scene->AddSystem(new WASDControllerSystem(scene),
-                     ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<WASDControllerComponent>(),
-                     Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
+    scene->AddSystem(new RotationControllerSystem(scene));
+    scene->AddSystem(new WASDControllerSystem(scene));
 
     Entity* cameraNode = scene->FindByName("Camera");
     if (cameraNode)

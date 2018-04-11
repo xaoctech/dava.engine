@@ -35,11 +35,11 @@
 
 using namespace DAVA;
 
+extern const char* runOnlyTheseTestClasses;
 namespace
 {
-// List of names specifying which test classes should run.
-// Names should be separated with ' ' or ',' or ';'
-String runOnlyTheseTestClasses = "";
+//runOnlyTheseTestClassesString can be changed in RunOnlyThisTestClasses.h
+String runOnlyTheseTestClassesString(runOnlyTheseTestClasses);
 
 // List of names specifying which test classes shouldn't run. This list takes precedence over runOnlyTheseTests.
 // Names should be separated with ' ' or ',' or ';'
@@ -50,7 +50,8 @@ String disableTheseTestClasses = "ScriptTest "
                                  "FormulaExecutorTest "
                                  "AtomicTest "
                                  "UIFlowTest "
-                                 "UIScriptTest";
+                                 "UIScriptTest "
+                                 "NetworkRemoteInputSystemTest";
 #else
 // TODO: linux
 // Linux unittests are running in console mode so disable tests dependent on GUI facilities (windows, input, etc)
@@ -67,7 +68,8 @@ String disableTheseTestClasses =
 "UIFlowTest "
 "AtomicTest "
 "ReflectionTest "
-"UIScriptTest";
+"UIScriptTest "
+"NetworkRemoteInputSystemTest";
 #endif
 
 bool teamcityOutputEnabled = false; // Flag whether to enable TeamCity output
@@ -80,6 +82,7 @@ const String testCoverageFileName = "Tests.cover";
 int DAVAMain(Vector<String> cmdline)
 {
     Assert::AddHandler(Assert::DefaultLoggerHandler);
+    Assert::AddHandler(Assert::DefaultDebuggerBreakHandler);
 
     KeyedArchive* appOptions = new KeyedArchive();
     appOptions->SetInt32("rhi_threaded_frame_count", 2);
@@ -157,7 +160,7 @@ void GameCore::ProcessCommandLine()
     CommandLineParser* cmdline = CommandLineParser::Instance();
     if (cmdline->CommandIsFound("-only_test"))
     {
-        runOnlyTheseTestClasses = cmdline->GetCommandParam("-only_test");
+        runOnlyTheseTestClassesString = cmdline->GetCommandParam("-only_test");
     }
     if (cmdline->CommandIsFound("-disable_test"))
     {
@@ -188,9 +191,9 @@ void GameCore::OnAppStarted()
                                           MakeFunction(this, &GameCore::OnTestFinished),
                                           MakeFunction(this, &GameCore::OnTestFailed),
                                           MakeFunction(this, &GameCore::OnTestClassDisabled));
-    if (!runOnlyTheseTestClasses.empty())
+    if (!runOnlyTheseTestClassesString.empty())
     {
-        UnitTests::TestCore::Instance()->RunOnlyTheseTestClasses(runOnlyTheseTestClasses);
+        UnitTests::TestCore::Instance()->RunOnlyTheseTestClasses(runOnlyTheseTestClassesString);
     }
     if (!disableTheseTestClasses.empty())
     {

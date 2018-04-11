@@ -7,6 +7,7 @@
 #include "OverdrawTesterRenderObject.h"
 
 #include "Base/String.h"
+#include "Entity/ComponentUtils.h"
 #include "Functional/Function.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
@@ -56,7 +57,7 @@ const uint32 accumulatedFramesCount = 20;
 const bool generateTexWithMips = true;
 
 OverdrawTesterSystem::OverdrawTesterSystem(DAVA::Scene* scene, DAVA::PixelFormat textureFormat_, DAVA::uint16 textureResolution_, DAVA::Function<void(DAVA::Array<DAVA::Vector<FrameData>, 6>*)> finishCallback_)
-    : SceneSystem(scene)
+    : SceneSystem(scene, DAVA::ComponentUtils::MakeMask<OverdrawTesterComponent>())
     , textureFormat(textureFormat_)
     , textureResolution(textureResolution_)
     , finishCallback(finishCallback_)

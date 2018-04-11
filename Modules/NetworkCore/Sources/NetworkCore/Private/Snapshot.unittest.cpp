@@ -333,8 +333,8 @@ DAVA_TESTCLASS (SnapshotTest)
         TEST_VERIFY(CheckSSCSnapshot(false, 1));
         TEST_VERIFY(CheckSSCSnapshot(false, 4));
 
-        size_t historySize = ssc->serverHistory.size();
-        size_t overflowFrameId = historySize * 2;
+        uint32 historySize = static_cast<uint32>(ssc->serverHistory.size());
+        uint32 overflowFrameId = historySize * 2;
         TEST_VERIFY(nullptr != ssc->CreateServerSnapshot(overflowFrameId));
         TEST_VERIFY(nullptr != ssc->CreateServerSnapshot(overflowFrameId - historySize + 1));
 

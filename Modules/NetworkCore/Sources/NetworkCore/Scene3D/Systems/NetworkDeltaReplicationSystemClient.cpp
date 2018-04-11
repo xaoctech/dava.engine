@@ -260,7 +260,7 @@ void NetworkDeltaReplicationSystemClient::OnReceive(const Vector<uint8>& packet)
         delta.srcSize = diffSize;
         deltas.push_back(std::move(delta));
 
-        size += diffSize;
+        size += static_cast<uint32>(diffSize);
     }
 
     DVASSERT(size == packet.size());

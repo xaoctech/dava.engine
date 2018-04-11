@@ -18,8 +18,8 @@
 
 #include <Platform/DeviceInfo.h>
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/StaticBodyComponent.h>
-#include <Physics/HeightFieldShapeComponent.h>
+#include <Physics/Core/StaticBodyComponent.h>
+#include <Physics/Core/HeightFieldShapeComponent.h>
 #include <Physics/PhysicsSystem.h>
 #endif
 #include <Scene3D/Components/Controller/WASDControllerComponent.h>
@@ -79,12 +79,10 @@ void ViewSceneScreen::PlaceSceneAtScreen()
         //camera->SetPosition(Vector3(0, -10, 1));
 
         rotationControllerSystem = new DAVA::RotationControllerSystem(scene);
-        scene->AddSystem(rotationControllerSystem, ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<RotationControllerComponent>(),
-                         Scene::SCENE_SYSTEM_REQUIRE_PROCESS | Scene::SCENE_SYSTEM_REQUIRE_INPUT);
+        scene->AddSystem(rotationControllerSystem);
 
         wasdSystem = new WASDControllerSystem(scene);
-        scene->AddSystem(wasdSystem, ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<WASDControllerComponent>(),
-                         Scene::SCENE_SYSTEM_REQUIRE_PROCESS);
+        scene->AddSystem(wasdSystem);
 
         sceneView = new DAVA::UI3DView(GetRect());
         //sceneView->SetFrameBufferScaleFactor(0.5f);
@@ -115,11 +113,11 @@ void ViewSceneScreen::RemoveSceneFromScreen()
     {
         scene->RemoveSystem(rotationControllerSystem);
         {
-        }
-        else
-        {
             DAVA::TestCharacterControllerModule* characterModule = DAVA::GetEngineContext()->moduleManager->GetModule<DAVA::TestCharacterControllerModule>();
-            characterModule->DisableController(scene);
+            if (characterModule != nullptr)
+            {
+                characterModule->DisableController(scene);
+            }
             characterSpawned = false;
         }
         SafeDelete(rotationControllerSystem);

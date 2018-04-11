@@ -172,7 +172,7 @@ bool UDPServer::Update(uint32 timeout)
         Logger::FrameworkDebug("CLIENT_DISCONNECTED: host:%d port:%d", peer->address.host, peer->address.port);
         auto peerIt = peerStorage.find(peer);
         DVASSERT(peerIt != peerStorage.end());
-        const FastName& token = peerIt->second.GetToken();
+        const FastName token = peerIt->second.GetToken();
         disconnectSignal.Emit(token);
         peerStorage.erase(peerIt);
         tokenIndex.erase(token);

@@ -5,12 +5,12 @@
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-#include "Math/Rect.h"
-#include "Utils/Utils.h"
-#include "Logger/Logger.h"
-
 #include "Engine/Engine.h"
 #include "Engine/Window.h"
+#include "Logger/Logger.h"
+#include "Math/Rect.h"
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+#include "Utils/Utils.h"
 
 extern "C"
 {

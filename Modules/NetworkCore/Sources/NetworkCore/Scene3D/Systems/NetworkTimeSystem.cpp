@@ -200,8 +200,8 @@ void NetworkTimeSystem::ProcessFixed(float32 timeElapsed)
         return;
     }
 
-    static float32 lastCallTime = SystemTimer::GetMs();
-    const float32 currentCallTime = SystemTimer::GetMs();
+    static float32 lastCallTime = static_cast<float32>(SystemTimer::GetMs());
+    const float32 currentCallTime = static_cast<float32>(SystemTimer::GetMs());
 
     ffpsMeter.Update(static_cast<float32>(currentCallTime - lastCallTime) / 1e3f);
     if (ffpsMeter.IsFpsReady())

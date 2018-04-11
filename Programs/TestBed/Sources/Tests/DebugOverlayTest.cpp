@@ -15,7 +15,7 @@ String TestOverlayItem::GetName() const
     return "Test item (testbed)";
 }
 
-void TestOverlayItem::Draw(bool* shown)
+void TestOverlayItem::Draw(bool* shown, float32 timeElapsed)
 {
     ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Test window", shown, ImGuiWindowFlags_NoFocusOnAppearing))

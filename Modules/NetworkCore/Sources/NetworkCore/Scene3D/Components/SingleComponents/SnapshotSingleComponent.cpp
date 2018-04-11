@@ -117,7 +117,7 @@ Snapshot* GetSnapshot(SnapshotSingleComponent::SnapshotHistory& history, size_t&
 
     DVASSERT(pos < history.size());
     uint32 curFrameId = history[pos].frameId;
-    uint32 historySize = history.size();
+    uint32 historySize = static_cast<uint32>(history.size());
 
     // requested current frame
     if (frameId == curFrameId)
@@ -133,11 +133,11 @@ Snapshot* GetSnapshot(SnapshotSingleComponent::SnapshotHistory& history, size_t&
             uint32 p = 0;
             if (offset <= pos)
             {
-                p = pos - offset;
+                p = static_cast<uint32>(pos - offset);
             }
             else
             {
-                p = historySize - (offset - pos);
+                p = historySize - static_cast<uint32>(offset - pos);
             }
 
             // when creation requested, check if pos is free

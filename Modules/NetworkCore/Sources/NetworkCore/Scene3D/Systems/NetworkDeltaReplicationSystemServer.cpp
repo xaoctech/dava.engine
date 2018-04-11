@@ -308,7 +308,7 @@ NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Owner
         entHeader.netEntityId = netEntityId;
         entHeader.frameOffset = range.GetFrameCount();
         entHeader.Save(tmpBlock.buff + emptyPacketHeaderSize);
-        tmpBlock.size = tmpHeadersOffset + diffSize;
+        tmpBlock.size = tmpHeadersOffset + static_cast<uint32>(diffSize);
 
         if (0 == entHeader.frameOffset || tmpBlock.size > NetworkCoreUtils::ENET_DEFAULT_MTU_UNCOMPRESSED)
         {

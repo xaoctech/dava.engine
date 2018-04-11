@@ -30,8 +30,11 @@
 
 #include <functional>
 #include "Scene3D/Components/RenderComponent.h"
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/Core/StaticBodyComponent.h>
 #include <Physics/Core/MeshShapeComponent.h>
+#endif //#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 
 namespace DAVA
 {
@@ -193,9 +196,12 @@ void Entity::AddNode(Entity* node)
 {
     if (node)
     {
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
         DAVA::MeshShapeComponent* shape = node->GetComponent<MeshShapeComponent>();
         if (shape != nullptr)
             shape->SetTypeMask(1);
+#endif // __DAVAENGINE_PHYSICS_ENABLED__
+
         /*DAVA::RenderComponent* render = static_cast<DAVA::RenderComponent*>(node->GetComponent(Component::RENDER_COMPONENT));
         if (render != nullptr && render->GetRenderObject()->GetType() == RenderObject::TYPE_MESH)
         {

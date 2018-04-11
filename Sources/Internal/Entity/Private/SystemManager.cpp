@@ -266,7 +266,7 @@ uint32 SystemManager::GetSystemIndex(const Type* systemType) const
     {
         if (methodsToProcess[i].systemType == systemType)
         {
-            return methodsToFixedProcess.size() + i;
+            return static_cast<uint32>(methodsToFixedProcess.size() + i);
         }
     }
 

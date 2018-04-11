@@ -51,9 +51,9 @@ void DebugOverlayItemEngineSettings::Draw(bool* shown, float32 timeElapsed)
             {
                 EngineSettingsVar* var = engineSettings->GetVar(i);
 
-                ImGui::Text(var->GetName().c_str());
+                ImGui::Text("%s", var->GetName().c_str());
                 if (ImGui::IsItemHovered())
-                    ImGui::SetTooltip(var->GetHelp().c_str());
+                    ImGui::SetTooltip("%s", var->GetHelp().c_str());
 
                 ImGui::NextColumn();
                 ImGui::PushID(var);
@@ -97,7 +97,7 @@ void DebugOverlayItemEngineSettings::Draw(bool* shown, float32 timeElapsed)
                 {
                     ImGui::Text("?");
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(valueType->GetName());
+                        ImGui::SetTooltip("%s", valueType->GetName());
                 }
 
                 ImGui::PopID();

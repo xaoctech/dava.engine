@@ -64,4 +64,3 @@ DAVA_TESTCLASS (FeatureManagerTest)
         TEST_VERIFY(testInt == 2);
     }
 };
-

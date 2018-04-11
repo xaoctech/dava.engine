@@ -39,7 +39,7 @@ class TestsRunner():
         self.buildDir           = arg.buildDir
         self.platform           = arg.platform 
         self.sdk_dir            = arg.sdk_dir 
-        self.coverage_artifacts = arg.coverage_artifacts 
+        self.coverage_artifacts = arg.coverage_artifacts
 
         self.appDir             = os.path.join (arg.buildDir, 'app' ) 
         self.appOtherDir        = os.path.join (arg.buildDir, 'app_other' )
@@ -279,31 +279,32 @@ class TestsRunner():
                     sys.stdout.write(err.message)
                     sys.stdout.flush()
 
-            if self.platform == 'MACOS':
-                pathCoverageDir      = os.path.realpath( os.path.join(self.davaRoot, 'RepoTools', 'coverage') )
-                pathHtmlReportScript = os.path.join( pathCoverageDir, 'coverage_report.py' )   
-                pathBuild            = self.buildDir
-                pathExecute          = os.path.realpath( os.path.join( os.getcwd(), '{0}.app'.format( self.prjNameBase ) ) )
-                pathReportOut        = os.path.join( pathBuild, 'Coverage')    
-
-                buildMode            = None
-
-                if self.coverage_artifacts == 'true':
-                    buildMode = 'false'
-                else:
-                    buildMode = 'true'
-
-                params = [  'python', pathHtmlReportScript,
-                            '--pathBuild', pathBuild,  
-                            '--pathExecute', pathExecute,                   
-                            '--pathReportOut', pathReportOut,
-                            '--buildConfig', 'RelWithDebinfo',
-                            '--notExecute' , 'true',
-                            '--teamcityMode' , 'true', 
-                            '--buildMode', buildMode
-                             ]
-
-                subprocess.call(params)
+#  disabled coverage for server branch
+#            if self.platform == 'MACOS':
+#                pathCoverageDir      = os.path.realpath( os.path.join(self.davaRoot, 'RepoTools', 'coverage') )
+#                pathHtmlReportScript = os.path.join( pathCoverageDir, 'coverage_report.py' )
+#                pathBuild            = self.buildDir
+#                pathExecute          = os.path.realpath( os.path.join( os.getcwd(), '{0}.app'.format( self.prjNameBase ) ) )
+#                pathReportOut        = os.path.join( pathBuild, 'Coverage')
+#
+#                buildMode            = None
+#
+#                if self.coverage_artifacts == 'true':
+#                    buildMode = 'false'
+#                else:
+#                    buildMode = 'true'
+#
+#                params = [  'python', pathHtmlReportScript,
+#                            '--pathBuild', pathBuild,
+#                            '--pathExecute', pathExecute,
+#                            '--pathReportOut', pathReportOut,
+#                            '--buildConfig', 'RelWithDebinfo',
+#                            '--notExecute' , 'true',
+#                            '--teamcityMode' , 'true',
+#                            '--buildMode', buildMode
+#                             ]
+#
+#                subprocess.call(params)
 
             if app_exit_code == 1:
                 sys.exit( self.app_exit_code )

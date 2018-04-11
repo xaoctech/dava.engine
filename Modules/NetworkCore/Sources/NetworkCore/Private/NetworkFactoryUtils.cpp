@@ -250,8 +250,8 @@ uint8 EntityConfigManager::ReadDomainMask(const YamlNode* node, const String& se
         return defaultValue;
 
     uint8 result = 0;
-    const size_t numberOfDomains = domainsNode->GetCount();
-    for (size_t idx = 0; idx < numberOfDomains; ++idx)
+    const uint32 numberOfDomains = domainsNode->GetCount();
+    for (uint32 idx = 0; idx < numberOfDomains; ++idx)
     {
         FastName domainName = domainsNode->Get(idx)->AsFastName();
         EntityCfg::Domain domain = GetDomainByName(domainName);
@@ -268,8 +268,8 @@ M::Privacy EntityConfigManager::ReadReplicationPrivacy(const YamlNode* node, con
         return defaultValue;
 
     uint8 result = 0;
-    const size_t numberOfPrivacy = privacyNode->GetCount();
-    for (size_t idx = 0; idx < numberOfPrivacy; ++idx)
+    const uint32 numberOfPrivacy = privacyNode->GetCount();
+    for (uint32 idx = 0; idx < numberOfPrivacy; ++idx)
     {
         FastName domainName = privacyNode->Get(idx)->AsFastName();
         M::Privacy privacy = GetPrivacyByName(domainName);

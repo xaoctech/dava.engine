@@ -131,11 +131,11 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
 
         UpdateListOfResimulatingEntities();
 
-        mispredictedEntitiesCount += predictionSingleComponent->mispredictedEntities.size();
+        mispredictedEntitiesCount += static_cast<uint32>(predictionSingleComponent->mispredictedEntities.size());
 
         const auto& resimulatingEntities = networkResimulationSingleComponent->GetResimulatingEntities();
 
-        resimulatedEntitiesCount += resimulatingEntities.size();
+        resimulatedEntitiesCount += static_cast<uint32>(resimulatingEntities.size());
 
         Map<uint32 /* frameId */, Vector<Entity*>> resimulationFrameIdToEntities;
 
@@ -298,7 +298,7 @@ void NetworkResimulationSystem::UpdateListOfResimulatingEntities()
     for (const auto& p : predictionSingleComponent->mispredictedEntities)
     {
         resimulatingEntities.emplace_back(p.first, p.second.frameId);
-        indices[p.first] = resimulatingEntities.size() - 1;
+        indices[p.first] = static_cast<uint32>(resimulatingEntities.size() - 1);
         resimulationStartFrameId = Min(resimulationStartFrameId, p.second.frameId);
     }
 
@@ -349,7 +349,7 @@ void NetworkResimulationSystem::UpdateListOfResimulatingEntities()
                         {
                             uint32 frameId = resimulatingEntity->second;
                             resimulatingEntities.emplace_back(p.first, frameId);
-                            indices[p.first] = resimulatingEntities.size() - 1;
+                            indices[p.first] = static_cast<uint32>(resimulatingEntities.size() - 1);
                             resimulatingEntity = &resimulatingEntities[i];
                         }
                         else

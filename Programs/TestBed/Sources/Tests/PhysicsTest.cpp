@@ -3,7 +3,7 @@
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/PhysicsModule.h>
-#include <Physics/Private/PhysicsMath.h>
+#include <Physics/Core/Private/PhysicsMath.h>
 #include <Physics/PhysicsConfigs.h>
 
 #include <UI/Update/UIUpdateComponent.h>

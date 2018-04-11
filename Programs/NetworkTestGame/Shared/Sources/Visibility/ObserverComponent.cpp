@@ -31,6 +31,6 @@ void ObserverComponent::ClearCache()
 
 void ObserverComponent::Reset()
 {
-    Memset(visibilityByObservableId.data(), visibilityByObservableId.size(), 0);
+    Memset(visibilityByObservableId.data(), static_cast<int>(visibilityByObservableId.size()), 0);
     updatedObservablesIds.clear();
 }

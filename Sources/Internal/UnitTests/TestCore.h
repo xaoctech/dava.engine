@@ -2,6 +2,7 @@
 #define __DAVAENGINE_TESTCORE_H__
 
 #include "Base/BaseTypes.h"
+#include "Debug/DVAssert.h"
 #include "Functional/Function.h"
 #include "UnitTests/TestClass.h"
 
@@ -11,6 +12,57 @@ namespace UnitTests
 {
 class TestClass;
 class TestClassFactoryBase;
+
+// Guard to run test functions without previous handlers and to put them back when testing is over
+class AssertsHandlersGuard final
+{
+public:
+    AssertsHandlersGuard()
+        : previousHandlers(Assert::GetAllHandlers())
+    {
+        Assert::RemoveAllHandlers();
+    }
+
+    ~AssertsHandlersGuard()
+    {
+        Assert::RemoveAllHandlers();
+        for (const Assert::Handler& handler : previousHandlers)
+        {
+            AddHandler(handler);
+        }
+    }
+
+private:
+    const Vector<Assert::Handler> previousHandlers;
+};
+
+// Guard and install 'Continue' Handler
+static Assert::FailBehaviour ContinueHandler(const Assert::AssertInfo& assertInfo)
+{
+    return Assert::FailBehaviour::Continue;
+}
+class AssertsHandlersGuardNoAssert final
+{
+public:
+    AssertsHandlersGuardNoAssert()
+        : previousHandlers(Assert::GetAllHandlers())
+    {
+        Assert::RemoveAllHandlers();
+        Assert::AddHandler(ContinueHandler);
+    }
+
+    ~AssertsHandlersGuardNoAssert()
+    {
+        Assert::RemoveAllHandlers();
+        for (const Assert::Handler& handler : previousHandlers)
+        {
+            AddHandler(handler);
+        }
+    }
+
+private:
+    const Vector<Assert::Handler> previousHandlers;
+};
 
 class TestCore final
 {

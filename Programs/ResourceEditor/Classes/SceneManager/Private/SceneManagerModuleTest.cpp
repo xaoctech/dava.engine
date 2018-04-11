@@ -25,6 +25,7 @@
 #include <TArc/Utils/QtDelayedExecutor.h>
 #include <TArc/Testing/GMockInclude.h>
 
+#include <Physics/Core/PhysicsComponent.h>
 #include <Physics/Controllers/CharacterControllerComponent.h>
 
 #include <Base/Any.h>
@@ -49,6 +50,7 @@ DAVA_TARC_TESTCLASS(SceneManagerModuleTests)
     DAVA::Set<const DAVA::ReflectedType*> ignoreComponentTypes = {
         // TODO remove this ignore after fix assert in PhysicsSystem
         DAVA::ReflectedTypeDB::Get<DAVA::CharacterControllerComponent>(),
+        DAVA::ReflectedTypeDB::Get<DAVA::PhysicsComponent>(),
         // CollisionTypeComponent may be registered in earlier tests,
         // but since we can't unregister components and this component's
         // presence makes no sense in this test, we should ignore it
@@ -173,7 +175,6 @@ private:
                     entity->AddComponent(component);
                 }
             }
-
             scene->Update(0.16f);
             CommandLineModuleTestUtils::SceneBuilder::CreateFullScene(Mock::ProjectManagerModule::testScenePath, Mock::ProjectManagerModule::testProjectPath, scene.Get());
         }

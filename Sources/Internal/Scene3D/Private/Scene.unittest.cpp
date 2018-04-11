@@ -102,9 +102,9 @@ DAVA_TESTCLASS (SceneTest)
 
     DAVA_TEST (Process)
     {
-        const uint32 updatesCount = 1e3;
+        const uint32 updatesCount = static_cast<uint32>(1e3);
         float32 fixedDelta = 1.f / 60.f;
-        std::srand(time(nullptr));
+        std::srand(static_cast<unsigned>(time(nullptr)));
 
         Scene* scene = nullptr;
         UTSystem* utSystem = nullptr;

@@ -86,10 +86,10 @@ void BitsetCompressor<TBitset>::CompressFull(const TBitset& value, CompressionSc
     if (GetRequiredBitsForPack(value, numberOfSetBits, setBits) < BITS)
     {
         writer.WriteBits(true, 1);
-        writer.WriteBits(numberOfSetBits, BITS_COUNT_PER_INDEX);
+        writer.WriteBits(static_cast<uint32>(numberOfSetBits), static_cast<uint32>(BITS_COUNT_PER_INDEX));
         for (size_t setBitIdx = 0; setBitIdx < numberOfSetBits; ++setBitIdx)
         {
-            writer.WriteBits(setBits[setBitIdx], BITS_COUNT_PER_INDEX);
+            writer.WriteBits(setBits[setBitIdx], static_cast<uint32>(BITS_COUNT_PER_INDEX));
         }
     }
     else

@@ -12,8 +12,8 @@ class Window;
 
 class TestOverlayItem final : public DAVA::DebugOverlayItem
 {
-    virtual DAVA::String GetName() const override;
-    virtual void Draw(bool* shown) override;
+    DAVA::String GetName() const override;
+    void Draw(bool* shown, DAVA::float32 timeElapsed) override;
 };
 
 class DebugOverlayTest final : public BaseScreen
