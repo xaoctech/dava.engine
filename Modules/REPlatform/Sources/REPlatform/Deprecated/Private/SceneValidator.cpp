@@ -7,6 +7,7 @@
 #include <QtTools/ConsoleWidget/PointerSerializer.h>
 #include <TArc/Core/Deprecated.h>
 
+#include <Math/Transform.h>
 #include <Render/Highlevel/Heightmap.h>
 #include <Render/Highlevel/RenderPassNames.h>
 #include <Render/Image/LibPVRHelper.h>
@@ -15,6 +16,7 @@
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
 
 namespace DAVA
@@ -81,7 +83,8 @@ void SceneValidator::ValidateScalesInternal(Entity* sceneNode)
         return;
     }
 
-    const Matrix4& t = sceneNode->GetLocalTransform();
+    TransformComponent* tc = sceneNode->GetComponent<TransformComponent>();
+    const Matrix4& t = tc->GetLocalMatrix();
     float32 sx = sqrt(t._00 * t._00 + t._10 * t._10 + t._20 * t._20);
     float32 sy = sqrt(t._01 * t._01 + t._11 * t._11 + t._21 * t._21);
     float32 sz = sqrt(t._02 * t._02 + t._12 * t._12 + t._22 * t._22);
@@ -175,9 +178,10 @@ void SceneValidator::ValidateRenderComponent(Entity* ownerNode)
 
 void SceneValidator::FixIdentityTransform(Entity* ownerNode, const String& errorMessage)
 {
-    if (ownerNode->GetLocalTransform() != Matrix4::IDENTITY)
+    TransformComponent* ownerTC = ownerNode->GetComponent<TransformComponent>();
+    if (ownerTC->GetLocalTransform() != Transform())
     {
-        ownerNode->SetLocalTransform(Matrix4::IDENTITY);
+        ownerTC->SetLocalTransform(Transform());
         SceneEditor2* sc = dynamic_cast<SceneEditor2*>(ownerNode->GetScene());
         if (sc != nullptr)
         {

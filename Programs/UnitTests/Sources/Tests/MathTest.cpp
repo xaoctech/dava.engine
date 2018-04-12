@@ -21,7 +21,7 @@ DAVA_TESTCLASS (MathTest)
     DAVA_TEST (MatrixTestFunction)
     {
         TEST_VERIFY(TestMatrixDecomposition(Matrix4::MakeTranslation(Vector3(10.0f, 0.0f, 0.0f))) < 0.0001f);
-        TEST_VERIFY(TestMatrixDecomposition(Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.0f), PI_05)) < 0.0001f);
+        TEST_VERIFY(TestMatrixDecomposition(Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.0f), -PI_05)) < 0.0001f);
         TEST_VERIFY(TestMatrixDecomposition(Matrix4::MakeScale(Vector3(3.0f, 3.0f, 3.0f))) < 0.0001f);
 
         Vector3 axis(0.0f, 1.0f, 1.0f);
@@ -29,7 +29,7 @@ DAVA_TESTCLASS (MathTest)
         TEST_VERIFY(
         TestMatrixDecomposition(
         Matrix4::MakeTranslation(Vector3(10.0f, 0.0f, 0.0f)) *
-        Matrix4::MakeRotation(axis, PI_05 * 0.25f) *
+        Matrix4::MakeRotation(axis, -PI_05 * 0.25f) *
         Matrix4::MakeScale(Vector3(3.0f, 3.0f, 3.0f))) < 0.0001f);
     }
 

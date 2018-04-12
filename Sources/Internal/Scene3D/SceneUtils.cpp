@@ -1,6 +1,8 @@
 #include "Scene3D/SceneUtils.h"
 
 #include "Utils/StringFormat.h"
+#include "Math/Transform.h"
+#include "Math/TransformUtils.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderBatch.h"
 #include "Render/Highlevel/Mesh.h"
@@ -285,8 +287,8 @@ void SceneUtils::BakeTransformsUpToFarParent(Entity* parent, Entity* currentNode
     }
 
     // Set local transform as Ident because transform is already baked up into geometry
-    TransformComponent* transformComponent = GetTransformComponent(currentNode);
-    transformComponent->SetLocalTransform(&Matrix4::IDENTITY);
+    TransformComponent* transform = currentNode->GetComponent<TransformComponent>();
+    transform->SetLocalTransform(TransformUtils::IDENTITY);
 }
 
 void SceneUtils::CollapseAnimationsUpToFarParent(Entity* node, Entity* parent)

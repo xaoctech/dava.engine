@@ -247,7 +247,7 @@ float32 LandscapeEditorDrawSystem::GetTextureSize(const FastName& level)
 Vector3 LandscapeEditorDrawSystem::GetLandscapeSize()
 {
     AABBox3 transformedBox;
-    baseLandscape->GetBoundingBox().GetTransformedBox(*baseLandscape->GetWorldTransformPtr(), transformedBox);
+    baseLandscape->GetBoundingBox().GetTransformedBox(*baseLandscape->GetWorldMatrixPtr(), transformedBox);
 
     Vector3 landSize = transformedBox.max - transformedBox.min;
     return landSize;

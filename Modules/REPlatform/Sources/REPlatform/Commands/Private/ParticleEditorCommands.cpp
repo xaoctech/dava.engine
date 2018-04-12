@@ -735,7 +735,7 @@ void CommandAddParticleEmitterSimplifiedForce::Redo()
         return;
 
     // Add the new Force to the Layer.
-    ParticleForceSimplified* newForce = new ParticleForceSimplified(RefPtr<PropertyLine<Vector3>>(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))), RefPtr<PropertyLine<float32>>(NULL));
+    ParticleForceSimplified* newForce = new ParticleForceSimplified(RefPtr<PropertyLine<Vector3>>(new PropertyLineValue<Vector3>(Vector3(0, 0, 0))), RefPtr<PropertyLine<float32>>());
     selectedLayer->AddSimplifiedForce(newForce);
     newForce->Release();
 }

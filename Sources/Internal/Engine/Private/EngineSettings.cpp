@@ -56,7 +56,7 @@ bool EngineSettings::Load(const FilePath& filepath)
 {
     if (GetEngineContext()->fileSystem->Exists(filepath))
     {
-        ScopedPtr<YamlParser> parser(YamlParser::Create(filepath));
+        RefPtr<YamlParser> parser(YamlParser::Create(filepath));
         YamlNode* rootNode = parser->GetRootNode();
 
         if (rootNode)

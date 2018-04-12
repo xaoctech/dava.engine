@@ -90,10 +90,9 @@ DAVA_TESTCLASS (LocalizationTest)
         Font* font = FTFont::Create("~res:/Fonts/korinna.ttf");
 
         FilePath filePath("~res:/TestData/LocalizationTest/bidi_test.yaml");
-        YamlParser* parser = YamlParser::Create(filePath);
+        RefPtr<YamlParser> parser = YamlParser::Create(filePath);
         SCOPE_EXIT
         {
-            SafeRelease(parser);
             SafeRelease(font);
         };
 

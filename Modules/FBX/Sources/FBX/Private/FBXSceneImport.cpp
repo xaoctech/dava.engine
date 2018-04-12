@@ -1,9 +1,10 @@
 #include "FBXSceneImport.h"
 #include "FBXMeshImport.h"
 
-#include "Logger/Logger.h"
-#include "FileSystem/FilePath.h"
-#include "Scene3D/Entity.h"
+#include <Logger/Logger.h>
+#include <FileSystem/FilePath.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 namespace DAVA
 {
@@ -52,7 +53,8 @@ void ProcessSceneHierarchyRecursive(FbxNode* fbxNode, Entity* entity)
     else
     {
         Matrix4 transform = ToMatrix4(fbxNode->EvaluateLocalTransform());
-        entity->SetLocalTransform(transform);
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        tc->SetLocalTransform(transform);
     }
 
     int32 childCount = fbxNode->GetChildCount();

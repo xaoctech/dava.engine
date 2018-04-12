@@ -1,6 +1,8 @@
 #include "REPlatform/DataNodes/Selectable.h"
 
 #include <Base/Type.h>
+#include <Math/Transform.h>
+#include <Math/TransformUtils.h>
 #include <Reflection/ReflectedTypeDB.h>
 
 namespace DAVA
@@ -75,19 +77,19 @@ void Selectable::SetBoundingBox(const AABBox3& box)
     boundingBox = box;
 }
 
-const Matrix4& Selectable::GetLocalTransform() const
+const Transform& Selectable::GetLocalTransform() const
 {
     auto proxy = GetTransformProxyForClass(object);
-    return (proxy == nullptr) ? Matrix4::IDENTITY : proxy->GetLocalTransform(object);
+    return (proxy == nullptr) ? TransformUtils::IDENTITY : proxy->GetLocalTransform(object);
 }
 
-const Matrix4& Selectable::GetWorldTransform() const
+const Transform& Selectable::GetWorldTransform() const
 {
     auto proxy = GetTransformProxyForClass(object);
-    return (proxy == nullptr) ? Matrix4::IDENTITY : proxy->GetWorldTransform(object);
+    return (proxy == nullptr) ? TransformUtils::IDENTITY : proxy->GetWorldTransform(object);
 }
 
-void Selectable::SetLocalTransform(const Matrix4& transform)
+void Selectable::SetLocalTransform(const Transform& transform)
 {
     auto proxy = GetTransformProxyForClass(object);
     if (proxy != nullptr)

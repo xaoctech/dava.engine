@@ -155,8 +155,8 @@ public:
     inline const AABBox3& GetBoundingBox() const;
     inline const AABBox3& GetWorldBoundingBox() const;
 
-    inline void SetWorldTransformPtr(Matrix4* _worldTransform);
-    inline Matrix4* GetWorldTransformPtr() const;
+    inline void SetWorldMatrixPtr(Matrix4* _worldTransform);
+    inline Matrix4* GetWorldMatrixPtr() const;
     inline void SetInverseTransform(const Matrix4& _inverseWorldTransform);
     inline const Matrix4& GetInverseWorldTransform() const;
 
@@ -358,7 +358,7 @@ inline const AABBox3& RenderObject::GetWorldBoundingBox() const
     return worldBBox;
 }
 
-inline void RenderObject::SetWorldTransformPtr(Matrix4* _worldTransform)
+inline void RenderObject::SetWorldMatrixPtr(Matrix4* _worldTransform)
 {
     if (worldTransform == _worldTransform)
         return;
@@ -366,7 +366,7 @@ inline void RenderObject::SetWorldTransformPtr(Matrix4* _worldTransform)
     flags |= TRANSFORM_UPDATED;
 }
 
-inline Matrix4* RenderObject::GetWorldTransformPtr() const
+inline Matrix4* RenderObject::GetWorldMatrixPtr() const
 {
     return worldTransform;
 }

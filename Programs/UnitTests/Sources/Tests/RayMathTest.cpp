@@ -45,7 +45,7 @@ DAVA_TESTCLASS (RayMathTest)
         }
 
         AABBox3 transformedBox;
-        smallBox.GetTransformedBox(Matrix4::MakeRotation(Vector3::UnitX, PI / 2.0f), transformedBox);
+        smallBox.GetTransformedBox(Matrix4::MakeRotation(Vector3::UnitX, -PI / 2.0f), transformedBox);
         TEST_VERIFY(FLOAT_EQUAL(transformedBox.min.x, smallBox.min.x));
         TEST_VERIFY(FLOAT_EQUAL(transformedBox.min.y, smallBox.min.y));
         TEST_VERIFY(FLOAT_EQUAL(transformedBox.min.z, smallBox.min.z));

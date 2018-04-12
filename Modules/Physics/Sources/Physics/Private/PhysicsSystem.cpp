@@ -130,13 +130,7 @@ Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
         }
     }
 
-    Vector3 pos;
-    Vector3 scale;
-    Quaternion quat;
-    TransformComponent* transformComponent = GetTransformComponent(e);
-    transformComponent->GetWorldTransform().Decomposition(pos, scale, quat);
-
-    return scale;
+    return GetTransformComponent(e)->GetWorldTransform().GetScale();
 }
 
 PhysicsComponent* GetParentPhysicsComponent(Entity* entity)
@@ -689,7 +683,8 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
                 // Update entity's transform and its shapes down the hierarchy recursively
 
                 Matrix4 scaleMatrix = Matrix4::MakeScale(component->currentScale);
-                entity->SetWorldTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
+                TransformComponent* entityTransform = entity->GetComponent<TransformComponent>();
+                entityTransform->SetWorldMatrix(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
 
                 Vector<Entity*> children;
                 entity->GetChildEntitiesWithCondition(children, [component](Entity* e) { return PhysicsSystemDetail::GetParentPhysicsComponent(e) == component; });
@@ -705,7 +700,8 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
                         CollisionShapeComponent* shape = shapes[0];
 
                         Matrix4 scaleMatrix = Matrix4::MakeScale(shape->scale);
-                        child->SetLocalTransform(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(shape->GetPxShape()->getLocalPose()));
+                        TransformComponent* childTransform = child->GetComponent<TransformComponent>();
+                        childTransform->SetLocalMatrix(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(shape->GetPxShape()->getLocalPose()));
                     }
                 }
             }
@@ -773,7 +769,9 @@ void PhysicsSystem::InitNewObjects()
         component->SetPxActor(createdActor);
         physx::PxRigidActor* rigidActor = createdActor->is<physx::PxRigidActor>();
         Vector3 scale;
-        PhysicsSystemDetail::UpdateGlobalPose(rigidActor, component->GetEntity()->GetWorldTransform(), scale);
+
+        TransformComponent* transform = component->GetEntity()->GetComponent<TransformComponent>();
+        PhysicsSystemDetail::UpdateGlobalPose(rigidActor, transform->GetWorldMatrix(), scale);
         component->currentScale = scale;
 
         Entity* entity = component->GetEntity();
@@ -790,9 +788,8 @@ void PhysicsSystem::InitNewObjects()
         if (shape != nullptr)
         {
             Entity* entity = component->GetEntity();
-            Matrix4 worldTransform = entity->GetWorldTransform();
-            Vector3 position, scale, rotation;
-            worldTransform.Decomposition(position, scale, rotation);
+            const Transform& worldTransform = GetTransformComponent(entity)->GetLocalTransform();
+            Vector3 scale = worldTransform.GetScale();
 
             PhysicsComponent* physicsComponent = PhysicsSystemDetail::GetParentPhysicsComponent(entity);
             if (physicsComponent != nullptr)
@@ -834,7 +831,7 @@ void PhysicsSystem::InitNewObjects()
             BoxCharacterControllerComponent* boxCharacterControllerComponent = static_cast<BoxCharacterControllerComponent*>(component);
 
             physx::PxBoxControllerDesc desc;
-            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
+            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(GetTransformComponent(entity)->GetLocalTransform().GetTranslation());
             desc.halfHeight = boxCharacterControllerComponent->GetHalfHeight();
             desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
             desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
@@ -849,7 +846,7 @@ void PhysicsSystem::InitNewObjects()
             CapsuleCharacterControllerComponent* capsuleCharacterControllerComponent = static_cast<CapsuleCharacterControllerComponent*>(component);
 
             physx::PxCapsuleControllerDesc desc;
-            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
+            desc.position = PhysicsMath::Vector3ToPxExtendedVec3(GetTransformComponent(entity)->GetLocalTransform().GetTranslation());
             desc.radius = capsuleCharacterControllerComponent->GetRadius();
             desc.height = capsuleCharacterControllerComponent->GetHeight();
             desc.material = physics->GetMaterial(FastName());
@@ -1040,7 +1037,7 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
             physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
             DVASSERT(rigidActor != nullptr);
             Vector3 scale;
-            PhysicsSystemDetail::UpdateGlobalPose(rigidActor, e->GetWorldTransform(), scale);
+            PhysicsSystemDetail::UpdateGlobalPose(rigidActor, GetTransformComponent(e)->GetLocalMatrix(), scale);
 
             physx::PxU32 shapesCount = rigidActor->getNbShapes();
             for (physx::PxU32 i = 0; i < shapesCount; ++i)
@@ -1054,7 +1051,7 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
                 DVASSERT(shapeComponent->GetEntity() != nullptr);
                 if (shapeComponent->GetEntity() != e)
                 {
-                    PhysicsSystemDetail::UpdateShapeLocalPose(shape, shapeComponent->GetEntity()->GetLocalTransform());
+                    PhysicsSystemDetail::UpdateShapeLocalPose(shape, GetTransformComponent(shapeComponent->GetEntity())->GetLocalMatrix());
                 }
 
                 // Update geometry scale
@@ -1288,9 +1285,8 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
             Entity* entity = controllerComponent->GetEntity();
             DVASSERT(entity != nullptr);
 
-            Matrix4 transform = entity->GetLocalTransform();
-            transform.SetTranslationVector(PhysicsMath::PxExtendedVec3ToVector3(controller->getFootPosition()));
-            entity->SetLocalTransform(transform);
+            TransformComponent* transform = entity->GetComponent<TransformComponent>();
+            transform->SetLocalTranslation(PhysicsMath::PxExtendedVec3ToVector3(controller->getFootPosition()));
         }
     }
 }

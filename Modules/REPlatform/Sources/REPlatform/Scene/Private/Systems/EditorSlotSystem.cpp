@@ -23,6 +23,7 @@
 #include <Render/RenderHelper.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/SlotComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/SceneFile/SerializationContext.h>
 #include <Scene3D/SceneFile/VersionInfo.h>
@@ -213,7 +214,9 @@ void EditorSlotSystem::Process(float32 timeElapsed)
         Matrix4 jointTranfsorm = scene->slotSystem->GetJointTransform(slot);
         bool inverseSuccessed = jointTranfsorm.Inverse();
         DVASSERT(inverseSuccessed);
-        Matrix4 attachmentTransform = entity->GetLocalTransform() * jointTranfsorm;
+
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        Matrix4 attachmentTransform = tc->GetLocalMatrix() * jointTranfsorm;
         scene->slotSystem->SetAttachmentTransform(slot, attachmentTransform);
     }
 
@@ -716,7 +719,8 @@ void EditorSlotSystem::Draw()
                 Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
                 if (loadedEntity != nullptr)
                 {
-                    Matrix4 transform = loadedEntity->GetWorldTransform();
+                    TransformComponent* tc = loadedEntity->GetComponent<TransformComponent>();
+                    Matrix4 transform = tc->GetWorldMatrix();
                     rh->DrawAABoxTransformed(box, transform, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
                     rh->DrawAABoxTransformed(box, transform, boxEdgeColor, RenderHelper::DRAW_WIRE_DEPTH);
 

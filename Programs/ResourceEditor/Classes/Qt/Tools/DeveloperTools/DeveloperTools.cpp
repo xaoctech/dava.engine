@@ -15,6 +15,7 @@
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/SkeletonComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Systems/LandscapeSystem.h>
 #include <Scene3D/Systems/StaticOcclusionSystem.h>
 
@@ -56,18 +57,18 @@ void DeveloperTools::OnDebugFunctionsGridCopy()
     {
         Entity* entity = selection.GetContent().front().AsEntity();
 
-        const Matrix4& matrix = entity->GetLocalTransform();
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        const Transform& transform = tc->GetLocalTransform();
 
         for (uint32 x = 0; x < 10; ++x)
         {
             for (uint32 y = 0; y < 10; ++y)
             {
-                Matrix4 translation;
-                translation.BuildTranslation(Vector3(x * xshift, y * yshift, z * zshift));
-
-                Matrix4 newMatrix = matrix * translation;
                 Entity* clonedEntity = entity->Clone();
-                clonedEntity->SetLocalTransform(newMatrix);
+                TransformComponent* clonedTC = clonedEntity->GetComponent<TransformComponent>();
+
+                Transform newTransform = transform * TransformUtils::MakeTranslation(Vector3(x * xshift, y * yshift, z * zshift));
+                clonedTC->SetLocalTransform(newTransform);
 
                 RenderObject* renderObject = GetRenderObject(clonedEntity);
                 NMaterial* material = renderObject->GetRenderBatch(0)->GetMaterial();

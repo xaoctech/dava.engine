@@ -560,36 +560,36 @@ void ClearTestFolder(const FilePath& folder)
 
 bool CreateSlotYaml(const FilePath& yamlPath, const FilePath& slotContentsPath)
 {
-    ScopedPtr<YamlNode> rootNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
+    RefPtr<YamlNode> rootNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
 
-    YamlNode* slotNode = YamlNode::CreateMapNode(false);
+    RefPtr<YamlNode> slotNode = YamlNode::CreateMapNode(false);
     slotNode->Set(String("Name"), String("Box1"));
     slotNode->Set(String("Type"), String("Box"));
     slotNode->Set(String("Path"), slotContentsPath.GetAbsolutePathname());
     rootNode->Add(slotNode);
 
-    return YamlEmitter::SaveToYamlFile(yamlPath, rootNode);
+    return YamlEmitter::SaveToYamlFile(yamlPath, rootNode.Get());
 }
 
 bool CreateEditorConfigYaml(const FilePath& yamlPath)
 {
-    ScopedPtr<YamlNode> rootNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
+    RefPtr<YamlNode> rootNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
 
     {
-        YamlNode* node = YamlNode::CreateMapNode(false);
+        RefPtr<YamlNode> node = YamlNode::CreateMapNode(false);
         node->Set(String("name"), String("CollisionType"));
         node->Set(String("type"), String("CollisionTypeMap"));
         node->Set(String("default"), 0);
 
-        YamlNode* array = YamlNode::CreateArrayNode();
+        RefPtr<YamlNode> array = YamlNode::CreateArrayNode();
         {
-            YamlNode* entry = YamlNode::CreateArrayNode();
+            RefPtr<YamlNode> entry = YamlNode::CreateArrayNode();
             entry->Add(String("First"));
             entry->Add(0);
             array->AddNodeToArray(entry);
         }
         {
-            YamlNode* entry = YamlNode::CreateArrayNode();
+            RefPtr<YamlNode> entry = YamlNode::CreateArrayNode();
             entry->Add(String("Second"));
             entry->Add(1);
             array->AddNodeToArray(entry);
@@ -600,20 +600,20 @@ bool CreateEditorConfigYaml(const FilePath& yamlPath)
     }
 
     {
-        YamlNode* node = YamlNode::CreateMapNode(false);
+        RefPtr<YamlNode> node = YamlNode::CreateMapNode(false);
         node->Set(String("name"), String("CollisionTypeCrashed"));
         node->Set(String("type"), String("CollisionTypeMap"));
         node->Set(String("default"), 0);
 
-        YamlNode* array = YamlNode::CreateArrayNode();
+        RefPtr<YamlNode> array = YamlNode::CreateArrayNode();
         {
-            YamlNode* entry = YamlNode::CreateArrayNode();
+            RefPtr<YamlNode> entry = YamlNode::CreateArrayNode();
             entry->Add(String("First"));
             entry->Add(0);
             array->AddNodeToArray(entry);
         }
         {
-            YamlNode* entry = YamlNode::CreateArrayNode();
+            RefPtr<YamlNode> entry = YamlNode::CreateArrayNode();
             entry->Add(String("Second"));
             entry->Add(1);
             array->AddNodeToArray(entry);
@@ -623,7 +623,7 @@ bool CreateEditorConfigYaml(const FilePath& yamlPath)
         rootNode->Add(node);
     }
 
-    return YamlEmitter::SaveToYamlFile(yamlPath, rootNode);
+    return YamlEmitter::SaveToYamlFile(yamlPath, rootNode.Get());
 }
 
 void CreateProjectInfrastructure(const FilePath& projectPathname)

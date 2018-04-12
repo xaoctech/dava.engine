@@ -333,15 +333,14 @@ bool LocalizationSystem::SaveToYamlFile(const StringFile* stringFile)
         return false;
     }
 
-    YamlNode* node = YamlNode::CreateMapNode(true, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION);
+    RefPtr<YamlNode> node = YamlNode::CreateMapNode(true, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION);
     for (auto iter = stringFile->strings.begin(); iter != stringFile->strings.end(); ++iter)
     {
         node->Add(iter->first, iter->second);
     }
 
-    bool result = YamlEmitter::SaveToYamlFile(stringFile->pathName, node);
+    bool result = YamlEmitter::SaveToYamlFile(stringFile->pathName, node.Get());
 
-    SafeRelease(node);
     return result;
 }
 

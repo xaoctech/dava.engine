@@ -10,9 +10,11 @@
 
 #include <Render/Highlevel/Camera.h>
 
+#include <Math/Transform.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/SingleComponents/MotionSingleComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
@@ -97,7 +99,8 @@ void TestCharacterControllerSystem::Process(float32 timeElapsed)
 
     Quaternion characterOrientation;
     characterOrientation.Construct(-Vector3::UnitY, characterForward);
-    characterMeshEntity->SetLocalTransform(characterOrientation.GetMatrix());
+    TransformComponent* tc = characterMeshEntity->GetComponent<TransformComponent>();
+    tc->SetLocalRotation(characterOrientation);
 
     //////////////////////////////////////////////////////////////////////////
     //Calculate motion params
@@ -339,10 +342,11 @@ void TestCharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
     Vector3 weaponPointPosition = skeleton->GetJointObjectSpaceTransform(controllerSystem->weaponPointJointIndex).GetPosition();
     Quaternion weaponPointOrientation = skeleton->GetJointObjectSpaceTransform(controllerSystem->weaponPointJointIndex).GetOrientation();
 
-    Matrix4 weaponTransform = Matrix4::MakeRotation(Vector3::UnitX, DegToRad(90.f));
-    weaponTransform *= weaponPointOrientation.GetMatrix() * Matrix4::MakeTranslation(weaponPointPosition);
+    Quaternion weaponTransform = Quaternion::MakeRotation(Vector3::UnitX, DegToRad(90.f));
 
-    controllerSystem->weaponEntity->SetLocalTransform(weaponTransform);
+    TransformComponent* tc = controllerSystem->weaponEntity->GetComponent<TransformComponent>();
+    tc->SetLocalRotation(weaponTransform * weaponPointOrientation);
+    tc->SetLocalTranslation(weaponPointPosition);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -378,7 +382,9 @@ void TestCharacterCameraSystem::Process(DAVA::float32 timeElapsed)
     Vector3 headJointPosition = characterSkeleton->GetJointObjectSpaceTransform(headJointIndex).GetPosition();
     headJointPosition.x = 0.f;
     headJointPosition.z = Lerp(Lerp(1.75f, 1.65f, crouchingParam), headJointPosition.z + 0.1f, zoomFactor);
-    Vector3 headPosition = headJointPosition * characterMeshEntity->GetWorldTransform();
+
+    TransformComponent* tc = characterMeshEntity->GetComponent<TransformComponent>();
+    Vector3 headPosition = headJointPosition * tc->GetWorldTransform();
 
     Vector3 normalCameraOffset = -2.4f * cameraDirection - 0.1f * characterLeft;
     Vector3 zoomCameraOffset = -1.4f * cameraDirection - 0.35f * characterLeft;

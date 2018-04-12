@@ -12,10 +12,6 @@
 // definition of basic 2D types
 namespace DAVA
 {
-
-#define FLOAT_EQUAL(f1, f2) (std::abs(f1 - f2) < DAVA::EPSILON)
-#define FLOAT_EQUAL_EPS(f1, f2, EPS) (std::abs(f1 - f2) < EPS)
-
 inline float32 FloatClamp(float32 min, float32 max, float32 val);
 inline float32 Lerp(float32 v0, float32 v1, float32 t);
 

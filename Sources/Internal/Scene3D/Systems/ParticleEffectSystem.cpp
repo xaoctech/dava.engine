@@ -297,8 +297,8 @@ void ParticleEffectSystem::AddToActive(ParticleEffectComponent* effect)
         Scene* scene = GetScene();
         if (scene)
         {
-            Matrix4* worldTransformPointer = effect->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-            effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);
+            Matrix4* worldTransformPointer = effect->GetEntity()->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
+            effect->effectRenderObject->SetWorldMatrixPtr(worldTransformPointer);
             Vector3 pos = worldTransformPointer->GetTranslationVector();
             effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
             scene->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);
@@ -517,10 +517,10 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     {
         TransformComponent* tr = GetTransformComponent(effect->GetEntity());
         DVASSERT(tr);
-        worldTransformPtr = tr->GetWorldTransformPtr();
+        worldTransformPtr = tr->GetWorldMatrixPtr();
     }
     else
-        worldTransformPtr = effect->effectRenderObject->GetWorldTransformPtr();
+        worldTransformPtr = effect->effectRenderObject->GetWorldMatrixPtr();
 
     effect->effectData.infoSources[0].position = worldTransformPtr->GetTranslationVector();
 
@@ -1044,7 +1044,7 @@ void ParticleEffectSystem::ApplyGlobalForces(Particle* particle, float32 dt, flo
     {
         ParticleEffectComponent* effect = forcePair.first;
         TransformComponent* tr = GetTransformComponent(effect->GetEntity());
-        Matrix4* worldTransformPtr = tr->GetWorldTransformPtr();
+        Matrix4* worldTransformPtr = tr->GetWorldMatrixPtr();
 
         for (ParticleForce* force : forcePair.second.worldAlignForces)
         {

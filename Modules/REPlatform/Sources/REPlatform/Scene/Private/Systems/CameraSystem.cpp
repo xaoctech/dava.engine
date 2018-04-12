@@ -53,7 +53,7 @@ SceneCameraSystem::~SceneCameraSystem()
 
 void SceneCameraSystem::SaveLocalProperties(PropertiesHolder* holder)
 {
-    if (curSceneCamera == nullptr)
+    if (curSceneCamera == nullptr || holder == nullptr)
     {
         return;
     }

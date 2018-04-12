@@ -18,6 +18,8 @@
 #include "TArc/Testing/MockDefine.h"
 
 #include <Engine/Qt/RenderWidget.h>
+#include <Math/Transform.h>
+#include <Math/TransformUtils.h>
 #include <Render/Highlevel/Camera.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
@@ -26,12 +28,22 @@
 #include <UI/UIControlSystem.h>
 
 #include <QApplication> 
+#include <QSpinBox>
 #include <QtTest>
 
 using namespace DAVA;
 
 DAVA_TARC_TESTCLASS(SelectionModuleTest)
 {
+    void SetFocus(QWidget * widget, QDoubleSpinBox * box)
+    {
+        box->clearFocus();
+        if (box->isActiveWindow() == false)
+            qApp->setActiveWindow(widget);
+
+        box->setFocus(Qt::MouseFocusReason);
+    };
+
     DAVA_TEST (SelectEntityTest)
     {
         ContextAccessor* accessor = GetAccessor();
@@ -42,21 +54,25 @@ DAVA_TARC_TESTCLASS(SelectionModuleTest)
         scene->AddNode(node);
 
         Vector3 newPosition(100, 100, 0);
-        Matrix4 newTransform = Matrix4::MakeTranslation(newPosition);
-        scene->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(node.get()), node->GetLocalTransform(), newTransform)));
+        Transform newTransform(newPosition);
+        TransformComponent* tc = node->GetComponent<TransformComponent>();
+        scene->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(node.get()), tc->GetLocalTransform(), newTransform)));
 
-        auto stepMouseClick = [this, scene, node]()
+        RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
+        QDoubleSpinBox* box = new QDoubleSpinBox(renderWidget);
+
+        auto stepMouseClick = [this, scene, renderWidget, node]()
         {
-            RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
             Rect r(renderWidget->childrenRect().x(), renderWidget->childrenRect().y(), renderWidget->childrenRect().width(), renderWidget->childrenRect().height());
             Camera* camera = scene->GetCurrentCamera();
-            Vector2 nodePos = camera->GetOnScreenPosition(node.get()->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector(), r);
+            Vector2 nodePos = camera->GetOnScreenPosition(node->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation(), r);
             QTest::mouseClick(GetRenderWidgetTestTarget(), Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(nodePos.x, nodePos.y));
         };
 
         auto stepCheckSelection = [this, scene, node]()
         {
             SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.GetSize() == 1);
             TEST_VERIFY(selectionGroup.ContainsObject(node.get()));
             InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         };
@@ -66,6 +82,9 @@ DAVA_TARC_TESTCLASS(SelectionModuleTest)
         {
             expectation.WillOnce(::testing::Return());
         }
+        expectation.WillOnce(::testing::Invoke([this, renderWidget, box]() {
+            SetFocus(renderWidget, box);
+        }));
         expectation.WillOnce(::testing::Invoke(stepMouseClick));
         expectation.WillOnce(::testing::Invoke(stepCheckSelection));
         expectation.WillOnce(::testing::Return());

@@ -56,9 +56,11 @@
 #include "Render/Highlevel/SpeedTreeObject.h"
 #include "Render/Material/NMaterial.h"
 #include "Math/Vector.h"
+#include "Math/Quaternion.h"
 #include "Math/Rect.h"
 #include "Math/AABBox3.h"
 #include "Math/Color.h"
+#include "Math/Transform.h"
 #include "UI/Script/UIScriptComponent.h"
 #include "UI/Script/UIScriptComponentController.h"
 #include "UI/Script/Private/UILuaScriptComponentController.h"
@@ -226,6 +228,18 @@ void RegisterVector4()
     .End();
 }
 
+void RegisterQuaternion()
+{
+    ReflectionRegistrator<Quaternion>::Begin()
+    .Field("X", &Quaternion::x)[M::SubProperty()]
+    .Field("Y", &Quaternion::y)[M::SubProperty()]
+    .Field("Z", &Quaternion::z)[M::SubProperty()]
+    .Field("W", &Quaternion::w)[M::SubProperty()]
+    .End();
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Quaternion);
+}
+
 void RegisterRect()
 {
     ReflectionRegistrator<Rect>::Begin()
@@ -256,6 +270,17 @@ void RegisterColor()
     .Field("B", &Color::b)
     .Field("A", &Color::a)
     .End();
+}
+
+void RegisterTransform()
+{
+    ReflectionRegistrator<Transform>::Begin()
+    .Field("translation", &Transform::GetTranslation, nullptr)
+    .Field("scale", &Transform::GetScale, nullptr)
+    .Field("rotation", &Transform::GetRotation, nullptr)
+    .End();
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Transform);
 }
 
 void RegisterPermanentNames()
@@ -428,9 +453,11 @@ void RegisterReflectionForBaseTypes()
     RegisterVector2();
     RegisterVector3();
     RegisterVector4();
+    RegisterQuaternion();
     RegisterRect();
     RegisterAABBox3();
     RegisterColor();
+    RegisterTransform();
 
     RegisterPermanentNames();
 }

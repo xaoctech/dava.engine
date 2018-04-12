@@ -49,14 +49,13 @@ bool UIYamlLoader::SaveFonts(const FilePath& yamlPathname)
 
 YamlNode* UIYamlLoader::CreateRootNode(const FilePath& yamlPathname)
 {
-    YamlParser* parser = YamlParser::Create(yamlPathname);
+    RefPtr<YamlParser> parser = YamlParser::Create(yamlPathname);
     if (!parser)
     {
         Logger::Error("Failed to open yaml file: %s", yamlPathname.GetStringValue().c_str());
         return NULL;
     }
     YamlNode* rootNode = SafeRetain(parser->GetRootNode());
-    SafeRelease(parser);
     return rootNode;
 }
 
@@ -65,7 +64,7 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode* rootNode)
     FontManager* fontManager = GetEngineContext()->fontManager;
     for (auto t = rootNode->AsMap().begin(); t != rootNode->AsMap().end(); ++t)
     {
-        YamlNode* node = t->second;
+        YamlNode* node = t->second.Get();
 
         FontPreset preset = CreateFontPresetFromYamlNode(node);
         if (preset.Valid())

@@ -10,11 +10,13 @@
 
 #include <Base/BaseTypes.h>
 #include <Entity/Component.h>
+#include <Math/Transform.h>
 #include <Particles/ParticleEmitter.h>
 #include <Particles/ParticleEmitterInstance.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 namespace DAVA
 {
@@ -51,7 +53,9 @@ void EditorParticlesSystem::DrawDebugInfoForEffect(Entity* effectEntity)
     AABBox3 worldBox;
     AABBox3 collBox = collisionSystem->GetBoundingBox(effectEntity);
     DVASSERT(!collBox.IsEmpty());
-    collBox.GetTransformedBox(effectEntity->GetWorldTransform(), worldBox);
+
+    TransformComponent* tc = effectEntity->GetComponent<TransformComponent>();
+    collBox.GetTransformedBox(tc->GetWorldMatrix(), worldBox);
     float32 radius = (collBox.max - collBox.min).Length() / 3;
     scene->GetRenderSystem()->GetDebugDrawer()->DrawIcosahedron(worldBox.GetCenter(), radius, Color(0.9f, 0.9f, 0.9f, 0.35f), RenderHelper::DRAW_SOLID_DEPTH);
 }
@@ -64,8 +68,9 @@ void EditorParticlesSystem::DrawEmitter(ParticleEmitterInstance* emitter, Entity
     SceneCollisionSystem* collisionSystem = scene->GetSystem<SceneCollisionSystem>();
 
     Vector3 center = emitter->GetSpawnPosition();
-    TransformPerserveLength(center, Matrix3(owner->GetWorldTransform()));
-    center += owner->GetWorldTransform().GetTranslationVector();
+    TransformComponent* tc = owner->GetComponent<TransformComponent>();
+    TransformPerserveLength(center, Matrix3(tc->GetWorldMatrix()));
+    center += tc->GetWorldMatrix().GetTranslationVector();
 
     AABBox3 boundingBox = collisionSystem->GetBoundingBox(owner);
     DVASSERT(!boundingBox.IsEmpty());
@@ -152,12 +157,13 @@ void EditorParticlesSystem::DrawSizeCircleShockWave(Entity* effectEntity, Partic
 
     if (emitter->GetEmitter()->emissionVector)
     {
-        Matrix4 wMat = effectEntity->GetWorldTransform();
-        wMat.SetTranslationVector(Vector3(0.0f, 0.0f, 0.0f));
-        emissionVector = emitter->GetEmitter()->emissionVector->GetValue(time) * wMat;
+        TransformComponent* tc = effectEntity->GetComponent<TransformComponent>();
+        Transform wTrans = tc->GetWorldTransform();
+        wTrans.SetTranslation(Vector3::Zero);
+        emissionVector = emitter->GetEmitter()->emissionVector->GetValue(time) * wTrans;
     }
 
-    auto center = Selectable(emitter).GetWorldTransform().GetTranslationVector();
+    auto center = Selectable(emitter).GetWorldTransform().GetTranslation();
 
     auto drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     drawer->DrawCircle(center, emissionVector, emitterRadius, 12, Color(0.7f, 0.0f, 0.0f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
@@ -183,12 +189,13 @@ void EditorParticlesSystem::DrawSizeCircle(Entity* effectEntity, ParticleEmitter
 
     if (emitter->GetEmitter()->emissionVector)
     {
-        Matrix4 wMat = effectEntity->GetWorldTransform();
-        wMat.SetTranslationVector(Vector3(0.0f, 0.0f, 0.0f));
-        emitterVector = emitter->GetEmitter()->emissionVector->GetValue(time) * wMat;
+        TransformComponent* tc = effectEntity->GetComponent<TransformComponent>();
+        Transform wTrans = tc->GetWorldTransform();
+        wTrans.SetTranslation(Vector3::Zero);
+        emitterVector = emitter->GetEmitter()->emissionVector->GetValue(time) * wTrans;
     }
 
-    auto center = Selectable(emitter).GetWorldTransform().GetTranslationVector();
+    auto center = Selectable(emitter).GetWorldTransform().GetTranslation();
 
     auto drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     drawer->DrawCircle(center, emitterVector, emitterRadius, 12,
@@ -209,12 +216,13 @@ void EditorParticlesSystem::DrawSizeBox(Entity* effectEntity, ParticleEmitterIns
         emitterSize = emitter->GetEmitter()->size->GetValue(time);
     }
 
-    Matrix4 wMat = effectEntity->GetWorldTransform();
+    TransformComponent* tc = effectEntity->GetComponent<TransformComponent>();
+    Transform wMat = tc->GetWorldTransform();
 
-    wMat.SetTranslationVector(Selectable(emitter).GetWorldTransform().GetTranslationVector());
+    wMat.SetTranslation(Selectable(emitter).GetWorldTransform().GetTranslation());
 
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-    drawer->DrawAABoxTransformed(AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), wMat,
+    drawer->DrawAABoxTransformed(AABBox3(-0.5f * emitterSize, 0.5f * emitterSize), TransformUtils::ToMatrix(wMat),
                                  Color(0.7f, 0.0f, 0.0f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
 }
 
@@ -250,7 +258,8 @@ void EditorParticlesSystem::DrawVectorArrow(ParticleEmitterInstance* emitter, Ve
     float32 arrowBaseSize = 5.0f;
     emitterVector = (emitterVector * arrowBaseSize * scale);
 
-    Matrix4 wMat = effect->GetEntity()->GetWorldTransform();
+    TransformComponent* tc = effect->GetEntity()->GetComponent<TransformComponent>();
+    Matrix4 wMat = tc->GetWorldMatrix();
     wMat.SetTranslationVector(Vector3(0, 0, 0));
     TransformPerserveLength(emitterVector, wMat);
 
@@ -280,6 +289,7 @@ void EditorParticlesSystem::DrawParticleForces(ParticleForce* force)
     ParticleEmitterInstance* emitterInstance = GetRootEmitterLayerOwner(layer);
     ParticleEffectComponent* effectComponent = emitterInstance->GetOwner();
     Entity* entity = effectComponent->GetEntity();
+    TransformComponent* tc = entity->GetComponent<TransformComponent>();
     if (force->type == ForceType::VORTEX || force->type == ForceType::WIND || force->type == ForceType::PLANE_COLLISION)
     {
         float32 scale = 1.0f;
@@ -291,13 +301,14 @@ void EditorParticlesSystem::DrawParticleForces(ParticleForce* force)
         float32 arrowBaseSize = 5.0f;
         Vector3 emitterVector = force->direction;
         Vector3 center;
+
         if (force->worldAlign)
         {
-            center = entity->GetWorldTransform().GetTranslationVector() + force->position;
+            center = tc->GetWorldTransform().GetTranslation() + force->position;
         }
         else
         {
-            Matrix4 wMat = entity->GetWorldTransform();
+            Matrix4 wMat = tc->GetWorldMatrix();
             emitterVector = emitterVector * Matrix3(wMat);
             center = force->position * wMat;
         }
@@ -309,7 +320,7 @@ void EditorParticlesSystem::DrawParticleForces(ParticleForce* force)
 
     if (force->type == ForceType::PLANE_COLLISION)
     {
-        Matrix4 wMat = entity->GetWorldTransform();
+        Matrix4 wMat = tc->GetWorldMatrix();
         Vector3 forcePosition;
         Vector3 wNormal;
         if (force->worldAlign)
@@ -342,9 +353,9 @@ void EditorParticlesSystem::DrawParticleForces(ParticleForce* force)
         float32 radius = force->pointGravityRadius;
         Vector3 translation;
         if (force->worldAlign)
-            translation = entity->GetWorldTransform().GetTranslationVector() + force->position;
+            translation = tc->GetWorldTransform().GetTranslation() + force->position;
         else
-            translation = Selectable(force).GetWorldTransform().GetTranslationVector();
+            translation = Selectable(force).GetWorldTransform().GetTranslation();
 
         drawer->DrawIcosahedron(translation, radius, Color(0.0f, 0.3f, 0.7f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
         drawer->DrawIcosahedron(translation, radius, Color(0.0f, 0.15f, 0.35f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
@@ -354,34 +365,34 @@ void EditorParticlesSystem::DrawParticleForces(ParticleForce* force)
         return;
     if (force->GetShape() == ParticleForce::eShape::BOX)
     {
-        Matrix4 wMat = entity->GetWorldTransform();
+        Transform wTrans = tc->GetWorldMatrix();
         if (force->worldAlign)
         {
-            Vector3 translation = wMat.GetTranslationVector();
-            wMat = Matrix4::IDENTITY;
-            wMat.SetTranslationVector(translation + force->position);
+            Vector3 translation = wTrans.GetTranslation();
+            wTrans = Transform();
+            wTrans.SetTranslation(translation + force->position);
         }
         else
-            wMat.SetTranslationVector(Selectable(force).GetWorldTransform().GetTranslationVector());
+        {
+            wTrans.SetTranslation(Selectable(force).GetWorldTransform().GetTranslation());
+        }
 
-        drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), wMat,
-                                     Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
-
-        drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), wMat,
-                                     Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+        Matrix4 m4 = TransformUtils::ToMatrix(wTrans);
+        drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), m4, Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawAABoxTransformed(AABBox3(-force->GetHalfBoxSize(), force->GetHalfBoxSize()), m4, Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
     else if (force->GetShape() == ParticleForce::eShape::SPHERE)
     {
-        Matrix4 wMat = Selectable(force).GetWorldTransform();
+        Transform wTrans = Selectable(force).GetWorldTransform();
         if (force->worldAlign)
         {
-            Vector3 translation = entity->GetWorldTransform().GetTranslationVector();
-            wMat = Matrix4::IDENTITY;
-            wMat.SetTranslationVector(translation + force->position);
+            Vector3 translation = tc->GetWorldTransform().GetTranslation();
+            wTrans = Matrix4::IDENTITY;
+            wTrans.SetTranslation(translation + force->position);
         }
         float32 radius = force->GetRadius();
-        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
-        drawer->DrawIcosahedron(wMat.GetTranslationVector(), radius, Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+        drawer->DrawIcosahedron(wTrans.GetTranslation(), radius, Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+        drawer->DrawIcosahedron(wTrans.GetTranslation(), radius, Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
     }
 }
 

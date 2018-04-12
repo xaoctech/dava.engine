@@ -6,6 +6,7 @@
 #include <Base/Type.h>
 #include <Base/TypeInheritance.h>
 #include <Debug/DVAssert.h>
+#include <Math/Transform.h>
 #include <Reflection/ReflectedType.h>
 #include <Scene3D/Entity.h>
 
@@ -34,9 +35,9 @@ public:
     {
     public:
         virtual ~TransformProxy() = default;
-        virtual const Matrix4& GetWorldTransform(const Any& object) = 0;
-        virtual const Matrix4& GetLocalTransform(const Any& object) = 0;
-        virtual void SetLocalTransform(Any& object, const Matrix4& matrix) = 0;
+        virtual const Transform& GetWorldTransform(const Any& object) = 0;
+        virtual const Transform& GetLocalTransform(const Any& object) = 0;
+        virtual void SetLocalTransform(Any& object, const Transform& matrix) = 0;
         virtual bool SupportsTransformType(const Any& object, TransformType transformType) const = 0;
         virtual bool TransformDependsFromObject(const Any& dependant, const Any& dependsOn) const = 0;
     };
@@ -76,9 +77,9 @@ public:
     void SetBoundingBox(const AABBox3& box);
 
     bool SupportsTransformType(TransformType) const;
-    const Matrix4& GetLocalTransform() const;
-    const Matrix4& GetWorldTransform() const;
-    void SetLocalTransform(const Matrix4& transform);
+    const Transform& GetLocalTransform() const;
+    const Transform& GetWorldTransform() const;
+    void SetLocalTransform(const Transform& transform);
 
     bool TransformDependsOn(const Selectable&) const;
 

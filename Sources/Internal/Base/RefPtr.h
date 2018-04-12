@@ -15,6 +15,10 @@ public:
     {
     }
 
+    RefPtr(std::nullptr_t)
+    {
+    }
+
     explicit RefPtr(T* p)
         : _ptr(p)
     {
@@ -116,6 +120,12 @@ public:
         return *this;
     }
 
+    RefPtr& operator=(std::nullptr_t)
+    {
+        RefPtr().Swap(*this);
+        return *this;
+    }
+
     bool operator<(const RefPtr& other) const
     {
         return _ptr < other._ptr;
@@ -141,11 +151,18 @@ public:
     {
         return _ptr == ptr;
     }
+    bool operator==(std::nullptr_t) const
+    {
+        return _ptr == nullptr;
+    }
     friend bool operator==(const T* ptr, const RefPtr& rp)
     {
         return ptr == rp._ptr;
     }
-
+    friend bool operator==(std::nullptr_t, const RefPtr& rp)
+    {
+        return nullptr == rp._ptr;
+    }
     bool operator!=(const RefPtr& rp) const
     {
         return _ptr != rp._ptr;
@@ -154,13 +171,21 @@ public:
     {
         return _ptr != ptr;
     }
+    bool operator!=(std::nullptr_t) const
+    {
+        return _ptr != nullptr;
+    }
     friend bool operator!=(const T* ptr, const RefPtr& rp)
     {
         return ptr != rp._ptr;
     }
+    friend bool operator!=(std::nullptr_t, const RefPtr& rp)
+    {
+        return nullptr != rp._ptr;
+    }
     bool operator!() const // Enables "if (!sp) ..."
     {
-        return _ptr == 0;
+        return _ptr == nullptr;
     }
 
     template <typename... Arg>
@@ -184,7 +209,7 @@ public:
     operator Tester*() const
     {
         if (!_ptr)
-            return 0;
+            return nullptr;
         static Tester test;
         return &test;
     }

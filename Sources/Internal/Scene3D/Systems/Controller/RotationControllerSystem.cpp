@@ -133,8 +133,8 @@ void RotationControllerSystem::RotateDirection(Camera* camera)
         curViewAngleY = Clamp(curViewAngleY + dp.y * rotationSpeed, -maxViewAngle, maxViewAngle);
 
         DAVA::Matrix4 mt, mt2;
-        mt.BuildRotation(DAVA::Vector3(0.f, 0.f, 1.f), DAVA::DegToRad(curViewAngleZ));
-        mt2.BuildRotation(DAVA::Vector3(1.f, 0.f, 0.f), DAVA::DegToRad(curViewAngleY));
+        mt.BuildRotation(DAVA::Vector3(0.f, 0.f, 1.f), -DAVA::DegToRad(curViewAngleZ));
+        mt2.BuildRotation(DAVA::Vector3(1.f, 0.f, 0.f), -DAVA::DegToRad(curViewAngleY));
         mt2 *= mt;
 
         DAVA::Vector3 dir = DAVA::Vector3(0.f, 10.f, 0.f) * mt2;
@@ -148,8 +148,8 @@ void RotationControllerSystem::RotatePosition(Camera* camera)
     DAVA::Matrix4 mt, mt1, mt2, mt3;
 
     mt1.BuildTranslation(DAVA::Vector3(-dp.x * rotationSpeed, 0.f, dp.y * rotationSpeed));
-    mt2.BuildRotation(DAVA::Vector3(1.f, 0.f, 0.f), DAVA::DegToRad(curViewAngleY));
-    mt3.BuildRotation(DAVA::Vector3(0.f, 0.f, 1.f), DAVA::DegToRad(curViewAngleZ));
+    mt2.BuildRotation(DAVA::Vector3(1.f, 0.f, 0.f), -DAVA::DegToRad(curViewAngleY));
+    mt3.BuildRotation(DAVA::Vector3(0.f, 0.f, 1.f), -DAVA::DegToRad(curViewAngleZ));
 
     mt = mt1 * mt2 * mt3;
 
@@ -166,8 +166,8 @@ void RotationControllerSystem::RotatePositionAroundPoint(Camera* camera, const V
     curViewAngleY = Clamp(curViewAngleY + (rotateStopPoint.y - rotateStartPoint.y), -maxViewAngle, maxViewAngle);
 
     DAVA::Matrix4 mt, mt2;
-    mt.BuildRotation(DAVA::Vector3(0, 0, 1), DAVA::DegToRad(curViewAngleZ));
-    mt2.BuildRotation(DAVA::Vector3(1, 0, 0), DAVA::DegToRad(curViewAngleY));
+    mt.BuildRotation(DAVA::Vector3(0, 0, 1), -DAVA::DegToRad(curViewAngleZ));
+    mt2.BuildRotation(DAVA::Vector3(1, 0, 0), -DAVA::DegToRad(curViewAngleY));
     mt2 *= mt;
 
     DAVA::Vector3 curPos = camera->GetPosition();

@@ -818,7 +818,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeInfo(DAVA::SpeedTreeObject* rend
         }
     }
 
-    Matrix4* worldTransformPtr = renderObject->GetWorldTransformPtr();
+    Matrix4* worldTransformPtr = renderObject->GetWorldMatrixPtr();
     Vector3 objectScale = (worldTransformPtr != nullptr) ? worldTransformPtr->GetScaleVector() : Vector3(1.f, 1.f, 1.f);
     info.leafsSquareAbsolute.x *= objectScale.y * objectScale.z;
     info.leafsSquareAbsolute.y *= objectScale.x * objectScale.z;

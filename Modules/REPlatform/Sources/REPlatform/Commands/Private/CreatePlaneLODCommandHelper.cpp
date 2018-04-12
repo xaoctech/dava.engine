@@ -4,10 +4,13 @@
 
 #include <TArc/Core/Deprecated.h>
 
+#include <Math/Transform.h>
+#include <Math/TransformUtils.h>
 #include <Render/Highlevel/SpeedTreeObject.h>
 #include <Render/Image/Image.h>
 #include <Render/Material/NMaterialNames.h>
 #include <Render/Renderer.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Lod/LodSystem.h>
 
 namespace DAVA
@@ -292,7 +295,8 @@ void DrawToTextureForRequest(RequestPointer& request, Entity* fromEntity, Camera
     }
 
     ScopedPtr<Entity> clonedEnity(SceneHelper::CloneEntityWithMaterials(fromEntity));
-    clonedEnity->SetLocalTransform(Matrix4::IDENTITY);
+    TransformComponent* clonedTransform = clonedEnity->GetComponent<TransformComponent>();
+    clonedTransform->SetLocalTransform(TransformUtils::IDENTITY);
 
     SpeedTreeObject* treeObejct = GetSpeedTreeObject(clonedEnity);
     if (treeObejct)

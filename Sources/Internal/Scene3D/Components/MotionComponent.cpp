@@ -148,7 +148,7 @@ void MotionComponent::ReloadFromFile()
     }
     else if (descriptorPath.IsEqualToExtension(".yaml"))
     {
-        YamlParser* parser = YamlParser::Create(descriptorPath);
+        RefPtr<YamlParser> parser = YamlParser::Create(descriptorPath);
         if (parser != nullptr)
         {
             YamlNode* rootNode = parser->GetRootNode();
@@ -179,8 +179,6 @@ void MotionComponent::ReloadFromFile()
                 }
             }
         }
-
-        SafeRelease(parser);
     }
 }
 
@@ -194,12 +192,11 @@ Vector<FilePath> MotionComponent::GetDependencies() const
 
         if (descriptorPath.IsEqualToExtension(".yaml"))
         {
-            YamlParser* parser = YamlParser::Create(descriptorPath);
+            RefPtr<YamlParser> parser = YamlParser::Create(descriptorPath);
             if (parser != nullptr)
             {
                 Set<FilePath> dependencies;
                 GetDependenciesRecursive(parser->GetRootNode(), &dependencies);
-                SafeRelease(parser);
 
                 for (const FilePath& fp : dependencies)
                     result.push_back(fp);

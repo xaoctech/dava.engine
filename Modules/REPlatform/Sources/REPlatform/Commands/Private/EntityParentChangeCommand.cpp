@@ -1,17 +1,22 @@
 #include "REPlatform/Commands/EntityParentChangeCommand.h"
 
-#include <Scene3D/Entity.h>
+#include <Math/Transform.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Entity.h>
 
 namespace DAVA
 {
 namespace EntityParentChangeCommandDetails
 {
-Matrix4 ConvertLocalTransform(Entity* entity, Entity* parent)
+Transform ConvertLocalTransform(Entity* entity, Entity* parent)
 {
-    Matrix4 parentInverse = parent->GetWorldTransform();
+    TransformComponent* parentTransform = parent->GetComponent<TransformComponent>();
+    TransformComponent* entityTransform = entity->GetComponent<TransformComponent>();
+
+    Transform parentInverse = parentTransform->GetWorldTransform();
     parentInverse.Inverse();
-    return entity->GetWorldTransform() * parentInverse;
+    return entityTransform->GetWorldTransform() * parentInverse;
 }
 }
 
@@ -32,7 +37,8 @@ EntityParentChangeCommand::EntityParentChangeCommand(Entity* _entity, Entity* _n
     DVASSERT(oldParent != nullptr);
     oldBefore = oldParent->GetNextChild(entity);
 
-    oldTransform = entity->GetLocalTransform();
+    TransformComponent* entityTransform = entity->GetComponent<TransformComponent>();
+    oldTransform = entityTransform->GetLocalTransform();
     newTransform = EntityParentChangeCommandDetails::ConvertLocalTransform(entity, newParent);
 }
 
@@ -54,7 +60,8 @@ void EntityParentChangeCommand::Undo()
 
     if (saveEntityPosition == true)
     {
-        entity->SetLocalTransform(oldTransform);
+        TransformComponent* entityTransform = entity->GetComponent<TransformComponent>();
+        entityTransform->SetLocalTransform(oldTransform);
     }
 }
 
@@ -71,7 +78,8 @@ void EntityParentChangeCommand::Redo()
 
     if (saveEntityPosition == true)
     {
-        entity->SetLocalTransform(newTransform);
+        TransformComponent* entityTransform = entity->GetComponent<TransformComponent>();
+        entityTransform->SetLocalTransform(newTransform);
     }
 }
 

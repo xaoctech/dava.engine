@@ -241,7 +241,7 @@ DAVA_TESTCLASS (PhysicsTest)
         using namespace PhysicsTestDetils;
         SceneInfo info = CreateScene();
         Matrix4 localTransform = Matrix4::MakeTranslation(Vector3(90.0f, 0.0f, 0.0f));
-        info.entity->GetComponent<TransformComponent>()->SetLocalTransform(&localTransform);
+        info.entity->GetComponent<TransformComponent>()->SetLocalMatrix(localTransform);
 
         StaticBodyComponent* bodyComponent = AttachComponent<StaticBodyComponent>(info);
         BoxShapeComponent* boxComponent = AttachComponent<BoxShapeComponent>(info);
