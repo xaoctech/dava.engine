@@ -413,11 +413,11 @@ DAVA_TESTCLASS (UIFlowTest)
 
         KeyedArchive* model = data->GetArchive("model");
         TEST_VERIFY(model != nullptr);
-        TEST_VERIFY(model->GetFloat64("a") == 1.0);
+        TEST_VERIFY(model->GetInt32("a") == 1);
 
         SendEvent("INC_A");
         SystemsUpdate();
-        TEST_VERIFY(model->GetFloat64("a") == 2.0);
+        TEST_VERIFY(model->GetInt32("a") == 2);
 
         stateSys->DeactivateAllStates();
         SystemsUpdate();

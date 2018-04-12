@@ -291,6 +291,12 @@ public final class DavaActivity extends Activity
         Application app = getApplication();
         File externalFiles = app.getExternalFilesDir(null); // Could be null due to unmounted external storage
         externalFilesDir = externalFiles != null? (externalFiles.getAbsolutePath() + "/") : "";
+        // validate path to externalFilesDir
+        DeviceInfo.StorageCapacity storageCapacity = DeviceInfo.getCapacityAndFreeSpace(externalFilesDir);
+        if (storageCapacity == null)
+        {
+            externalFilesDir = "";
+        }
         internalFilesDir = app.getFilesDir().getAbsolutePath() + "/";
         sourceDir = app.getApplicationInfo().publicSourceDir;
         packageName = app.getApplicationInfo().packageName;

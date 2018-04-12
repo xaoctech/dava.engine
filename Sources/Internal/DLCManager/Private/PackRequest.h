@@ -42,6 +42,8 @@ public:
     /** return true when all files loaded and ready */
     bool IsDownloaded() const final;
 
+    DLCManager& GetDLCManager() const final;
+
     // clear redundant data to free memory
     void Finalize();
 

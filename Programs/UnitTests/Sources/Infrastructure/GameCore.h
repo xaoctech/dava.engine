@@ -30,6 +30,10 @@ public:
 
     void Update(DAVA::float32 update);
 
+    static int exitCode;
+    static const int exitCodeTestFail = 17;
+    static const int exitCodeAssert = 18;
+
 private:
     void ProcessCommandLine();
     void ProcessTests(DAVA::float32 timeElapsed);

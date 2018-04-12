@@ -9,6 +9,7 @@
 #include "Logger/Logger.h"
 #include "Base/Exception.h"
 #include "Time/SystemTimer.h"
+#include "Time/DateTime.h"
 #include "Engine/Engine.h"
 #include "Debug/Private/ImGui.h"
 #include "Platform/DeviceInfo.h"
@@ -27,6 +28,38 @@ namespace DAVA
 {
 DLCManager::~DLCManager() = default;
 DLCManager::IRequest::~IRequest() = default;
+
+DLCManager* DLCManager::Create()
+{
+    using namespace DAVA;
+    // just need DAVA::Engine reference
+    const EngineContext* context = GetEngineContext();
+    if (!context)
+    {
+        Logger::Error("%s(%d) error: context not created yet.", __FUNCTION__, __LINE__);
+        return nullptr;
+    }
+    DLCManagerImpl* impl = dynamic_cast<DLCManagerImpl*>(context->dlcManager);
+    if (!impl)
+    {
+        Logger::Error("%s(%d) error: no default DLCManager.", __FUNCTION__, __LINE__);
+        return nullptr;
+    }
+
+    Engine* engine = Engine::Instance();
+    if (!engine)
+    {
+        Logger::Error("%s(%d) error: engine is nullptr.", __FUNCTION__, __LINE__);
+        return nullptr;
+    }
+
+    return new DLCManagerImpl(engine);
+}
+
+void DLCManager::Destroy(DLCManager* dlcManager)
+{
+    delete dlcManager;
+}
 
 const String& DLCManagerImpl::ToString(InitState state)
 {
@@ -104,8 +137,11 @@ bool DLCManagerImpl::CountError(int32 errCode)
     return errorCounter >= hints.maxSameErrorCounter;
 }
 
+uint32 DLCManagerImpl::lastCreatedIndexId = 0;
+
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : profiler(1024 * 16)
+    : instanceIndex(lastCreatedIndexId++)
+    , profiler(1024 * 16)
     , engine(*engine_)
 {
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
@@ -241,6 +277,10 @@ void DLCManagerImpl::ClearResouces()
         metaRemoteDataLoadedSem.~Semaphore();
         new (&metaRemoteDataLoadedSem) Semaphore();
     }
+    else
+    {
+        scanState = ScanState::Wait;
+    }
 
     for (auto request : requests)
     {
@@ -280,6 +320,12 @@ void DLCManagerImpl::ClearResouces()
 
     timeWaitingNextInitializationAttempt = 0;
     retryCount = 0;
+
+    scanFileReady.clear();
+
+    lastProgress.alreadyDownloaded = 0;
+    lastProgress.inQueue = 0;
+    lastProgress.isRequestingEnabled = false;
 }
 
 DLCManagerImpl::~DLCManagerImpl()
@@ -318,22 +364,30 @@ void DLCManagerImpl::TestPackDirectoryExist() const
     }
 }
 
+static FilePath GetTmpFilePath()
+{
+    std::stringstream ss;
+    DAVA::DateTime dateTime = DAVA::DateTime::Now();
+    ss << "~doc:/dlc_manager_log_" << dateTime.GetDay() << '_' << dateTime.GetHour() << '_' << dateTime.GetMinute() << ".log";
+    return FilePath(ss.str());
+}
+
 void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints_)
 {
     if (!log.is_open())
     {
-        FilePath p(hints_.logFilePath);
+        FilePath p = hints_.logFilePath.empty() ? GetTmpFilePath() : FilePath(hints_.logFilePath);
         String fullLogPath = p.GetAbsolutePathname();
 
         log.open(fullLogPath.c_str(), std::ios::trunc);
         if (!log)
         {
             const char* err = strerror(errno);
-            Logger::Error("can't create dlc_manager.log error: %s", err);
+            Logger::Error("can't create \"%s\" error: %s", fullLogPath.c_str(), err);
             DAVA_THROW(DAVA::Exception, err);
         }
 
-        Logger::Info("DLCManager log file: %s", fullLogPath.c_str());
+        Logger::Info("DLCManager(%d) log file: %s", instanceIndex, fullLogPath.c_str());
 
         String preloaded = hints_.preloadedPacks;
         transform(begin(preloaded), end(preloaded), begin(preloaded), [](char c)
@@ -341,7 +395,7 @@ void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const
                       return c == '\n' ? ' ' : c;
                   });
 
-        log << "DLCManager::Initialize" << '\n'
+        log << "DLCManager(" << instanceIndex << ")::Initialize" << '\n'
             << "(\n"
             << "    dirToDownloadPacks: " << dirToDownloadPacks.GetAbsolutePathname() << '\n'
             << "    urlToServerSuperpack: " << urlToServerSuperpack << '\n'
@@ -1775,6 +1829,71 @@ DLCManager::Info DLCManagerImpl::GetInfo() const
     return info;
 }
 
+DLCManager::FileInfo DLCManager::GetFileInfo(const FilePath& /*path*/) const
+{
+    return FileInfo{};
+}
+
+DLCManager::FileInfo DLCManagerImpl::GetFileInfo(const FilePath& path) const
+{
+    FileInfo fileInfo;
+
+    if (!IsInitialized())
+    {
+        return fileInfo;
+    }
+
+    if (HasLocalMeta())
+    {
+        // no information for local(static files in APK) files
+        const PackMetaData& meta = GetLocalMeta();
+        const FileNamesTree& tree = meta.GetFileNamesTree();
+        if (tree.Find(fileInfo.relativePathInMeta))
+        {
+            fileInfo.isLocalFile = true;
+            fileInfo.isKnownFile = true;
+        }
+    }
+
+    if (HasRemoteMeta())
+    {
+        const PackMetaData& meta = GetRemoteMeta();
+        const FileNamesTree& remoteFilesTree = meta.GetFileNamesTree();
+
+        fileInfo.relativePathInMeta = path.StartsWith("~res:/") ? path.GetRelativePathname("~res:/") : path.GetRelativePathname();
+
+        if (remoteFilesTree.Find(fileInfo.relativePathInMeta))
+        {
+            fileInfo.isRemoteFile = true;
+            fileInfo.isKnownFile = true;
+
+            const auto it = mapFileData.find(fileInfo.relativePathInMeta);
+            if (it != end(mapFileData))
+            {
+                const PackFormat::FileTableEntry* entry = it->second;
+
+                fileInfo.indexOfPackInMeta = entry->metaIndex;
+                const PackMetaData::PackInfo& packInfo = meta.GetPackInfo(entry->metaIndex);
+                fileInfo.packName = packInfo.packName;
+
+                const size_t indexInString = uncompressedFileNames.find(fileInfo.relativePathInMeta);
+                DVASSERT(indexInString != String::npos);
+                const String& str = uncompressedFileNames;
+                const size_t numOfNullChars = std::count(begin(str), begin(str) + indexInString + 1, '\0');
+                const uint32 fileIndex = static_cast<uint32>(numOfNullChars); // will match index of string and index of file in filesTable
+
+                fileInfo.indexOfFileInMeta = fileIndex;
+                fileInfo.hashCompressedInMeta = entry->compressedCrc32;
+                fileInfo.hashUncompressedInMeta = entry->originalCrc32;
+                fileInfo.sizeCompressedInMeta = entry->compressedSize;
+                fileInfo.sizeUncompressedInMeta = entry->originalSize;
+                fileInfo.isDlcMngThinkFileReady = IsFileReady(fileIndex);
+            }
+        }
+    }
+    return fileInfo;
+}
+
 bool DLCManagerImpl::IsRequestingEnabled() const
 {
     DVASSERT(Thread::IsMainThread());
@@ -1928,7 +2047,8 @@ void DLCManagerImpl::StartScanDownloadedFiles()
         {
             scanState = ScanState::Starting;
             scanThread = Thread::Create(MakeFunction(this, &DLCManagerImpl::ThreadScanFunc));
-            scanThread->SetName("DLC::ThreadScanFunc");
+            String name = String("DLC(") + std::to_string(instanceIndex) + ")::ThreadScan";
+            scanThread->SetName(name);
             scanThread->Start();
         }
     }

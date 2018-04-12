@@ -97,6 +97,8 @@ void EnumerateRenderObjects(DAVA::Entity* entity, DAVA::Set<DAVA::FilePath>& dep
         {
             Landscape* landscape = static_cast<Landscape*>(ro);
             dependencies.insert(landscape->GetHeightmapPathname());
+
+            enumerateMaterial(landscape->GetMaterial(), dependencies);
             break;
         }
         case RenderObject::TYPE_VEGETATION:
@@ -140,15 +142,6 @@ void EnumerateSlots(DAVA::Entity* entity, DAVA::Set<DAVA::FilePath>& dependencie
     {
         SlotComponent* comp = entity->GetComponent<SlotComponent>(i);
         dependencies.insert(comp->GetConfigFilePath());
-
-        Scene* scene = entity->GetScene();
-        DVASSERT(scene != nullptr);
-
-        Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(comp->GetConfigFilePath());
-        for (const SlotSystem::ItemsCache::Item& item : items)
-        {
-            dependencies.insert(item.scenePath);
-        }
     }
 }
 

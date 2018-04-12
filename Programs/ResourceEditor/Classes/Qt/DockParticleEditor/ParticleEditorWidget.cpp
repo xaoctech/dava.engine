@@ -169,6 +169,7 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
     }
 
     emitterPropertiesWidget->GetEmitterRadiusTimeline()->setVisible(radiusTimeLineVisible);
+    emitterPropertiesWidget->GetEmitterInnerRadiusTimeline()->setVisible(emitterInstance->GetEmitter()->emitterType == DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME);
     emitterPropertiesWidget->GetEmitterAngleTimeline()->setVisible(angleTimeLineVisible);
     emitterPropertiesWidget->GetEmitterSizeTimeline()->setVisible(sizeTimeLineVisible);
 }

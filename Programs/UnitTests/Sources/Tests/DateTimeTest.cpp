@@ -101,7 +101,7 @@ DAVA_TESTCLASS (DateTimeTest)
             TEST_VERIFY(x_date_ru == L"08.09.1984" || x_date_ru == L"08.09.84"); // may differ on win32/win10/android/ios
             WideString x_time_ru = date.GetLocalizedTime(); // time representation
             Logger::Info("x_time_ru == \"%s\"", UTF8Utils::EncodeToUTF8(x_time_ru).c_str());
-            TEST_VERIFY(x_time_ru == L"16:30:22");
+            TEST_VERIFY(x_time_ru == L"16:30:22" || x_time_ru == L"4:30:22 ПП");
 
             ls->SetCurrentLocale("en");
             ls->Init();

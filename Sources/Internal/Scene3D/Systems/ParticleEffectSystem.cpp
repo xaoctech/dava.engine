@@ -1126,8 +1126,15 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
     {
         float32 curRadius = 1.0f;
+        float32 innerRadius = 0.0f;
         if (group.emitter->radius)
             curRadius = group.emitter->radius->GetValue(group.time);
+
+        if (group.emitter->innerRadius)
+        {
+            innerRadius = group.emitter->innerRadius->GetValue(group.time);
+            innerRadius = Min(innerRadius, curRadius);
+        }
 
         float32 angleBase = 0;
         float32 angleVariation = PI_2;
@@ -1138,7 +1145,10 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
 
         float32 curAngle = angleBase + angleVariation * ParticlesRandom::VanDerCorputRnd(ind, 3);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
-            curRadius *= std::sqrt(static_cast<float32>(GetEngineContext()->random->RandFloat())); // Better distribution on circle.
+        {
+            float32 rndRadiusNorm = std::sqrt(static_cast<float32>(GetEngineContext()->random->RandFloat())); // Better distribution on circle.
+            curRadius = Lerp(innerRadius, curRadius, rndRadiusNorm);
+        }
         float32 sinAngle = 0.0f;
         float32 cosAngle = 0.0f;
         SinCosFast(curAngle, sinAngle, cosAngle);

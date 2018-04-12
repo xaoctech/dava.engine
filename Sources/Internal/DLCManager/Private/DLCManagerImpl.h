@@ -155,6 +155,8 @@ public:
 
     Info GetInfo() const final;
 
+    FileInfo GetFileInfo(const FilePath& path) const final;
+
     const FilePath& GetLocalPacksDirectory() const;
 
     const String& GetSuperPackUrl() const;
@@ -190,6 +192,8 @@ public:
 
     bool CountError(int32 errCode);
     void FireNetworkReady(bool nextState);
+
+    uint32 instanceIndex = 0;
 
     ProfilerCPU profiler;
 
@@ -238,6 +242,8 @@ private:
     void DrawProfilerDebugWindow();
     String DumpToJsonProfilerTrace();
     static PackRequest* CastToPackRequest(const IRequest* request);
+
+    static uint32 lastCreatedIndexId;
 
     enum class ScanState : uint32
     {

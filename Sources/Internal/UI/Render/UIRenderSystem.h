@@ -40,6 +40,9 @@ protected:
     void OnControlVisible(UIControl* control) override;
     void OnControlInvisible(UIControl* control) override;
 
+    void RegisterComponent(UIControl* control, UIComponent* component) override;
+    void UnregisterComponent(UIControl* control, UIComponent* component) override;
+
     void Process(float32 elapsedTime) override;
     void Render();
 
@@ -62,7 +65,7 @@ private:
     RefPtr<UIScreen> currentScreen;
     RefPtr<UIControl> popupContainer;
 
-    int32 ui3DViewCount = 0;
+    Set<UIControl*> ui3DViews;
     bool needClearMainPass = true;
 };
 }

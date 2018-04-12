@@ -39,8 +39,8 @@
 #include <QMoveEvent>
 #include <QStyle>
 
-ModernComponentSectionWidget::ModernComponentSectionWidget(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_, ControlNode* controlNode_, const DAVA::Type* componentType_)
-    : ModernSectionWidget(accessor_, ui_, controlNode_)
+ModernComponentSectionWidget::ModernComponentSectionWidget(DAVA::ContextAccessor* accessor_, DAVA::OperationInvoker* invoker_, DAVA::UI* ui_, ControlNode* controlNode_, const DAVA::Type* componentType_)
+    : ModernSectionWidget(accessor_, invoker_, ui_, controlNode_)
     , componentType(componentType_)
 {
     addRemoveButton = new QToolButton(header);

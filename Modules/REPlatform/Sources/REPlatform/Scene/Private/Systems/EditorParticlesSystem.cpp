@@ -147,7 +147,7 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
 void EditorParticlesSystem::DrawSizeCircleShockWave(Entity* effectEntity, ParticleEmitterInstance* emitter)
 {
     float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
-    float32 emitterRadius = (emitter->GetEmitter()->radius) ? emitter->GetEmitter()->radius->GetValue(time) : 0.0f;
+    float32 emitterRadius = (emitter->GetEmitter()->radius != nullptr) ? emitter->GetEmitter()->radius->GetValue(time) : 0.0f;
 
     Vector3 emissionVector(0.0f, 0.0f, 1.0f);
 
@@ -167,12 +167,19 @@ void EditorParticlesSystem::DrawSizeCircleShockWave(Entity* effectEntity, Partic
 void EditorParticlesSystem::DrawSizeCircle(Entity* effectEntity, ParticleEmitterInstance* emitter)
 {
     float32 emitterRadius = 0.0f;
+    float32 emitterInnerRadius = 0.0f;
     Vector3 emitterVector;
     float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
 
     if (emitter->GetEmitter()->radius)
     {
         emitterRadius = emitter->GetEmitter()->radius->GetValue(time);
+    }
+
+    if (emitter->GetEmitter()->innerRadius)
+    {
+        emitterInnerRadius = emitter->GetEmitter()->innerRadius->GetValue(time);
+        emitterInnerRadius = Min(emitterInnerRadius, emitterRadius);
     }
 
     if (emitter->GetEmitter()->emissionVector)
@@ -187,6 +194,8 @@ void EditorParticlesSystem::DrawSizeCircle(Entity* effectEntity, ParticleEmitter
     auto drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     drawer->DrawCircle(center, emitterVector, emitterRadius, 12,
                        Color(0.7f, 0.0f, 0.0f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+    if (emitter->GetEmitter()->emitterType == DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
+        drawer->DrawCircle(center, emitterVector, emitterInnerRadius, 12, Color(0.0f, 0.0f, 0.0f, 0.4f), RenderHelper::DRAW_SOLID_DEPTH);
 }
 
 void EditorParticlesSystem::DrawSizeBox(Entity* effectEntity, ParticleEmitterInstance* emitter)

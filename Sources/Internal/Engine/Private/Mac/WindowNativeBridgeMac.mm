@@ -212,6 +212,14 @@ void WindowNativeBridge::HandleSizeChanging(WindowNativeBridge::SizeChangingReas
     {
         mainDispatcher->PostEvent(MainDispatcherEvent::CreateWindowDpiChangedEvent(window, dpi));
     }
+
+    // When window's bounds change, pinned cursor might appear outside of the window and become lost.
+    // Due to this, I update the pinned cursor's position each time the window is resized.
+    // Nevertheless, the window's bounds still can be moved and lose the pinned cursor.
+    if (eCursorCapture::PINNING == captureMode)
+    {
+        SetSystemCursorCapture(true);
+    }
 }
 
 void WindowNativeBridge::WindowDidResize()

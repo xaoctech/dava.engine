@@ -29,6 +29,8 @@ public:
     static String IntToStr1000Separated(int32 a);
     static String FloatToStr(float32 a);
     static String FloatToStrWithPrecision(float32 a, int32 precision);
+    static String Float64ToStr(float64 a);
+    static String Float64ToStrWithPrecision(float64 a, int32 precision);
     static String Vector2ToStr(const Vector2& value);
     static String Localize(const String& key);
 };

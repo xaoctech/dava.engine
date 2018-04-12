@@ -61,6 +61,10 @@ void FormulaExecutor::Visit(FormulaNegExpression* exp)
     {
         calculationResult = Any(-val.Get<float32>());
     }
+    else if (val.CanGet<float64>())
+    {
+        calculationResult = Any(-val.Get<float64>());
+    }
     else if (val.CanGet<int64>())
     {
         calculationResult = Any(-val.Get<int64>());
@@ -203,6 +207,12 @@ void FormulaExecutor::Visit(FormulaBinaryOperatorExpression* exp)
             float32 lVal = l.CanGet<float32>() ? l.Get<float32>() : static_cast<float32>(leftIntVal);
             float32 rVal = r.CanGet<float32>() ? r.Get<float32>() : static_cast<float32>(rightIntVal);
             calculationResult = CalculateNumberValues<float32>(exp->GetOperator(), lVal, rVal);
+        }
+        else if ((l.CanGet<float64>() && r.CanCast<float64>()) || (l.CanCast<float64>() && r.CanGet<float64>()))
+        {
+            float64 lVal = l.Cast<float64>();
+            float64 rVal = r.Cast<float64>();
+            calculationResult = CalculateNumberValues<float64>(exp->GetOperator(), lVal, rVal);
         }
         else
         {

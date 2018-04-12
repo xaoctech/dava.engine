@@ -163,6 +163,8 @@ UIDataRootModel::UIDataRootModel(bool editorMode)
     funcContext->RegisterFunction("str1000Separated", MakeFunction(&UIDataBindingDefaultFunctions::IntToStr1000Separated));
     funcContext->RegisterFunction("str", MakeFunction(&UIDataBindingDefaultFunctions::FloatToStr));
     funcContext->RegisterFunction("str", MakeFunction(&UIDataBindingDefaultFunctions::FloatToStrWithPrecision));
+    funcContext->RegisterFunction("str", MakeFunction(&UIDataBindingDefaultFunctions::Float64ToStr));
+    funcContext->RegisterFunction("str", MakeFunction(&UIDataBindingDefaultFunctions::Float64ToStrWithPrecision));
     funcContext->RegisterFunction("str", MakeFunction(&UIDataBindingDefaultFunctions::Vector2ToStr));
     funcContext->RegisterFunction("localize", MakeFunction(&UIDataBindingDefaultFunctions::Localize));
     context = funcContext;

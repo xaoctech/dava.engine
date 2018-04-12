@@ -15,8 +15,9 @@
 #include <QScrollArea>
 #include <QTimer>
 
-ModernPropertiesTab::ModernPropertiesTab(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_, const DAVA::Vector<const DAVA::Type*>& componentTypes_)
+ModernPropertiesTab::ModernPropertiesTab(DAVA::ContextAccessor* accessor_, DAVA::OperationInvoker* invoker_, DAVA::UI* ui_, const DAVA::Vector<const DAVA::Type*>& componentTypes_)
     : accessor(accessor_)
+    , invoker(invoker_)
     , ui(ui_)
     , componentTypes(componentTypes_)
 {
@@ -131,7 +132,7 @@ void ModernPropertiesTab::SetRootProperty(RootProperty* root_)
             for (int32 i = 0; i < root->GetControlPropertiesSectionsCount(); i++)
             {
                 ControlPropertiesSection* section = root->GetControlPropertiesSection(i);
-                ModernControlSectionWidget* sectionWidget = new ModernControlSectionWidget(accessor, ui, root->GetControlNode(), section);
+                ModernControlSectionWidget* sectionWidget = new ModernControlSectionWidget(accessor, invoker, ui, root->GetControlNode(), section);
 
                 vLayout->addWidget(sectionWidget);
                 controlSections.push_back(sectionWidget);
@@ -147,7 +148,7 @@ void ModernPropertiesTab::SetRootProperty(RootProperty* root_)
                 while ((section = root->FindComponentPropertiesSection(componentType, index)) != nullptr)
                 {
                     sectionWasAdded = true;
-                    ModernComponentSectionWidget* sectionWidget = new ModernComponentSectionWidget(accessor, ui, root->GetControlNode(), componentType);
+                    ModernComponentSectionWidget* sectionWidget = new ModernComponentSectionWidget(accessor, invoker, ui, root->GetControlNode(), componentType);
                     sectionWidget->AttachComponentPropertiesSection(section, root);
                     vLayout->addWidget(sectionWidget);
                     componentSections.push_back(sectionWidget);
@@ -156,7 +157,7 @@ void ModernPropertiesTab::SetRootProperty(RootProperty* root_)
 
                 if (!sectionWasAdded || UIComponentUtils::IsMultiple(componentType))
                 {
-                    ModernComponentSectionWidget* sectionWidget = new ModernComponentSectionWidget(accessor, ui, root->GetControlNode(), componentType);
+                    ModernComponentSectionWidget* sectionWidget = new ModernComponentSectionWidget(accessor, invoker, ui, root->GetControlNode(), componentType);
                     vLayout->addWidget(sectionWidget);
                     componentSections.push_back(sectionWidget);
                     index++;
@@ -215,7 +216,7 @@ void ModernPropertiesTab::ComponentPropertiesWasAdded(RootProperty* root, Compon
 
             if (UIComponentUtils::IsMultiple(section->GetComponentType()))
             {
-                ModernComponentSectionWidget* sectionWidget = new ModernComponentSectionWidget(accessor, ui, root->GetControlNode(), section->GetComponentType());
+                ModernComponentSectionWidget* sectionWidget = new ModernComponentSectionWidget(accessor, invoker, ui, root->GetControlNode(), section->GetComponentType());
                 vLayout->insertWidget(index + 1, sectionWidget);
                 componentSections.insert(index + 1, sectionWidget);
             }

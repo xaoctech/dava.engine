@@ -2,6 +2,9 @@
 
 #include "Engine/Engine.h"
 
+#include "DLCManager/DLCManager.h"
+#include "DLCManager/Private/DLCManagerImpl.h"
+
 #include "FileSystem/DynamicMemoryFile.h"
 #include "FileSystem/FileAPIHelper.h"
 #include "FileSystem/FileSystem.h"
@@ -17,6 +20,7 @@
 #include "Concurrency/Thread.h"
 #include "Logger/Logger.h"
 #include "Utils/StringFormat.h"
+#include "Utils/CRC32.h"
 
 #if defined(__DAVAENGINE_WINDOWS__)
 #include <io.h>
@@ -72,6 +76,46 @@ static int SetFilePos(FILE* f, int64 position, int32 seekDirection)
 #else
     return fseeko(f, position, seekDirection);
 #endif
+}
+
+static void LogErrorAndRemoveBadFile(const FilePath& filename, const String& fileNameAbs)
+{
+    std::stringstream ss;
+    DLCManager* dlc = GetEngineContext()->dlcManager;
+    if (dlc)
+    {
+        const DLCManager::FileInfo fileInfo = dlc->GetFileInfo(filename);
+
+        ss << "error: loading file(dvpl): " << fileInfo.relativePathInMeta << '\n' <<
+        "pack_name: " << fileInfo.packName << '\n' <<
+        "index_of_file_in_meta: " << fileInfo.indexOfFileInMeta << '\n' <<
+        "index_of_pack_in_meta: " << fileInfo.indexOfPackInMeta << '\n' <<
+        "hash_compressed_in_meta: 0x" << std::hex << fileInfo.hashCompressedInMeta << '\n' <<
+        "hash_uncompressed_in_meta: 0x" << std::hex << fileInfo.hashUncompressedInMeta << '\n' <<
+        "size_compressed_in_meta: " << std::dec << fileInfo.sizeCompressedInMeta << '\n' <<
+        "size_uncompressed_in_meta: " << fileInfo.sizeUncompressedInMeta << '\n' <<
+        "is_known_file: " << std::boolalpha << fileInfo.isKnownFile << '\n' <<
+        "is_local_file: " << std::boolalpha << fileInfo.isLocalFile << '\n' <<
+        "is_remote_file: " << std::boolalpha << fileInfo.isRemoteFile << '\n' <<
+        "is_dlc_mng_think_file_ready: " << std::boolalpha << fileInfo.isDlcMngThinkFileReady << '\n';
+    }
+    else
+    {
+        ss << "GetEngineContext()->dlcManager is nullptr\n";
+    }
+    ss << "is_regular_file: " << std::boolalpha << FileAPI::IsRegularFile(fileNameAbs) << '\n'
+       << "on disk file_size(+" << sizeof(PackFormat::LitePack::Footer)
+       << " byte footer): " << std::dec << FileAPI::GetFileSize(fileNameAbs) << '\n';
+
+    const uint32 hashWithoutFooter = CRC32::ForDVPLFileContent(fileNameAbs);
+
+    ss << "on disk file_compressed_hash: 0x" << std::hex << hashWithoutFooter << '\n';
+    // delete bad file (can't decompress)
+    const bool isFileRemoved = 0 == FileAPI::RemoveFile(fileNameAbs);
+    ss << "remove_file result: " << std::boolalpha << isFileRemoved;
+
+    String str = ss.str();
+    Logger::Error("%s", str.c_str());
 }
 
 File* File::Create(const FilePath& filename, uint32 attributes)
@@ -133,14 +177,21 @@ File* File::Create(const FilePath& filename, uint32 attributes)
     if (!(attributes & (WRITE | CREATE | APPEND)))
     {
         FilePath compressedFile = filename + extDvpl;
-        String fileName = compressedFile.GetAbsolutePathname();
-        if (FileAPI::IsRegularFile(fileName))
+        const String fileNameAbs = compressedFile.GetAbsolutePathname();
+        if (FileAPI::IsRegularFile(fileNameAbs))
         {
-            result = CompressedCreate(compressedFile, attributes);
+            try
+            {
+                result = CompressedCreate(compressedFile, attributes);
+            }
+            catch (std::exception& ex)
+            {
+                Logger::Error("error: (%s) decompress exception: %s", fileNameAbs.c_str(), ex.what());
+            }
+
             if (result == nullptr)
             {
-                // delete bad file (can't decompress)
-                FileAPI::RemoveFile(fileName);
+                LogErrorAndRemoveBadFile(filename, fileNameAbs);
             }
         }
     }
@@ -196,8 +247,8 @@ File* File::CompressedCreate(const FilePath& filename, uint32 attributes)
         return nullptr;
     }
 
-    uint32 fileSize = static_cast<uint32>(f->GetSize());
-    uint32 footerSize = static_cast<uint32>(sizeof(PackFormat::LitePack::Footer));
+    const auto fileSize = static_cast<uint32>(f->GetSize());
+    const auto footerSize = static_cast<uint32>(sizeof(PackFormat::LitePack::Footer));
 
     if (fileSize < footerSize)
     {
@@ -205,7 +256,7 @@ File* File::CompressedCreate(const FilePath& filename, uint32 attributes)
         return nullptr;
     }
 
-    int64 footerPos = fileSize - footerSize;
+    const int64 footerPos = fileSize - footerSize;
 
     if (!f->Seek(footerPos, SEEK_FROM_START))
     {
@@ -213,11 +264,17 @@ File* File::CompressedCreate(const FilePath& filename, uint32 attributes)
         return nullptr;
     }
 
-    PackFormat::LitePack::Footer footer;
+    PackFormat::LitePack::Footer footer{ 0, 0, 0, Compressor::Type::None, { '\0', '\0', '\0', '\0' } }; // default init with 0
 
     if (footerSize != f->Read(&footer, sizeof(footer)))
     {
         Logger::Error("can't read footer: %s", filename.GetAbsolutePathname().c_str());
+        return nullptr;
+    }
+
+    if (PackFormat::FILE_MARKER_LITE != footer.packMarkerLite)
+    {
+        Logger::Error("file_marker_lite does not match: %s", filename.GetAbsolutePathname().c_str());
         return nullptr;
     }
 

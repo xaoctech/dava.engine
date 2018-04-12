@@ -49,13 +49,27 @@ UIFlowStateComponent* UIFlowStateSystem::FindStateByPath(const String& statePath
         // Search from current Single State
         if (currentState)
         {
-            stateControl = currentState->GetControl()->FindByPath(statePath);
+            if (statePath.empty())
+            {
+                stateControl = currentState->GetControl();
+            }
+            else
+            {
+                stateControl = currentState->GetControl()->FindByPath(statePath);
+            }
         }
 
         // Search from root State
         if (stateControl == nullptr)
         {
-            stateControl = flowRoot->FindByPath(statePath);
+            if (statePath.empty())
+            {
+                stateControl = flowRoot;
+            }
+            else
+            {
+                stateControl = flowRoot->FindByPath(statePath);
+            }
         }
 
         if (stateControl)
@@ -599,7 +613,10 @@ void UIFlowStateSystem::FinishTransaction(const UIFlowTransitionTransaction* tra
         DVASSERT(top.get() == transaction);
         if (top.get() == transaction)
         {
-            PutHistoryTransaction(std::move(top));
+            if (!top->IsEmpty())
+            {
+                PutHistoryTransaction(std::move(top));
+            }
             transitionTransactions.pop_front();
         }
     }

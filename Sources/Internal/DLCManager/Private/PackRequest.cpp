@@ -127,6 +127,16 @@ uint64 PackRequest::GetDownloadedSize() const
     return requestsSize;
 }
 
+DLCManager& DLCManager::IRequest::GetDLCManager() const
+{
+    DAVA_THROW(DAVA::Exception, "implement it for your DLCManager::IRequest");
+}
+
+DLCManager& PackRequest::GetDLCManager() const
+{
+    return *packManager;
+}
+
 /** return true when all files loaded and ready */
 bool PackRequest::IsDownloaded() const
 {

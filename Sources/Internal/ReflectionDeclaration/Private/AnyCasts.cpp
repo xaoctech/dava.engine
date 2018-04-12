@@ -129,7 +129,16 @@ void RegisterAnyCasts()
     AnyCast<FastName, String>::Register(&FastNameToString);
     AnyCast<int32, size_t>::RegisterDefault();
     AnyCast<size_t, int32>::RegisterDefault();
+    AnyCast<int8, String>::Register(&IntegralToString<int8>);
+    AnyCast<uint8, String>::Register(&IntegralToString<uint8>);
+    AnyCast<int16, String>::Register(&IntegralToString<int16>);
+    AnyCast<uint16, String>::Register(&IntegralToString<uint16>);
     AnyCast<int32, String>::Register(&IntegralToString<int32>);
+    AnyCast<uint32, String>::Register(&IntegralToString<uint32>);
+    AnyCast<int64, String>::Register(&IntegralToString<int64>);
+    AnyCast<uint64, String>::Register(&IntegralToString<uint64>);
+    AnyCast<float32, String>::Register(&IntegralToString<float32>);
+    AnyCast<float64, String>::Register(&IntegralToString<float64>);
     AnyCast<size_t, String>::Register(&IntegralToString<size_t>);
     AnyCast<int8, FastName>::Register(&IntegralToString<int8>);
     AnyCast<uint8, FastName>::Register(&IntegralToString<uint8>);

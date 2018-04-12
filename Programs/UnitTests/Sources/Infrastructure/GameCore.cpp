@@ -15,7 +15,6 @@
 #include "UI/UIControlSystem.h"
 #include "UnitTests/UnitTests.h"
 #include "Utils/StringFormat.h"
-#include "Components/PlayerTankComponent.h"
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectionRegistrator.h"
 
@@ -38,7 +37,7 @@ using namespace DAVA;
 extern const char* runOnlyTheseTestClasses;
 namespace
 {
-//runOnlyTheseTestClassesString can be changed in RunOnlyThisTestClasses.h
+//runOnlyTheseTestClasses can be changed in RunOnlyThisTestClasses.h
 String runOnlyTheseTestClassesString(runOnlyTheseTestClasses);
 
 // List of names specifying which test classes shouldn't run. This list takes precedence over runOnlyTheseTests.
@@ -83,6 +82,12 @@ int DAVAMain(Vector<String> cmdline)
 {
     Assert::AddHandler(Assert::DefaultLoggerHandler);
     Assert::AddHandler(Assert::DefaultDebuggerBreakHandler);
+    auto AssertFailedHandler = [](const Assert::AssertInfo& assertInfo) -> Assert::FailBehaviour
+    {
+        GameCore::exitCode = GameCore::exitCodeAssert;
+        return Assert::FailBehaviour::Continue;
+    };
+    Assert::AddHandler(AssertFailedHandler);
 
     KeyedArchive* appOptions = new KeyedArchive();
     appOptions->SetInt32("rhi_threaded_frame_count", 2);
@@ -113,8 +118,6 @@ int DAVAMain(Vector<String> cmdline)
         "PackManager"
     };
 
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PlayerTankComponent);
-
     Engine e;
 #if defined(__DAVAENGINE_LINUX__)
     appOptions->SetInt32("renderer", rhi::RHI_NULL_RENDERER);
@@ -131,6 +134,8 @@ int DAVAMain(Vector<String> cmdline)
     e.Run();
     return 0;
 }
+
+int GameCore::exitCode = 0;
 
 GameCore::GameCore(DAVA::Engine& e)
     : engine(e)
@@ -276,6 +281,8 @@ void GameCore::OnTestFinished(const DAVA::String& testClassName, const DAVA::Str
 
 void GameCore::OnTestFailed(const String& testClassName, const String& testName, const String& condition, const char* filename, int lineno, const String& userMessage)
 {
+    exitCode = exitCodeTestFail;
+
     String errorString;
     if (userMessage.empty())
     {
@@ -384,7 +391,7 @@ void GameCore::FinishTests()
 {
     // Inform teamcity script we just finished all tests
     Logger::Debug("Finish all tests.");
-    Quit(0);
+    Quit(exitCode);
 }
 
 void GameCore::Quit(int exitCode)
