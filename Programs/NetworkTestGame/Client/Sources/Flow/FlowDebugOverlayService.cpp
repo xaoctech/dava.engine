@@ -28,7 +28,6 @@ void FlowDebugOverlayService::ToggleDebugOverlay()
     using namespace DAVA;
 
     const EngineContext* context = GetEngineContext();
-    const Mouse* mouse = context->deviceManager->GetMouse();
     Window* window = GetPrimaryWindow();
 
     if (context != nullptr && window != nullptr)
@@ -37,6 +36,8 @@ void FlowDebugOverlayService::ToggleDebugOverlay()
 
         if (overlay != nullptr)
         {
+            const Mouse* mouse = context->deviceManager->GetMouse();
+
             if (!overlay->IsShown())
             {
                 if (mouse != nullptr)

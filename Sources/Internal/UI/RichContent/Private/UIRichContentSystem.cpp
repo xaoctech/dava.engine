@@ -140,7 +140,7 @@ void UIRichContentSystem::Process(float32 elapsedTime)
             {
                 if (alink.component && alink.component->IsModified())
                 {
-                    update |= true;
+                    update = true;
 
                     onBeginProcessComponent.Emit(alink.component);
 

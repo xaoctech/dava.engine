@@ -1256,8 +1256,8 @@ void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
         if (controller != nullptr)
         {
             TransformComponent* transform = entity->GetComponent<TransformComponent>();
-            physx::PxController* pxController = controller->controller;
-            if (controller != nullptr)
+            physx::PxController* pxController = controller->GetPxController();
+            if (pxController != nullptr)
             {
                 Vector3 currentPosition = PhysicsMath::PxExtendedVec3ToVector3(pxController->getFootPosition());
                 Vector3 newPosition = transform->GetPosition();

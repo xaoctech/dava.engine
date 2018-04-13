@@ -174,15 +174,15 @@ CollisionObj CreateMesh(bool createCollision, const Matrix4& transform, RenderOb
             DVASSERT(rigidActor);
             rigidActor->userData = userData;
 
-            PxShape* shape = module->CreateMeshShape(std::move(polygons), Vector3(1.0, 1.0, 1.0), FastName(), cache);
-            shape->setQueryFilterData(objectFilterData);
-            rigidActor->attachShape(*shape);
-
             AABBox3 bbox;
             for (PolygonGroup* polygon : polygons)
             {
                 bbox.AddAABBox(polygon->GetBoundingBox());
             }
+
+            PxShape* shape = module->CreateMeshShape(std::move(polygons), Vector3(1.0, 1.0, 1.0), FastName(), cache);
+            shape->setQueryFilterData(objectFilterData);
+            rigidActor->attachShape(*shape);
 
             InitBounds(shape, bbox);
             UpdateActorTransform(transform, rigidActor);

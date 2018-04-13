@@ -36,6 +36,7 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
     class BaseContext
     {
     public:
+        // Player id = id of the player we create entity for
         BaseContext(DAVA::NetworkPlayerID playerId)
         {
             using namespace DAVA;
@@ -212,7 +213,7 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
     class ServerContext : public BaseContext
     {
     public:
-        ServerContext(DAVA::NetworkPlayerID playerId = 0)
+        ServerContext(DAVA::NetworkPlayerID playerId)
             : BaseContext(playerId)
         {
             using namespace DAVA;
@@ -233,8 +234,8 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
     class ClientContext : public BaseContext
     {
     public:
-        ClientContext(DAVA::NetworkPlayerID playerId = 0)
-            : BaseContext(0)
+        ClientContext(DAVA::NetworkPlayerID playerId)
+            : BaseContext(playerId)
         {
             using namespace DAVA;
 
@@ -242,8 +243,9 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
             NetworkClientSingleComponent* serverSingleComponent = scene->GetSingleComponent<NetworkClientSingleComponent>();
             serverSingleComponent->SetClient(&client);
 
+            // Set local player id to be UINT32_MAX, since in this test we need our replicated entity to be from another player
             NetworkGameModeSingleComponent* gameModeSingleComponent = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
-            gameModeSingleComponent->SetNetworkPlayerID(playerId);
+            gameModeSingleComponent->SetNetworkPlayerID(UINT32_MAX);
         }
 
         void ProcessFrame() override

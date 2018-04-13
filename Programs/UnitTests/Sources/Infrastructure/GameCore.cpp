@@ -49,8 +49,7 @@ String disableTheseTestClasses = "ScriptTest "
                                  "FormulaExecutorTest "
                                  "AtomicTest "
                                  "UIFlowTest "
-                                 "UIScriptTest "
-                                 "NetworkRemoteInputSystemTest";
+                                 "UIScriptTest ";
 #else
 // TODO: linux
 // Linux unittests are running in console mode so disable tests dependent on GUI facilities (windows, input, etc)
