@@ -46,7 +46,7 @@ void SpeedTreeObject::BindDynamicParameters(Camera* camera, RenderBatch* batch)
 void SpeedTreeObject::PrepareToRender(Camera* camera)
 {
     SkinnedMesh::PrepareToRender(camera);
-
+    /*
     Vector3 direction = GetWorldBoundingBox().GetCenter() - camera->GetPosition();
     direction = MultiplyVectorMat3x3(direction, *invWorldTransform);
     direction.z = 0.f;
@@ -68,6 +68,7 @@ void SpeedTreeObject::PrepareToRender(Camera* camera)
             }
         }
     }
+    // */
 }
 
 void SpeedTreeObject::UpdateAnimationFlag(int32 maxAnimatedLod)

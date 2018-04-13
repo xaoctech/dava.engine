@@ -360,13 +360,13 @@ void TilemaskEditorPanel::SetDrawTexture(int textureIndex)
 // to the values suitable for tilemask editor system
 DAVA::int32 TilemaskEditorPanel::BrushSizeUIToSystem(DAVA::int32 uiValue)
 {
-    DAVA::int32 systemValue = uiValue * DAVA::ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
+    DAVA::int32 systemValue = uiValue; // * DAVA::ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
     return systemValue;
 }
 
 DAVA::int32 TilemaskEditorPanel::BrushSizeSystemToUI(DAVA::int32 systemValue)
 {
-    DAVA::int32 uiValue = systemValue / DAVA::ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
+    DAVA::int32 uiValue = systemValue; // / DAVA::ResourceEditor::LANDSCAPE_BRUSH_SIZE_UI_TO_SYSTEM_COEF;
     return uiValue;
 }
 

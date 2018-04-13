@@ -35,6 +35,7 @@ class BaseContextMenu
 {
 public:
     BaseContextMenu(DAVA::SceneEditor2* scene, const SceneTreeModelV2* model, const DAVA::Vector<DAVA::Selectable>& selectedObjects, const DAVA::Selectable& currentObject);
+    virtual ~BaseContextMenu() = default;
 
     void Init(DAVA::ContextAccessor* accessor, DAVA::UI* ui, DAVA::OperationInvoker* invoker);
     void Show(const QPoint& pos);

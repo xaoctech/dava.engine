@@ -54,10 +54,15 @@ void ReleaseQueryObjectsPool();
 
 namespace TextureGLES2
 {
+struct Framebuffer
+{
+    uint32 identifier = 0;
+};
+
 void Init(uint32 maxCount);
 void SetupDispatch(Dispatch* dispatch);
 void SetToRHI(Handle tex, unsigned unit_i, uint32 base_i = DAVA::InvalidIndex);
-unsigned GetFrameBuffer(const Handle* color, const TextureFace* face, const unsigned* level, uint32 colorCount, Handle depth);
+Framebuffer GetFrameBuffer(const Handle* color, const TextureFace* face, const unsigned* level, uint32 colorCount, Handle depth);
 void ResolveMultisampling(Handle from, Handle to);
 Size2i Size(Handle tex);
 void ReCreateAll();

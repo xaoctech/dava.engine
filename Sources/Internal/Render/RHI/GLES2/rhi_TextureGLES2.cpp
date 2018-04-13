@@ -11,29 +11,18 @@
 
 namespace rhi
 {
-//==============================================================================
-
 struct FramebufferGLES2_t
 {
-    Handle color[MAX_RENDER_TARGET_COUNT];
-    GLuint colorUID[MAX_RENDER_TARGET_COUNT];
-    TextureFace colorFace[MAX_RENDER_TARGET_COUNT];
-    uint32 colorLevel[MAX_RENDER_TARGET_COUNT];
-    Handle depthStencil = InvalidHandle;
+    TextureGLES2::Framebuffer framebuffer; // TODO : move something useful inside
+
+    Handle color[MAX_RENDER_TARGET_COUNT]{};
+    GLuint colorUID[MAX_RENDER_TARGET_COUNT]{};
+    TextureFace colorFace[MAX_RENDER_TARGET_COUNT]{};
+    uint32 colorLevel[MAX_RENDER_TARGET_COUNT]{};
     uint32 colorCount = 0;
+
+    Handle depthStencil = InvalidHandle;
     GLuint depthStencilUID = 0;
-    uint32 level = 0;
-    GLuint frameBuffer = 0;
-    TextureFace face = TextureFace::TEXTURE_FACE_NONE;
-    FramebufferGLES2_t()
-    {
-#define FILL_ALL(x) memset(x, 0, sizeof(x));
-        FILL_ALL(color);
-        FILL_ALL(colorUID);
-        FILL_ALL(colorFace);
-        FILL_ALL(colorLevel);
-#undef FILL_ALL
-    }
 };
 static std::vector<FramebufferGLES2_t> framebufferCache;
 
@@ -56,8 +45,7 @@ public:
 
     void* mappedData = nullptr;
     SamplerState::Descriptor::Sampler usedSamplerState;
-    GLint fbo = 0;
-    GLint attachmentID = 0;
+    GLint lastUsedFramebuffer = 0;
 
     uint32 isMapped : 1;
     uint32 updatePending : 1;
@@ -93,13 +81,10 @@ bool TextureGLES2_t::Create(const Texture::Descriptor& desc, bool forceExecute)
     UpdateCreationDesc(desc);
 
     GLuint glObjects[2] = { 0, 0 };
+    lastUsedFramebuffer = 0;
 
     bool is_render_buffer = false;
-
-    fbo = 0;
-
-    bool createRenderBuffer = (desc.format == TEXTURE_FORMAT_D24S8) ||
-    ((desc.format == TEXTURE_FORMAT_D16) && !DeviceCaps().isDepthTextureSupported);
+    bool createRenderBuffer = (desc.format == TEXTURE_FORMAT_D24S8) || ((desc.format == TEXTURE_FORMAT_D16) && !DeviceCaps().isDepthTextureSupported);
 
     if (createRenderBuffer)
     {
@@ -428,7 +413,7 @@ void TextureGLES2_t::Destroy(bool forceExecute)
                     cmd_cnt = 0;
                 }
                 DVASSERT(cmd_cnt <= countof(cmd) - 1);
-                doomed_fbo[cmd_cnt] = f->frameBuffer;
+                doomed_fbo[cmd_cnt] = f->framebuffer.identifier;
                 cmd[cmd_cnt].func = GLCommand::DELETE_FRAMEBUFFERS;
                 cmd[cmd_cnt].arg[0] = 1;
                 cmd[cmd_cnt].arg[1] = uint64(&(doomed_fbo[cmd_cnt]));
@@ -519,7 +504,7 @@ static void* gles2_Texture_Map(Handle tex, uint32 level, TextureFace face)
             GLCommand::Function func = [](void* context) {
                 LocalContext* ctx = reinterpret_cast<LocalContext*>(context);
                 TextureGLES2_t* self = ctx->self;
-                uint32 framebuffer = TextureGLES2::GetFrameBuffer(&ctx->handle, &ctx->face, &ctx->level, 1, InvalidHandle);
+                TextureGLES2::Framebuffer framebuffer = TextureGLES2::GetFrameBuffer(&ctx->handle, &ctx->face, &ctx->level, 1, InvalidHandle);
                 Size2i readSize = TextureExtents(Size2i(self->width, self->height), ctx->level);
 
                 GLint internalFormat = 0;
@@ -528,10 +513,9 @@ static void* gles2_Texture_Map(Handle tex, uint32 level, TextureFace face)
                 bool compressed = false;
                 GetGLTextureFormat(self->format, &internalFormat, &format, &type, &compressed);
 
-                GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer));
-                GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0 + self->attachmentID));
-                GL_CALL(glReadPixels(0, 0, readSize.dx, readSize.dy, format, type, self->mappedData));
+                GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer.identifier));
                 GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0));
+                GL_CALL(glReadPixels(0, 0, readSize.dx, readSize.dy, format, type, self->mappedData));
                 GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, _GLES2_Bound_FrameBuffer));
             };
 
@@ -706,8 +690,7 @@ void gles2_Texture_ReadRegion(Handle tex, void* data, uint32 dataSize, const Rec
 {
     TextureGLES2_t* self = TextureGLES2Pool::Get(tex);
     DVASSERT(self->isRenderTarget);
-    DVASSERT(!self->isRenderBuffer);
-    DVASSERT(self->fbo != 0);
+    DVASSERT(self->lastUsedFramebuffer != 0);
     DVASSERT(TextureSize(self->format, rect.dx, rect.dy, level) == dataSize);
 
     GLint internalFormat;
@@ -718,7 +701,7 @@ void gles2_Texture_ReadRegion(Handle tex, void* data, uint32 dataSize, const Rec
 
     GLCommand cmd[] =
     {
-      { GLCommand::BIND_FRAMEBUFFER, { GL_FRAMEBUFFER, uint64(self->fbo) } },
+      { GLCommand::BIND_FRAMEBUFFER, { GL_FRAMEBUFFER, uint64(self->lastUsedFramebuffer) } },
       { GLCommand::READ_PIXELS, { uint64(rect.x), uint64(rect.y), uint64(rect.dx), uint64(rect.dy), uint64(format), uint64(type), uint64(data) } },
       { GLCommand::BIND_FRAMEBUFFER, { GL_FRAMEBUFFER, _GLES2_Bound_FrameBuffer } },
     };
@@ -960,11 +943,9 @@ void SetToRHI(Handle tex, uint32 unit_i, uint32 base_i)
     }
 }
 
-uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32* level, uint32 colorCount, Handle depthStencil)
+Framebuffer GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32* level, uint32 colorCount, Handle depthStencil)
 {
     DVASSERT(colorCount <= DeviceCaps().maxRenderTargetCount);
-
-    GLuint fb = 0;
 
     for (const FramebufferGLES2_t& f : framebufferCache)
     {
@@ -973,43 +954,39 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
         bool sameTargets = true;
         if (sameColor && (colorCount > 0))
         {
-            sameTargets =
-            (memcmp(f.color, color, sizeof(Handle) * colorCount) == 0) &&
+            sameTargets = (memcmp(f.color, color, sizeof(Handle) * colorCount) == 0) &&
             (memcmp(f.colorFace, face, sizeof(TextureFace) * colorCount) == 0) &&
             (memcmp(f.colorLevel, level, sizeof(uint32) * colorCount) == 0);
         }
 
         if (sameColor && sameDepth && sameTargets)
-        {
-            fb = f.frameBuffer;
-            break;
-        }
+            return f.framebuffer;
     }
 
-    if (fb == 0)
+    Framebuffer result;
+    GL_CALL(glGenFramebuffers(1, &result.identifier));
+    DVASSERT(result.identifier != 0);
+
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, result.identifier));
+
+    for (uint32 i = 0; i != colorCount; ++i)
     {
-        GL_CALL(glGenFramebuffers(1, &fb));
-        DVASSERT(fb != 0);
-        GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, fb));
+        TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
 
-        for (uint32 i = 0; i != colorCount; ++i)
+        DVASSERT(DeviceCaps().textureFormat[tex->format].renderable, DAVA::Format("Texture format '%s' is non-renderable", TextureFormatToString(tex->format)).c_str());
+
+        if (tex->isRenderBuffer)
         {
-            TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
-
-            DVASSERT(DeviceCaps().textureFormat[tex->format].renderable, DAVA::Format("Texture format '%s' is non-renderable", TextureFormatToString(tex->format)).c_str());
-
-            if (tex->isRenderBuffer)
+            DVASSERT(glIsRenderbuffer(tex->uid));
+            GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_RENDERBUFFER, tex->uid));
+        }
+        else
+        {
+            GLenum target = GL_TEXTURE_2D;
+            if (tex->isCubeMap)
             {
-                DVASSERT(glIsRenderbuffer(tex->uid));
-                GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_RENDERBUFFER, tex->uid));
-            }
-            else
-            {
-                GLenum target = GL_TEXTURE_2D;
-                if (tex->isCubeMap)
+                switch (face[i])
                 {
-                    switch (face[i])
-                    {
                     case TextureFace::TEXTURE_FACE_POSITIVE_X:
                         target = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
                         break;
@@ -1030,116 +1007,111 @@ uint32 GetFrameBuffer(const Handle* color, const TextureFace* face, const uint32
                         break;
                     default:
                         DVASSERT(0, "Invalid TextureFace provided");
-                    }
                 }
-                /*
-                 * GFX_COMPLETE
-                 * There was another function around, called "glFramebufferTextureLayer"
-                 * In case of emergency or sudden break of rendering to cubemap levels or layers contact s_reznik
-                 */
-                GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, target, tex->uid, level[i]));
             }
+            /*
+             * GFX_COMPLETE
+             * There was another function around, called "glFramebufferTextureLayer"
+             * In case of emergency or sudden break of rendering to cubemap levels or layers contact s_reznik
+             */
+            GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, target, tex->uid, level[i]));
         }
+    }
 
-        if (depthStencil != InvalidHandle && depthStencil != DefaultDepthBuffer)
+    if (depthStencil != InvalidHandle && depthStencil != DefaultDepthBuffer)
+    {
+        TextureGLES2_t* ds = TextureGLES2Pool::Get(depthStencil);
+
+        if (ds->isRenderBuffer)
         {
-            TextureGLES2_t* ds = TextureGLES2Pool::Get(depthStencil);
-
-            if (ds->isRenderBuffer)
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+            GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ds->uid));
+            if (ds->uid2)
             {
-            #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-                GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ds->uid));
-                if (ds->uid2)
-                {
-                    GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, ds->uid2));
-                }
-            #else
-                if (ds->format == TextureFormat::TEXTURE_FORMAT_D24S8)
-                {
-                    GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, ds->uid));
-                }
-                else
-                {
-                    GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ds->uid));
-                }
-            #endif
+                GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, ds->uid2));
+            }
+#else
+            if (ds->format == TextureFormat::TEXTURE_FORMAT_D24S8)
+            {
+                GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, ds->uid));
             }
             else
             {
-                GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, ds->uid, level[0]));
+                GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ds->uid));
             }
-        }
-
-        if (_GLES2_MultipleRenderTargets)
-        {
-            GLenum b[MAX_RENDER_TARGET_COUNT] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
-            GL_CALL(glDrawBuffers(colorCount, b));
-
-            if (colorCount == 0)
-            {
-#ifdef __DAVAENGINE_ANDROID__
-                if (glReadBuffer)
 #endif
-                {
-                    GL_CALL(glReadBuffer(GL_NONE));
-                }
-            }
-        }
-
-        int status = 0;
-        GL_CALL(status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
-
-        if (status == GL_FRAMEBUFFER_COMPLETE)
-        {
-            FramebufferGLES2_t f;
-            f.colorCount = colorCount;
-            memcpy(f.color, color, sizeof(Handle) * colorCount);
-            memcpy(f.colorFace, face, sizeof(TextureFace) * colorCount);
-            memcpy(f.colorLevel, level, sizeof(uint32) * colorCount);
-            f.depthStencil = depthStencil;
-            f.depthStencilUID = (depthStencil != InvalidHandle && depthStencil != DefaultDepthBuffer) ? TextureGLES2Pool::Get(depthStencil)->uid : 0;
-            f.frameBuffer = fb;
-
-            for (uint32 i = 0; i != colorCount; ++i)
-            {
-                TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
-                f.colorUID[i] = tex->uid;
-                if (tex->fbo == 0)
-                {
-                    tex->attachmentID = i;
-                    tex->fbo = fb;
-                }
-            }
-
-            framebufferCache.push_back(f);
         }
         else
         {
-            DAVA::Logger::Error("Failed to create framebuffer, status: %08X", status);
-            for (uint32 i = 0; i < colorCount; ++i)
-            {
-                if (color[i] != InvalidHandle)
-                {
-                    TextureGLES2_t* col = TextureGLES2Pool::Get(color[i]);
-                    DAVA::Logger::Error("Color%u: %s, %ux%u, face: %u, level: %u", i, TextureFormatToString(col->format), col->width, col->height, uint32(face[i]), level[i]);
-                }
-                else
-                {
-                    DAVA::Logger::Error("Color%u: none", i);
-                }
-            }
-            if (depthStencil != InvalidHandle)
-            {
-                TextureGLES2_t* ds = TextureGLES2Pool::Get(depthStencil);
-                DAVA::Logger::Error("Depth: %s, %ux%u", TextureFormatToString(ds->format), ds->width, ds->height);
-            }
-            DVASSERT(status == GL_FRAMEBUFFER_COMPLETE);
+            GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, ds->uid, level[0]));
         }
-
-        GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, _GLES2_Bound_FrameBuffer));
     }
 
-    return fb;
+    if (_GLES2_MultipleRenderTargets)
+    {
+        GLenum b[MAX_RENDER_TARGET_COUNT] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
+        GL_CALL(glDrawBuffers(colorCount, b));
+
+        if (colorCount == 0)
+        {
+#ifdef __DAVAENGINE_ANDROID__
+            if (glReadBuffer)
+#endif
+            {
+                GL_CALL(glReadBuffer(GL_NONE));
+            }
+        }
+    }
+
+    int status = 0;
+    GL_CALL(status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+    if (status == GL_FRAMEBUFFER_COMPLETE)
+    {
+        FramebufferGLES2_t f;
+        f.colorCount = colorCount;
+        memcpy(f.color, color, sizeof(Handle) * colorCount);
+        memcpy(f.colorFace, face, sizeof(TextureFace) * colorCount);
+        memcpy(f.colorLevel, level, sizeof(uint32) * colorCount);
+        f.depthStencil = depthStencil;
+        f.depthStencilUID = (depthStencil != InvalidHandle && depthStencil != DefaultDepthBuffer) ? TextureGLES2Pool::Get(depthStencil)->uid : 0;
+        f.framebuffer = result;
+
+        for (uint32 i = 0; i != colorCount; ++i)
+        {
+            TextureGLES2_t* tex = TextureGLES2Pool::Get(color[i]);
+            f.colorUID[i] = tex->uid;
+            tex->lastUsedFramebuffer = result.identifier;
+        }
+
+        framebufferCache.push_back(f);
+    }
+    else
+    {
+        DAVA::Logger::Error("Failed to create framebuffer, status: %08X", status);
+        for (uint32 i = 0; i < colorCount; ++i)
+        {
+            if (color[i] != InvalidHandle)
+            {
+                TextureGLES2_t* col = TextureGLES2Pool::Get(color[i]);
+                DAVA::Logger::Error("Color%u: %s, %ux%u, face: %u, level: %u", i, TextureFormatToString(col->format), col->width, col->height, uint32(face[i]), level[i]);
+            }
+            else
+            {
+                DAVA::Logger::Error("Color%u: none", i);
+            }
+        }
+        if (depthStencil != InvalidHandle)
+        {
+            TextureGLES2_t* ds = TextureGLES2Pool::Get(depthStencil);
+            DAVA::Logger::Error("Depth: %s, %ux%u", TextureFormatToString(ds->format), ds->width, ds->height);
+        }
+        DVASSERT(status == GL_FRAMEBUFFER_COMPLETE);
+    }
+
+    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, _GLES2_Bound_FrameBuffer));
+
+    return result;
 }
 
 void ResolveMultisampling(Handle fromTexture, Handle toTexture)
@@ -1152,26 +1124,25 @@ void ResolveMultisampling(Handle fromTexture, Handle toTexture)
 
     bool fromHasDepthFormat = (from->format == TextureFormat::TEXTURE_FORMAT_D16) || (from->format == TextureFormat::TEXTURE_FORMAT_D24S8);
     DVASSERT(!fromHasDepthFormat);
-    //DVASSERT(!from->fbo.empty());
 
     if (to != nullptr)
     {
         bool toHasDepthFormat = (to->format == TextureFormat::TEXTURE_FORMAT_D16) || (to->format == TextureFormat::TEXTURE_FORMAT_D24S8);
         DVASSERT(!toHasDepthFormat);
-        //if (to->fbo.empty())
-        if (to->fbo == 0)
+        if (to->lastUsedFramebuffer == 0)
         {
             // force create frame-buffer object
             Handle colorTex = toTexture;
             TextureFace colorFace = TEXTURE_FACE_NONE;
             uint32 colorLevel = 0;
-
-            GetFrameBuffer(&colorTex, &colorFace, &colorLevel, 1, InvalidHandle);
+            Framebuffer framebuffer = GetFrameBuffer(&colorTex, &colorFace, &colorLevel, 1, InvalidHandle);
+            to->lastUsedFramebuffer = framebuffer.identifier;
         }
-        targetBuffer = to->fbo;
+        targetBuffer = to->lastUsedFramebuffer;
     }
 
-    _GLES2_Bound_FrameBuffer = from->fbo;
+    DVASSERT(from->lastUsedFramebuffer != 0);
+    _GLES2_Bound_FrameBuffer = from->lastUsedFramebuffer;
     GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, _GLES2_Bound_FrameBuffer));
     GL_CALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, targetBuffer));
 
@@ -1206,13 +1177,9 @@ void ReCreateAll()
     TextureGLES2Pool::ReCreateAll();
 }
 
-uint32
-NeedRestoreCount()
+uint32 NeedRestoreCount()
 {
     return TextureGLES2Pool::PendingRestoreCount();
 }
-
-} // namespace TextureGLES2
-
-//==============================================================================
-} // namespace rhi
+}
+}

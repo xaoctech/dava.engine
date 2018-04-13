@@ -1,5 +1,4 @@
-#ifndef __RHI_TYPE_H__
-#define __RHI_TYPE_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
@@ -1009,16 +1008,3 @@ inline bool ScissorRect::operator!=(const ScissorRect& v) const
 }
 
 } // namespace rhi
-
-//------------------------------------------------------------------------------
-//
-//
-
-
-
-
-
-
-
-
-#endif // __RHI_TYPE_H__

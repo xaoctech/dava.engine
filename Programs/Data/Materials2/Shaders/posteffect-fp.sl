@@ -65,9 +65,11 @@ uniform sampler2D depth; // Do not forget to pass this texture from c++ side.
 #endif
 
 #endif
+
 #if (ENABLE_COLOR_GRADING)
 uniform sampler2D colorGradingTable;
 #endif
+
 #if (DISPLAY_HEAT_MAP)
 uniform sampler2D heatmapTable;
 #endif
@@ -102,6 +104,20 @@ uniform sampler2D tex1;
 [material][b] property float2 texelOffset;
 
 #define GRAYSCALE_LUM 1
+
+#if (ENABLE_COLOR_GRADING)
+float3 ApplyColorGrading(in float3 color)
+{
+    float2 uvOffset = float2(0.5, 0.5);
+    float u = color.x / 16.0 + uvOffset.x / 256.0;
+    float v = color.y + uvOffset.y / 16.0;
+    float z0 = floor(color.z * 16.0) / 16.0;
+    float z1 = z0 + 1.0 / 16.0;
+    float3 sample0 = tex2D(colorGradingTable, saturate(float2(u + z0, v))).xyz;
+    float3 sample1 = tex2D(colorGradingTable, saturate(float2(u + z1, v))).xyz;
+    return lerp(sample0, sample1, (color.z - z0) * 16.0);
+}
+#endif
 
 #if TECH_COMBINE
 
@@ -150,7 +166,14 @@ float3 DilateDepth(float2 texcoord_depth)
 }
 #endif
 
-float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texClmp)
+struct TAAData
+{
+    float2 texelOffset;
+    float2 cameraDynamicRange;
+    float cameraTargetLuminance;
+};
+
+float3 ApplyTemporalAA(float2 texcoord, TAAData data, float luminanceHistoryValue, float4 texClmp)
 {
     float2 velocityUv = texcoord;
 #if TXAA_DEPTH_DILATION
@@ -163,25 +186,37 @@ float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texC
     float3 historySample = tex2D(history, historyUv).xyz;
     historySample = SRGBToLinear(historySample);
 
-    float3 s00 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, -texelOffset.y)).xyz;
-    float3 s01 = tex2D(hdrImage, texcoord + float2(0, -texelOffset.y)).xyz;
-    float3 s02 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, -texelOffset.y)).xyz;
-    float3 s10 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, 0)).xyz;
+    float3 s00 = tex2D(hdrImage, texcoord + float2(-data.texelOffset.x, -data.texelOffset.y)).xyz;
+    float3 s01 = tex2D(hdrImage, texcoord + float2(0, -data.texelOffset.y)).xyz;
+    float3 s02 = tex2D(hdrImage, texcoord + float2(+data.texelOffset.x, -data.texelOffset.y)).xyz;
+    float3 s10 = tex2D(hdrImage, texcoord + float2(-data.texelOffset.x, 0)).xyz;
     float3 s11 = tex2D(hdrImage, texcoord + float2(0, 0)).xyz;
-    float3 s12 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, 0)).xyz;
-    float3 s20 = tex2D(hdrImage, texcoord + float2(-texelOffset.x, +texelOffset.y)).xyz;
-    float3 s21 = tex2D(hdrImage, texcoord + float2(0, +texelOffset.y)).xyz;
-    float3 s22 = tex2D(hdrImage, texcoord + float2(+texelOffset.x, +texelOffset.y)).xyz;
+    float3 s12 = tex2D(hdrImage, texcoord + float2(+data.texelOffset.x, 0)).xyz;
+    float3 s20 = tex2D(hdrImage, texcoord + float2(-data.texelOffset.x, +data.texelOffset.y)).xyz;
+    float3 s21 = tex2D(hdrImage, texcoord + float2(0, +data.texelOffset.y)).xyz;
+    float3 s22 = tex2D(hdrImage, texcoord + float2(+data.texelOffset.x, +data.texelOffset.y)).xyz;
 
-    s00 = HDRtoLDR(s00, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
-    s01 = HDRtoLDR(s01, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
-    s02 = HDRtoLDR(s02, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
-    s10 = HDRtoLDR(s10, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
-    s11 = HDRtoLDR(s11, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
-    s12 = HDRtoLDR(s12, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
-    s20 = HDRtoLDR(s20, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
-    s21 = HDRtoLDR(s21, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
-    s22 = HDRtoLDR(s22, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    s00 = HDRtoLDR(s00, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    s01 = HDRtoLDR(s01, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    s02 = HDRtoLDR(s02, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    s10 = HDRtoLDR(s10, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    s11 = HDRtoLDR(s11, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    s12 = HDRtoLDR(s12, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    s20 = HDRtoLDR(s20, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    s21 = HDRtoLDR(s21, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    s22 = HDRtoLDR(s22, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+
+#if (ENABLE_COLOR_GRADING)
+    s00 = ApplyColorGrading(s00);
+    s01 = ApplyColorGrading(s01);
+    s02 = ApplyColorGrading(s02);
+    s10 = ApplyColorGrading(s10);
+    s11 = ApplyColorGrading(s11);
+    s12 = ApplyColorGrading(s12);
+    s20 = ApplyColorGrading(s20);
+    s21 = ApplyColorGrading(s21);
+    s22 = ApplyColorGrading(s22);
+#endif
 
 #if TXAA_YCOCG_SPACE
     historySample = RGBToYCoCg(historySample);
@@ -195,6 +230,7 @@ float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texC
     s21 = RGBToYCoCg(s21);
     s22 = RGBToYCoCg(s22);
 #endif
+    
     float3 crossMin = min(s01, s10);
     crossMin = min(crossMin, s11);
     crossMin = min(crossMin, s12);
@@ -245,8 +281,9 @@ float3 ApplyTemporalAA(float2 texcoord, float luminanceHistoryValue, float4 texC
 #else
     float3 temporalToRGB = temporal;
 #endif
-
-    temporalToRGB = LDRtoHDR(temporalToRGB, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, luminanceHistoryValue);
+    
+    temporalToRGB = LDRtoHDR(temporalToRGB, data.cameraDynamicRange.x, data.cameraDynamicRange.y, data.cameraTargetLuminance, luminanceHistoryValue);
+    
     return temporalToRGB;
 }
 #endif // ENABLE_TXAA
@@ -283,7 +320,13 @@ fragment_out fp_main(fragment_in input)
     float3 originalColor = hdr;
 
 #if ENABLE_TXAA
-    hdr = ApplyTemporalAA(input.varTexCoord0, input.luminanceHistoryValue, input.texClmp);
+    TAAData taaData;
+    {
+        taaData.texelOffset = texelOffset;
+        taaData.cameraDynamicRange = cameraDynamicRange;
+        taaData.cameraTargetLuminance = cameraTargetLuminance;
+    }
+    hdr = ApplyTemporalAA(input.varTexCoord0, taaData, input.luminanceHistoryValue, input.texClmp);
 #endif
 
     hdr = HDRtoLDR(hdr, cameraDynamicRange.x, cameraDynamicRange.y, cameraTargetLuminance, input.luminanceHistoryValue);
@@ -299,19 +342,10 @@ fragment_out fp_main(fragment_in input)
     }
 #endif
 
-#if (ENABLE_COLOR_GRADING)
-    {
-        float2 uvOffset = float2(0.5, 0.5);
-        float u = hdr.x / 16.0 + uvOffset.x / 256.0;
-        float v = hdr.y + uvOffset.y / 16.0;
-        float z0 = floor(hdr.z * 16.0) / 16.0;
-        float z1 = z0 + 1.0 / 16.0;
-        float3 sample0 = tex2D(colorGradingTable, saturate(float2(u + z0, v))).xyz;
-        float3 sample1 = tex2D(colorGradingTable, saturate(float2(u + z1, v))).xyz;
-        hdr = lerp(sample0, sample1, (hdr.z - z0) * 16.0);
-    }
+#if (ENABLE_COLOR_GRADING) && (ENABLE_TXAA == 0) // if TAA enabled - color grading applied in TAA part
+    hdr = ApplyColorGrading(hdr);
 #endif
-
+    
     fragment_out output;
 
 #if (DISPLAY_HEAT_MAP)

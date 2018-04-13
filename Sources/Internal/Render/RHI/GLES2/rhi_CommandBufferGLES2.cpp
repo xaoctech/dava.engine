@@ -650,13 +650,14 @@ void CommandBufferGLES2_t::Execute()
                 if (apply_fb)
                 {
                     Handle ds = (passCfg.UsingMSAA()) ? passCfg.depthStencilBuffer.multisampleTexture : passCfg.depthStencilBuffer.texture;
-                    GLuint fbo = TextureGLES2::GetFrameBuffer(rt, rt_face, rt_level, rt_count, ds);
-                    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
-                    _GLES2_Bound_FrameBuffer = fbo;
+                    TextureGLES2::Framebuffer framebuffer = TextureGLES2::GetFrameBuffer(rt, rt_face, rt_level, rt_count, ds);
+                    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer.identifier));
                     
-                    #if defined(__DAVAENGINE_MACOS__)
+                #if defined(__DAVAENGINE_MACOS__)
                     do_clear = true;
-                    #endif
+                #endif
+
+                    _GLES2_Bound_FrameBuffer = framebuffer.identifier;
                 }
 
 
@@ -1368,10 +1369,8 @@ static void _GLES2_ExecuteQueuedCommands(const CommonImpl::Frame& frame)
 #endif
 
     Trace("\n\n-------------------------------\nexecuting frame %u\n", frame_n);
-    for (std::vector<RenderPassGLES2_t *>::iterator p = pass.begin(), p_end = pass.end(); p != p_end; ++p)
+    for (RenderPassGLES2_t* pp : pass)
     {
-        RenderPassGLES2_t* pp = *p;
-
         for (uint32 b = 0; b != pp->cmdBuf.size(); ++b)
         {
             Handle cb_h = pp->cmdBuf[b];

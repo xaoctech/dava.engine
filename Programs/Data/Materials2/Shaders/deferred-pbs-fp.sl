@@ -15,6 +15,7 @@ fragment_in
     float3 tbnToWorld1 : TEXCOORD2;
     float4 tbnToWorld2 : TEXCOORD3;
     float4 projectedPosition : TEXCOORD4;
+    float3 toCamera : TEXCOORD5;
 #if (VERTEX_BAKED_AO)
     float vertexBakedAO : COLOR0;
 #endif
@@ -23,12 +24,20 @@ fragment_in
 #endif
 };
 
+#ensuredefined BAKE_IMPOSTER 0
+
 fragment_out
 {
+#if (BAKE_IMPOSTER)
+    float4 mask : SV_TARGET0;
+    float4 buffer0 : SV_TARGET1;
+    float4 buffer1 : SV_TARGET2;
+#else
     float4 color : SV_TARGET0;
     float4 normal : SV_TARGET1;
     float4 params : SV_TARGET2;
     float4 depth : SV_TARGET3;
+#endif
 };
 
 #ensuredefined FULL_NORMAL 0
@@ -58,6 +67,8 @@ fragment_out fp_main(fragment_in input)
     float4 albedoTintSample = tex2D(albedoTint, input.uv.zw);
     baseColorSample.xyz = lerp(baseColorSample.xyz, SoftLightBlend(baseColorSample.xyz, albedoTintSample.xyz), albedoTintSample.w);
 #endif
+    
+    baseColorSample.xyz *= baseColorScale.xyz;
 
     float4 normalMapSample = tex2D(normalmap, input.uv.xy);
 
@@ -75,15 +86,17 @@ fragment_out fp_main(fragment_in input)
     float directionalLightStaticShadow = 1.0;
 #endif
     
+    ambientOcclusion = saturate((ambientOcclusion + aoBias) * aoScale);
+
     float metallness = normalMapSample.w;
-    float roughness = normalMapSample.z;
+    float roughness = normalMapSample.z * roughnessScale;
    
 #if (VIEW_MODE & RESOLVE_NORMAL_MAP)
     float3 nts;
     {
     #if (FULL_NORMAL)
         nts = normalize(2.0 * normalMapSample.xyz - 1.0);
-        roughness = tex2D(roughnessTexture, input.uv.xy).x;
+        roughness = tex2D(roughnessTexture, input.uv.xy).x * roughnessScale;
     #else
         float2 xy = (2.0 * normalMapSample.xy - 1.0) * normalScale;
         nts = float3(xy, sqrt(1.0 - saturate(dot(xy, xy))));
@@ -97,7 +110,7 @@ fragment_out fp_main(fragment_in input)
 #if (FLIP_BACKFACE_NORMALS)
     n *= sign(input.tbnToWorld2.w);
 #endif
-
+    
 #if (TRANSMITTANCE)
     float flags = 1.0;
 #else
@@ -106,9 +119,27 @@ fragment_out fp_main(fragment_in input)
 #endif
     
     fragment_out output;
-    output.color = float4(baseColorSample.xyz * baseColorScale.xyz, 1.0 /* UNUSED!!! UNUSED!!! UNUSED!!! */);
-    output.normal = float4(n * 0.5 + 0.5, flags);
-    output.params = float4(roughness * roughnessScale, metallness, saturate((ambientOcclusion + aoBias) * aoScale), directionalLightStaticShadow);
-    output.depth = input.projectedPosition.z / input.projectedPosition.w * ndcToZMapping.x + ndcToZMapping.y;
+#if (BAKE_IMPOSTER)
+    {
+        float3 v = input.toCamera * float3(1.0, 1.0, 0.0);
+        
+        float3 b = float3(0.0, 0.0, 1.0);
+        float NdotB = dot(n, b);
+        
+        float3 t = normalize(cross(b, v));
+        float NdotT = dot(n, t);
+
+        output.mask = 1.0; // either 1 or discarded
+        output.buffer0 = float4(baseColorSample.xyz, ambientOcclusion);
+        output.buffer1 = float4(NdotT * 0.5 + 0.5, NdotB * 0.5 + 0.5, roughness, metallness);
+    }
+#else
+    {
+        output.color = float4(baseColorSample.xyz, 1.0 /* UNUSED!!! UNUSED!!! UNUSED!!! */);
+        output.normal = float4(n * 0.5 + 0.5, flags);
+        output.params = float4(roughness, metallness, ambientOcclusion, directionalLightStaticShadow);
+        output.depth = input.projectedPosition.z / input.projectedPosition.w * ndcToZMapping.x + ndcToZMapping.y;
+    }
+#endif
     return output;
 }

@@ -335,6 +335,11 @@ const void* DynamicBindings::GetDynamicParam(eUniformSemantic shaderSemantic)
     }
 
     DVASSERT(dynamicParameters[shaderSemantic].value != 0);
+    if (dynamicParameters[shaderSemantic].value == nullptr)
+    {
+        const static float emptyData[16] = {};
+        dynamicParameters[shaderSemantic].value = emptyData;
+    }
     return dynamicParameters[shaderSemantic].value;
 }
 

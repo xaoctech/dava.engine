@@ -45,8 +45,8 @@ void LandscapeEditorSystem::UpdateCursorPosition()
     isIntersectsLandscape = GetScene()->GetSystem<SceneCollisionSystem>()->LandRayTestFromCamera(landPos);
     if (isIntersectsLandscape)
     {
-        landPos.x = std::floor(landPos.x);
-        landPos.y = std::floor(landPos.y);
+        //landPos.x = std::floor(landPos.x);
+        //landPos.y = std::floor(landPos.y);
 
         const AABBox3& box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
 

@@ -1,8 +1,8 @@
 RenderTechnique:
     Layers: ["OpaqueRenderLayer"]
-    Shader: "~res:/Materials2/Shaders/materials"
+    Shader: "~res:/Materials2/Shaders/imposters"
     RenderState:
-        cullMode: "FACE_BACK"
+        cullMode: "NONE"
         depthFunc: "CMP_LESS"
         depthWrite: true
         depthTest: true
@@ -11,7 +11,7 @@ RenderTechnique:
             SupportedRenderFlows: ["HDRForward"]
         LDRForwardPass:
             SupportedRenderFlows: ["LDRForward"]
-            Shader: "~res:/Materials2/ShadersLDR/materials"
+            Shader: "~res:/Materials2/ShadersLDR/imposters"
         ForwardPassWithCombine:
             SupportedRenderFlows: ["TileBasedHDRForward"]
             UniqueDefines: ["FOWARD_WITH_COMBINE"]
@@ -26,11 +26,11 @@ RenderTechnique:
             UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
         LDRIBReflectionPass:
             SupportedRenderFlows: ["LDR"]
-            Shader: "~res:/Materials2/ShadersLDR/materials"
+            Shader: "~res:/Materials2/ShadersLDR/imposters"
             UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
         gBufferPass:
             SupportedRenderFlows: ["HDRDeferred"]
-            Shader: "~res:/Materials2/Shaders/deferred-pbs"
+            Shader: "~res:/Materials2/Shaders/deferred-imposters"
             Stencil:
                 enabled: true
                 failBack: "STENCILOP_REPLACE"
@@ -45,7 +45,7 @@ RenderTechnique:
                 zFailFront: "STENCILOP_REPLACE"
         gBufferFetchPass:
             SupportedRenderFlows: ["TileBasedHDRDeferred"]
-            Shader: "~res:/Materials2/Shaders/deferred-pbs"
+            Shader: "~res:/Materials2/Shaders/deferred-imposters"
             UniqueDefines: ["USE_FRAMEBUFFER_FETCH"]
             Stencil:
                 enabled: true
@@ -65,7 +65,3 @@ RenderTechnique:
             RenderState:
                 depthFunc: "CMP_EQUAL"
                 depthWrite: false
-        ImposterPass:
-            SupportedRenderFlows: ["all"]
-            UniqueDefines: ["BAKE_IMPOSTER"]
-            Shader: "~res:/Materials2/Shaders/deferred-pbs"

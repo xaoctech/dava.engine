@@ -17,11 +17,10 @@ ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy_, co
     undoImageMask.reserve(4);
     redoImageMask.reserve(4);
 
+    Rect2i updatedRecti(int32(updatedRect.x), int32(updatedRect.y), int32(updatedRect.dx), int32(updatedRect.dy));
     for (uint32 i = 0; i < landscapeProxy->GetLayersCount(); ++i)
     {
-        ScopedPtr<Image> currentImageMask(landscapeProxy->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK)->CreateImageFromMemory());
-        redoImageMask.push_back(Image::CopyImageRegion(currentImageMask, updatedRect));
-
+        redoImageMask.push_back(landscapeProxy->GetLandscapeTexture(i, Landscape::TEXTURE_TILEMASK)->CreateImageFromRegion(updatedRecti));
         undoImageMask.push_back(Image::CopyImageRegion(landscapeProxy->GetTilemaskImageCopy(i), updatedRect));
     }
 }
@@ -70,19 +69,17 @@ void ModifyTilemaskCommand::Redo()
 
 void ModifyTilemaskCommand::InvalidateLandscapePart()
 {
-    Rect fullRect;
-    for (uint32 i = 0; i < landscapeProxy->GetLayersCount(); ++i)
-    {
-        Texture* tilemask = landscapeProxy->GetTilemaskDrawTexture(i, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
-        Rect rect = updatedRect;
-        rect.x /= tilemask->GetWidth();
-        rect.dx /= tilemask->GetWidth();
-        rect.y /= tilemask->GetHeight();
-        rect.dy /= tilemask->GetHeight();
-        rect.y = 1.f - (rect.y + rect.dy);
-        fullRect.Combine(rect);
-    }
-    landscapeProxy->GetBaseLandscape()->InvalidatePages(fullRect);
+    //GFX_COMPLETE layer index
+    Texture* tilemask = landscapeProxy->GetTilemaskDrawTexture(0, LandscapeProxy::TILEMASK_TEXTURE_SOURCE);
+
+    Rect rect = updatedRect;
+    rect.x /= tilemask->GetWidth();
+    rect.dx /= tilemask->GetWidth();
+    rect.y /= tilemask->GetHeight();
+    rect.dy /= tilemask->GetHeight();
+    rect.y = 1.f - (rect.y + rect.dy);
+
+    landscapeProxy->GetBaseLandscape()->InvalidatePages(rect);
 }
 
 void ModifyTilemaskCommand::ApplyImageToTexture(Image* image, Texture* dstTex)

@@ -1,5 +1,4 @@
-#ifndef __RHI_PUBLIC_H__
-#define __RHI_PUBLIC_H__
+#pragma once
 
 #include "rhi_Type.h"
 
@@ -160,25 +159,25 @@ template <ResourceType T>
 class ResourceHandle
 {
 public:
-    ResourceHandle()
-        : handle(InvalidHandle)
-    {
-    }
+    ResourceHandle() = default;
+
     explicit ResourceHandle(Handle h)
         : handle(h)
     {
     }
+
     bool IsValid() const
     {
         return handle != InvalidHandle;
     }
+
     operator Handle() const
     {
         return handle;
     }
 
 private:
-    Handle handle;
+    Handle handle = InvalidHandle;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -345,63 +344,41 @@ void EndRenderPass(HRenderPass pass); // no explicit render-pass 'release' neede
 
 struct Packet
 {
-    enum
+    enum : uint32
     {
         OPT_OVERRIDE_SCISSOR = 1 << 0,
         OPT_OVERRIDE_VIEWPORT = 1 << 2,
         OPT_WIREFRAME = 1 << 1
     };
 
-    uint32 vertexStreamCount;
+    uint32 vertexStreamCount = 0;
     HVertexBuffer vertexStream[MAX_VERTEX_STREAM_COUNT];
-    uint32 vertexCount;
-    uint32 baseVertex;
-    uint32 startIndex;
-    uint32 vertexLayoutUID;
+    uint32 vertexCount = 0;
+    uint32 baseVertex = 0;
+    uint32 startIndex = 0;
+    uint32 vertexLayoutUID = VertexLayout::InvalidUID;
     HIndexBuffer indexBuffer;
     HPipelineState renderPipelineState;
     HDepthStencilState depthStencilState;
     HSamplerState samplerState;
-    CullMode cullMode;
+    CullMode cullMode = CULL_NONE;
     ScissorRect scissorRect;
     Viewport viewportRect;
-    uint32 vertexConstCount;
+    uint32 vertexConstCount = 0;
     HConstBuffer vertexConst[MAX_CONST_BUFFER_COUNT];
-    uint32 fragmentConstCount;
+    uint32 fragmentConstCount = 0;
     HConstBuffer fragmentConst[MAX_CONST_BUFFER_COUNT];
     HTextureSet textureSet;
-    PrimitiveType primitiveType;
-    uint32 primitiveCount;
-    uint32 instanceCount;
-    uint32 baseInstance;
-    uint32 queryIndex;
+    PrimitiveType primitiveType = PRIMITIVE_TRIANGLELIST;
+    uint32 primitiveCount = 0;
+    uint32 instanceCount = 0;
+    uint32 baseInstance = 0;
+    uint32 queryIndex = DAVA::InvalidIndex;
     HPerfQuery perfQueryStart;
     HPerfQuery perfQueryEnd;
-    uint32 options;
-    uint32 userFlags; //ignored by RHI
-    const char* debugMarker;
-
-    Packet()
-        : vertexStreamCount(0)
-        , vertexCount(0)
-        , baseVertex(0)
-        , startIndex(0)
-        , vertexLayoutUID(VertexLayout::InvalidUID)
-        , depthStencilState(InvalidHandle)
-        , samplerState(InvalidHandle)
-        , cullMode(CULL_CCW)
-        , vertexConstCount(0)
-        , fragmentConstCount(0)
-        , primitiveType(PRIMITIVE_TRIANGLELIST)
-        , primitiveCount(0)
-        , instanceCount(0)
-        , baseInstance(0)
-        , queryIndex(DAVA::InvalidIndex)
-        , options(0)
-        , userFlags(0)
-        , debugMarker(nullptr)
-    {
-    }
+    uint32 options = 0;
+    uint32 userFlags = 0; // ignored by RHI
+    const char* debugMarker = nullptr;
 };
 
 void BeginPacketList(HPacketList packetList);
@@ -413,5 +390,3 @@ uint32 NativeColorRGBA(float r, float g, float b, float a = 1.0f);
 uint32 NativeColorRGBA(uint32 color); //0xAABBGGRR to api-native;
 
 } // namespace rhi
-
-#endif // __RHI_PUBLIC_H__

@@ -440,12 +440,12 @@ void ReflectionRenderer::DrawDebugInfo()
         debugMaterial->AddTexture(envTextureName, debugDrawProbe->GetCurrentTexture());
 
     QuadRenderer::Options options;
-    options.loadAction = rhi::LOADACTION_LOAD;
+    options.dstLoadActions[0] = rhi::LOADACTION_LOAD;
     options.material = debugMaterial;
     options.srcTexture = debugDrawProbe->GetCurrentTexture()->handle;
     options.srcTexSize = Vector2(1.0f, 1.0f);
     options.srcRect = Rect2f(0.0f, 0.0f, 1.0f, 1.0f);
-    options.dstTexture = rhi::HTexture();
+    options.dstTextures[0] = rhi::HTexture();
     options.dstTexSize = Vector2(static_cast<float>(Renderer::GetFramebufferWidth()), static_cast<float>(Renderer::GetFramebufferHeight()));
     options.renderPassPriority = -200;
     options.dstRect = Rect2f(xPos, yPos, debugRenderWidth, debugRenderHeight);
