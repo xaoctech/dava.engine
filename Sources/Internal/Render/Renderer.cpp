@@ -136,6 +136,12 @@ void Initialize(rhi::Api _api, rhi::InitParam& params)
 #endif //android
 
     Texture::SetGPULoadingOrder(gpuLoadingOrder);
+
+    runtimeTextures.GetRuntimeTexture(RuntimeTextures::TEXTURE_INDIRECT_SPECULAR_LOOKUP);
+    runtimeTextures.GetRuntimeTexture(RuntimeTextures::TEXTURE_SCREEN_SPACE_NOISE);
+    runtimeTextures.GetRuntimeTexture(RuntimeTextures::TEXTURE_ATMOSPHERE_TRANSMITTANCE);
+    runtimeTextures.GetRuntimeTexture(RuntimeTextures::TEXTURE_ATMOSPHERE_SCATTERING);
+
     Logger::Info("MAX FPS: %d", rhi::DeviceCaps().maxFPS);
 }
 

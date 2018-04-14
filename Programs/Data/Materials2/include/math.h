@@ -242,9 +242,9 @@ float PhaseFunctionHenyeyGreenstein(float cosTheta, float g)
     return (a1 / a2) * (b1 / b2);
 }
 
-float2 ScatteringPhaseFunctions(float3 view, float3 light, float anisotropy)
+float2 ScatteringPhaseFunctions(float3 viewVector, float3 lightVector, float anisotropy)
 {
-    float angleCosine = dot(view, light);
+    float angleCosine = dot(viewVector, lightVector);
 
     float2 result;
     result.x = PhaseFunctionRayleigh(angleCosine);

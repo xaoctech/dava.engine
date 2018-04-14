@@ -142,6 +142,69 @@ rhi::HTexture ServiceTextures::GeneratePointLightLookupTexture(uint32 faceSize)
     return rhi::CreateTexture(desc);
 }
 
+rhi::HTexture ServiceTextures::GenerateAtmosphericTransmittanceTexture(uint32 width, uint32 height)
+{
+    rhi::Texture::Descriptor desc;
+    desc.autoGenMipmaps = false;
+    desc.cpuAccessRead = true;
+    desc.isRenderTarget = true;
+    desc.format = rhi::TEXTURE_FORMAT_RGBA32F;
+    desc.height = height;
+    desc.width = width;
+    rhi::HTexture result = rhi::CreateTexture(desc);
+
+    ScopedPtr<NMaterial> material(new NMaterial());
+    material->SetFXName(FastName("~res:/Materials2/AtmospherePrecomputeTransmittance.material"));
+    material->PreBuildMaterial(FastName("PrecomputeTransmittance"));
+
+    QuadRenderer().Render("PrecomputeTransmittance", material, rhi::Viewport(0, 0, width, height), result, rhi::TextureFace::TEXTURE_FACE_NONE, 0, rhi::LOADACTION_CLEAR, +50);
+
+    Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [result, width, height](rhi::HSyncObject obj) {
+        void* data = rhi::MapTexture(result);
+        {
+            ScopedPtr<Image> img(Image::CreateFromData(width, height, PixelFormat::FORMAT_RGBA32F, reinterpret_cast<uint8*>(data)));
+            ImageSystem::Save("~doc:/transmittance.pvr", img, PixelFormat::FORMAT_RGBA32F);
+        }
+        rhi::UnmapTexture(result);
+    });
+
+    return result;
+}
+
+rhi::HTexture ServiceTextures::GenerateAtmosphericScatteringTexture(uint32 width, uint32 height, uint32 depth)
+{
+    uint32 totalWidth = width * depth;
+
+    rhi::Texture::Descriptor desc;
+    desc.autoGenMipmaps = false;
+    desc.cpuAccessRead = true;
+    desc.isRenderTarget = true;
+    desc.format = rhi::TEXTURE_FORMAT_RGBA32F;
+    desc.height = height;
+    desc.width = totalWidth;
+    rhi::HTexture result = rhi::CreateTexture(desc);
+
+    float floatDepth[] = { static_cast<float>(depth) };
+
+    ScopedPtr<NMaterial> material(new NMaterial());
+    material->SetFXName(FastName("~res:/Materials2/AtmospherePrecomputeScattering.material"));
+    material->AddProperty(FastName("layersCount"), floatDepth, rhi::ShaderProp::TYPE_FLOAT1, 1);
+    material->PreBuildMaterial(FastName("PrecomputeScattering"));
+
+    QuadRenderer().Render("PrecomputeScattering", material, rhi::Viewport(0, 0, totalWidth, height), result, rhi::TextureFace::TEXTURE_FACE_NONE, 0, rhi::LOADACTION_CLEAR, +50);
+
+    Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [result, totalWidth, height](rhi::HSyncObject obj) {
+        void* data = rhi::MapTexture(result);
+        {
+            ScopedPtr<Image> img(Image::CreateFromData(totalWidth, height, PixelFormat::FORMAT_RGBA32F, reinterpret_cast<uint8*>(data)));
+            ImageSystem::Save("~doc:/scattering.pvr", img, PixelFormat::FORMAT_RGBA32F);
+        }
+        rhi::UnmapTexture(result);
+    });
+
+    return result;
+}
+
 /*
  * Details implementation
  */

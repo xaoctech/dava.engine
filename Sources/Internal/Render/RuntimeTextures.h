@@ -12,7 +12,7 @@ namespace DAVA
 class RuntimeTextures
 {
 public:
-    enum eRuntimeTextureSemantic
+    enum eRuntimeTextureSemantic : uint32
     {
         TEXTURE_STATIC = 0,
         TEXTURE_REFLECTION,
@@ -36,6 +36,9 @@ public:
         TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER,
 
         TEXTURE_VELOCITY,
+
+        TEXTURE_ATMOSPHERE_TRANSMITTANCE,
+        TEXTURE_ATMOSPHERE_SCATTERING,
 
         RUNTIME_TEXTURES_END,
         RUNTIME_TEXTURES_COUNT = RUNTIME_TEXTURES_END,
