@@ -99,7 +99,7 @@ void ImpostersModule::Bake()
     SceneData* sceneData = GetAccessor()->GetActiveContext()->GetData<SceneData>();
     FileDialogParams params;
     params.dir = QString::fromStdString(sceneData->GetScenePath().GetDirectory().GetAbsolutePathname());
-    params.filters = PathDescriptor::GetPathDescriptor(PathDescriptor::PATH_IMAGE).fileFilter;
+    params.filters = "PVR Images (*.pvr)";
     params.title = "Imposter texture";
 
     String destination = GetUI()->GetSaveFileName(mainWindowKey, params).toStdString();
@@ -227,31 +227,95 @@ void ImpostersModule::BakeRenderObject(DAVA::Entity* sourceEntity, DAVA::RenderO
 
     Size2i frameSize = Size2i(baseFrameSize, baseFrameSize * std::min(4, int32(std::exp2(cameraInvAspect - 1.0f))));
 
-    ScopedPtr<Texture> maskTexture(Texture::CreateFBO(superSamplingScale * frameSize.dx * IMPOSTER_FRAME_COUNT, superSamplingScale * frameSize.dy, PixelFormat::FORMAT_RGBA8888, true));
-    ScopedPtr<Texture> buffer0Texture(Texture::CreateFBO(superSamplingScale * frameSize.dx * IMPOSTER_FRAME_COUNT, superSamplingScale * frameSize.dy, PixelFormat::FORMAT_RGBA8888, false));
-    ScopedPtr<Texture> buffer1Texture(Texture::CreateFBO(superSamplingScale * frameSize.dx * IMPOSTER_FRAME_COUNT, superSamplingScale * frameSize.dy, PixelFormat::FORMAT_RGBA8888, false));
+    uint32 levelCount = 0;
+    uint32 maxDimension = std::max(frameSize.dx * IMPOSTER_FRAME_COUNT, frameSize.dy);
+    while (maxDimension >= 1)
+    {
+        maxDimension /= 2;
+        levelCount++;
+    }
 
-    ScopedPtr<Texture> albedoTexture(Texture::CreateFBO(frameSize.dx * IMPOSTER_FRAME_COUNT, frameSize.dy, PixelFormat::FORMAT_RGBA8888, false));
-    ScopedPtr<Texture> normalTexture(Texture::CreateFBO(frameSize.dx * IMPOSTER_FRAME_COUNT, frameSize.dy, PixelFormat::FORMAT_RGBA8888, false));
+    Texture::FBODescriptor fboDesc;
+    fboDesc.width = superSamplingScale * frameSize.dx * IMPOSTER_FRAME_COUNT;
+    fboDesc.height = superSamplingScale * frameSize.dy;
+    fboDesc.format = PixelFormat::FORMAT_RGBA8888;
+    fboDesc.mipLevelsCount = 1;
+    fboDesc.needDepth = true;
+    fboDesc.needPixelReadback = false;
+    fboDesc.ensurePowerOf2 = false;
+    ScopedPtr<Texture> maskTexture(Texture::CreateFBO(fboDesc));
+
+    fboDesc.needDepth = false;
+    ScopedPtr<Texture> buffer0Texture(Texture::CreateFBO(fboDesc));
     buffer0Texture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+
+    ScopedPtr<Texture> buffer1Texture(Texture::CreateFBO(fboDesc));
     buffer1Texture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+
+    fboDesc.width = frameSize.dx * IMPOSTER_FRAME_COUNT;
+    fboDesc.height = frameSize.dy;
+    fboDesc.mipLevelsCount = levelCount;
+    fboDesc.needPixelReadback = true;
+    ScopedPtr<Texture> albedoTexture(Texture::CreateFBO(fboDesc)); // frameSize.dx * IMPOSTER_FRAME_COUNT, frameSize.dy, PixelFormat::FORMAT_RGBA8888, false));
+    ScopedPtr<Texture> normalTexture(Texture::CreateFBO(fboDesc)); // frameSize.dx * IMPOSTER_FRAME_COUNT, frameSize.dy, PixelFormat::FORMAT_RGBA8888, false));
 
     rhi::HSyncObject sync = rhi::CreateSyncObject();
 
-    Renderer::RegisterSyncCallback(sync, [albedoPath, normalPath, albedoTexture, normalTexture, material](rhi::HSyncObject sync) mutable {
+    Renderer::RegisterSyncCallback(sync, [albedoPath, normalPath, albedoTexture, normalTexture, material, levelCount](rhi::HSyncObject sync) mutable {
+        Vector<Image*> albedoImages;
+        Vector<Image*> normalImages;
+        for (uint32 i = 0; i < levelCount; ++i)
         {
-            ScopedPtr<Image> image(albedoTexture->CreateImageFromMemory());
-            ImageSystem::Save(albedoPath, image);
+            uint32 width = std::max(1u, albedoTexture->width >> i);
+            uint32 height = std::max(1u, albedoTexture->height >> i);
+            {
+                void* mappedData = rhi::MapTexture(albedoTexture->handle, i);
+                albedoImages.emplace_back(Image::CreateFromData(width, height, albedoTexture->GetFormat(), static_cast<uint8*>(mappedData)));
+                rhi::UnmapTexture(albedoTexture->handle);
+            }
+            {
+                void* mappedData = rhi::MapTexture(normalTexture->handle, i);
+                normalImages.emplace_back(Image::CreateFromData(width, height, normalTexture->GetFormat(), static_cast<uint8*>(mappedData)));
+                rhi::UnmapTexture(normalTexture->handle);
+            }
+        }
+
+        {
+            ImageSystem::Save(albedoPath, albedoImages);
             RETextureDescriptorUtils::CreateOrUpdateDescriptor(albedoPath);
+            //*
+            TextureDescriptor* desc = TextureDescriptor::CreateFromFile(albedoPath);
+            desc->drawSettings.magFilter = rhi::TEXFILTER_NEAREST;
+            desc->drawSettings.minFilter = rhi::TEXFILTER_NEAREST;
+            desc->drawSettings.mipFilter = rhi::TEXMIPFILTER_LINEAR;
+            desc->SetGenerateMipmaps(false);
+            desc->Save();
+            SafeDelete(desc);
+            // */
         }
         material->AddTexture(FastName("albedo"), ScopedPtr<Texture>(Texture::CreateFromFile(albedoPath)));
+
         {
-            ScopedPtr<Image> image(normalTexture->CreateImageFromMemory());
-            ImageSystem::Save(normalPath, image);
+            ImageSystem::Save(normalPath, normalImages);
             RETextureDescriptorUtils::CreateOrUpdateDescriptor(normalPath);
+            //*
+            TextureDescriptor* desc = TextureDescriptor::CreateFromFile(normalPath);
+            desc->drawSettings.magFilter = rhi::TEXFILTER_NEAREST;
+            desc->drawSettings.minFilter = rhi::TEXFILTER_NEAREST;
+            desc->drawSettings.mipFilter = rhi::TEXMIPFILTER_LINEAR;
+            desc->SetGenerateMipmaps(false);
+            desc->Save();
+            SafeDelete(desc);
+            // */
         }
         material->AddTexture(FastName("normalmap"), ScopedPtr<Texture>(Texture::CreateFromFile(normalPath)));
-        
+
+        for (Image*& img : albedoImages)
+            SafeRelease(img);
+
+        for (Image*& img : normalImages)
+            SafeRelease(img);
+
         material.reset(nullptr);
         albedoTexture.reset(nullptr);
         normalTexture.reset(nullptr);
@@ -322,25 +386,37 @@ void ImpostersModule::BakeRenderObject(DAVA::Entity* sourceEntity, DAVA::RenderO
     rhi::EndPacketList(packetList);
     rhi::EndRenderPass(renderPass);
 
+    Vector<QuadRenderer::Options> processingQueue;
+    processingQueue.reserve(levelCount);
+    for (uint32 i = 0; i < levelCount; ++i)
     {
-        QuadRenderer quadRenderer;
-        QuadRenderer::Options options;
+        uint32 width = std::max(1u, albedoTexture->width >> i);
+        uint32 height = std::max(1u, albedoTexture->height >> i);
+
+        processingQueue.emplace_back();
+        QuadRenderer::Options& options = processingQueue.back();
         options.material = dilationMaterial;
         options.dstTextures[0] = albedoTexture->handle;
         options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_CLEAR;
+        options.dstTextureLevels[0] = i;
         options.dstTextures[1] = normalTexture->handle;
         options.dstLoadActions[1] = rhi::LoadAction::LOADACTION_CLEAR;
-        options.dstTexSize = Vector2(albedoTexture->width, albedoTexture->height);
-        options.dstRect = Rect2f(0.0f, 0.0f, albedoTexture->width, albedoTexture->height);
+        options.dstTextureLevels[1] = i;
+        options.dstTexSize = Vector2(width, height);
+        options.dstRect = Rect2f(0.0f, 0.0f, width, height);
+
         options.srcTexture = buffer0Texture->handle;
         options.srcTexSize = Vector2(buffer0Texture->width, buffer0Texture->height);
         options.srcRect = Rect2f(0.0f, 0.0f, buffer0Texture->width, buffer0Texture->height);
         options.textureSet = RhiUtils::FragmentTextureSet({ maskTexture->handle, buffer0Texture->handle, buffer1Texture->handle });
         options.renderPassPriority = 4;
         options.renderPassName = "Imposter filtering";
-        options.syncObject = sync;
-        quadRenderer.Render(options);
     }
+    processingQueue.back().syncObject = sync;
+
+    QuadRenderer quadRenderer;
+    for (const QuadRenderer::Options& options : processingQueue)
+        quadRenderer.Render(options);
 
 #if (IMPOSTER_MODULE_CREATE_DEBUG_OBJECT)
 

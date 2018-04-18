@@ -215,7 +215,7 @@ public:
 
     Compression compression[GPU_FAMILY_COUNT];
 
-    static Array<ImageFormat, 6> sourceTextureTypes;
+    static Array<ImageFormat, 7> sourceTextureTypes;
     static Array<ImageFormat, 2> compressedTextureTypes;
 
     eGPUFamily gpu = eGPUFamily::GPU_ORIGIN;
