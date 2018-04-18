@@ -32,7 +32,7 @@ public:
     DAVA::String WriteToString() const;
 
 private:
-    DAVA::Vector<DAVA::YamlNode*> nodesStack;
+    DAVA::Vector<DAVA::RefPtr<DAVA::YamlNode>> nodesStack;
 };
 
 

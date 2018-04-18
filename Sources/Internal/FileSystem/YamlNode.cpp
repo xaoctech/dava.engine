@@ -4,31 +4,32 @@
 #include "Utils/Utils.h"
 #include "Utils/UTF8Utils.h"
 #include "Utils/StringFormat.h"
+#include <Base/RefPtrUtils.h>
 #include "Base/Type.h"
 #include "Reflection/ReflectedTypeDB.h"
 
 namespace DAVA
 {
 static const String EMPTY_STRING = "";
-static const Vector<YamlNode*> EMPTY_VECTOR;
-static const UnorderedMap<String, YamlNode*> EMPTY_MAP = UnorderedMap<String, YamlNode*>();
+static const Vector<RefPtr<YamlNode>> EMPTY_VECTOR;
+static const UnorderedMap<String, RefPtr<YamlNode>> EMPTY_MAP = UnorderedMap<String, RefPtr<YamlNode>>();
 
-YamlNode* YamlNode::CreateStringNode()
+RefPtr<YamlNode> YamlNode::CreateStringNode()
 {
-    YamlNode* node = new YamlNode(TYPE_STRING);
+    RefPtr<YamlNode> node = MakeRef<YamlNode>(TYPE_STRING);
     return node;
 }
 
-YamlNode* YamlNode::CreateArrayNode(eArrayRepresentation representation /* = AR_FLOW_REPRESENTATION*/)
+RefPtr<YamlNode> YamlNode::CreateArrayNode(eArrayRepresentation representation /* = AR_FLOW_REPRESENTATION*/)
 {
-    YamlNode* node = new YamlNode(TYPE_ARRAY);
+    RefPtr<YamlNode> node = MakeRef<YamlNode>(TYPE_ARRAY);
     node->objectArray->style = representation;
     return node;
 }
 
-YamlNode* YamlNode::CreateMapNode(bool orderedSave /* = true*/, eMapRepresentation valRepresentation /*= MR_BLOCK_REPRESENTATION*/, eStringRepresentation keyRepresentation /*= SR_PLAIN_REPRESENTATION*/)
+RefPtr<YamlNode> YamlNode::CreateMapNode(bool orderedSave /* = true*/, eMapRepresentation valRepresentation /*= MR_BLOCK_REPRESENTATION*/, eStringRepresentation keyRepresentation /*= SR_PLAIN_REPRESENTATION*/)
 {
-    YamlNode* node = new YamlNode(TYPE_MAP);
+    RefPtr<YamlNode> node = MakeRef<YamlNode>(TYPE_MAP);
     node->objectMap->style = valRepresentation;
     node->objectMap->keyStyle = keyRepresentation;
     node->objectMap->orderedSave = orderedSave;
@@ -68,23 +69,12 @@ YamlNode::~YamlNode()
     break;
     case TYPE_ARRAY:
     {
-        size_t size = objectArray->array.size();
-        for (size_t k = 0; k < size; ++k)
-        {
-            SafeRelease(objectArray->array[k]);
-        }
         objectArray->array.clear();
         SafeDelete(objectArray);
     }
     break;
     case TYPE_MAP:
     {
-        UnorderedMap<String, YamlNode *>::iterator iter = objectMap->ordered.begin(),
-                                                   end = objectMap->ordered.end();
-        for (; iter != end; ++iter)
-        {
-            SafeRelease(iter->second);
-        }
         objectMap->ordered.clear();
         objectMap->unordered.clear();
         SafeDelete(objectMap);
@@ -310,7 +300,7 @@ VariantType YamlNode::AsVariantType() const
 {
     VariantType retValue;
 
-    const UnorderedMap<String, YamlNode*>& mapFromNode = AsMap();
+    const auto& mapFromNode = AsMap();
 
     for (auto it = mapFromNode.begin(); it != mapFromNode.end(); ++it)
     {
@@ -370,7 +360,7 @@ VariantType YamlNode::AsVariantType() const
         }
         else if (innerTypeName == DAVA::VariantType::TYPENAME_BYTE_ARRAY)
         {
-            const Vector<YamlNode*>& byteArrayNoodes = it->second->AsVector();
+            const auto& byteArrayNoodes = it->second->AsVector();
             int32 size = static_cast<int32>(byteArrayNoodes.size());
             uint8* innerArray = new uint8[size];
             for (int32 i = 0; i < size; ++i)
@@ -677,7 +667,7 @@ Any YamlNode::AsAny(const Reflection& ref) const
     return Any();
 }
 
-const Vector<YamlNode*>& YamlNode::AsVector() const
+const Vector<RefPtr<YamlNode>>& YamlNode::AsVector() const
 {
     DVASSERT(GetType() == TYPE_ARRAY);
     if (GetType() == TYPE_ARRAY)
@@ -686,7 +676,7 @@ const Vector<YamlNode*>& YamlNode::AsVector() const
     return EMPTY_VECTOR;
 }
 
-const UnorderedMap<String, YamlNode*>& YamlNode::AsMap() const
+const UnorderedMap<String, RefPtr<YamlNode>>& YamlNode::AsMap() const
 {
     DVASSERT(GetType() == TYPE_MAP);
     if (GetType() == TYPE_MAP)
@@ -699,13 +689,13 @@ const YamlNode* YamlNode::Get(uint32 index) const
 {
     if (GetType() == TYPE_ARRAY)
     {
-        return objectArray->array[index];
+        return objectArray->array[index].Get();
     }
     else if (GetType() == TYPE_MAP)
     {
-        return objectMap->unordered[index].second;
+        return objectMap->unordered[index].second.Get();
     }
-    return NULL;
+    return nullptr;
 }
 
 const String& YamlNode::GetItemKeyName(uint32 index) const
@@ -726,7 +716,7 @@ const YamlNode* YamlNode::Get(const String& name) const
         auto iter = objectMap->ordered.find(name);
         if (iter != objectMap->ordered.end())
         {
-            return iter->second;
+            return iter->second.Get();
         }
     }
     return NULL;
@@ -738,7 +728,7 @@ struct EqualToFirst
         : value(strValue)
     {
     }
-    bool operator()(const std::pair<String, YamlNode*>& val)
+    bool operator()(const std::pair<String, RefPtr<YamlNode>>& val)
     {
         return val.first == value;
     }
@@ -752,10 +742,9 @@ void YamlNode::RemoveNodeFromMap(const String& name)
     if (iter == objectMap->ordered.end())
         return;
 
-    SafeRelease(iter->second);
     objectMap->ordered.erase(iter);
 
-    Vector<std::pair<String, YamlNode*>>& array = objectMap->unordered;
+    auto& array = objectMap->unordered;
     array.erase(std::remove_if(array.begin(), array.end(), EqualToFirst(name)), array.end());
 }
 YamlNode::eStringRepresentation YamlNode::GetStringRepresentation() const
@@ -807,37 +796,37 @@ void YamlNode::InternalSetToString(const String& value)
 
 void YamlNode::InternalAddToMap(const String& name, const VariantType& varType, bool rewritePreviousValue)
 {
-    YamlNode* node = CreateNodeFromVariantType(varType);
+    RefPtr<YamlNode> node = CreateNodeFromVariantType(varType);
     InternalAddNodeToMap(name, node, rewritePreviousValue);
 }
 
 void YamlNode::InternalAddToMap(const String& name, const String& value, bool rewritePreviousValue)
 {
-    YamlNode* node = CreateStringNode();
+    RefPtr<YamlNode> node = CreateStringNode();
     node->InternalSetString(value, SR_DOUBLE_QUOTED_REPRESENTATION);
     InternalAddNodeToMap(name, node, rewritePreviousValue);
 }
 
 void YamlNode::InternalAddToArray(const VariantType& varType)
 {
-    YamlNode* node = CreateNodeFromVariantType(varType);
+    RefPtr<YamlNode> node = CreateNodeFromVariantType(varType);
     InternalAddNodeToArray(node);
 }
 
 void YamlNode::InternalAddToArray(const String& value)
 {
-    YamlNode* node = CreateStringNode();
+    RefPtr<YamlNode> node = CreateStringNode();
     node->InternalSetString(value, SR_DOUBLE_QUOTED_REPRESENTATION);
     InternalAddNodeToArray(node);
 }
 
-void YamlNode::InternalAddNodeToArray(YamlNode* node)
+void YamlNode::InternalAddNodeToArray(const RefPtr<YamlNode>& node)
 {
     DVASSERT(GetType() == TYPE_ARRAY);
     objectArray->array.push_back(node);
 }
 
-void YamlNode::InternalAddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue)
+void YamlNode::InternalAddNodeToMap(const String& name, const RefPtr<YamlNode>& node, bool rewritePreviousValue)
 {
     DVASSERT(GetType() == TYPE_MAP);
     if (rewritePreviousValue)
@@ -846,8 +835,8 @@ void YamlNode::InternalAddNodeToMap(const String& name, YamlNode* node, bool rew
     }
 
     DVASSERT(objectMap->ordered.find(name) == objectMap->ordered.end(), Format("YamlNode::InternalAddNodeToMap: map must have the unique key, \"%s\" is already there!", name.c_str()).c_str());
-    objectMap->ordered.insert(std::pair<String, YamlNode*>(name, node));
-    objectMap->unordered.push_back(std::pair<String, YamlNode*>(name, node));
+    objectMap->ordered.insert(std::make_pair(name, node));
+    objectMap->unordered.push_back(std::make_pair(name, node));
 }
 
 void YamlNode::InternalSetString(const String& value, eStringRepresentation style /* = SR_DOUBLE_QUOTED_REPRESENTATION*/)
@@ -861,7 +850,7 @@ void YamlNode::InternalSetMatrix(const float32* array, uint32 dimension)
 {
     for (uint32 i = 0; i < dimension; ++i)
     {
-        YamlNode* rowNode = CreateArrayNode();
+        RefPtr<YamlNode> rowNode = CreateArrayNode();
         rowNode->InternalSetVector(&array[i * dimension], dimension);
         InternalAddNodeToArray(rowNode);
     }
@@ -873,7 +862,7 @@ void YamlNode::InternalSetVector(const float32* array, uint32 dimension)
     objectArray->array.reserve(dimension);
     for (uint32 i = 0; i < dimension; ++i)
     {
-        YamlNode* innerNode = CreateNodeFromVariantType(VariantType(array[i]));
+        RefPtr<YamlNode> innerNode = CreateNodeFromVariantType(VariantType(array[i]));
         InternalAddNodeToArray(innerNode);
     }
     objectArray->style = AR_FLOW_REPRESENTATION;
@@ -884,7 +873,7 @@ void YamlNode::InternalSetByteArray(const uint8* byteArray, int32 byteArraySize)
     objectArray->array.reserve(byteArraySize);
     for (int32 i = 0; i < byteArraySize; ++i)
     {
-        YamlNode* innerNode = CreateStringNode();
+        RefPtr<YamlNode> innerNode = CreateStringNode();
         innerNode->InternalSetString(Format("%x", byteArray[i]), SR_PLAIN_REPRESENTATION);
         InternalAddNodeToArray(innerNode);
     }
@@ -895,9 +884,9 @@ void YamlNode::InternalSetKeyedArchive(KeyedArchive* archive)
 {
     //creation array with variables
     const KeyedArchive::UnderlyingMap& innerArchiveMap = archive->GetArchieveData();
-    for (KeyedArchive::UnderlyingMap::const_iterator it = innerArchiveMap.begin(); it != innerArchiveMap.end(); ++it)
+    for (auto it = innerArchiveMap.begin(); it != innerArchiveMap.end(); ++it)
     {
-        YamlNode* arrayElementNodeValue = CreateMapNode(true, MR_BLOCK_REPRESENTATION);
+        RefPtr<YamlNode> arrayElementNodeValue = CreateMapNode(true, MR_BLOCK_REPRESENTATION);
         arrayElementNodeValue->InternalAddNodeToMap(it->second->GetTypeName(), CreateNodeFromVariantType(*it->second), false);
 
         InternalAddNodeToMap(it->first, arrayElementNodeValue, false);
@@ -1085,10 +1074,10 @@ bool YamlNode::InitMapFromVariantType(const VariantType& varType)
     return result;
 }
 
-YamlNode* YamlNode::CreateNodeFromVariantType(const VariantType& varType)
+RefPtr<YamlNode> YamlNode::CreateNodeFromVariantType(const VariantType& varType)
 {
     eType nodeType = VariantTypeToYamlNodeType(varType.GetType());
-    YamlNode* node = NULL;
+    RefPtr<YamlNode> node;
     switch (nodeType)
     {
     case TYPE_STRING:

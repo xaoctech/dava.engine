@@ -62,12 +62,11 @@ public:
     void SetTypeMaskToCollideWith(uint32 value);
     uint32 GetTypeMaskToCollideWith() const;
 
-    physx::PxController* GetPxController();
-
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Deserialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
 
     physx::PxActor* GetPxActor() const;
+    physx::PxController* GetPxController() const;
 
 protected:
     void ScheduleUpdate();

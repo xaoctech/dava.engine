@@ -10,11 +10,7 @@ void FeatureManager::InitFromConfig(const FilePath& fileName)
 {
     features.clear();
 
-    YamlParser* parser = YamlParser::Create(fileName);
-    SCOPE_EXIT
-    {
-        SafeRelease(parser);
-    };
+    RefPtr<YamlParser> parser = YamlParser::Create(fileName);
 
     if (parser)
     {

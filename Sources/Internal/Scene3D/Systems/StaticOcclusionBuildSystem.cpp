@@ -143,7 +143,7 @@ void StaticOcclusionBuildSystem::OnEntityChanged(Entity* entity)
     AABBox3 localBox = component->GetBoundingBox();
     Vector3 boxSize = localBox.GetSize();
     AABBox3 bbox;
-    localBox.GetTransformedBox(GetTransformComponent(entity)->GetWorldTransform(), bbox);
+    localBox.GetTransformedBox(GetTransformComponent(entity)->GetWorldMatrix(), bbox);
     uint32 xSubdivisions = component->GetSubdivisionsX();
     uint32 ySubdivisions = component->GetSubdivisionsY();
     boxSize.x /= xSubdivisions;
@@ -192,7 +192,7 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion()
     TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
     AABBox3 localBox = occlusionComponent->GetBoundingBox();
     AABBox3 worldBox;
-    localBox.GetTransformedBox(transformComponent->GetWorldTransform(), worldBox);
+    localBox.GetTransformedBox(transformComponent->GetWorldMatrix(), worldBox);
 
     data.Init(occlusionComponent->GetSubdivisionsX(), occlusionComponent->GetSubdivisionsY(),
               occlusionComponent->GetSubdivisionsZ(), objectsCount, worldBox, occlusionComponent->GetCellHeightOffsets());

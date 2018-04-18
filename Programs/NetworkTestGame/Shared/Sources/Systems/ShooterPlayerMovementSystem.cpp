@@ -38,8 +38,6 @@
 #include <Physics/Core/CapsuleShapeComponent.h>
 #include <Physics/Core/Private/PhysicsMath.h>
 
-#include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
-
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterMovementSystem)
 {
     using namespace DAVA;
@@ -265,16 +263,17 @@ void ShooterMovementSystem::RotateEntityTowardsCurrentAim(DAVA::Entity* entity)
     Vector3 aimRayDirection;
     Vector3 aimRayEnd;
     Entity* aimRayEndEntity;
-    GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE | RaycastFilter::IGNORE_DYNAMICS, aimRayStart, aimRayDirection, aimRayEnd, &aimRayEndEntity);
+    GetCurrentAimRay(*aimComponent, RaycastFilter::IGNORE_SOURCE | RaycastFilter::IGNORE_DYNAMICS | RaycastFilter::IGNORE_CONTROLLER, aimRayStart, aimRayDirection, aimRayEnd, &aimRayEndEntity);
 
     // Create quaternion that represents partial rotation towards current aim ray
     TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
     DVASSERT(transformComponent != nullptr);
+    const Transform& transform = transformComponent->GetLocalTransform();
 
-    const Quaternion& currentOrientation = transformComponent->GetRotation();
+    const Quaternion& currentOrientation = transform.GetRotation();
 
     Vector3 currentForward = currentOrientation.ApplyToVectorFast(SHOOTER_CHARACTER_FORWARD);
-    Vector3 finalForward = aimRayEnd - transformComponent->GetPosition();
+    Vector3 finalForward = aimRayEnd - transform.GetTranslation();
     finalForward.Normalize();
 
     Quaternion deltaOrientation = Quaternion::MakeRotation(currentForward, finalForward);
@@ -296,7 +295,8 @@ void ShooterMovementSystem::RotateEntityTowardsCurrentAim(DAVA::Entity* entity)
         !FLOAT_EQUAL(intermediateOrientation.z, currentOrientation.z) ||
         !FLOAT_EQUAL(intermediateOrientation.w, currentOrientation.w))
     {
-        transformComponent->SetLocalTransform(transformComponent->GetPosition(), intermediateOrientation, transformComponent->GetScale());
+        transformComponent->SetLocalTransform(Transform(
+                transform.GetTranslation(), transform.GetScale(), intermediateOrientation));
     }
 }
 
@@ -366,8 +366,9 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
                     return;
                 }
 
-                TransformComponent* transform = cct->GetComponent<TransformComponent>();
-                cctComponent->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(oldTransformComponent.GetPosition()), PhysicsMath::QuaternionToPxQuat(transform->GetRotation())));
+                TransformComponent* transformComp = cct->GetComponent<TransformComponent>();
+                const Transform& transform = transformComp->GetLocalTransform();
+                cctComponent->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(oldTransformComponent.GetPosition()), PhysicsMath::QuaternionToPxQuat(transform.GetRotation())));
             }
             else
             {
@@ -430,8 +431,9 @@ void ShooterMovementSystem::BeforeCharacterMove(DAVA::CharacterControllerCompone
                         return;
                     }
 
-                    TransformComponent* transform = cct->GetComponent<TransformComponent>();
-                    cctComponent->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(oldTransformComponent.GetPosition()), PhysicsMath::QuaternionToPxQuat(transform->GetRotation())));
+                    TransformComponent* transformComp = cct->GetComponent<TransformComponent>();
+                    const Transform& transform = transformComp->GetLocalTransform();
+                    cctComponent->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(oldTransformComponent.GetPosition()), PhysicsMath::QuaternionToPxQuat(transform.GetRotation())));
                 }
             }
         }
@@ -453,8 +455,9 @@ void ShooterMovementSystem::AfterCharacterMove(DAVA::CharacterControllerComponen
     {
         if (cct != controllerComponent->GetEntity())
         {
-            TransformComponent* transform = cct->GetComponent<TransformComponent>();
-            cct->GetComponent<CapsuleCharacterControllerComponent>()->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(transform->GetPosition()), PhysicsMath::QuaternionToPxQuat(transform->GetRotation())));
+            TransformComponent* transformComp = cct->GetComponent<TransformComponent>();
+            const Transform& transform = transformComp->GetLocalTransform();
+            cct->GetComponent<CapsuleCharacterControllerComponent>()->GetPxController()->getActor()->setKinematicTarget(physx::PxTransform(PhysicsMath::Vector3ToPxVec3(transform.GetTranslation()), PhysicsMath::QuaternionToPxQuat(transform.GetRotation())));
         }
     }
 }
@@ -468,8 +471,8 @@ void ShooterMovementSystem::MoveCharacter(DAVA::Entity* player, const DAVA::Vect
         CharacterControllerComponent* characterControllerComponent = PhysicsUtils::GetCharacterControllerComponent(player);
         if (characterControllerComponent != nullptr && characterControllerComponent->IsGrounded())
         {
-            TransformComponent* transformComponent = player->GetComponent<TransformComponent>();
-            characterControllerComponent->Move(transformComponent->GetRotation().ApplyToVectorFast(offset * duration));
+            const Transform& transform = player->GetComponent<TransformComponent>()->GetLocalTransform();
+            characterControllerComponent->Move(transform.GetRotation().ApplyToVectorFast(offset * duration));
         }
     }
 }

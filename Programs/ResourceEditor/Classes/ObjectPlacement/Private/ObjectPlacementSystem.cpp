@@ -100,7 +100,7 @@ void ObjectPlacementSystem::PlaceAndAlign() const
         bool hitObject = false;
         bool hitLandscape = false;
 
-        Vector3 originalPos = etm.originalTransform.GetTranslationVector()
+        Vector3 originalPos = etm.originalTransform.GetTranslation()
         * etm.originalParentWorldTransform;
         Ray3 ray(originalPos, Vector3(0.0f, 0.0f, -1.0f));
         RayTraceCollision collision;
@@ -150,8 +150,8 @@ void ObjectPlacementSystem::PlaceAndAlign() const
             continue;
 
         Vector3 currentUp = Vector3(0.0f, 0.0f, 1.0f);
-        Matrix4 originalRotation = etm.originalTransform;
-        originalRotation.SetTranslationVector(Vector3(0.0f, 0.0f, 0.0f));
+        Transform originalRotation = etm.originalTransform;
+        originalRotation.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
         etm.originalParentWorldTransform.SetTranslationVector(Vector3(0.0f, 0.0f, 0.0f));
         currentUp = currentUp * originalRotation * etm.originalParentWorldTransform;
 
@@ -185,7 +185,7 @@ void ObjectPlacementSystem::GetObjectCollisionMatrixAndNormal(DAVA::RayTraceColl
     collision.geometry->GetCoord(vertIndices[2], v[2]);
     normal = (v[1] - v[0]).CrossProduct(v[2] - v[0]);
     translationVector = DAVA::Vector3(0.0f, 0.0f, -collision.t);
-    const DAVA::Matrix4* hitWorldTransform = collision.renderObject->GetWorldTransformPtr();
+    const DAVA::Matrix4* hitWorldTransform = collision.renderObject->GetWorldMatrixPtr();
     DAVA::Quaternion rotationQuaternion;
     DAVA::Vector3 pos, scale;
     hitWorldTransform->Decomposition(pos, scale, rotationQuaternion);

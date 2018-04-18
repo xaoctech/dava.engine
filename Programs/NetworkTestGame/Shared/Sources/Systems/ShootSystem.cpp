@@ -110,9 +110,10 @@ void ShootSystem::NextState(Entity* bullet, ShootComponent* shootComponent, DAVA
     case ShootPhase::BURN:
     case ShootPhase::FLY:
     {
-        Matrix4 locTrans = bullet->GetLocalTransform();
+        TransformComponent* transformComp = bullet->GetComponent<TransformComponent>();
         Vector3 moveVector(0.f, ShootComponent::MOVE_SPEED * timeElapsed, 0.f);
-        bullet->SetLocalTransform(Matrix4::MakeTranslation(moveVector) * locTrans);
+        transformComp->SetLocalTransform(Transform(
+                Matrix4::MakeTranslation(moveVector) * transformComp->GetLocalMatrix()));
         shootComponent->SetDistance(shootComponent->GetDistance() + 1);
         return;
     }

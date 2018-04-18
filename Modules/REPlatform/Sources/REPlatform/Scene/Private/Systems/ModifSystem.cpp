@@ -1,5 +1,4 @@
 #include "REPlatform/Scene/Systems/ModifSystem.h"
-
 #include "REPlatform/Commands/BakeTransformCommand.h"
 #include "REPlatform/Commands/EntityAddCommand.h"
 #include "REPlatform/Commands/EntityLockCommand.h"
@@ -21,6 +20,7 @@
 #include <Render/Highlevel/Landscape.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Systems/StaticOcclusionSystem.h>
 
 namespace DAVA
@@ -36,7 +36,7 @@ Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities, Scen
     AABBox3 localBox;
     for (const Selectable& item : entities.GetContent())
     {
-        localBox.AddPoint(item.GetLocalTransform().GetTranslationVector());
+        localBox.AddPoint(item.GetLocalTransform().GetTranslation());
     }
     Vector3 averageLocalTranslation = localBox.GetCenter();
 
@@ -49,8 +49,8 @@ Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities, Scen
         etm.object = item;
         etm.originalTransform = item.GetLocalTransform();
 
-        etm.toLocalZero.BuildTranslation(-etm.originalTransform.GetTranslationVector());
-        etm.fromLocalZero.BuildTranslation(etm.originalTransform.GetTranslationVector());
+        etm.toLocalZero.BuildTranslation(-etm.originalTransform.GetTranslation());
+        etm.fromLocalZero.BuildTranslation(etm.originalTransform.GetTranslation());
 
         etm.toWorldZero.BuildTranslation(-averageLocalTranslation);
         etm.fromWorldZero.BuildTranslation(averageLocalTranslation);
@@ -61,7 +61,8 @@ Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities, Scen
         Entity* entity = item.AsEntity();
         if ((entity != nullptr) && (entity->GetParent() != nullptr))
         {
-            etm.originalParentWorldTransform = entity->GetParent()->GetWorldTransform();
+            TransformComponent* tc = entity->GetParent()->GetComponent<TransformComponent>();
+            etm.originalParentWorldTransform = tc->GetWorldMatrix();
         }
         else if (item.CanBeCastedTo<ParticleEmitterInstance>()) // special case for emitter
         {
@@ -72,7 +73,8 @@ Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities, Scen
                 Entity* ownerEntity = ownerComponent->GetEntity();
                 if (ownerEntity != nullptr)
                 {
-                    etm.originalParentWorldTransform = ownerEntity->GetWorldTransform();
+                    TransformComponent* tc = ownerEntity->GetComponent<TransformComponent>();
+                    etm.originalParentWorldTransform = tc->GetWorldMatrix();
                 }
             }
         }
@@ -92,7 +94,8 @@ Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities, Scen
                         Entity* ownerEntity = ownerComponent->GetEntity();
                         if (ownerEntity != nullptr)
                         {
-                            etm.originalParentWorldTransform = ownerEntity->GetWorldTransform();
+                            TransformComponent* tc = ownerEntity->GetComponent<TransformComponent>();
+                            etm.originalParentWorldTransform = tc->GetWorldMatrix();
                         }
                     }
                 }
@@ -693,11 +696,11 @@ Vector3 EntityModificationSystem::Move(const Vector3& newPos3d)
     for (EntityToModify& etm : modifEntities)
     {
         Matrix4 moveModification = Matrix4::MakeTranslation(moveOffset * etm.inversedParentWorldTransform);
-        Matrix4 newLocalTransform = etm.originalTransform * moveModification;
+        Transform newLocalTransform = etm.originalTransform * moveModification;
 
         if (snapToLandscape)
         {
-            newLocalTransform = newLocalTransform * SnapToLandscape(newLocalTransform.GetTranslationVector(), etm.originalParentWorldTransform);
+            newLocalTransform = newLocalTransform * SnapToLandscape(newLocalTransform.GetTranslation(), etm.originalParentWorldTransform);
         }
 
         etm.object.SetLocalTransform(newLocalTransform);
@@ -713,7 +716,7 @@ float32 EntityModificationSystem::Rotate(const Vector2& newPos2d)
 
     for (EntityToModify& etm : modifEntities)
     {
-        Matrix4 rotateModification = Matrix4::MakeRotation(rotateAround, rotateForce);
+        Matrix4 rotateModification = Matrix4::MakeRotation(rotateAround, -rotateForce);
         Matrix4& toZero = (curPivotPoint == Selectable::TransformPivot::ObjectCenter) ? etm.toLocalZero : etm.toWorldZero;
         Matrix4& fromZero = (curPivotPoint == Selectable::TransformPivot::ObjectCenter) ? etm.fromLocalZero : etm.fromWorldZero;
         etm.object.SetLocalTransform(etm.originalTransform * toZero * rotateModification * fromZero);
@@ -840,7 +843,8 @@ void EntityModificationSystem::CloneBegin()
             delegate->DidCloned(origEntity, newEntity);
         }
 
-        newEntity->SetLocalTransform(item.originalTransform);
+        TransformComponent* tc = newEntity->GetComponent<TransformComponent>();
+        tc->SetLocalTransform(item.originalTransform);
 
         Scene* scene = origEntity->GetScene();
         if (scene != nullptr)
@@ -887,13 +891,14 @@ void EntityModificationSystem::CloneEnd()
         for (uint32 i = 0; i < count; ++i)
         {
             // remember new transform
-            Matrix4 newLocalTransform = modifEntities[i].object.GetLocalTransform();
+            Transform newLocalTransform = modifEntities[i].object.GetLocalTransform();
 
             // return original entity to original pos
             modifEntities[i].object.SetLocalTransform(modifEntities[i].originalTransform);
 
             // move cloned entity to new pos
-            clonedEntities[i]->SetLocalTransform(newLocalTransform);
+            TransformComponent* tc = clonedEntities[i]->GetComponent<TransformComponent>();
+            tc->SetLocalTransform(newLocalTransform);
 
             // make cloned entity selected
             SafeRelease(clonedEntities[i]);
@@ -977,8 +982,11 @@ void EntityModificationSystem::BakeGeometry(const SelectableGroup& entities, Bak
             switch (mode)
             {
             case BAKE_ZERO_PIVOT:
-                bakeTransform = entity->GetLocalTransform();
-                break;
+            {
+                TransformComponent* tc = entity->GetComponent<TransformComponent>();
+                bakeTransform = tc->GetLocalMatrix();
+            }
+            break;
             case BAKE_CENTER_PIVOT:
                 bakeTransform.SetTranslationVector(-ro->GetBoundingBox().GetCenter());
                 break;
@@ -998,7 +1006,8 @@ void EntityModificationSystem::BakeGeometry(const SelectableGroup& entities, Bak
             // to make them match their previous position
             for (Entity* en : entityList)
             {
-                Matrix4 origTransform = en->GetLocalTransform();
+                TransformComponent* tc = en->GetComponent<TransformComponent>();
+                Matrix4 origTransform = tc->GetLocalMatrix();
                 Matrix4 newTransform = afterBakeTransform * origTransform;
                 sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(en), origTransform, newTransform)));
 
@@ -1007,7 +1016,9 @@ void EntityModificationSystem::BakeGeometry(const SelectableGroup& entities, Bak
                 for (int32 i = 0; i < en->GetChildrenCount(); ++i)
                 {
                     Entity* childEntity = en->GetChild(i);
-                    Matrix4 childOrigTransform = childEntity->GetLocalTransform();
+
+                    TransformComponent* childTC = childEntity->GetComponent<TransformComponent>();
+                    Matrix4 childOrigTransform = childTC->GetLocalMatrix();
                     Matrix4 childNewTransform = childOrigTransform * bakeTransform;
                     sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(childEntity), childOrigTransform, childNewTransform)));
                 }
@@ -1032,16 +1043,19 @@ void EntityModificationSystem::BakeGeometry(const SelectableGroup& entities, Bak
         sceneEditor->BeginBatch(commandMessage, count + 1);
 
         // transform parent entity
-        Matrix4 transform;
-        transform.SetTranslationVector(newPivotPos - entity->GetLocalTransform().GetTranslationVector());
-        sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(entity), entity->GetLocalTransform(), entity->GetLocalTransform() * transform)));
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        Transform transform;
+        transform.SetTranslation(newPivotPos - tc->GetLocalTransform().GetTranslation());
+        sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(entity), tc->GetLocalTransform(), tc->GetLocalTransform() * transform)));
 
         // transform child entities with inversed parent transformation
         transform.Inverse();
         for (uint32 i = 0; i < count; ++i)
         {
             Entity* childEntity = entity->GetChild(i);
-            sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(childEntity), childEntity->GetLocalTransform(), childEntity->GetLocalTransform() * transform)));
+            TransformComponent* childTC = childEntity->GetComponent<TransformComponent>();
+
+            sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(childEntity), childTC->GetLocalTransform(), childTC->GetLocalTransform() * transform)));
         }
 
         sceneEditor->EndBatch();
@@ -1117,8 +1131,8 @@ void EntityModificationSystem::ApplyMoveValues(ST_Axis axis, const SelectableGro
 
     for (const Selectable& item : selection.GetContent())
     {
-        Matrix4 origMatrix = item.GetLocalTransform();
-        Vector3 newPos = origMatrix.GetTranslationVector();
+        Transform origMatrix = item.GetLocalTransform();
+        Vector3 newPos = origMatrix.GetTranslation();
 
         if (pivotMode == PivotAbsolute)
         {
@@ -1155,8 +1169,8 @@ void EntityModificationSystem::ApplyMoveValues(ST_Axis axis, const SelectableGro
             }
         }
 
-        Matrix4 newMatrix = origMatrix;
-        newMatrix.SetTranslationVector(newPos);
+        Transform newMatrix = origMatrix;
+        newMatrix.SetTranslation(newPos);
         sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(item, origMatrix, newMatrix)));
     }
     sceneEditor->EndBatch();
@@ -1173,43 +1187,36 @@ void EntityModificationSystem::ApplyRotateValues(ST_Axis axis, const SelectableG
 
     for (const Selectable& item : selection.GetContent())
     {
-        Matrix4 origMatrix = item.GetLocalTransform();
+        Transform origTransform = item.GetLocalTransform();
 
-        DAVA::Vector3 pos, scale, rotate;
-        if (origMatrix.Decomposition(pos, scale, rotate))
+        Quaternion rotation;
+        Vector3 euler = origTransform.GetRotation().GetEuler();
+
+        if (pivotMode == PivotRelative)
         {
-            if (pivotMode == PivotRelative)
-            {
-                rotate *= 0.0f;
-            }
-
-            Matrix4 rotationMatrix;
-            Matrix4 moveToZeroPos;
-            Matrix4 moveFromZeroPos;
-            moveToZeroPos.BuildTranslation(-origMatrix.GetTranslationVector());
-            moveFromZeroPos.BuildTranslation(origMatrix.GetTranslationVector());
-
-            switch (axis)
-            {
-            case ST_AXIS_X:
-                rotationMatrix.BuildRotation(axisX, x - rotate.x);
-                break;
-            case ST_AXIS_Y:
-                rotationMatrix.BuildRotation(axisY, y - rotate.y);
-                break;
-            case ST_AXIS_Z:
-                rotationMatrix.BuildRotation(axisZ, z - rotate.z);
-                break;
-            default:
-                DVASSERT(0, "Unable to rotate around several axis at once");
-                break;
-            }
-
-            Matrix4 newMatrix = origMatrix * moveToZeroPos * rotationMatrix * moveFromZeroPos;
-            newMatrix.SetTranslationVector(origMatrix.GetTranslationVector());
-
-            sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(item, origMatrix, newMatrix)));
+            euler *= 0.0f;
         }
+
+        switch (axis)
+        {
+        case ST_AXIS_X:
+            rotation.Construct(Vector3(1.f, 0, 0), x - euler.x);
+            break;
+        case ST_AXIS_Y:
+            rotation.Construct(Vector3(0, 1.f, 0), y - euler.y);
+            break;
+        case ST_AXIS_Z:
+            rotation.Construct(Vector3(0, 0, 1.f), z - euler.z);
+            break;
+        default:
+            DVASSERT(0, "Unable to rotate around several axis at once");
+            break;
+        }
+
+        Transform newTransform = origTransform;
+        newTransform.SetRotation(origTransform.GetRotation() * rotation);
+
+        sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(item, origTransform, newTransform)));
     }
 
     sceneEditor->EndBatch();
@@ -1240,32 +1247,19 @@ void EntityModificationSystem::ApplyScaleValues(ST_Axis axis, const SelectableGr
 
     for (const Selectable& item : selection.GetContent())
     {
+        Transform origTransform = item.GetLocalTransform();
+
         float32 scaleValue = axisScaleValue;
-
-        Matrix4 origMatrix = item.GetLocalTransform();
-
-        Vector3 pos, scale, rotate;
-        if (origMatrix.Decomposition(pos, scale, rotate))
+        Vector3 scale = origTransform.GetScale();
+        if (pivotMode == PivotAbsolute)
         {
-            if (pivotMode == PivotAbsolute)
-            {
-                scaleValue = (scale.x < std::numeric_limits<float>::epsilon()) ? 0.0f : (scaleValue / scale.x);
-            }
-
-            Matrix4 moveToZeroPos;
-            moveToZeroPos.BuildTranslation(-origMatrix.GetTranslationVector());
-
-            Matrix4 moveFromZeroPos;
-            moveFromZeroPos.BuildTranslation(origMatrix.GetTranslationVector());
-
-            Matrix4 scaleMatrix;
-            scaleMatrix.BuildScale(Vector3(scaleValue, scaleValue, scaleValue));
-
-            Matrix4 newMatrix = origMatrix * moveToZeroPos * scaleMatrix * moveFromZeroPos;
-            newMatrix.SetTranslationVector(origMatrix.GetTranslationVector());
-
-            sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(item, origMatrix, newMatrix)));
+            scaleValue = (scale.x < std::numeric_limits<float>::epsilon()) ? 0.0f : (scaleValue / scale.x);
         }
+
+        Transform newTransform = origTransform;
+        newTransform.SetScale(origTransform.GetScale() * scaleValue);
+
+        sceneEditor->Exec(std::unique_ptr<Command>(new TransformCommand(item, origTransform, newTransform)));
     }
 
     sceneEditor->EndBatch();
@@ -1298,7 +1292,7 @@ void EntityModificationSystem::CalculateMedianAxes(const SelectableGroup& select
     axisX = axisY = axisZ = { 0, 0, 0 };
     for (const Selectable& item : selection.GetContent())
     {
-        const DAVA::Matrix4& t = item.GetLocalTransform();
+        DAVA::Matrix4 t = TransformUtils::ToMatrix(item.GetLocalTransform());
         axisX += DAVA::Vector3(t._data[0][0], t._data[0][1], t._data[0][2]);
         axisY += DAVA::Vector3(t._data[1][0], t._data[1][1], t._data[1][2]);
         axisZ += DAVA::Vector3(t._data[2][0], t._data[2][1], t._data[2][2]);

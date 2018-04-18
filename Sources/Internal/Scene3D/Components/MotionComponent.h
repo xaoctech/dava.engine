@@ -22,6 +22,7 @@ public:
 
     void TriggerEvent(const FastName& trigger); //TODO: *Skinning* make adequate naming
     void SetParameter(const FastName& parameterID, float32 value);
+    float32 GetParameter(const FastName& parameterID) const;
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -61,6 +62,7 @@ protected:
     DAVA_VIRTUAL_REFLECTION(MotionComponent, Component);
 
     friend class MotionSystem;
+    friend struct MotionUtils;
 };
 
 inline float32 MotionComponent::GetPlaybackRate() const

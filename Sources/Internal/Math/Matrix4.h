@@ -7,6 +7,8 @@
 
 namespace DAVA
 {
+// http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.371.6578&rep=rep1&type=pdf
+//
 //
 //
 //	we use vectors as rows  (row-major matrixes)
@@ -414,6 +416,8 @@ inline bool Matrix4::Inverse()
 
 inline bool Matrix4::Decomposition(Vector3& position, Vector3& scale, Vector3& orientation) const
 {
+    //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.371.6578&rep=rep1&type=pdf
+
     //if(_data[3][0] == 0 && _data[3][1] == 0 && _data[3][2] == 0 && _data[3][3] == 1)
     //{
     //	return false;
@@ -432,15 +436,12 @@ inline bool Matrix4::Decomposition(Vector3& position, Vector3& scale, Vector3& o
 		DVASSERT((fabs(_10*_20+_11*_21+_12*_22)<0.001f) && "Only orthoganal basis accepted");
 		DVASSERT((fabs(_20*_00+_21*_01+_22*_02)<0.001f) && "Only orthoganal basis accepted");*/
 
-        scale.x = std::sqrt(_00 * _00 + _01 * _01 + _02 * _02);
-        scale.y = std::sqrt(_10 * _10 + _11 * _11 + _12 * _12);
-        scale.z = std::sqrt(_20 * _20 + _21 * _21 + _22 * _22);
+        position = GetTranslationVector();
+        scale = GetScaleVector();
 
-        orientation.x = std::atan2(_21, _22);
-        orientation.y = std::atan2(-_20, std::sqrt(_21 * _21 + _22 * _22));
-        orientation.z = std::atan2(_10, _00);
-
-        position = Vector3(_data[0][3], _data[1][3], _data[2][3]);
+        orientation.x = std::atan2(_12, _22);
+        orientation.y = std::asin(-_02 / scale.x);
+        orientation.z = std::atan2(_01, _00);
 
         return true;
     }
@@ -489,6 +490,8 @@ inline const Matrix4& Matrix4::operator*=(const Matrix4& m)
 void SinCosFast(float angleInRadians, float& sine, float& cosine);
 inline void Matrix4::BuildRotation(const Vector3& r, float32 angleInRadians)
 {
+    angleInRadians = -angleInRadians; // simple way to fix rotation dirrection :)
+
     float32 sinA, cosA;
     SinCosFast(angleInRadians, sinA, cosA);
     Identity();

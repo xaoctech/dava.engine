@@ -24,14 +24,12 @@ public:
     void PrepareForRemove() override;
 
     void ImmediateEvent(Component* component, uint32 event) override;
-    void Process(float32 timeElapsed) override;
+    void ProcessFixed(float32 timeElapsed) override;
 
     void UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh* skinnedMeshObject);
     void DrawSkeletons(RenderHelper* drawer);
 
 private:
-    void UpdateJointTransforms(SkeletonComponent* skeleton);
-
     void RebuildSkeleton(SkeletonComponent* skeleton);
 
     void UpdateTestSkeletons(float32 timeElapsed);

@@ -81,9 +81,8 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
         }
         else
         {
-            TransformComponent* transComp = rocket->GetComponent<TransformComponent>();
-            Vector3 position = transComp->GetPosition();
-            explosionPosition = transComp->GetPosition();
+            const Transform& transform = rocket->GetComponent<TransformComponent>()->GetLocalTransform();
+            explosionPosition = transform.GetTranslation();
         }
 
         // effect: rocket explosion
@@ -111,8 +110,9 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
     };
 
     TransformComponent* transComp = rocket->GetComponent<TransformComponent>();
-    Vector3 position = transComp->GetPosition();
-    Quaternion rotation = transComp->GetRotation();
+    const Transform& transform = transComp->GetLocalTransform();
+    Vector3 position = transform.GetTranslation();
+    Quaternion rotation = transform.GetRotation();
 
     if (rocketComp->GetStage() == ShooterRocketComponent::Stage::BOOSTER &&
         distance == ShooterRocketComponent::SPLIT_DISTANCE)
@@ -156,7 +156,8 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
                 TransformComponent* subTrunsComp = subRocket->GetComponent<TransformComponent>();
                 float32 angle = (subRocketIdx - (subRocketCount / 2.f)) * DEG_TO_RAD * 45.f;
                 Quaternion subRotation = rotation * Quaternion::MakeRotation(Vector3::UnitZ, -angle);
-                subTrunsComp->SetLocalTransform(position, subRotation, Vector3(1.f, 1.0f, 1.0f));
+                subTrunsComp->SetLocalTransform(Transform(
+                        position, Vector3(1.f, 1.0f, 1.0f), subRotation));
                 GetScene()->AddNode(subRocket);
             }
         }
@@ -169,10 +170,10 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
     {
         const Entity* target = entitiesComp->FindByID(rocketComp->targetId);
         DVASSERT(target);
-        const Vector3& targetFeet = target->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector();
+        const Vector3& targetFeet = target->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
         const float32 targetHeight = target->GetComponent<CapsuleCharacterControllerComponent>()->GetHeight();
         const Vector3 targetPos = targetFeet + Vector3(0.f, 0.f, targetHeight);
-        const Vector3& currentPos = rocket->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector();
+        const Vector3& currentPos = rocket->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
 
         Vector3 targetDir = targetPos - currentPos;
         targetDir.Normalize();
@@ -196,7 +197,8 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
     }
 
     position += rotation.ApplyToVectorFast(Vector3(0, ShooterRocketComponent::MOVE_SPEED, 0) * timeElapsed);
-    transComp->SetLocalTransform(position, rotation, Vector3(1.0, 1.0, 1.0));
+    transComp->SetLocalTransform(Transform(
+            position, Vector3(1.0, 1.0, 1.0), rotation));
     rocketComp->SetDistance(distance + 1);
 }
 
@@ -205,9 +207,10 @@ void ShooterRocketSystem::SimulateRocket2(DAVA::Entity* rocket)
     const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
 
     TransformComponent* transComp = rocket->GetComponent<TransformComponent>();
+    const Transform& transform = transComp->GetLocalTransform();
     ShooterRocketComponent* rocketComp = rocket->GetComponent<ShooterRocketComponent>();
-    Vector3 position = transComp->GetPosition();
-    Quaternion rotation = transComp->GetRotation();
+    Vector3 position = transform.GetTranslation();
+    Quaternion rotation = transform.GetRotation();
 
     bool createExplosionAndReturn = false;
     Vector3 explosionPosition;
@@ -249,7 +252,8 @@ void ShooterRocketSystem::SimulateRocket2(DAVA::Entity* rocket)
 
     position += rotation.ApplyToVectorFast(Vector3(0, ShooterRocketComponent::MOVE_SPEED, 0) * timeElapsed);
 
-    transComp->SetLocalTransform(position, rotation, Vector3(1.0, 1.0, 1.0));
+    transComp->SetLocalTransform(Transform(
+            position, Vector3(1.0, 1.0, 1.0), rotation));
     rocketComp->SetDistance(distance + 1);
 }
 
@@ -358,7 +362,8 @@ const Entity* ShooterRocketSystem::GetTarget(Entity* rocket, Entity* shooter)
 {
     NetworkEntitiesSingleComponent* networkEntities = GetScene()->GetSingleComponent<NetworkEntitiesSingleComponent>();
     TransformComponent* transComp = rocket->GetComponent<TransformComponent>();
-    const Vector3& position = transComp->GetPosition();
+    const Transform& transform = transComp->GetLocalTransform();
+    const Vector3& position = transform.GetTranslation();
     const NetworkPlayerID playerId = rocket->GetComponent<NetworkReplicationComponent>()->GetNetworkPlayerID();
     const NetworkPlayerComponent* playerComp = shooter->GetComponent<NetworkPlayerComponent>();
     const FixedVector<NetworkID>& visibleEntityIds = playerComp->visibleEntityIds;
@@ -380,7 +385,8 @@ const Entity* ShooterRocketSystem::GetTarget(Entity* rocket, Entity* shooter)
 
         if (SELF_DAMAGE || playerId != entity->GetComponent<NetworkReplicationComponent>()->GetNetworkPlayerID())
         {
-            const float32 dist = Distance(position, entity->GetComponent<TransformComponent>()->GetPosition());
+            const Vector3& entityPos = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
+            const float32 dist = Distance(position, entityPos);
             if (target == nullptr || dist < minDist)
             {
                 minDist = dist;

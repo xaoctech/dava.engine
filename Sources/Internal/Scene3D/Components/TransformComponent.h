@@ -2,14 +2,19 @@
 
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
+#include "Math/Transform.h"
+#include "Math/TransformUtils.h"
+#include "Reflection/Reflection.h"
 #include "Math/Quaternion.h"
 #include "Reflection/Reflection.h"
+#include "Scene3D/Systems/TransformSystem.h"
 
 namespace DAVA
 {
 class Entity;
 class TransformSystem;
 class SerializationContext;
+class Transform;
 
 class TransformComponent : public Component
 {
@@ -19,16 +24,20 @@ class TransformComponent : public Component
     DAVA_VIRTUAL_REFLECTION(TransformComponent, Component);
 
 public:
-    Matrix4 GetLocalTransform() const;
-    const Vector3& GetPosition() const;
-    const Quaternion& GetRotation() const;
-    const Vector3& GetScale() const;
+    DAVA_DEPRECATED(inline Matrix4* GetWorldMatrixPtr()); //TODO: delete it
+    DAVA_DEPRECATED(inline const Matrix4& GetWorldMatrix()); //TODO: delete it
+    DAVA_DEPRECATED(inline Matrix4 GetLocalMatrix()); //TODO: delete it
 
-    const Matrix4& GetWorldTransform() const;
-    const Matrix4* GetWorldTransformPtr() const;
+    DAVA_DEPRECATED(void SetWorldMatrix(const Matrix4& transform)); //TODO: delete it
+    DAVA_DEPRECATED(void SetLocalMatrix(const Matrix4& transform)); //TODO: delete it
 
-    void SetLocalTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
-    void SetLocalTransform(const Matrix4& transform);
+    void SetLocalTranslation(const Vector3& translation);
+    void SetLocalScale(const Vector3& scale);
+    void SetLocalRotation(const Quaternion& rotation);
+
+    void SetLocalTransform(const Transform& transform);
+    const Transform& GetLocalTransform() const;
+    const Transform& GetWorldTransform() const;
 
     Component* Clone(Entity* toEntity) override;
     void Serialize(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -36,49 +45,47 @@ public:
 
 protected:
     void SetParent(Entity* node);
-    void SetWorldTransform(const Matrix4& transform);
-
-    void ApplyLocalTransfomChanged();
-    void ApplyWorldTransfomChanged();
-    void ApplyParentChanged();
 
 private:
-    Vector3 position;
-    Quaternion rotation;
-    Vector3 scale = Vector3(1.0f, 1.0f, 1.0f);
+    void MarkLocalChanged();
+    void MarkWorldChanged();
+    void MarkParentChanged();
+
+    void UpdateWorldTransformForEmptyParent();
+
+    Transform localTransform;
+    Transform worldTransform;
 
     Matrix4 worldMatrix = Matrix4::IDENTITY;
-    const Matrix4* parentMatrix = nullptr;
-    Entity* parent = nullptr;
+    Transform* parentTransform = nullptr;
+    Entity* parent = nullptr; //Entity::parent should be removed
+
+    friend class TransformSystem;
+    friend class FTransformComponent;
 };
 
-inline const Matrix4& TransformComponent::GetWorldTransform() const
+inline const Matrix4& TransformComponent::GetWorldMatrix()
 {
     return worldMatrix;
 }
 
-inline const Matrix4* TransformComponent::GetWorldTransformPtr() const
+inline Matrix4 TransformComponent::GetLocalMatrix()
+{
+    return TransformUtils::ToMatrix(localTransform);
+}
+
+inline Matrix4* TransformComponent::GetWorldMatrixPtr()
 {
     return &worldMatrix;
 }
 
-inline const Vector3& TransformComponent::GetPosition() const
+inline const Transform& TransformComponent::GetLocalTransform() const
 {
-    return position;
+    return localTransform;
 }
 
-inline const Quaternion& TransformComponent::GetRotation() const
+inline const DAVA::Transform& TransformComponent::GetWorldTransform() const
 {
-    return rotation;
-}
-
-inline const Vector3& TransformComponent::GetScale() const
-{
-    return scale;
-}
-
-inline Matrix4 TransformComponent::GetLocalTransform() const
-{
-    return Matrix4(position, rotation, scale);
+    return worldTransform;
 }
 }

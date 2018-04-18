@@ -8,6 +8,7 @@
 #include <Entity/SceneSystem.h>
 #include <Functional/Signal.h>
 #include <Math/Matrix4.h>
+#include <Math/Transform.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Scene3D/Entity.h>
 #include <UI/UIEvent.h>
@@ -25,7 +26,7 @@ struct EntityToModify
 
     Matrix4 inversedParentWorldTransform;
     Matrix4 originalParentWorldTransform;
-    Matrix4 originalTransform;
+    Transform originalTransform;
 
     Matrix4 toLocalZero;
     Matrix4 fromLocalZero;

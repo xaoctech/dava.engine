@@ -110,17 +110,6 @@ void NetworkInputSystem::ProcessFixedClientBegin(float32 timeElapsed)
 
     for (Entity* entity : entities)
     {
-        static bool emulateRunning = false;
-        if (GetEngineContext()->deviceManager->GetKeyboard() != nullptr && GetEngineContext()->deviceManager->GetKeyboard()->GetKeyState(eInputElements::KB_P).IsJustPressed())
-        {
-            emulateRunning = !emulateRunning;
-        }
-
-        if (emulateRunning)
-        {
-            AddDigitalActionForClient(this, entity, FastName("SHOOTER_MOVE_FORWARD"));
-        }
-
         for (auto& actions : GetCollectedActionsForClient(GetScene(), entity))
         {
             actions.clientFrameId = netTimeComp->GetFrameId();

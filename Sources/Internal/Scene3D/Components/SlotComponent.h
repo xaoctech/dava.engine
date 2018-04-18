@@ -5,7 +5,7 @@
 #include "Reflection/Reflection.h"
 
 #include "FileSystem/FilePath.h"
-#include "Math/Matrix4.h"
+#include "Math/Transform.h"
 #include "Base/Array.h"
 #include "Base/FastName.h"
 #include "Base/IntrospectionBase.h"
@@ -70,10 +70,10 @@ public:
     void SetSlotName(FastName name);
 
     /** Set attachment transform */
-    void SetAttachmentTransform(const Matrix4& transform);
+    void SetAttachmentTransform(const Transform& transform);
 
     /** Get attachment transform */
-    const Matrix4& GetAttachmentTransform() const;
+    const Transform& GetAttachmentTransform() const;
 
     /** Get UID of joint in SkeletonComponent of this Entity that slot attached to. If slot doesn't attached to joint return value is invalid */
     const FastName& GetJointUID() const;
@@ -107,7 +107,7 @@ private:
     FastName slotName = FastName("");
     FastName templateName = FastName("");
 
-    Matrix4 attachmentTransform;
+    Transform attachmentTransform;
     FastName attachementToJoint;
     FilePath configFilePath;
     Array<FastName, MAX_FILTERS_COUNT> typeFilters;

@@ -2,6 +2,7 @@
 
 #include "NetworkCore/Scene3D/Components/NetworkPredictComponent.h"
 #include "NetworkCore/NetworkCoreUtils.h"
+#include "NetworkCore/NetworkTransformUtils.h"
 
 #include <Debug/ProfilerCPU.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -29,23 +30,14 @@ void NetworkTransformFromNetToLocalSystem::ProcessFixed(float32 timeElapsed)
 
     for (Entity* entity : entities->GetEntities())
     {
-        CopyFromNetToLocal(entity);
+        NetworkTransformComponent* netTransformComp = entity->GetComponent<NetworkTransformComponent>();
+        DVASSERT(netTransformComp != nullptr);
+
+        NetworkTransformUtils::CopyToTransform(netTransformComp);
     }
 }
 
 void NetworkTransformFromNetToLocalSystem::PrepareForRemove()
 {
-}
-
-void NetworkTransformFromNetToLocalSystem::CopyFromNetToLocal(Entity* entity)
-{
-    NetworkTransformComponent* netTransformComp = entity->GetComponent<NetworkTransformComponent>();
-    TransformComponent* transformComp = entity->GetComponent<TransformComponent>();
-
-    if (transformComp->GetPosition() != netTransformComp->GetPosition() ||
-        transformComp->GetRotation() != netTransformComp->GetOrientation())
-    {
-        transformComp->SetLocalTransform(netTransformComp->GetPosition(), netTransformComp->GetOrientation(), transformComp->GetScale());
-    }
 }
 } // namespace DAVA

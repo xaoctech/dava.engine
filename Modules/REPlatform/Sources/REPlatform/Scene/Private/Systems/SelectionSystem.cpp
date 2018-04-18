@@ -20,6 +20,8 @@
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Systems/EventSystem.h>
 #include <Particles/ParticleEmitter.h>
+#include <Math/TransformUtils.h>
+#include <Math/Transform.h>
 #include <Base/Vector.h>
 #include <Base/Any.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
@@ -575,7 +577,7 @@ void SelectionSystem::Draw()
         {
             if (item.SupportsTransformType(Selectable::TransformType::Disabled))
             {
-                DrawItem(item.GetBoundingBox(), item.GetWorldTransform(), drawMode, wireDrawType, solidDrawType, Color::White);
+                DrawItem(item.GetBoundingBox(), TransformUtils::ToMatrix(item.GetWorldTransform()), drawMode, wireDrawType, solidDrawType, Color::White);
             }
         }
     }
@@ -592,7 +594,7 @@ void SelectionSystem::Draw()
 
     for (const auto& item : objectsToSelect.GetContent())
     {
-        DrawItem(item.GetBoundingBox(), item.GetWorldTransform(), drawMode, wireDrawType, solidDrawType, drawColor);
+        DrawItem(item.GetBoundingBox(), TransformUtils::ToMatrix(item.GetWorldTransform()), drawMode, wireDrawType, solidDrawType, drawColor);
     }
 }
 
@@ -737,7 +739,7 @@ void SelectionSystem::UpdateHoodPos() const
             Vector3 hoodCenter;
             if (modificationSystem->GetPivotPoint() == Selectable::TransformPivot::ObjectCenter)
             {
-                hoodCenter = currentSelection.GetFirst().GetWorldTransform().GetTranslationVector();
+                hoodCenter = currentSelection.GetFirst().GetWorldTransform().GetTranslation();
             }
             else
             {

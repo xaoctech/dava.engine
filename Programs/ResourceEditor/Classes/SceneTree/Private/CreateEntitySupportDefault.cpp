@@ -276,8 +276,8 @@ public:
         RefPtr<Entity> windEntity(new Entity());
         windEntity->SetName(FastName(ResourceEditor::WIND_NODE_NAME));
 
-        Matrix4 ltMx = Matrix4::MakeTranslation(Vector3(0.f, 0.f, 20.f));
-        GetTransformComponent(windEntity.Get())->SetLocalTransform(ltMx);
+        TransformComponent* tc = windEntity->GetComponent<TransformComponent>();
+        tc->SetLocalTranslation(Vector3(0.f, 0.f, 20.f));
 
         windEntity->AddComponent(new DAVA::WindComponent());
 
@@ -395,7 +395,9 @@ public:
                             0, 1, 0, 0,
                             0, 0, -1, 0,
                             0, 0, 0, 1);
-        sceneNode->SetLocalTransform(m);
+
+        TransformComponent* tc = sceneNode->GetComponent<TransformComponent>();
+        tc->SetLocalMatrix(m);
 
         AddEntity(sceneNode.Get());
         FinishCreation();

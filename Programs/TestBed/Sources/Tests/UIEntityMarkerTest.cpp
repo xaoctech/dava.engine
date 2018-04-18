@@ -99,7 +99,9 @@ void UIEntityMarkerTest::LoadResources()
                         if (distanceText)
                         {
                             Vector3 camPos = marker->GetTargetEntity()->GetScene()->GetCurrentCamera()->GetPosition();
-                            Vector3 entPos = marker->GetTargetEntity()->GetWorldTransform().GetTranslationVector();
+
+                            TransformComponent* tc = marker->GetTargetEntity()->GetComponent<TransformComponent>();
+                            Vector3 entPos = tc->GetWorldTransform().GetTranslation();
                             float32 distance = (camPos - entPos).Length();
                             distanceText->SetText(Format("%.3f", distance));
                         }

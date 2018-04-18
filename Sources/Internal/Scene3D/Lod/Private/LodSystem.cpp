@@ -49,7 +49,7 @@ void LodSystem::Process(float32 timeElapsed)
                 {
                     int32 index = iter->second;
                     FastStruct* fast = &fastVector[index];
-                    fast->position = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector();
+                    fast->position = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
                 }
             }
         }
@@ -202,7 +202,7 @@ void LodSystem::AddEntity(Entity* entity)
     TransformComponent* transform = entity->GetComponent<TransformComponent>();
     LodComponent* lod = entity->GetComponent<LodComponent>();
     ParticleEffectComponent* effect = entity->GetComponent<ParticleEffectComponent>();
-    Vector3 position = transform->GetWorldTransform().GetTranslationVector();
+    Vector3 position = transform->GetWorldTransform().GetTranslation();
 
     lod->currentLod = LodComponent::INVALID_LOD_LAYER;
 

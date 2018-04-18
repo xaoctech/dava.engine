@@ -59,15 +59,15 @@ spec:
     imagePullPolicy: Always
     resources:
       limits:
-        cpu: "1.3"
+        cpu: "3.3"
       requests:
-        cpu: "1.1"
+        cpu: "3.1"
     volumeMounts:
     - name: shared-data
       mountPath: /debug
     ports:
     - containerPort: 9000
-    args: ["--game", "default", "--health-check-host", "localhost", "--health-check-port", "5050", "--game-stats-log", "/debug/game-stats.log"]
+    args: ["--clients", "127", "--game", "default", "--health-check-host", "localhost", "--health-check-port", "5050", "--game-stats-log", "/debug/game-stats.log"]
     securityContext:
       privileged: true
   - name: debug

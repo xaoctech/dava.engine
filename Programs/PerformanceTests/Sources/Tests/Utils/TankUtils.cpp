@@ -25,7 +25,9 @@ void TankUtils::MakeSkinnedTank(Entity* sourceTank, Vector<uint32>& outJointInde
         DVASSERT(wheelObject);
 
         const Vector3& centerPos = wheelObject->GetBoundingBox().GetCenter();
-        wheel->SetLocalTransform(Matrix4::MakeTranslation(centerPos));
+
+        TransformComponent* tc = wheel->GetComponent<TransformComponent>();
+        tc->SetLocalTranslation(centerPos);
     }
 
     Vector<SkeletonComponent::Joint> tankJoints;
@@ -84,7 +86,8 @@ void TankUtils::Animate(Entity* tank, const Vector<uint32>& jointIndexes, float3
     }
 
     // rotate gun shot effect
-    turret->SetLocalTransform(turrentRotation.GetMatrix());
+    TransformComponent* tc = turret->GetComponent<TransformComponent>();
+    tc->SetLocalMatrix(turrentRotation.GetMatrix());
 
     uint32 turretJoint = skeleton->GetJointIndex(TankUtils::TankNode::TURRET);
     JointTransform transform = skeleton->GetJointTransform(turretJoint);

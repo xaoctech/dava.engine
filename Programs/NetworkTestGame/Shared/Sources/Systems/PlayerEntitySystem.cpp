@@ -177,10 +177,10 @@ void PlayerEntitySystem::FillCarPlayerEntity(DAVA::Entity* entity)
         entity->AddComponent(new NetworkInputComponent());
         entity->AddComponent(new NetworkPlayerComponent());
 
-        TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+        const Transform& transform = entity->GetComponent<TransformComponent>()->GetLocalTransform();
         NetworkTransformComponent* networkTransform = new NetworkTransformComponent();
-        networkTransform->SetPosition(transformComponent->GetPosition());
-        networkTransform->SetOrientation(transformComponent->GetRotation());
+        networkTransform->SetPosition(transform.GetTranslation());
+        networkTransform->SetOrientation(transform.GetRotation());
         entity->AddComponent(networkTransform);
 
         entity->AddComponent(new ObserverComponent());

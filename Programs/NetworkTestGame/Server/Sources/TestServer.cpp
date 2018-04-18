@@ -559,7 +559,7 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
 #ifdef NDEBUG
     for (int32 host = 1; host <= 2; ++host)
     {
-        for (int32 i = 1; i <= 60; ++i)
+        for (int32 i = 1; i <= 64; ++i)
         {
             int32 clientID = i * 10 + host;
             FastName token(Format("%064d", clientID));

@@ -229,8 +229,8 @@ void CubesGameplaySystem::ScheduleMagneteForces(DAVA::Entity* bigCube, DAVA::Ent
 {
     using namespace DAVA;
 
-    const Vector3 smallCubePosition = smallCube->GetComponent<TransformComponent>()->GetPosition();
-    const Vector3 bigCubePosition = bigCube->GetComponent<TransformComponent>()->GetPosition();
+    const Vector3 smallCubePosition = smallCube->GetComponent<TransformComponent>()->GetLocalTransform().GetTranslation();
+    const Vector3 bigCubePosition = bigCube->GetComponent<TransformComponent>()->GetLocalTransform().GetTranslation();
     const float32 distanceToBigCube = Distance(bigCubePosition, smallCubePosition);
     if (distanceToBigCube < CubesGameplaySystemDetails::MinForceDistance)
     {
@@ -246,7 +246,7 @@ void CubesGameplaySystem::UpdateCameraPosition(DAVA::Entity* bigCube) const
     if (bigCube != nullptr)
     {
         TransformComponent* cubeTransform = bigCube->GetComponent<TransformComponent>();
-        Vector3 cubePosition = cubeTransform->GetPosition();
+        Vector3 cubePosition = cubeTransform->GetLocalTransform().GetTranslation();
 
         Camera* camera = GetScene()->GetCurrentCamera();
 

@@ -281,7 +281,9 @@ void DebugDrawSystem::DrawLightNode(Entity* entity, bool isSelected)
         AABBox3 worldBox;
         AABBox3 localBox = scene->GetSystem<SceneCollisionSystem>()->GetUntransformedBoundingBox(entity);
         DVASSERT(!localBox.IsEmpty());
-        localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
+
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        localBox.GetTransformedBox(tc->GetWorldMatrix(), worldBox);
 
         if (light->GetType() == Light::TYPE_DIRECTIONAL)
         {
@@ -379,7 +381,8 @@ void DebugDrawSystem::DrawSoundNode(Entity* entity)
         AABBox3 localBox = scene->GetSystem<SceneCollisionSystem>()->GetUntransformedBoundingBox(entity);
         if (!localBox.IsEmpty())
         {
-            localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
+            TransformComponent* tc = entity->GetComponent<TransformComponent>();
+            localBox.GetTransformedBox(tc->GetWorldMatrix(), worldBox);
 
             Color soundColor = settings->soundObjectBoxColor;
             GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, ClampToUnityRange(soundColor), RenderHelper::DRAW_SOLID_DEPTH);
@@ -398,7 +401,8 @@ void DebugDrawSystem::DrawSelectedSoundNode(Entity* entity)
     {
         Scene* scene = GetScene();
 
-        Vector3 position = entity->GetWorldTransform().GetTranslationVector();
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        Vector3 position = tc->GetWorldTransform().GetTranslation();
 
         uint32 fontHeight = 0;
         TextDrawSystem* textDrawSystem = scene->GetSystem<TextDrawSystem>();
@@ -436,8 +440,8 @@ void DebugDrawSystem::DrawWindNode(Entity* entity)
     WindComponent* wind = GetWindComponent(entity);
     if (wind)
     {
-        const Matrix4& worldMx = entity->GetWorldTransform();
-        Vector3 worldPosition = worldMx.GetTranslationVector();
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        Vector3 worldPosition = tc->GetWorldTransform().GetTranslation();
 
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawArrow(worldPosition, worldPosition + wind->GetDirection() * 3.f, .75f,
                                                                    Color(1.0f, 0.5f, 0.2f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
@@ -451,7 +455,9 @@ void DebugDrawSystem::DrawEntityBox(Entity* entity, const Color& color) const
     if (localBox.IsEmpty() == false)
     {
         AABBox3 worldBox;
-        localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
+
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        localBox.GetTransformedBox(tc->GetWorldMatrix(), worldBox);
         GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, color, RenderHelper::DRAW_WIRE_DEPTH);
     }
 }
@@ -472,7 +478,8 @@ void DebugDrawSystem::CollectRenderBatchesRecursively(Entity* entity, RenderBatc
         auto roType = ro->GetType();
         if ((roType == RenderObject::TYPE_MESH) || (roType == RenderObject::TYPE_RENDEROBJECT) || (roType == RenderObject::TYPE_SPEED_TREE))
         {
-            const Matrix4& wt = entity->GetWorldTransform();
+            TransformComponent* tc = entity->GetComponent<TransformComponent>();
+            const Matrix4& wt = tc->GetWorldMatrix();
             for (uint32 i = 0, e = ro->GetActiveRenderBatchCount(); i < e; ++i)
             {
                 RenderBatch* batch = ro->GetActiveRenderBatch(i);
@@ -570,13 +577,17 @@ void DebugDrawSystem::DrawSwitchesWithDifferentLods(Entity* entity)
         AABBox3 worldBox;
         AABBox3 localBox = scene->GetSystem<SceneCollisionSystem>()->GetUntransformedBoundingBox(entity);
         DVASSERT(!localBox.IsEmpty());
-        localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
-        GetScene()->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, Color(1.0f, 0.f, 0.f, 1.f), RenderHelper::DRAW_WIRE_DEPTH);
+
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
+        localBox.GetTransformedBox(tc->GetWorldMatrix(), worldBox);
+        scene->GetRenderSystem()->GetDebugDrawer()->DrawAABox(worldBox, Color(1.0f, 0.f, 0.f, 1.f), RenderHelper::DRAW_WIRE_DEPTH);
     }
 }
 
 void DebugDrawSystem::DrawDecals(Entity* entity)
 {
+    TransformComponent* tc = entity->GetComponent<TransformComponent>();
+
     RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
     uint32 componentsCount = entity->GetComponentCount<GeoDecalComponent>();
     for (uint32 i = 0; i < componentsCount; ++i)
@@ -584,8 +595,7 @@ void DebugDrawSystem::DrawDecals(Entity* entity)
         GeoDecalComponent* decal = entity->GetComponent<GeoDecalComponent>(i);
 
         DVASSERT(decal != nullptr);
-
-        Matrix4 transform = entity->GetWorldTransform();
+        Matrix4 transform = tc->GetWorldMatrix();
 
         RenderHelper::eDrawType dt = RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
         Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);

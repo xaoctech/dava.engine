@@ -1,5 +1,6 @@
 #include "NetworkPhysics/NetworkPhysicsModule.h"
-#include "NetworkPhysics/CharacterMirrorsSingleComponent.h"
+#include "NetworkPhysics/HitboxesDebugDrawComponent.h"
+#include "NetworkPhysics/HitboxesDebugDrawSystem.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 
@@ -9,7 +10,10 @@ NetworkPhysicsModule::NetworkPhysicsModule(Engine* engine)
     : IModule(engine)
 {
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkPhysicsModule);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CharacterMirrorsSingleComponent);
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HitboxesDebugDrawComponent);
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HitboxesDebugDrawSystem);
 }
 
 void NetworkPhysicsModule::Init()

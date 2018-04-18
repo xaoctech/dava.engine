@@ -30,7 +30,9 @@ void ShooterRespawnSystem::ProcessFixed(DAVA::float32 dt)
 
     for (HealthComponent* newHealthComponent : healthComponentsPending->components)
     {
-        newHealthComponent->GetEntity()->GetComponent<TransformComponent>()->SetLocalTransform(GetRandomPlayerSpawnPosition(), Quaternion(0.0f, 0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f));
+        TransformComponent* transformComp = newHealthComponent->GetEntity()->GetComponent<TransformComponent>();
+        transformComp->SetLocalTransform(Transform(
+                GetRandomPlayerSpawnPosition(), Vector3(1.0f, 1.0f, 1.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
     }
     healthComponentsPending->components.clear();
 
@@ -39,7 +41,9 @@ void ShooterRespawnSystem::ProcessFixed(DAVA::float32 dt)
         if (healthComponent->GetHealth() == 0)
         {
             healthComponent->SetHealth(SHOOTER_CHARACTER_MAX_HEALTH);
-            healthComponent->GetEntity()->GetComponent<TransformComponent>()->SetLocalTransform(GetRandomPlayerSpawnPosition(), Quaternion(0.0f, 0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f));
+            TransformComponent* transformComp = healthComponent->GetEntity()->GetComponent<TransformComponent>();
+            transformComp->SetLocalTransform(Transform(
+                    GetRandomPlayerSpawnPosition(), Vector3(1.0f, 1.0f, 1.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
         }
     }
 }

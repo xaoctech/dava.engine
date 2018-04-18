@@ -115,7 +115,8 @@ void CubesUtils::SetupCubesScene(DAVA::Scene* scene)
     light->SetType(Light::eType::TYPE_AMBIENT);
     LightComponent* lightComponent = new LightComponent(light);
     Entity* lightEntity = new Entity();
-    lightEntity->GetComponent<TransformComponent>()->SetLocalTransform({ 0.f, 0.f, 50.f }, {}, {});
+    lightEntity->GetComponent<TransformComponent>()->SetLocalTransform(Transform(
+            { 0.f, 0.f, 50.f }, Vector3::Zero + 1.f, {}));
     lightEntity->AddComponent(lightComponent);
     scene->AddNode(lightEntity);
 
@@ -139,7 +140,8 @@ void CubesUtils::FillSceneWithSmallCubes(DAVA::Scene* scene)
             Vector3 position(GridLeftTop + i, GridLeftTop + j, CubesDetails::SmallCubeHalfSize);
 
             Entity* cube = new Entity();
-            cube->GetComponent<TransformComponent>()->SetLocalTransform(position, {}, Vector3::Zero + 1.f);
+            cube->GetComponent<TransformComponent>()->SetLocalTransform(Transform(
+                    position, Vector3::Zero + 1.f, {}));
             cube->AddComponent(new SmallCubeComponent());
             scene->AddNode(cube);
         }

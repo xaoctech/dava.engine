@@ -15,6 +15,6 @@ public:
     DAVA_VIRTUAL_REFLECTION(TEMPLATEComponent, Component);
     TEMPLATEComponent();
 
-    DAVA::Component* Clone(Entity* toEntity) override;
+    Component* Clone(Entity* toEntity) override;
 };
 }

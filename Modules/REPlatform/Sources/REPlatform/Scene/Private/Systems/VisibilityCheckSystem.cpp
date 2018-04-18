@@ -210,9 +210,10 @@ void VisibilityCheckSystem::Draw()
 
         if (visibilityComponent->IsEnabled())
         {
-            const Matrix4& worldTransform = mapItem.first->GetWorldTransform();
-            Vector3 position = worldTransform.GetTranslationVector();
-            Vector3 direction = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, 1.0f), worldTransform);
+            TransformComponent* tc = mapItem.first->GetComponent<TransformComponent>();
+            const Transform& worldTransform = tc->GetWorldTransform();
+            Vector3 position = worldTransform.GetTranslation();
+            Vector3 direction = worldTransform.GetRotation().ApplyToVectorFast(Vector3::UnitZ);
             dbg->DrawCircle(position, direction, visibilityComponent->GetRadius(), 36, Color::White, RenderHelper::DRAW_WIRE_DEPTH);
             shouldRenderOverlay = true;
         }
@@ -300,9 +301,10 @@ void VisibilityCheckSystem::UpdatePointSet()
         auto visibilityComponent = entity->GetComponent<VisibilityCheckComponent>();
         if (visibilityComponent->IsEnabled())
         {
-            auto worldTransform = entity->GetWorldTransform();
-            Vector3 position = worldTransform.GetTranslationVector();
-            Vector3 normal = MultiplyVectorMat3x3(Vector3(0.0f, 0.0f, 1.0f), worldTransform);
+            TransformComponent* tc = entity->GetComponent<TransformComponent>();
+            const auto& worldTransform = tc->GetWorldTransform();
+            Vector3 position = worldTransform.GetTranslation();
+            Vector3 normal = worldTransform.GetRotation().ApplyToVectorFast(Vector3::UnitZ);
             normal.Normalize();
             float32 upAngle = std::cos(DegToRad(90.0f - visibilityComponent->GetUpAngle()));
             float32 dnAngle = -std::cos(DegToRad(90.0f - visibilityComponent->GetDownAngle()));
@@ -313,7 +315,7 @@ void VisibilityCheckSystem::UpdatePointSet()
             {
                 Vector3 placedPoint;
                 Vector3 placedNormal;
-                Vector3 transformedPoint = position + MultiplyVectorMat3x3(pt, worldTransform);
+                Vector3 transformedPoint = position + worldTransform.GetRotation().ApplyToVectorFast(pt);
                 if ((landscape != nullptr) && landscape->PlacePoint(transformedPoint, placedPoint, &placedNormal))
                 {
                     if (visibilityComponent->ShouldPlaceOnLandscape())

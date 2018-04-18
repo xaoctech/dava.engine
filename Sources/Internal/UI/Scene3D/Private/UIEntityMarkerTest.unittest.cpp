@@ -6,6 +6,7 @@
 #include "Engine/Engine.h"
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Components/CameraComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Scene.h"
 #include "UI/Scene3D/UIEntityMarkerComponent.h"
 #include "UI/Scene3D/UIEntityMarkersContainerComponent.h"
@@ -39,7 +40,9 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
 
         Matrix4 m;
         m.BuildTranslation(position);
-        entity->SetLocalTransform(m);
+
+        TransformComponent* transform = entity->GetComponent<TransformComponent>();
+        transform->SetLocalTransform(m);
 
         return entity;
     }

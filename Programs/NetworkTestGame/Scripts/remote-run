@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-clients_num=64
+clients_num=${AWS_TEST_CLIENTS_NUM:-126}
 bot_kind=random
 log_stats=false
 

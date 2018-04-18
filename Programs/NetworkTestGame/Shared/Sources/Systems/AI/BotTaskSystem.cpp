@@ -2,9 +2,10 @@
 #include "Components/HealthComponent.h"
 #include "Components/ShootComponent.h"
 
-#include <Math/Matrix2.h>
+#include <Math/Transform.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
 #include <Utils/Random.h>
 
@@ -124,7 +125,10 @@ bool BotTaskSystem::GetShotParams(float& outYawCorrection, float& outDist, float
         return false;
     }
 
-    Vector3 targetPos3 = target->GetWorldTransform().GetTranslationVector();
+    TransformComponent* transformComp = target->GetComponent<TransformComponent>();
+    DVASSERT(transformComp);
+
+    Vector3 targetPos3 = transformComp->GetWorldTransform().GetTranslation();
     Vector2 targetPos(targetPos3.x, targetPos3.y);
 
     if (!task->haveTargetPosition)
@@ -137,8 +141,8 @@ bool BotTaskSystem::GetShotParams(float& outYawCorrection, float& outDist, float
     task->targetPosition = targetPos3;
 
     Entity* entity = task->GetEntity();
-    const Matrix4& m = entity->GetWorldTransform();
-    Vector3 selfPos3 = entity->GetWorldTransform().GetTranslationVector();
+    const Matrix4& m = transformComp->GetWorldMatrix();
+    Vector3 selfPos3 = m.GetTranslationVector();
     Vector2 selfPos(selfPos3.x, selfPos3.y);
 
     float dist;
@@ -246,7 +250,8 @@ void BotTaskSystem::ProcessTask(float32 timeElapsed, MoveToPointTaskComponent* t
     }
 
     Entity* entity = task->GetEntity();
-    const Matrix4& m = entity->GetWorldTransform();
+
+    const Matrix4& m = entity->GetComponent<TransformComponent>()->GetWorldMatrix();
 
     Vector3 delta3 = task->targetPoint - m.GetTranslationVector();
     Vector2 delta(delta3.x, delta3.y);
@@ -379,7 +384,7 @@ void BotTaskSystem::ProcessTask(float32 timeElapsed, RandomMovementTaskComponent
 void BotTaskSystem::ProcessTask(float32 timeElapsed, SlideToBorderTaskComponent* task)
 {
     Entity* entity = task->GetEntity();
-    Vector3 selfPos = entity->GetWorldTransform().GetTranslationVector();
+    Vector3 selfPos = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
 
     if (task->movingRight)
     {
@@ -409,7 +414,7 @@ void BotTaskSystem::ProcessTask(float32 timeElapsed, SlideToBorderTaskComponent*
 void BotTaskSystem::ProcessTask(float32 timeElapsed, WagToBorderTaskComponent* task)
 {
     Entity* entity = task->GetEntity();
-    Vector3 selfPos = entity->GetWorldTransform().GetTranslationVector();
+    Vector3 selfPos = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
 
     if (task->movingRight)
     {
@@ -459,7 +464,7 @@ void BotTaskSystem::ProcessTask(float32 timeElapsed, WagToBorderTaskComponent* t
 void BotTaskSystem::ProcessTask(float32 timeElapsed, DodgeCenterTaskComponent* task)
 {
     Entity* entity = task->GetEntity();
-    Vector3 selfPos = entity->GetWorldTransform().GetTranslationVector();
+    Vector3 selfPos = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
 
     if (task->movingRight)
     {
@@ -499,8 +504,8 @@ void BotTaskSystem::ProcessTask(float32 timeElapsed, ShootIfSeeingTargetTaskComp
         return;
     }
 
-    Vector3 shooterPos = task->GetEntity()->GetWorldTransform().GetTranslationVector();
-    Vector3 targetPos = target->GetWorldTransform().GetTranslationVector();
+    Vector3 shooterPos = task->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
+    Vector3 targetPos = target->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
 
     if (fabs(shooterPos.x - targetPos.x) < 0.5f)
     {

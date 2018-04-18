@@ -66,6 +66,11 @@ public:
     bool CanBeInterrupted(const MotionTransitionInfo* other, const Motion* srcMotion, const Motion* dstMotion) const;
     void Interrupt(const MotionTransitionInfo* other, Motion* srcMotion, Motion* dstMotion);
 
+    float32 GetTransitionPhase() const;
+    void SetTransitionPhase(float32 value);
+
+    const MotionTransitionInfo* GetTransitionInfo() const;
+
 protected:
     const MotionTransitionInfo* transitionInfo = nullptr;
 
@@ -91,6 +96,21 @@ inline bool MotionTransition::IsComplete() const
 {
     DVASSERT(transitionInfo != nullptr);
     return IsStarted() && ((transitionPhase >= 1.f) || (transitionInfo->duration < EPSILON) || (transitionInfo->type == MotionTransitionInfo::TYPE_REPLACE));
+}
+
+inline float32 MotionTransition::GetTransitionPhase() const
+{
+    return transitionPhase;
+}
+
+inline void MotionTransition::SetTransitionPhase(float32 value)
+{
+    transitionPhase = value;
+}
+
+inline const MotionTransitionInfo* MotionTransition::GetTransitionInfo() const
+{
+    return transitionInfo;
 }
 
 } //ns

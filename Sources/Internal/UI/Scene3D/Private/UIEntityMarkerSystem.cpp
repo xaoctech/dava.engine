@@ -3,9 +3,12 @@
 #include "Render/Highlevel/Camera.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "UI/Scene3D/UIEntityMarkerComponent.h"
 #include "UI/Scene3D/UIEntityMarkersContainerComponent.h"
 #include "UI/UIControl.h"
+
+#include <Math/Transform.h>
 
 namespace DAVA
 {
@@ -163,7 +166,8 @@ void UIEntityMarkerSystem::Process(float32 elapsedTime)
                 continue;
             }
 
-            Vector3 worldPosition = target->GetWorldTransform().GetTranslationVector();
+            TransformComponent* targetTransform = target->GetComponent<TransformComponent>();
+            Vector3 worldPosition = targetTransform->GetWorldTransform().GetTranslation();
             Vector3 positionAndDepth = camera->GetOnScreenPositionAndDepth(worldPosition, containerControl->GetAbsoluteRect());
             Vector3 distance = worldPosition - camera->GetPosition();
 

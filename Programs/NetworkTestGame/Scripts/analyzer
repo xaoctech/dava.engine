@@ -5,7 +5,7 @@ pod=${1}
 cmd=${2:-start}
 dir=${3:-dev}
 secret=${4:-secret.tfvars}
-clients_num=${5:-64}
+clients_num=${AWS_TEST_CLIENTS_NUM:-126}
 
 SSH_OPTS="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 

@@ -57,7 +57,8 @@ void NetworkTransformComponent::Deserialize(KeyedArchive* archive, Serialization
 
 void NetworkTransformComponent::CopyTransformFrom(TransformComponent* copyFrom)
 {
-    SetPosition(copyFrom->GetPosition());
-    SetOrientation(copyFrom->GetRotation());
+    const Transform& localTransform = copyFrom->GetLocalTransform();
+    SetPosition(localTransform.GetTranslation());
+    SetOrientation(localTransform.GetRotation());
 }
 }

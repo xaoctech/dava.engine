@@ -11,6 +11,7 @@
 #include <Render/Highlevel/Light.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Entity.h>
 
 namespace DAVA
@@ -58,10 +59,11 @@ void EditorLightSystem::UpdateCameraLightPosition()
         if (!camera)
             return;
 
-        Matrix4 m = Matrix4::MakeTranslation(camera->GetPosition() - camera->GetLeft() * 20.f + camera->GetUp() * 20.f);
-        if (m != cameraLight->GetLocalTransform())
+        Vector3 newPosition = camera->GetPosition() - camera->GetLeft() * 20.f + camera->GetUp() * 20.f;
+        TransformComponent* tc = cameraLight->GetComponent<TransformComponent>();
+        if (newPosition != tc->GetLocalTransform().GetTranslation())
         {
-            cameraLight->SetLocalTransform(m);
+            tc->SetLocalTranslation(newPosition);
         }
     }
 }

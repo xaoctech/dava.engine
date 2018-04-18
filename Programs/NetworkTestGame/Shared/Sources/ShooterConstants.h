@@ -53,3 +53,10 @@ static const DAVA::float32 SHOOTER_CAR_IMPULSE_MAGNITUDE_PER_DAMAGE = 5000.0f;
 static const DAVA::float32 SHOOTER_MAX_VISIBILITY_RADIUS = 500.f;
 static const DAVA::float32 SHOOTER_UNCONDITIONAL_VISIBILITY_RADIUS = 50.f;
 static const DAVA::float32 SHOOTER_CHARACTER_VISIBILITY_HEIGHT = 2.f;
+
+// Animation constants
+static const DAVA::FastName MOTION_PARAM_RUNNING("running");
+static const DAVA::FastName MOTION_PARAM_CROUCHING("crouching");
+static const DAVA::FastName MOTION_PARAM_AIM_ANGLE("aim-angle");
+static const DAVA::FastName MOTION_PARAM_DIRECTION_X("direction-x");
+static const DAVA::FastName MOTION_PARAM_DIRECTION_Y("direction-y");

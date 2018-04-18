@@ -42,7 +42,7 @@ NetworkDebugPredictDrawSystem::NetworkDebugPredictDrawSystem(Scene* scene)
 
 void NetworkDebugPredictDrawSystem::AddEntity(Entity* entity)
 {
-    entityToLastTransform[entity] = entity->GetLocalTransform();
+    entityToLastTransform[entity] = entity->GetComponent<TransformComponent>()->GetWorldMatrix();
 }
 
 void NetworkDebugPredictDrawSystem::RemoveEntity(Entity* entity)

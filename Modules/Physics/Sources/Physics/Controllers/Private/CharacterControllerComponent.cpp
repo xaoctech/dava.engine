@@ -90,11 +90,6 @@ uint32 CharacterControllerComponent::GetTypeMaskToCollideWith() const
     return typeMaskToCollideWith;
 }
 
-physx::PxController* CharacterControllerComponent::GetPxController()
-{
-    return controller;
-}
-
 void CharacterControllerComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
@@ -109,7 +104,13 @@ void CharacterControllerComponent::Deserialize(KeyedArchive* archive, Serializat
 
 physx::PxActor* CharacterControllerComponent::GetPxActor() const
 {
+    DVASSERT(controller != nullptr);
     return controller->getActor();
+}
+
+physx::PxController* CharacterControllerComponent::GetPxController() const
+{
+    return controller;
 }
 
 void CharacterControllerComponent::ScheduleUpdate()

@@ -21,8 +21,6 @@ public:
     void PrepareForRemove() override;
 
 private:
-    void CopyFromNetToLocal(Entity* entity);
-
     EntityGroup* entities = nullptr;
 };
 } // namespace DAVA

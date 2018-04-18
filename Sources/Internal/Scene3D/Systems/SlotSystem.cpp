@@ -1,5 +1,13 @@
 #include "Scene3D/Systems/SlotSystem.h"
 
+#include "Scene3D/Scene.h"
+#include "Scene3D/Components/SlotComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/SkeletonComponent.h"
+#include "Scene3D/Systems/Private/AsyncSlotExternalLoader.h"
+#include "Math/Transform.h"
+#include "Math/TransformUtils.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/XMLParser.h"
 #include "FileSystem/XMLParserStatus.h"
@@ -7,12 +15,6 @@
 #include "FileSystem/YamlNode.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/SlotComponent.h"
-#include "Scene3D/Components/SkeletonComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Systems/Private/AsyncSlotExternalLoader.h"
 
 namespace DAVA
 {
@@ -130,7 +132,7 @@ void SlotSystem::ItemsCache::LoadConfigFile(const FilePath& configPath)
 
 void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
 {
-    ScopedPtr<YamlParser> parser(YamlParser::Create(configPath));
+    RefPtr<YamlParser> parser(YamlParser::Create(configPath));
     if (!parser)
     {
         Logger::Error("Couldn't parse yaml file %s", configPath.GetAbsolutePathname().c_str());
@@ -158,9 +160,9 @@ void SlotSystem::ItemsCache::LoadYamlConfig(const FilePath& configPath)
     bool duplicatesFound = false;
     Set<Item, ItemLess>& items = cachedItems[configPath.GetAbsolutePathname()];
 
-    const DAVA::Vector<DAVA::YamlNode*>& yamlNodes = rootNode->AsVector();
+    const auto& yamlNodes = rootNode->AsVector();
     size_t propertiesCount = yamlNodes.size();
-    for (YamlNode* currentNode : yamlNodes)
+    for (const RefPtr<YamlNode>& currentNode : yamlNodes)
     {
         uint32 fieldsCount = currentNode->GetCount();
 
@@ -453,14 +455,15 @@ void SlotSystem::Process(float32 timeElapsed)
     {
         SlotNode& node = nodes[i];
 
+        TransformComponent* transform = node.loadedEnity->GetComponent<TransformComponent>();
         if (node.component->GetJointUID().IsValid())
         {
-            node.loadedEnity->SetLocalTransform(GetResultTranform(node.component));
+            transform->SetLocalMatrix(GetResultTranform(node.component));
             ResetFlag(node, SlotNode::ATTACHMENT_TRANSFORM_CHANGED);
         }
         else if (TestFlag(node, SlotNode::ATTACHMENT_TRANSFORM_CHANGED))
         {
-            node.loadedEnity->SetLocalTransform(node.component->GetAttachmentTransform());
+            transform->SetLocalTransform(node.component->GetAttachmentTransform());
             ResetFlag(node, SlotNode::ATTACHMENT_TRANSFORM_CHANGED);
         }
     }
@@ -475,7 +478,6 @@ void SlotSystem::AttachItemToSlot(Entity* rootEntity, FastName slotName, FastNam
     for (uint32 i = 0; i < slotsCount; ++i)
     {
         SlotComponent* slotComponent = rootEntity->GetComponent<SlotComponent>(i);
-
         if (slotComponent->GetSlotName() == slotName)
         {
             AttachItemToSlot(slotComponent, itemName);
@@ -614,7 +616,7 @@ DAVA::Matrix4 SlotSystem::GetResultTranform(SlotComponent* component) const
 
     const JointTransform& transform = skeleton->GetJointObjectSpaceTransform(jointIndex);
     Matrix4 jointTransform = transform.GetMatrix();
-    return component->GetAttachmentTransform() * jointTransform;
+    return TransformUtils::ToMatrix(component->GetAttachmentTransform() * Transform(jointTransform));
 }
 
 void SlotSystem::SetScene(Scene* scene)

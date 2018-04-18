@@ -1,20 +1,23 @@
 #include "NetworkPhysics/NetworkPhysicsUtils.h"
-
-#include <Base/UnordererMap.h>
+#include "NetworkPhysics/HitboxesDebugDrawComponent.h"
 
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/SnapshotSingleComponent.h>
 #include <NetworkCore/SnapshotUtils.h>
+#include <NetworkCore/NetworkCoreUtils.h>
 
 #include <Physics/PhysicsSystem.h>
+#include <Physics/Core/CollisionShapeComponent.h>
 #include <Physics/Core/PhysicsUtils.h>
+#include <Physics/Core/Private/PhysicsMath.h>
 
-#include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
-
+#include <Base/UnordererMap.h>
 #include <Engine/Engine.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
+
+#include <physx/extensions/PxShapeExt.h>
 
 namespace DAVA
 {
@@ -41,13 +44,6 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
                                         });
 
     // Save current network transforms
-
-    struct Transform
-    {
-        Vector3 position;
-        Quaternion orientation;
-    };
-
     UnorderedMap<Entity*, Transform> oldTransforms;
     for (Entity* e : dynamics)
     {
@@ -56,7 +52,7 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
         TransformComponent* transformComponent = e->GetComponent<TransformComponent>();
         DVASSERT(transformComponent != nullptr);
 
-        oldTransforms[e] = { transformComponent->GetPosition(), transformComponent->GetRotation() };
+        oldTransforms[e] = transformComponent->GetLocalTransform();
     }
 
     // Roll back transforms
@@ -90,10 +86,10 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
         TransformComponent* transformComponent = e->GetComponent<TransformComponent>();
         DVASSERT(transformComponent != nullptr);
 
-        transformComponent->SetLocalTransform(
-        networkTransformComponent->GetPosition(),
-        networkTransformComponent->GetOrientation(),
-        transformComponent->GetScale());
+        transformComponent->SetLocalTransform(Transform(
+                networkTransformComponent->GetPosition(),
+                transformComponent->GetLocalTransform().GetScale(),
+                networkTransformComponent->GetOrientation()));
     }
 
     PhysicsSystem* physicsSystem = scene.GetSystem<PhysicsSystem>();
@@ -132,10 +128,10 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
 
         Transform& transform = oldTransforms[e];
 
-        networkTransformComponent->SetPosition(transform.position);
-        networkTransformComponent->SetOrientation(transform.orientation);
+        networkTransformComponent->SetPosition(transform.GetTranslation());
+        networkTransformComponent->SetOrientation(transform.GetRotation());
 
-        transformComponent->SetLocalTransform(transform.position, transform.orientation, transformComponent->GetScale());
+        transformComponent->SetLocalTransform(transform);
     }
 
     // Sync restored transforms for potential future raycasts on same frame
@@ -143,6 +139,49 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
 
     // Return result
     return result;
+}
+
+void SnapshotDebugDrawHitboxes(HitboxesDebugDrawComponent& hitboxesDebugDrawComponent, Entity& target)
+{
+    Entity* entity = hitboxesDebugDrawComponent.GetEntity();
+    DVASSERT(entity != nullptr);
+
+    Scene* scene = entity->GetScene();
+    DVASSERT(scene != nullptr);
+
+    const bool isServer = IsServer(scene);
+    FixedVector<Vector3>& positions = isServer ? hitboxesDebugDrawComponent.serverHitboxPositions : hitboxesDebugDrawComponent.clientHitboxPositions;
+    FixedVector<Quaternion>& orientations = isServer ? hitboxesDebugDrawComponent.serverHitboxOrientations : hitboxesDebugDrawComponent.clientHitboxOrientations;
+
+    CollisionShapeComponent* shapes[HitboxesDebugDrawComponent::NumMaxHitboxes];
+    uint32 numShapes = 0;
+    PhysicsUtils::ForEachShapeComponent(&target, [&shapes, &numShapes](CollisionShapeComponent* shape)
+                                        {
+                                            if (numShapes < HitboxesDebugDrawComponent::NumMaxHitboxes)
+                                            {
+                                                shapes[numShapes] = shape;
+                                                ++numShapes;
+                                            }
+                                        });
+
+    positions.resize(numShapes);
+    orientations.resize(numShapes);
+    for (uint32 i = 0; i < numShapes; ++i)
+    {
+        const physx::PxShape* shape = shapes[i]->GetPxShape();
+        DVASSERT(shape != nullptr);
+
+        const physx::PxActor* actor = shape->getActor();
+        DVASSERT(actor != nullptr);
+
+        const physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
+        DVASSERT(rigidActor != nullptr);
+
+        physx::PxTransform globalPose = physx::PxShapeExt::getGlobalPose(*shape, *rigidActor);
+
+        positions[i] = PhysicsMath::PxVec3ToVector3(globalPose.p);
+        orientations[i] = PhysicsMath::PxQuatToQuaternion(globalPose.q);
+    }
 }
 }
 }

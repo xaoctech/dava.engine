@@ -49,7 +49,7 @@ void LightUpdateSystem::Process(float32 timeElapsed)
 void LightUpdateSystem::RecalcLight(Entity* entity)
 {
     // Update new transform pointer, and mark that transform is changed
-    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+    Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
     Light* light = entity->GetComponent<LightComponent>()->GetLightObject();
     light->SetPositionDirectionFromMatrix(*worldTransformPointer);
     entity->GetScene()->renderSystem->MarkForUpdate(light);

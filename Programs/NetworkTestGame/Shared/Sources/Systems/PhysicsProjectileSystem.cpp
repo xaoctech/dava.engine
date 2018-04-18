@@ -95,7 +95,7 @@ void PhysicsProjectileSystem::NextState(DAVA::Entity* entity, PhysicsProjectileC
         }
         else
         {
-            Vector3 currentPosition = entity->GetComponent<TransformComponent>()->GetPosition();
+            Vector3 currentPosition = entity->GetComponent<TransformComponent>()->GetLocalTransform().GetTranslation();
             float32 distance = Distance(currentPosition, projectileComponent->GetInitialPosition());
             if (distance > 100.0f)
             {

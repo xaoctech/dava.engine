@@ -26,7 +26,8 @@ public:
     void OnConnectServer(const Responder& responder);
     void OnReceiveClient(const uint8* data, size_t, uint8 channelId, uint32);
     void OnReceiveServer(const Responder& responder, const uint8* data, size_t);
-    void ProcessFixed(float32 timeElapsed) override;
+    void ProcessFixedUpdateStats(float32 timeElapsed);
+    void ProcessFixedSendStats(float32 timeElapsed);
     void Process(float32 timeElapsed) override;
     void PrepareForRemove() override{};
     void ProcessFrameDiff(int32 diff);

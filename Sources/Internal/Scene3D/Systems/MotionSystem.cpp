@@ -12,6 +12,7 @@
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/SkeletonAnimation/MotionLayer.h"
 #include "Scene3D/SkeletonAnimation/SimpleMotion.h"
+#include "Scene3D/SkeletonAnimation/MotionUtils.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 
@@ -21,12 +22,12 @@ DAVA_VIRTUAL_REFLECTION_IMPL(MotionSystem)
 {
     ReflectionRegistrator<MotionSystem>::Begin()[M::Tags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &MotionSystem::Process)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::NORMAL, 3.0f)]
+    .Method("ProcessFixed", &MotionSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 1.1f)]
     .End();
 }
 
 MotionSystem::MotionSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<SkeletonComponent>() | ComponentUtils::MakeMask<MotionComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<SkeletonComponent>() | ComponentUtils::MakeMask<MotionComponent>())
 {
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }
@@ -82,7 +83,7 @@ void MotionSystem::ImmediateEvent(Component* component, uint32 event)
     }
 }
 
-void MotionSystem::Process(float32 timeElapsed)
+void MotionSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_MOTION_SYSTEM);
     DVASSERT(motionSingleComponent != nullptr);
@@ -141,63 +142,7 @@ void MotionSystem::Process(float32 timeElapsed)
 
     for (MotionComponent* component : activeComponents)
     {
-        UpdateMotionLayers(component, timeElapsed);
-    }
-}
-
-void MotionSystem::UpdateMotionLayers(MotionComponent* motionComponent, float32 dTime)
-{
-    DVASSERT(motionComponent);
-
-    SkeletonComponent* skeleton = GetSkeletonComponent(motionComponent->GetEntity());
-    if (skeleton != nullptr && (motionComponent->GetMotionLayersCount() != 0 || (motionComponent->simpleMotion != nullptr && motionComponent->simpleMotion->IsPlaying())))
-    {
-        dTime *= motionComponent->playbackRate;
-        SkeletonPose resultPose = skeleton->GetDefaultPose();
-
-        uint32 motionLayersCount = motionComponent->GetMotionLayersCount();
-        for (uint32 l = 0; l < motionLayersCount; ++l)
-        {
-            MotionLayer* motionLayer = motionComponent->GetMotionLayer(l);
-
-            motionLayer->Update(dTime);
-
-            for (const auto& motionEnd : motionLayer->GetEndedMotions())
-                motionSingleComponent->animationEnd.insert(MotionSingleComponent::AnimationInfo(motionComponent, motionLayer->GetName(), motionEnd));
-
-            for (const auto& motionMarker : motionLayer->GetReachedMarkers())
-                motionSingleComponent->animationMarkerReached.insert(MotionSingleComponent::AnimationInfo(motionComponent, motionLayer->GetName(), motionMarker.first, motionMarker.second));
-
-            const SkeletonPose& pose = motionLayer->GetCurrentSkeletonPose();
-            MotionLayer::eMotionBlend blendMode = motionLayer->GetBlendMode();
-            switch (blendMode)
-            {
-            case MotionLayer::BLEND_OVERRIDE:
-                resultPose.Override(pose);
-                motionComponent->rootOffsetDelta = motionLayer->GetCurrentRootOffsetDelta();
-                break;
-            case MotionLayer::BLEND_ADD:
-                resultPose.Add(pose);
-                break;
-            case MotionLayer::BLEND_DIFF:
-                resultPose.Diff(pose);
-                break;
-            default:
-                break;
-            }
-        }
-
-        SimpleMotion* simpleMotion = motionComponent->simpleMotion;
-        if (simpleMotion != nullptr && simpleMotion->IsPlaying())
-        {
-            simpleMotion->Update(dTime);
-            if (!simpleMotion->IsPlaying())
-                motionSingleComponent->simpleMotionFinished.emplace_back(motionComponent);
-
-            simpleMotion->EvaluatePose(&resultPose);
-        }
-
-        skeleton->ApplyPose(resultPose);
+        MotionUtils::UpdateMotionLayers(component, timeElapsed);
     }
 }
 }

@@ -8,7 +8,6 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Render/RenderHelper.h"
 #include "FileSystem/FileSystem.h"
-#include "FileSystem/KeyedArchive.h"
 #include "Utils/Random.h"
 #include "Utils/StringFormat.h"
 #include "Scene3D/Scene.h"
@@ -23,13 +22,12 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/AnimationComponent.h"
-#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Private/EntityHelpers.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Math/Transform.h"
 
 #include <functional>
-#include "Scene3D/Components/RenderComponent.h"
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
 #include <Physics/Core/StaticBodyComponent.h>
@@ -365,8 +363,10 @@ void Entity::BakeTransforms()
 
     if (size == 1 && needPropagate) // propagate matrices
     {
-        children[0]->SetLocalTransform(children[0]->GetLocalTransform() * GetLocalTransform());
-        SetLocalTransform(Matrix4::IDENTITY);
+        TransformComponent* transform = GetComponent<TransformComponent>();
+        TransformComponent* childTransform = children[0]->GetComponent<TransformComponent>();
+        childTransform->SetLocalMatrix(childTransform->GetLocalMatrix() * transform->GetLocalMatrix());
+        transform->SetLocalMatrix(Matrix4::IDENTITY);
     }
 
     for (auto child : children)
@@ -517,7 +517,7 @@ AABBox3 Entity::GetWTMaximumBoundingBoxSlow()
     if (renderComponent && transformComponent)
     {
         AABBox3 wtBox;
-        renderComponent->GetRenderObject()->GetBoundingBox().GetTransformedBox(transformComponent->GetWorldTransform(), wtBox);
+        renderComponent->GetRenderObject()->GetBoundingBox().GetTransformedBox(transformComponent->GetWorldMatrix(), wtBox);
         retBBox.AddAABBox(wtBox);
     }
 
@@ -733,29 +733,16 @@ void Entity::RemoveFlagRecursive(int32 flagToRemove)
     }
 }
 
-void Entity::SetLocalTransform(const Matrix4& newMatrix)
-{
-    // TIME_PROFILE("Entity::SetLocalTransform");
-    GetComponent<TransformComponent>()->SetLocalTransform(newMatrix);
-}
-
-Matrix4 Entity::GetLocalTransform()
-{
-    return GetComponent<TransformComponent>()->GetLocalTransform();
-}
-
-const Matrix4& Entity::GetWorldTransform() const
-{
-    return GetComponent<TransformComponent>()->GetWorldTransform();
-}
-
 Matrix4 Entity::AccamulateLocalTransform(Entity* fromParent)
 {
+    TransformComponent* transform = GetComponent<TransformComponent>();
+    Matrix4 localMatrix = transform->GetLocalMatrix();
+
     if (fromParent == this)
     {
-        return GetLocalTransform();
+        return localMatrix;
     }
-    return GetLocalTransform() * parent->AccamulateLocalTransform(fromParent);
+    return localMatrix * parent->AccamulateLocalTransform(fromParent);
 }
 
 Matrix4 Entity::AccamulateTransformUptoFarParent(Entity* farParent)
@@ -764,7 +751,10 @@ Matrix4 Entity::AccamulateTransformUptoFarParent(Entity* farParent)
     {
         return Matrix4::IDENTITY;
     }
-    return GetLocalTransform() * parent->AccamulateTransformUptoFarParent(farParent);
+
+    TransformComponent* transform = GetComponent<TransformComponent>();
+    Matrix4 localMatrix = transform->GetLocalMatrix();
+    return localMatrix * parent->AccamulateTransformUptoFarParent(farParent);
 }
 
 void Entity::FindComponentsByTypeRecursive(const Type* type, List<DAVA::Entity*>& components)

@@ -27,6 +27,8 @@
 #include <Functional/Function.h>
 #include <Math/AABBox3.h>
 #include <Math/Vector.h>
+#include <Math/Transform.h>
+#include <Math/TransformUtils.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
@@ -262,7 +264,7 @@ enum class ClassifyPlanesResult
 
 inline Plane TransformPlaneToLocalSpace(const Selectable& object, const Plane& plane)
 {
-    Matrix4 transform = object.GetWorldTransform();
+    Matrix4 transform = TransformUtils::ToMatrix(object.GetWorldTransform());
     transform.Transpose();
     return Plane(Vector4(plane.n.x, plane.n.y, plane.n.z, plane.d) * transform);
 }
@@ -605,7 +607,9 @@ AABBox3 SceneCollisionSystem::GetBoundingBox(const Any& object) const
                 DAVA::Entity* childEntity = entity->GetChild(i);
                 DAVA::AABBox3 entityBox = GetBoundingBox(childEntity);
                 DAVA::AABBox3 entityTransformedBox;
-                entityBox.GetTransformedBox(childEntity->GetLocalTransform(), entityTransformedBox);
+
+                TransformComponent* tc = childEntity->GetComponent<TransformComponent>();
+                entityBox.GetTransformedBox(tc->GetLocalMatrix(), entityTransformedBox);
                 aabox.AddAABBox(entityTransformedBox);
             }
         }
@@ -691,7 +695,7 @@ void SceneCollisionSystem::Process(float32 timeElapsed)
             physx::PxRigidActor* actor = iter->second;
 
             Selectable wrapper(object);
-            SceneCollisionSystemDetail::UpdateActorTransform(wrapper.GetWorldTransform(), actor);
+            SceneCollisionSystemDetail::UpdateActorTransform(TransformUtils::ToMatrix(wrapper.GetWorldTransform()), actor);
         }
     }
     objectsToUpdateTransform.clear();
@@ -914,6 +918,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
     {
         CollisionObj result;
         Entity* entity = object.AsEntity();
+        TransformComponent* tc = entity->GetComponent<TransformComponent>();
 
         float32 debugBoxUserScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxUserScale;
         float32 debugBoxWaypointScale = SIMPLE_COLLISION_BOX_SIZE * settings->debugBoxWaypointScale;
@@ -931,13 +936,13 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             {
                 EnumerateObjectHierarchy(Selectable(particleEffect->GetEmitterInstance(i)), createCollision, callback);
             }
-            result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxParticleScale), userData);
+            result = CreateBox(createCollision, false, tc->GetWorldMatrix(), toVec3Fn(debugBoxParticleScale), userData);
         }
 
         GeoDecalComponent* geoDecalComponent = GetGeoDecalComponent(entity);
         if ((result.isValid == false) && (geoDecalComponent != nullptr))
         {
-            result = CreateBox(createCollision, true, entity->GetWorldTransform(), geoDecalComponent->GetDimensions(), userData);
+            result = CreateBox(createCollision, true, tc->GetWorldMatrix(), geoDecalComponent->GetDimensions(), userData);
         }
 
         RenderObject* renderObject = GetRenderObject(entity);
@@ -952,7 +957,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
             }
             else if ((objType != RenderObject::TYPE_SPRITE) && (objType != RenderObject::TYPE_VEGETATION))
             {
-                result = CreateMesh(createCollision, entity->GetWorldTransform(), renderObject, geometryCache, userData);
+                result = CreateMesh(createCollision, tc->GetWorldMatrix(), renderObject, geometryCache, userData);
             }
         }
 
@@ -971,19 +976,19 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
                 (entity->GetComponent<TextComponent>() != nullptr) ||
                 (entity->GetComponent<WindComponent>() != nullptr))
             {
-                result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxScale), userData);
+                result = CreateBox(createCollision, false, tc->GetWorldMatrix(), toVec3Fn(debugBoxScale), userData);
             }
             else if (entity->GetComponent<UserComponent>() != nullptr)
             {
-                result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxUserScale), userData);
+                result = CreateBox(createCollision, false, tc->GetWorldMatrix(), toVec3Fn(debugBoxUserScale), userData);
             }
             else if (GetWaypointComponent(entity) != nullptr)
             {
-                result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxWaypointScale), userData);
+                result = CreateBox(createCollision, false, tc->GetWorldMatrix(), toVec3Fn(debugBoxWaypointScale), userData);
             }
             else
             {
-                result = CreateBox(createCollision, false, entity->GetWorldTransform(), toVec3Fn(debugBoxScale), userData);
+                result = CreateBox(createCollision, false, tc->GetWorldMatrix(), toVec3Fn(debugBoxScale), userData);
             }
         }
 
@@ -996,7 +1001,7 @@ void SceneCollisionSystem::EnumerateObjectHierarchy(const Selectable& object, bo
     {
         float32 scale = object.CanBeCastedTo<ParticleEmitterInstance>() ? debugBoxParticleScale : debugBoxScale;
         const Any& containedObject = object.GetContainedObject();
-        CollisionObj result = CreateBox(createCollision, false, object.GetWorldTransform(), toVec3Fn(scale), userData);
+        CollisionObj result = CreateBox(createCollision, false, TransformUtils::ToMatrix(object.GetWorldTransform()), toVec3Fn(scale), userData);
         callback(containedObject, result.collisionObject, result.shouldRecreate);
     }
 }
@@ -1016,7 +1021,7 @@ AABBox3 SceneCollisionSystem::GetTransformedBoundingBox(const Selectable& object
         for (int32 i = 0; i < entity->GetChildrenCount(); i++)
         {
             Selectable childEntity(entity->GetChild(i));
-            AABBox3 childBox = GetTransformedBoundingBox(childEntity, childEntity.GetLocalTransform());
+            AABBox3 childBox = GetTransformedBoundingBox(childEntity, TransformUtils::ToMatrix(childEntity.GetLocalTransform()));
             if (childBox.IsEmpty() == false)
             {
                 if (entityBox.IsEmpty())

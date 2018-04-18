@@ -41,7 +41,7 @@ private:
     bool IsSpawnNode(DAVA::Entity* entity) const;
     const DAVA::Color& GetSpawnColor(DAVA::Entity* entity) const;
 
-    const DAVA::Matrix4* GetWorldTransformPtr(DAVA::Entity* entity) const;
+    DAVA::Matrix4* GetWorldMatrixPtr(DAVA::Entity* entity) const;
 
     void RemoveOldSpawns();
     void FindNewSpawns(DAVA::Vector<DAVA::Entity*>& newSpawns);

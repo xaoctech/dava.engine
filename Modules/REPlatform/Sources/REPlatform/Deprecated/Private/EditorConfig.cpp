@@ -64,19 +64,19 @@ void EditorConfig::ParseConfig(const FilePath& filePath)
 {
     ClearConfig();
 
-    ScopedPtr<YamlParser> parser(YamlParser::Create(filePath));
-    if (parser.get() == nullptr)
+    RefPtr<YamlParser> parser(YamlParser::Create(filePath));
+    if (parser.Get() == nullptr)
         return;
 
     YamlNode* rootNode = parser->GetRootNode();
     if (rootNode == nullptr)
         return;
 
-    const Vector<YamlNode*>& yamlNodes = rootNode->AsVector();
+    const auto& yamlNodes = rootNode->AsVector();
     size_t propertiesCount = yamlNodes.size();
     for (size_t i = 0; i < propertiesCount; ++i)
     {
-        YamlNode* propertyNode = yamlNodes[i];
+        YamlNode* propertyNode = yamlNodes[i].Get();
         if (propertyNode == nullptr)
         {
             Logger::Error("EditorConfig::ParseConfig %s ERROR property %d is missing", filePath.GetAbsolutePathname().c_str(), i);
@@ -179,8 +179,8 @@ void EditorConfig::ParseConfig(const FilePath& filePath)
             if (comboNode == nullptr)
                 break;
 
-            const DAVA::Vector<DAVA::YamlNode*>& comboValueNodes = comboNode->AsVector();
-            for (const DAVA::YamlNode* comboValueNode : comboValueNodes)
+            const auto& comboValueNodes = comboNode->AsVector();
+            for (const auto& comboValueNode : comboValueNodes)
             {
                 properties[nameStr]->comboValues.push_back(comboValueNode->AsString());
             }
@@ -199,8 +199,8 @@ void EditorConfig::ParseConfig(const FilePath& filePath)
             if (colorListNode == nullptr)
                 break;
 
-            const DAVA::Vector<DAVA::YamlNode*>& colorListNodes = colorListNode->AsVector();
-            for (const DAVA::YamlNode* colorNode : colorListNodes)
+            const auto& colorListNodes = colorListNode->AsVector();
+            for (const auto& colorNode : colorListNodes)
             {
                 if (!colorNode || colorNode->GetCount() != 4)
                     continue;
@@ -227,8 +227,8 @@ void EditorConfig::ParseConfig(const FilePath& filePath)
             if (mapNode == nullptr)
                 break;
 
-            const DAVA::Vector<DAVA::YamlNode*> mapNodes = mapNode->AsVector();
-            for (const DAVA::YamlNode* pairNode : mapNodes)
+            const auto& mapNodes = mapNode->AsVector();
+            for (const auto& pairNode : mapNodes)
             {
                 std::pair<DAVA::int32, DAVA::String> pair = { pairNode->Get(1)->AsInt(), pairNode->Get(0)->AsString() };
                 properties[nameStr]->collisionTypeMapValues.push_back(pair);

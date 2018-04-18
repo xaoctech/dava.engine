@@ -97,7 +97,8 @@ void InvaderAttackSystem::ApplyDigitalActions(Entity* entity, const Vector<FastN
     {
         if (action == FIRST_SHOOT)
         {
-            Vector3 shootStart = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector() + SHOOT_OFFSET;
+            const Vector3& shooterPos = entity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
+            Vector3 shootStart = shooterPos + SHOOT_OFFSET;
             Vector3 shootEnd = shootStart + AIM_OFFSET;
             Vector3 shootDirection = AIM_OFFSET;
             shootDirection.Normalize();

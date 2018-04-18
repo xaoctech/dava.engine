@@ -106,7 +106,7 @@ std::ostream& operator<<(std::ostream& os, const DAVA::Any& any)
         else if (type->Is<FastName>())
         {
             const FastName& v = any.Get<FastName>();
-            os << "'" << ((v.IsValid()) ? v.c_str() : "NULL") << "'";
+            os << "'" << (v.IsValid() ? v.c_str() : "<null>") << "'";
         }
         else if (type->Is<Vector2>())
         {

@@ -3,11 +3,13 @@
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <Math/Transform.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include <Scene3D/Scene.h>
-#include <Scene3D/Entity.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/MotionComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Entity.h>
+#include <Scene3D/Scene.h>
 #include <Scene3D/Systems/MotionSystem.h>
 #include <Scene3D/Systems/RenderUpdateSystem.h>
 #include <Scene3D/Systems/TransformSystem.h>
@@ -110,7 +112,8 @@ bool TestCharacterControllerModule::EnableController(DAVA::Scene* scene, const V
     SceneContext& context = activeControllers[scene];
 
     context.characterEntity = testCharacterEntity->Clone();
-    context.characterEntity->SetLocalTransform(Matrix4::MakeTranslation(spawnPoint));
+    TransformComponent* tc = context.characterEntity->GetComponent<TransformComponent>();
+    tc->SetLocalTranslation(spawnPoint);
     scene->AddNode(context.characterEntity);
 
     context.characterControllerSystem->SetCharacterEntity(context.characterEntity);

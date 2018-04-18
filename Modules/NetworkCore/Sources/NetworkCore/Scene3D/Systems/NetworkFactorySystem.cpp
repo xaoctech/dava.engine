@@ -85,12 +85,16 @@ void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
 
         TransformComponent* transComp = entity->GetComponent<TransformComponent>();
         DVASSERT(transComp);
-        NetworkFactoryComponent::InitialTransform initTrans = { transComp->GetPosition(), transComp->GetRotation() };
+
+        const Transform& localTransform = transComp->GetLocalTransform();
+
+        NetworkFactoryComponent::InitialTransform initTrans = { localTransform.GetTranslation(), localTransform.GetRotation() };
         if (fc->initialTransformPtr)
         {
             initTrans = *fc->initialTransformPtr;
         }
-        transComp->SetLocalTransform(initTrans.position, initTrans.rotation, transComp->GetScale() * fc->scale);
+        transComp->SetLocalTransform(Transform(
+                initTrans.position, localTransform.GetScale() * fc->scale, initTrans.rotation));
 
         Vector<const Type*> predictComponentTypes;
         for (const auto& componentIt : entityCfg->components)

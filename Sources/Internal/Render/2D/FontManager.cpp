@@ -149,7 +149,7 @@ RefPtr<Font> FontManager::LoadFont(const FilePath& fontPath)
         }
         else
         {
-            YamlParser* parser = YamlParser::Create(fontPath);
+            RefPtr<YamlParser> parser = YamlParser::Create(fontPath);
             if (parser)
             {
                 const YamlNode* node = parser->GetRootNode();

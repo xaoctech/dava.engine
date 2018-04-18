@@ -64,7 +64,7 @@ void NetworkFrequencySystem::ProcessFixed(DAVA::float32 timeElapsed)
             ObservableCache& cache = toObserveOnCurrFrame.back();
 
             cache.entity = observableTransform->GetEntity();
-            cache.position = observableTransform->GetPosition();
+            cache.position = observableTransform->GetWorldTransform().GetTranslation();
             cache.id = observableId;
         }
     }
@@ -74,7 +74,7 @@ void NetworkFrequencySystem::ProcessFixed(DAVA::float32 timeElapsed)
         ObserverComponent* observerComp = observer.comp;
 
         ObserverCache observerCache;
-        observerCache.position = observer.transform->GetPosition();
+        observerCache.position = observer.transform->GetWorldTransform().GetTranslation();
         observerCache.playerComp = observer.playerComp;
         observerCache.networkPeriodByObservableId = &observer.networkPeriodByObservableId;
 
@@ -94,7 +94,7 @@ void NetworkFrequencySystem::ProcessFixed(DAVA::float32 timeElapsed)
             TransformComponent* observableTransform = it->second;
             ObservableCache observableCache;
             observableCache.entity = observableTransform->GetEntity();
-            observableCache.position = observableTransform->GetPosition();
+            observableCache.position = observableTransform->GetWorldTransform().GetTranslation();
             observableCache.id = updatedId;
 
             UpdateNetworkPeriod(observerCache, observableCache, observerComp->IsVisible(updatedId));

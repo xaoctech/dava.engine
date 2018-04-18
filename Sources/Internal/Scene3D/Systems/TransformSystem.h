@@ -10,14 +10,16 @@
 namespace DAVA
 {
 class Entity;
+class Transform;
 class TransformComponent;
+
 class TransformSystem : public SceneSystem
 {
 public:
     DAVA_VIRTUAL_REFLECTION(TransformSystem, SceneSystem);
 
     TransformSystem(Scene* scene);
-    ~TransformSystem();
+    ~TransformSystem() override;
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
@@ -33,10 +35,9 @@ private:
     void HierarchicAddToUpdate(Entity* entity);
 
     bool UpdateEntity(Entity* entity, bool forceUpdate = false);
-    Matrix4 GetWorldTransform(TransformComponent* tc, bool* isFinal) const;
 
     int32 passedNodes;
     int32 multipliedNodes;
     float32 timeElapsed;
 };
-};
+}

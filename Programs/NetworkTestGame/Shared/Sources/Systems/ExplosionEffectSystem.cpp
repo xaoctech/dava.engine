@@ -122,7 +122,8 @@ void ExplosionEffectSystem::ProcessNewEffects(DAVA::Scene* scene)
             effectEntity->AddComponent(new NetworkTransformComponent);
 
             TransformComponent* transformComponent = effectEntity->GetComponent<TransformComponent>();
-            transformComponent->SetLocalTransform(descriptor.position, descriptor.rotation, Vector3{ 1.f, 1.f, 1.f });
+            transformComponent->SetLocalTransform(Transform(
+                    descriptor.position, Vector3{ 1.f, 1.f, 1.f }, descriptor.rotation));
 
             scene->AddNode(effectEntity);
         }

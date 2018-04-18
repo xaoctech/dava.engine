@@ -145,6 +145,7 @@ void GameModeSystemCars::Process(float32 timeElapsed)
     if (cameraComponent != nullptr && focusedCar != nullptr)
     {
         TransformComponent* focusedCarTransform = focusedCar->GetComponent<TransformComponent>();
+        const Transform& localCarTransform = focusedCarTransform->GetLocalTransform();
 
         Vector3 cameraOffset = Vector3::Zero;
 
@@ -152,7 +153,7 @@ void GameModeSystemCars::Process(float32 timeElapsed)
         if (mouse != nullptr && GetPrimaryWindow() != nullptr)
         {
             Matrix4 rotationMatrixZ;
-            rotationMatrixZ.BuildRotation(Vector3::UnitZ, mouse->GetPosition().x * PI / 180.0f);
+            rotationMatrixZ.BuildRotation(Vector3::UnitZ, -mouse->GetPosition().x * PI / 180.0f);
 
             static Vector3 currentPos = Vector3(0.0f, -15.0f, 7.0f);
             currentPos = currentPos * rotationMatrixZ;
@@ -161,13 +162,13 @@ void GameModeSystemCars::Process(float32 timeElapsed)
         else
         {
             // For touch devices just keep camera behind
-            cameraOffset = focusedCarTransform->GetRotation().ApplyToVectorFast(Vector3(10.0f, 0.0f, 3.0f));
+            cameraOffset = localCarTransform.GetRotation().ApplyToVectorFast(Vector3(10.0f, 0.0f, 3.0f));
         }
 
         Camera* camera = cameraComponent->GetCamera();
         camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
-        camera->SetPosition(focusedCarTransform->GetPosition() + cameraOffset);
-        camera->SetTarget(focusedCarTransform->GetPosition());
+        camera->SetPosition(localCarTransform.GetTranslation() + cameraOffset);
+        camera->SetTarget(localCarTransform.GetTranslation());
         camera->RebuildCameraFromValues();
     }
 }
@@ -227,7 +228,8 @@ void GameModeSystemCars::OnClientConnected(const FastName& token)
 
         // Position the car slightly above the ground
         TransformComponent* carTransform = car->GetComponent<TransformComponent>();
-        carTransform->SetLocalTransform(Vector3(0.0f, 0.0f, 14.5f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f));
+        carTransform->SetLocalTransform(Transform(
+                Vector3(0.0f, 0.0f, 14.5f), Vector3(1.0f, 1.0f, 1.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
 
         GetScene()->AddNode(car);
     }

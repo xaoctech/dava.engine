@@ -127,7 +127,7 @@ void TextBlockGraphicRender::Draw(const Color& textColor, const Vector2* offset)
     offsetMatrix.BuildTranslation(Vector3(float32(xOffset) - textBlock->pivot.x, float32(yOffset) - textBlock->pivot.y, 0.f));
 
     Matrix4 rotateMatrix;
-    rotateMatrix.BuildRotation(Vector3(0.f, 0.f, 1.f), textBlock->angle);
+    rotateMatrix.BuildRotation(Vector3(0.f, 0.f, 1.f), -textBlock->angle);
 
     Matrix4 scaleMatrix;
     //recalculate x scale - for non-uniform scale

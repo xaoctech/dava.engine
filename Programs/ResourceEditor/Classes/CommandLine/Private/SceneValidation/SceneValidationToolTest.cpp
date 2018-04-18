@@ -17,6 +17,7 @@
 #include <Render/Material/NMaterial.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/CustomPropertiesComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 DAVA_TARC_TESTCLASS(SceneValidationToolTest)
 {
@@ -62,7 +63,8 @@ DAVA_TARC_TESTCLASS(SceneValidationToolTest)
             Entity* box = builder.AddBox(CommandLineModuleTestUtils::SceneBuilder::WITHOUT_REF_TO_OWNER);
             Matrix4 notIdentityMatrix;
             notIdentityMatrix.Zero();
-            box->SetLocalTransform(notIdentityMatrix); // specifying non-identity matrix: verification should fail
+            TransformComponent* tc = box->GetComponent<TransformComponent>();
+            tc->SetLocalMatrix(notIdentityMatrix); // specifying non-identity matrix: verification should fail
             builder.AddR2O(box);
         }
 

@@ -35,7 +35,7 @@ WaveSystem::WaveInfo::WaveInfo(WaveComponent* _component)
 
     maxRadiusSq = maxRadius * maxRadius;
 
-    center = GetTransformComponent(component->GetEntity())->GetWorldTransform().GetTranslationVector();
+    center = GetTransformComponent(component->GetEntity())->GetWorldTransform().GetTranslation();
 }
 
 WaveSystem::WaveSystem(Scene* scene)

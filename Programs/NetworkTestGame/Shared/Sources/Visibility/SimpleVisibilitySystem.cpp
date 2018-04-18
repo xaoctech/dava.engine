@@ -60,10 +60,10 @@ void SimpleVisibilitySystem::ProcessFixed(float32 timeElapsed)
 
     auto updateObservable = [this](ObservableItem& observable)
     {
-        const Vector3& observablePos = observable.transform->GetPosition();
+        const Vector3& observablePos = observable.transform->GetWorldTransform().GetTranslation();
         for (ObserverItem& observer : observers)
         {
-            const Vector3& observerPos = observer.transform->GetPosition();
+            const Vector3& observerPos = observer.transform->GetWorldTransform().GetTranslation();
             float32 distSqr = DistanceSquared(observerPos, observablePos);
             float maxVisibilityRadius = observer.comp->maxVisibilityRadius;
             bool isVisible = (distSqr <= maxVisibilityRadius * maxVisibilityRadius);

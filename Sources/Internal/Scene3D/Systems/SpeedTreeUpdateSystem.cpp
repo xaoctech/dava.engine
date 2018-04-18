@@ -109,7 +109,7 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
             for (Entity* entity : pair.second)
             {
                 SpeedTreeComponent* component = entity->GetComponent<SpeedTreeComponent>();
-                const Matrix4* wtMxPrt = GetTransformComponent(component->GetEntity())->GetWorldTransformPtr();
+                Matrix4* wtMxPrt = GetTransformComponent(component->GetEntity())->GetWorldMatrixPtr();
                 component->wtPosition = wtMxPrt->GetTranslationVector();
                 wtMxPrt->GetInverse(component->wtInvMx);
 

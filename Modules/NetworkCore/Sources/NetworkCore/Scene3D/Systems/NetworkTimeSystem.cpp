@@ -25,7 +25,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTimeSystem)
     ReflectionRegistrator<NetworkTimeSystem>::Begin()[M::Tags("network")]
     .ConstructorByPointer<Scene*>()
     .Method("Process", &NetworkTimeSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 17.0f)]
-    .Method("ProcessFixed", &NetworkTimeSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 3.0f)]
+    .Method("ProcessFixedUpdateStats", &NetworkTimeSystem::ProcessFixedUpdateStats)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 3.0f)]
+    .Method("ProcessFixedSendStats", &NetworkTimeSystem::ProcessFixedSendStats)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 14.2f)]
     .End();
 }
 
@@ -186,7 +187,7 @@ void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const uint8*
     }
 }
 
-void NetworkTimeSystem::ProcessFixed(float32 timeElapsed)
+void NetworkTimeSystem::ProcessFixedUpdateStats(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkTimeSystem::ProcessFixed");
 
@@ -215,9 +216,20 @@ void NetworkTimeSystem::ProcessFixed(float32 timeElapsed)
     uint32 uptime = netTimeComp->GetUptimeMs();
     uptime += static_cast<uint32>(timeElapsed * 1000);
     netTimeComp->SetUptimeMs(uptime);
+}
+
+void NetworkTimeSystem::ProcessFixedSendStats(float32 timeElapsed)
+{
+    if (IsReSimulating())
+    {
+        DVASSERT(realCurrFrameId);
+        return;
+    }
 
     if (client)
     {
+        uint32 frameId = netTimeComp->GetFrameId();
+
         int32 adjustedFrames = netTimeComp->GetAdjustedFrames();
         if (adjustedFrames == 0)
         {

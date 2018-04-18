@@ -1,19 +1,19 @@
 #include "Systems/ShooterCharacterAnimationSystem.h"
-#include "Components/ShooterRoleComponent.h"
 #include "Components/ShooterAimComponent.h"
 #include "ShooterConstants.h"
 #include "ShooterUtils.h"
 
+#include <Debug/ProfilerCPU.h>
+#include <Entity/ComponentUtils.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/MotionComponent.h>
+#include <Scene3D/Components/SkeletonComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/SingleComponents/MotionSingleComponent.h>
 #include <Scene3D/Components/SingleComponents/ActionsSingleComponent.h>
-#include <Entity/ComponentUtils.h>
-#include <Debug/ProfilerCPU.h>
 
 #include <NetworkCore/NetworkCoreUtils.h>
 
@@ -22,292 +22,189 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCharacterAnimationSystem)
     using namespace DAVA;
     ReflectionRegistrator<ShooterCharacterAnimationSystem>::Begin()[M::Tags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &ShooterCharacterAnimationSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 6.0f)]
+    .Method("ProcessFixed", &ShooterCharacterAnimationSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 25.0f)]
     .End();
 }
 
 ShooterCharacterAnimationSystem::ShooterCharacterAnimationSystem(DAVA::Scene* scene)
-    : DAVA::SceneSystem(scene, DAVA::ComponentUtils::MakeMask<ShooterRoleComponent>())
-{
-}
-
-void ShooterCharacterAnimationSystem::AddEntity(DAVA::Entity* entity)
-{
-    ShooterRoleComponent* roleComponent = entity->GetComponent<ShooterRoleComponent>();
-    DVASSERT(roleComponent != nullptr);
-
-    if (roleComponent->GetRole() == ShooterRoleComponent::Role::Player)
-    {
-        data d;
-        animationData.insert({ entity, d });
-    }
-}
-
-void ShooterCharacterAnimationSystem::RemoveEntity(DAVA::Entity* entity)
-{
-    animationData.erase(entity);
-}
-
-void ShooterCharacterAnimationSystem::Process(DAVA::float32 dt)
+    : DAVA::SceneSystem(scene, DAVA::ComponentUtils::MakeMask())
 {
     using namespace DAVA;
 
-    DAVA_PROFILER_CPU_SCOPE("ShooterCarSystem::Process");
+    players = scene->AquireEntityGroup<MotionComponent, SkeletonComponent, ShooterAimComponent>();
+}
 
-    for (auto& animData : animationData)
+void ShooterCharacterAnimationSystem::ProcessFixed(DAVA::float32 dt)
+{
+    using namespace DAVA;
+
+    for (Entity* player : players->GetEntities())
     {
-        Entity* entity = animData.first;
-        data& d = animData.second;
-
-        if (!d.filled)
+        if (IsServer(this) || IsClientOwner(this, player))
         {
-            if (SetCharacterEntity(entity, d))
+            const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), player);
+            if (!allActions.empty())
             {
-                d.filled = true;
-            }
-        }
-
-        const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), entity);
-        if (!allActions.empty())
-        {
-            const auto& actions = allActions.back();
-
-            Vector2 direction(0.0f, 0.0f);
-            bool accelerated = false;
-            for (const FastName& action : actions.digitalActions)
-            {
-                if (action == SHOOTER_ACTION_MOVE_FORWARD)
-                    direction.y += 1.f;
-                else if (action == SHOOTER_ACTION_MOVE_BACKWARD)
-                    direction.y -= 1.f;
-                else if (action == SHOOTER_ACTION_MOVE_LEFT)
-                    direction.x -= 1.f;
-                else if (action == SHOOTER_ACTION_MOVE_RIGHT)
-                    direction.x += 1.f;
-                else if (action == SHOOTER_ACTION_ACCELERATE)
-                    accelerated = true;
-            }
-
-            for (const auto& analogActionInfo : actions.analogActions)
-            {
-                if (analogActionInfo.first.actionId == SHOOTER_ACTION_ANALOG_MOVE)
+                for (const ActionsSingleComponent::Actions& actions : allActions)
                 {
-                    Vector2 analogActionState = ConvertFixedPrecisionToAnalog(analogActionInfo.first.precision, analogActionInfo.second);
-
-                    if (!FLOAT_EQUAL_EPS(analogActionState.x, 0.0f, 0.1f))
-                    {
-                        direction.x = analogActionState.x < 0.0f ? -1.0f : 1.0f;
-                    }
-
-                    if (!FLOAT_EQUAL_EPS(analogActionState.y, 0.0f, 0.1f))
-                    {
-                        direction.y = -analogActionState.y < 0.0f ? -1.0f : 1.0f;
-                    }
-
-                    if (std::abs(analogActionState.x) > 0.9f || std::abs(analogActionState.y) > 0.9f)
-                    {
-                        // Accelerate
-                        accelerated = true;
-                    }
+                    UpdateInputDependentParams(player, actions, dt);
                 }
             }
-
-            ProcessActions(direction, accelerated, actions.digitalActions, dt, entity, d);
         }
+
+        UpdateInputIndependentParams(player, dt);
+        UpdateEventsAndWeapon(player);
     }
 }
 
 void ShooterCharacterAnimationSystem::PrepareForRemove()
 {
+    using namespace DAVA;
 }
 
-// TODO: taken from TestCharacterController module with some changes, refactor it
-
-bool ShooterCharacterAnimationSystem::SetCharacterEntity(DAVA::Entity* entity, data& d)
+void ShooterCharacterAnimationSystem::UpdateInputDependentParams(const DAVA::Entity* player, const DAVA::ActionsSingleComponent::Actions& actions, DAVA::float32 dt)
 {
     using namespace DAVA;
 
-    d.weaponEntity = nullptr;
-    d.shootEffect = nullptr;
+    MotionComponent* motionComponent = player->GetComponent<MotionComponent>();
+    DVASSERT(motionComponent != nullptr);
 
-    d.characterMotionComponent = nullptr;
-    d.characterSkeleton = nullptr;
+    dt *= motionComponent->GetPlaybackRate();
 
-    d.headJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
-    d.weaponPointJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
-
-    if (entity != nullptr)
+    Vector2 movingDirection;
+    bool running = false;
+    for (const FastName& action : actions.digitalActions)
     {
-        d.characterEntity = SafeRetain(entity);
-        if (d.characterEntity == nullptr)
+        if (action == SHOOTER_ACTION_MOVE_FORWARD)
         {
-            return false;
+            movingDirection.y += 1.f;
         }
-
-        d.weaponEntity = entity->FindByName("Weapon");
-        if (d.weaponEntity != nullptr)
-            d.shootEffect = d.weaponEntity->FindByName("shot_auto");
-
-        d.characterSkeleton = GetSkeletonComponent(d.characterEntity);
-        if (d.characterSkeleton == nullptr)
+        else if (action == SHOOTER_ACTION_MOVE_BACKWARD)
         {
-            return false;
+            movingDirection.y -= 1.f;
         }
-
-        d.headJointIndex = d.characterSkeleton->GetJointIndex(FastName("node-Head"));
-
-        d.weaponPointJointIndex = d.characterSkeleton->GetJointIndex(FastName("node-RH_WP"));
-        if (d.weaponPointJointIndex == SkeletonComponent::INVALID_JOINT_INDEX)
-            d.weaponPointJointIndex = d.characterSkeleton->GetJointIndex(FastName("node-Weapon_Primary"));
-
-        DVASSERT(d.headJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
-        DVASSERT(d.weaponPointJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
-
-        d.characterMotionComponent = GetMotionComponent(d.characterEntity);
+        else if (action == SHOOTER_ACTION_MOVE_LEFT)
+        {
+            movingDirection.x -= 1.f;
+        }
+        else if (action == SHOOTER_ACTION_MOVE_RIGHT)
+        {
+            movingDirection.x += 1.f;
+        }
+        else if (action == SHOOTER_ACTION_ACCELERATE)
+        {
+            running = true;
+        }
     }
 
-    return true;
+    // Direction
+
+    const float32 movingDirectionDt = dt * 5.0f;
+
+    float32 previousDirectionX = motionComponent->GetParameter(MOTION_PARAM_DIRECTION_X);
+    float32 previousDirectionY = motionComponent->GetParameter(MOTION_PARAM_DIRECTION_Y);
+    float32 newDirectionX = previousDirectionX;
+    float32 newDirectionY = previousDirectionY;
+
+    if (previousDirectionX > movingDirection.x)
+    {
+        newDirectionX -= movingDirectionDt;
+    }
+    else if (previousDirectionX < movingDirection.x)
+    {
+        newDirectionX += movingDirectionDt;
+    }
+
+    if (previousDirectionY > movingDirection.y)
+    {
+        newDirectionY -= movingDirectionDt;
+    }
+    else if (previousDirectionY < movingDirection.y)
+    {
+        newDirectionY += movingDirectionDt;
+    }
+
+    if (Abs(newDirectionX) < movingDirectionDt)
+    {
+        newDirectionX = 0.f;
+    }
+    if (Abs(newDirectionY) < movingDirectionDt)
+    {
+        newDirectionY = 0.f;
+    }
+
+    newDirectionX = Clamp(newDirectionX, -1.0f, 1.0f);
+    newDirectionY = Clamp(newDirectionY, -1.0f, 1.0f);
+
+    motionComponent->SetParameter(MOTION_PARAM_DIRECTION_X, newDirectionX);
+    motionComponent->SetParameter(MOTION_PARAM_DIRECTION_Y, newDirectionY);
+
+    // Running
+
+    const float32 runningDt = dt * 3.0f;
+
+    const float32 previousRunning = motionComponent->GetParameter(MOTION_PARAM_RUNNING);
+    float32 newRunning = previousRunning;
+    if (newDirectionX != 0.0f || newDirectionY != 0.0f)
+    {
+        newRunning += (running ? runningDt : -runningDt);
+        newRunning = Clamp(newRunning, 0.0f, 1.0f);
+    }
+
+    motionComponent->SetParameter(MOTION_PARAM_RUNNING, newRunning);
 }
 
-void ShooterCharacterAnimationSystem::ProcessActions(DAVA::Vector2 moveDirectionTarget, bool running, const DAVA::Vector<DAVA::FastName>& actions, DAVA::float32 dt, DAVA::Entity* entity, data& d)
+void ShooterCharacterAnimationSystem::UpdateInputIndependentParams(const DAVA::Entity* player, const DAVA::float32 dt)
 {
     using namespace DAVA;
 
-    if (d.characterMotionComponent == nullptr)
-        return;
+    MotionComponent* motionComponent = player->GetComponent<MotionComponent>();
+    DVASSERT(motionComponent != nullptr);
 
-    dt *= d.characterMotionComponent->GetPlaybackRate();
+    ShooterAimComponent* aimComponent = player->GetComponent<ShooterAimComponent>();
+    DVASSERT(aimComponent != nullptr);
 
-    //////////////////////////////////////////////////////////////////////////
-    //Calculate motion params
+    Vector3 defaultAimRayEnd = SHOOTER_AIM_OFFSET + SHOOTER_MAX_SHOOTING_DISTANCE * SHOOTER_CHARACTER_FORWARD;
+    defaultAimRayEnd.Normalize();
+    float32 defaultAngle = std::acos(SHOOTER_CHARACTER_FORWARD.DotProduct(defaultAimRayEnd));
 
-    bool shooting = false;
-    for (const FastName& action : actions)
-    {
-        if (action == SHOOTER_ACTION_ATTACK_BULLET)
-            shooting = true;
-    }
+    motionComponent->SetParameter(MOTION_PARAM_AIM_ANGLE, RadToDeg(-aimComponent->GetCurrentAngleX() + defaultAngle));
+}
 
-    float32 directionDt = dt * 5.f;
+void ShooterCharacterAnimationSystem::UpdateEventsAndWeapon(DAVA::Entity* player)
+{
+    using namespace DAVA;
 
-    if (d.directionParam.x > moveDirectionTarget.x)
-        d.directionParam.x -= directionDt;
-    if (d.directionParam.x < moveDirectionTarget.x)
-        d.directionParam.x += directionDt;
+    MotionComponent* motionComponent = player->GetComponent<MotionComponent>();
+    DVASSERT(motionComponent != nullptr);
 
-    if (d.directionParam.y > moveDirectionTarget.y)
-        d.directionParam.y -= directionDt;
-    if (d.directionParam.y < moveDirectionTarget.y)
-        d.directionParam.y += directionDt;
-
-    if (Abs(d.directionParam.x) < directionDt)
-        d.directionParam.x = 0.f;
-    if (Abs(d.directionParam.y) < directionDt)
-        d.directionParam.y = 0.f;
-
-    d.directionParam.x = Clamp(d.directionParam.x, -1.f, 1.f);
-    d.directionParam.y = Clamp(d.directionParam.y, -1.f, 1.f);
-
-    d.isMoving = (d.directionParam.SquareLength() > EPSILON || !moveDirectionTarget.IsZero());
-    d.isCrouching = false; //(keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LCTRL).IsPressed();
-    d.isRun = d.isMoving && running && !shooting; //isMoving && !isCrouching && !waitReloadEnd && (keyboard != nullptr) && keyboard->GetKeyState(eInputElements::KB_LSHIFT).IsPressed();
-    d.isZooming = false; //!isRun && ((mouse != nullptr && mouse->GetRightButtonState().IsPressed()) || doubleTapped);
-
-    d.runningParam += (d.isRun ? dt : -dt) * 3.f;
-    d.runningParam = Clamp(d.runningParam, 0.f, 1.f);
-
-    d.crouchingParam += (d.isCrouching ? dt : -dt) * 3.f;
-    d.crouchingParam = Clamp(d.crouchingParam, 0.f, 1.f);
-
-    d.zoomFactor += (d.isZooming ? dt : -dt) * 3.f;
-    d.zoomFactor = Clamp(d.zoomFactor, 0.f, 1.f);
-
-    ShooterAimComponent* aimComponent = d.characterEntity->GetComponent<ShooterAimComponent>();
-    if (aimComponent != nullptr)
-    {
-        Vector3 defaultAimRayEnd = SHOOTER_AIM_OFFSET + SHOOTER_MAX_SHOOTING_DISTANCE * SHOOTER_CHARACTER_FORWARD;
-        defaultAimRayEnd.Normalize();
-        float32 defaultAngle = std::acos(SHOOTER_CHARACTER_FORWARD.DotProduct(defaultAimRayEnd));
-
-        d.aimAngleParam = RadToDeg(-aimComponent->GetCurrentAngleX() + defaultAngle);
-    }
-    else
-    {
-        d.aimAngleParam = 0.0f;
-    }
-    //////////////////////////////////////////////////////////////////////////
-
-    const static FastName WEAPON_MOTION_NAME("WeaponMotion");
-    const static FastName WEAPON_MOTION_RELOAD_STATE_ID("reload");
-    const static FastName WEAPON_MOTION_SHOOT_STATE_ID("shoot");
-    const static FastName WEAPON_MOTION_SHOOT_MARKER("shoot");
-
-    const MotionSingleComponent* msc = GetScene()->GetSingleComponentForRead<MotionSingleComponent>(this);
-    if (d.waitReloadEnd)
-    {
-        MotionSingleComponent::AnimationInfo reloadAnimationInfo(d.characterMotionComponent, WEAPON_MOTION_NAME, WEAPON_MOTION_RELOAD_STATE_ID);
-        d.waitReloadEnd = (msc->animationEnd.count(reloadAnimationInfo) == 0);
-    }
-
-    if (d.shootEffect != nullptr && shooting)
-    {
-        GetParticleEffectComponent(d.shootEffect)->Start();
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    //Setup motion animation
-
-    const static FastName MOTION_PARAM_RUNNING("running");
-    const static FastName MOTION_PARAM_CROUCHING("crouching");
-    const static FastName MOTION_PARAM_AIM_ANGLE("aim-angle");
-    const static FastName MOTION_PARAM_DIRECTION_X("direction-x");
-    const static FastName MOTION_PARAM_DIRECTION_Y("direction-y");
+    SkeletonComponent* skeletonComponent = player->GetComponent<SkeletonComponent>();
+    DVASSERT(skeletonComponent != nullptr);
 
     const static FastName TRIGGER_MOVE("move");
     const static FastName TRIGGER_STOP("stop");
-    const static FastName TRIGGER_WEAPON_SHOOT("shoot");
-    const static FastName TRIGGER_WEAPON_RELOAD("reload");
-    const static FastName TRIGGER_WEAPON_IDLE("idle");
 
-    d.characterMotionComponent->SetParameter(MOTION_PARAM_RUNNING, d.runningParam);
-    d.characterMotionComponent->SetParameter(MOTION_PARAM_CROUCHING, d.crouchingParam);
-    d.characterMotionComponent->SetParameter(MOTION_PARAM_AIM_ANGLE, d.aimAngleParam);
-    d.characterMotionComponent->SetParameter(MOTION_PARAM_DIRECTION_X, d.directionParam.x);
-    d.characterMotionComponent->SetParameter(MOTION_PARAM_DIRECTION_Y, d.directionParam.y);
-
-    if (!d.isRun)
+    if (motionComponent->GetParameter(MOTION_PARAM_DIRECTION_X) != 0.0f || motionComponent->GetParameter(MOTION_PARAM_DIRECTION_Y) != 0.0f)
     {
-        if (shooting)
-        {
-            d.characterMotionComponent->TriggerEvent(TRIGGER_WEAPON_SHOOT);
-        }
-        else
-        {
-            d.characterMotionComponent->TriggerEvent(TRIGGER_WEAPON_IDLE);
-        }
+        motionComponent->TriggerEvent(TRIGGER_MOVE);
     }
     else
     {
-        d.characterMotionComponent->TriggerEvent(TRIGGER_WEAPON_IDLE);
+        motionComponent->TriggerEvent(TRIGGER_STOP);
     }
 
-    if (d.isMoving)
-    {
-        d.characterMotionComponent->TriggerEvent(TRIGGER_MOVE);
-    }
-    else
-    {
-        d.characterMotionComponent->TriggerEvent(TRIGGER_STOP);
-    }
+    // Weapon transform
 
-    // Weapon
+    uint32 weaponJointIndex = skeletonComponent->GetJointIndex(FastName("node-RH_WP"));
+    DVASSERT(weaponJointIndex != SkeletonComponent::INVALID_JOINT_INDEX);
 
-    SkeletonComponent* skeleton = d.characterSkeleton;
-    Vector3 weaponPointPosition = skeleton->GetJointObjectSpaceTransform(d.weaponPointJointIndex).GetPosition();
-    Quaternion weaponPointOrientation = skeleton->GetJointObjectSpaceTransform(d.weaponPointJointIndex).GetOrientation();
+    const JointTransform& weaponJointTransform = skeletonComponent->GetJointObjectSpaceTransform(weaponJointIndex);
+    Matrix4 weaponTransform =
+    Matrix4::MakeRotation(Vector3::UnitX, -DegToRad(90.f)) *
+    weaponJointTransform.GetOrientation().GetMatrix() *
+    Matrix4::MakeTranslation(weaponJointTransform.GetPosition());
 
-    Matrix4 weaponTransform = Matrix4::MakeRotation(Vector3::UnitX, DegToRad(90.f));
-    weaponTransform *= weaponPointOrientation.GetMatrix() * Matrix4::MakeTranslation(weaponPointPosition);
-
-    d.weaponEntity->SetLocalTransform(weaponTransform);
+    Entity* weaponEntity = player->FindByName("Weapon");
+    DVASSERT(weaponEntity != nullptr);
+    weaponEntity->GetComponent<TransformComponent>()->SetLocalTransform(Transform(weaponTransform));
 }

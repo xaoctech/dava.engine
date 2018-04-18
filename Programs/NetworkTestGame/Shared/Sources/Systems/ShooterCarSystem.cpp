@@ -201,11 +201,13 @@ DAVA::Entity* ShooterCarSystem::GetTargetCar(ShooterAimComponent* aimComponent) 
 
             TransformComponent* aimingEntityTransformComponent = aimingEntity->GetComponent<TransformComponent>();
             DVASSERT(aimingEntityTransformComponent != nullptr);
+            const Transform& shooterWt = aimingEntityTransformComponent->GetWorldTransform();
 
             TransformComponent* targetTransformComponent = aimRayEndEntity->GetComponent<TransformComponent>();
             DVASSERT(targetTransformComponent != nullptr);
+            const Transform& targetWt = targetTransformComponent->GetWorldTransform();
 
-            if (Distance(targetTransformComponent->GetWorldTransform().GetTranslationVector(), aimingEntityTransformComponent->GetWorldTransform().GetTranslationVector()) < 3.5f)
+            if (Distance(targetWt.GetTranslation(), shooterWt.GetTranslation()) < 3.5f)
             {
                 return aimRayEndEntity;
             }
@@ -292,7 +294,9 @@ void ShooterCarSystem::TryPutInCar(ShooterCarUserComponent* playerCarUserCompone
             // Teleport playerCarUserComponent under the ground for now
             // TODO: change hierarchy so that playerCarUserComponent is a child of the car. Can't do that right now since replication system fails when hierarchy changes
             TransformComponent* carUserTransformComponent = playerEntity->GetComponent<TransformComponent>();
-            carUserTransformComponent->SetLocalTransform(Vector3(0.0f, 0.0f, 0.0f), carUserTransformComponent->GetRotation(), carUserTransformComponent->GetScale());
+            const Transform& carUserTransform = carUserTransformComponent->GetLocalTransform();
+            carUserTransformComponent->SetLocalTransform(Transform(
+                    Vector3(0.0f, 0.0f, 0.0f), carUserTransform.GetScale(), carUserTransform.GetRotation()));
 
             // Hack: make all objects in the scene unconditionally visible for playerCarUserComponent
             ObserverComponent* observerComp = playerEntity->GetComponent<ObserverComponent>();
@@ -314,7 +318,7 @@ void ShooterCarSystem::MoveOutOfCar(ShooterCarUserComponent* playerCarUserCompon
 
     // Calculate position to position character when he gets out
     Vector3 nodePositionLocalSpace = SHOOTER_CAR_PASSENGER_NODES_POSITIONS[playerCarUserComponent->passengerIndex];
-    Vector3 nodePositionWorldSpace = nodePositionLocalSpace * car->GetWorldTransform();
+    Vector3 nodePositionWorldSpace = nodePositionLocalSpace * car->GetComponent<TransformComponent>()->GetWorldMatrix();
     physx::PxRaycastHit hit;
     QueryFilterCallback filterCallback(nullptr, RaycastFilter::NONE);
     bool collision = GetRaycastHit(*GetScene(), Vector3(nodePositionWorldSpace.x, nodePositionWorldSpace.y, nodePositionWorldSpace.z), Vector3(0.0f, 0.0f, -1.0f), 100.0f, &filterCallback, hit);
@@ -325,7 +329,9 @@ void ShooterCarSystem::MoveOutOfCar(ShooterCarUserComponent* playerCarUserCompon
 
     // Position him
     TransformComponent* carUserTransformComponent = playerEntity->GetComponent<TransformComponent>();
-    carUserTransformComponent->SetLocalTransform(nodePositionWorldSpace, carUserTransformComponent->GetRotation(), carUserTransformComponent->GetScale());
+    const Transform& carUserTransform = carUserTransformComponent->GetLocalTransform();
+    carUserTransformComponent->SetLocalTransform(Transform(
+            nodePositionWorldSpace, carUserTransform.GetScale(), carUserTransform.GetRotation()));
 
     // Reset his aim angle around X axis
 

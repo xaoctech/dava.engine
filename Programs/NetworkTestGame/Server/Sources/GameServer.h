@@ -76,4 +76,5 @@ private:
     bool hasProducedMetrics = false;
 
     bool disableNetworkInReplayMode = false;
+    DAVA::int64 networkTimeAvgUs = 0;
 };

@@ -505,8 +505,8 @@ physx::PxShape* PhysicsModule::CreateHeightField(Landscape* landscape, const Fas
     PxShape* shape = physics->createShape(geometry, *GetMaterial(materialName), true);
 
     float32 translate = landscapeSize / 2.0f;
-    localPose = Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.0f), -PI_05) *
-    Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), -PI_05) *
+    localPose = Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.0f), PI_05) *
+    Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), PI_05) *
     Matrix4::MakeTranslation(Vector3(-translate, -translate, 0.0f));
 
     return shape;
@@ -613,9 +613,9 @@ void PhysicsModule::LoadMaterials()
     YamlNode* root = parser->GetRootNode();
     DVASSERT(root->GetType() == YamlNode::TYPE_ARRAY);
 
-    Vector<YamlNode*> materialNodes = root->AsVector();
+    const auto& materialNodes = root->AsVector();
     bool configCorrupted = false;
-    for (YamlNode* materialNode : materialNodes)
+    for (const auto& materialNode : materialNodes)
     {
         const YamlNode* nameNode = materialNode->Get("Name");
         const YamlNode* staticFrictionNode = materialNode->Get("StaticFriction");

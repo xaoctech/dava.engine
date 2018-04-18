@@ -126,7 +126,7 @@ ShooterVisibilitySystem::~ShooterVisibilitySystem()
 
 Vector3 ShooterVisibilitySystem::ComputeExtrapolatedPOV(const ObserverItem& observer)
 {
-    const Vector3& observerPos = observer.transform->GetPosition();
+    const Vector3& observerPos = observer.transform->GetWorldTransform().GetTranslation();
 
     ShooterAimComponent* aimComponent = observer.comp->GetEntity()->GetComponent<ShooterAimComponent>();
     if (!aimComponent)
@@ -138,7 +138,7 @@ Vector3 ShooterVisibilitySystem::ComputeExtrapolatedPOV(const ObserverItem& obse
 
     float32 angleX = aimComponent->GetFinalAngleX();
     float32 angleZ = aimComponent->GetFinalAngleZ();
-    Matrix4 rotation = Matrix4::MakeRotation(SHOOTER_CHARACTER_RIGHT, angleX) * Matrix4::MakeRotation(Vector3::UnitZ, angleZ);
+    Matrix4 rotation = Matrix4::MakeRotation(SHOOTER_CHARACTER_RIGHT, -angleX) * Matrix4::MakeRotation(Vector3::UnitZ, -angleZ);
 
     Vector3 offsetZ = Vector3(0.0f, 0.0f, SHOOTER_AIM_OFFSET.z);
     Vector3 offsetRot = aimOffsetXY * rotation;
@@ -260,7 +260,7 @@ void ShooterVisibilitySystem::PrepareObservableCaches()
 
         cache.observableId = item.first;
         cache.entity = observable.transform->GetEntity();
-        cache.position = observable.transform->GetPosition();
+        cache.position = observable.transform->GetWorldTransform().GetTranslation();
 
         if (observable.shape)
         {
@@ -279,7 +279,7 @@ void ShooterVisibilitySystem::PrepareObserverCache(ObserverCache& outCache, Obse
 {
     ObserverComponent* observerComp = observer.comp;
     outCache.entity = observerComp->GetEntity();
-    outCache.position = observer.transform->GetPosition();
+    outCache.position = observer.transform->GetWorldTransform().GetTranslation();
     outCache.extrapolatedPOV = ComputeExtrapolatedPOV(observer);
     outCache.maxVisibilityRadiusSqr = observerComp->maxVisibilityRadius * observerComp->maxVisibilityRadius;
     float32 uncondRad = observerComp->unconditionalVisibilityRadius;

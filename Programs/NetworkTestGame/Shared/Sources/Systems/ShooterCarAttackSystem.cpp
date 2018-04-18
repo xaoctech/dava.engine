@@ -16,7 +16,6 @@
 #include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
 #include <Physics/Core/PhysicsUtils.h>
 
-#include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 
 namespace ShooterCarAttackSystemDetail

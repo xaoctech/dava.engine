@@ -10,14 +10,15 @@
 #include "ShooterConstants.h"
 #include "ShooterUtils.h"
 
+#include <Debug/ProfilerCPU.h>
+#include <DeviceManager/DeviceManager.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
-#include <DeviceManager/DeviceManager.h>
+#include <Render/Highlevel/RenderSystem.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Systems/ActionCollectSystem.h>
 #include <Scene3D/Components/TransformComponent.h>
-#include <Render/Highlevel/RenderSystem.h>
 #include <Input/Mouse.h>
 #include <Math/Vector.h>
 #include <Math/Quaternion.h>
@@ -27,21 +28,22 @@
 #include <NetworkCore/Scene3D/Components/NetworkInputComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkPredictComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkMotionComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h>
 #include <NetworkCore/Scene3D/Systems/NetworkIdSystem.h>
 #include <NetworkCore/LagCompensatedAction.h>
-#include <NetworkPhysics/NetworkPhysicsUtils.h>
-#include <NetworkPhysics/CharacterMirrorsSingleComponent.h>
+
 #include <Physics/PhysicsSystem.h>
+#include <Physics/Core/PhysicsUtils.h>
 #include <Physics/Core/CollisionShapeComponent.h>
-#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
 #include <Physics/Core/Private/PhysicsMath.h>
 #include <Physics/Core/DynamicBodyComponent.h>
-#include <Debug/ProfilerCPU.h>
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
 
-#include <physx/PxRigidActor.h>
+#include <NetworkPhysics/NetworkPhysicsUtils.h>
+#include <NetworkPhysics/HitboxesDebugDrawComponent.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerAttackSystem)
 {
@@ -87,7 +89,7 @@ private:
             const DynamicBodyComponent* dynamicBodyComponent = e->GetComponent<DynamicBodyComponent>();
             if (cctComponent != nullptr || dynamicBodyComponent != nullptr)
             {
-                static const ComponentMask lagCompensatedComponentsMask = ComponentUtils::MakeMask<NetworkTransformComponent>();
+                static const ComponentMask lagCompensatedComponentsMask = ComponentUtils::MakeMask<NetworkTransformComponent, NetworkMotionComponent>();
                 return &lagCompensatedComponentsMask;
             }
         }
@@ -97,31 +99,57 @@ private:
 
     void Action(DAVA::Scene& scene) override
     {
+        using namespace DAVA;
+
         // Invoke raycast
-        // All CCTs should already been rewound if we're on a server
+        // All entities should have already been rewound if we're on a server
         QueryFilterCallback filterCallback(player, RaycastFilter::IGNORE_CONTROLLER | RaycastFilter::IGNORE_SOURCE);
         collision = GetRaycastHit(*(player->GetScene()), origin, direction, SHOOTER_MAX_SHOOTING_DISTANCE, &filterCallback, hit);
+
+        if (collision)
+        {
+            // If we hit an enemy, snapshot hitboxes if there is a debug draw component
+            HitboxesDebugDrawComponent* hitboxesDebugDrawComponent = player->GetComponent<HitboxesDebugDrawComponent>();
+            if (hitboxesDebugDrawComponent)
+            {
+                Component* bodyComponent = static_cast<Component*>(hit.actor->userData);
+                if (bodyComponent->GetType()->Is<DynamicBodyComponent>())
+                {
+                    CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(hit.shape);
+                    DVASSERT(shapeComponent != nullptr);
+
+                    if (shapeComponent->GetJointName().IsValid() && shapeComponent->GetJointName().size() > 0)
+                    {
+                        Entity* targetPlayer = bodyComponent->GetEntity();
+                        DVASSERT(targetPlayer != nullptr);
+
+                        NetworkPhysicsUtils::SnapshotDebugDrawHitboxes(*hitboxesDebugDrawComponent, *targetPlayer);
+                    }
+                }
+            }
+        }
     }
 
     void OnComponentsInPast(DAVA::Scene& scene, const DAVA::Vector<DAVA::Entity*>& entities) override
     {
-        UpdatePhysicsEntities(scene);
+        UpdatePhysicsEntities(scene, entities);
     }
 
     void OnComponentsInPresent(DAVA::Scene& scene, const DAVA::Vector<DAVA::Entity*>& entities) override
     {
-        UpdatePhysicsEntities(scene);
+        UpdatePhysicsEntities(scene, entities);
     }
 
-    void UpdatePhysicsEntities(DAVA::Scene& scene)
+    void UpdatePhysicsEntities(DAVA::Scene& scene, const DAVA::Vector<DAVA::Entity*>& entities)
     {
         using namespace DAVA;
 
-        PhysicsSystem* physicsSystem = scene.GetSystem<PhysicsSystem>();
-        DVASSERT(physicsSystem != nullptr);
-
-        // Sync transforms so that raycast uses new positions
-        physicsSystem->SyncTransformToPhysx();
+        for (Entity* e : entities)
+        {
+            DVASSERT(e != nullptr);
+            PhysicsUtils::CopyTransformToPhysics(e); // Since we rewind transform
+            PhysicsUtils::SyncJointsTransformsWithPhysics(e); // Since we rewind motion
+        }
     }
 
 private:
@@ -293,13 +321,13 @@ void ShooterPlayerAttackSystem::SpawnBullet(DAVA::Entity* player, DAVA::uint32 c
     Vector3 barrelPosition;
     Vector3 barrelScale;
     Quaternion barrelOrientation;
-    const Matrix4& weaponBarrelTransform = weaponBarrelEntity->GetWorldTransform();
-    weaponBarrelTransform.Decomposition(barrelPosition, barrelScale, barrelOrientation);
+    const Transform& barrelTransform = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform();
 
     TransformComponent* bulletTransformComponent = bullet->GetComponent<TransformComponent>();
     DVASSERT(bulletTransformComponent != nullptr);
 
-    bulletTransformComponent->SetLocalTransform(barrelPosition, barrelOrientation, Vector3(1.0f, 1.0f, 1.0f));
+    bulletTransformComponent->SetLocalTransform(Transform(
+            barrelTransform.GetTranslation(), Vector3(1.0f, 1.0f, 1.0f), barrelTransform.GetRotation()));
 
     GetScene()->AddNode(bullet);
 }
@@ -338,7 +366,7 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
     Entity* weaponBarrelEntity = aimingEntity->FindByName(SHOOTER_GUN_BARREL_ENTITY_NAME);
     if (weaponBarrelEntity != nullptr)
     {
-        Vector3 shootStart = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector();
+        Vector3 shootStart = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
         Vector3 shootDirection = aimRayEnd - shootStart;
         shootDirection.Normalize();
 
@@ -359,6 +387,7 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
             raycastAttack.InvokeWithoutLagCompensation(*GetScene());
         }
 
+        // Deal damage only on server
         if (IsServer(GetScene()))
         {
             const physx::PxRaycastHit* hit = raycastAttack.GetHitInfo();
@@ -367,17 +396,22 @@ void ShooterPlayerAttackSystem::RaycastAttack(DAVA::Entity* aimingEntity, DAVA::
                 Component* bodyComponent = static_cast<Component*>(hit->actor->userData);
                 if (bodyComponent->GetType()->Is<DynamicBodyComponent>())
                 {
-                    Entity* entity = bodyComponent->GetEntity();
-                    DVASSERT(entity);
+                    CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(hit->shape);
+                    DVASSERT(shapeComponent != nullptr);
 
-                    HealthComponent* healthComponent = entity->GetComponent<HealthComponent>();
-                    if (healthComponent)
+                    if (shapeComponent->GetJointName().IsValid() && shapeComponent->GetJointName().size() > 0)
                     {
-                        CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(hit->shape);
-                        if (shapeComponent->GetJointName().IsValid() && shapeComponent->GetJointName().size() > 0)
+                        Entity* targetPlayer = bodyComponent->GetEntity();
+                        DVASSERT(targetPlayer);
+
+                        HealthComponent* healthComponent = targetPlayer->GetComponent<HealthComponent>();
+                        if (healthComponent)
                         {
-                            uint32 damage = GetBodyPartDamage(shapeComponent->GetJointName());
-                            healthComponent->DecHealth(damage, clientFrameId);
+                            if (shapeComponent->GetJointName().IsValid() && shapeComponent->GetJointName().size() > 0)
+                            {
+                                uint32 damage = GetBodyPartDamage(shapeComponent->GetJointName());
+                                healthComponent->DecHealth(damage, clientFrameId);
+                            }
                         }
                     }
                 }
@@ -439,16 +473,15 @@ void ShooterPlayerAttackSystem::RocketAttack(DAVA::Entity* aimingEntity, DAVA::u
             bulletReplComp->SetForReplication<ShooterRocketComponent>(M::Privacy::PUBLIC);
             rocket->AddComponent(bulletReplComp);
 
-            const Matrix4& weaponTrans = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform();
-            rocket->GetComponent<TransformComponent>()->SetLocalTransform(weaponTrans.GetTranslationVector(),
-                                                                          weaponTrans.GetRotation(),
-                                                                          weaponTrans.GetScaleVector());
+            const Transform& weaponTrans = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform();
+            rocket->GetComponent<TransformComponent>()->SetLocalTransform(Transform(
+                    weaponTrans.GetTranslation(), weaponTrans.GetScale(), weaponTrans.GetRotation()));
 
             // effect: rocket shot
             NetworkID shotEffectId = NetworkID::CreatePlayerActionId(playerID, clientFrameId, 2);
             effectQueue->CreateEffect(1)
             .SetDuration(5.f)
-            .SetPosition(weaponTrans.GetTranslationVector())
+            .SetPosition(weaponTrans.GetTranslation())
             .SetRotation(weaponTrans.GetRotation())
             .SetNetworkId(shotEffectId);
 

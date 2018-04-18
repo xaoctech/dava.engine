@@ -209,18 +209,18 @@ void UIParticles::Draw(const UIGeometricData& geometricData)
 
     if (inheritControlTransform)
     {
-        matrix = Matrix4::MakeScale(Vector3(geometricData.scale.x, geometricData.scale.y, 1.f)) * Matrix4::MakeRotation(Vector3::UnitZ, -geometricData.angle);
+        matrix = Matrix4::MakeScale(Vector3(geometricData.scale.x, geometricData.scale.y, 1.f)) * Matrix4::MakeRotation(Vector3::UnitZ, geometricData.angle);
         matrix.SetTranslationVector(Vector3(geometricData.position.x, geometricData.position.y, 0));
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WORLD, &matrix, reinterpret_cast<pointer_size>(&matrix));
 
-        effect->effectRenderObject->SetWorldTransformPtr(&Matrix4::IDENTITY);
+        effect->effectRenderObject->SetWorldMatrixPtr(&Matrix4::IDENTITY);
     }
     else
     {
-        matrix.BuildRotation(Vector3::UnitZ, -geometricData.angle);
+        matrix.BuildRotation(Vector3::UnitZ, geometricData.angle);
         matrix.SetTranslationVector(Vector3(geometricData.position.x, geometricData.position.y, 0));
         effect->effectRenderObject->BindDynamicParameters(defaultCamera, nullptr);
-        effect->effectRenderObject->SetWorldTransformPtr(&matrix);
+        effect->effectRenderObject->SetWorldMatrixPtr(&matrix);
     }
 
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_CAMERA_POS, &Vector3::Zero, reinterpret_cast<pointer_size>(&Vector3::Zero));

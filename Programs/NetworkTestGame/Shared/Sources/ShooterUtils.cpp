@@ -119,7 +119,7 @@ void GetAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DA
     float32 angleX = current ? aimComponent.GetCurrentAngleX() : aimComponent.GetFinalAngleX();
     float32 angleZ = current ? aimComponent.GetCurrentAngleZ() : aimComponent.GetFinalAngleZ();
 
-    Matrix4 rotation = Matrix4::MakeRotation(SHOOTER_CHARACTER_RIGHT, angleX) * Matrix4::MakeRotation(Vector3::UnitZ, angleZ);
+    Matrix4 rotation = Matrix4::MakeRotation(SHOOTER_CHARACTER_RIGHT, -angleX) * Matrix4::MakeRotation(Vector3::UnitZ, -angleZ);
     Vector3 aimPositionRelative = aimOffsetXY * rotation;
     Vector3 aimDirection = SHOOTER_CHARACTER_FORWARD * rotation;
 
@@ -127,8 +127,10 @@ void GetAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DA
 
     DVASSERT(aimingEntity != nullptr);
 
-    TransformComponent* aimingEntityTransform = aimingEntity->GetComponent<TransformComponent>();
-    DVASSERT(aimingEntityTransform != nullptr);
+    TransformComponent* aimingEntityTransformComp = aimingEntity->GetComponent<TransformComponent>();
+    DVASSERT(aimingEntityTransformComp != nullptr);
+
+    const Transform& aimingEntityTransform = aimingEntityTransformComp->GetLocalTransform();
 
     // Calculate aim offset in world space
 
@@ -136,12 +138,12 @@ void GetAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DA
 
     if (local)
     {
-        characterPosition = aimingEntityTransform->GetPosition();
+        characterPosition = aimingEntityTransform.GetTranslation();
     }
     else
     {
         // Calculate aim offset in world space
-        Matrix4 characterWorldTransform = aimingEntityTransform->GetWorldTransform();
+        Matrix4 characterWorldTransform = aimingEntityTransformComp->GetWorldMatrix();
         Vector3 characterWorldScale;
         Quaternion characterWorldRotation;
 
@@ -151,7 +153,7 @@ void GetAimRay(ShooterAimComponent const& aimComponent, RaycastFilter filter, DA
     Vector3 aimPositionAbsolute = characterPosition + aimPositionRelative + Vector3(0.0f, 0.0f, SHOOTER_AIM_OFFSET.z);
 
     // Check if something is between aim and the character. Move aim in this case so that the character is always visible to the camera
-    Vector3 lookFromPoint = aimingEntityTransform->GetRotation().ApplyToVectorFast(SHOOTER_CHARACTER_LOOK_FROM) + characterPosition;
+    Vector3 lookFromPoint = aimingEntityTransform.GetRotation().ApplyToVectorFast(SHOOTER_CHARACTER_LOOK_FROM) + characterPosition;
     Vector3 lookFromPointToAim = aimPositionAbsolute - lookFromPoint;
     float32 lookFromPointToAimLength = lookFromPointToAim.Length();
     lookFromPointToAim.Normalize();
@@ -252,7 +254,8 @@ void InitializeScene(DAVA::Scene& scene)
         {
             Entity* car = new Entity();
             TransformComponent* transformComponent = car->GetComponent<TransformComponent>();
-            transformComponent->SetLocalTransform(GetRandomCarSpawnPosition(), Quaternion(0.0f, 0.0f, 0.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f));
+            transformComponent->SetLocalTransform(Transform(
+                    GetRandomCarSpawnPosition(), Vector3(1.0f, 1.0f, 1.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
 
             ShooterRoleComponent* roleComponent = new ShooterRoleComponent();
             roleComponent->playerID = 0;

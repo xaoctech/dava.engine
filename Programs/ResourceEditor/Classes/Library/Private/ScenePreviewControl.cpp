@@ -120,7 +120,9 @@ void ScenePreviewControl::CreateCamera()
     light->AddFlag(DAVA::Light::CAST_SHADOW);
     lightNode->SetName("preview-light");
     lightNode->AddComponent(new DAVA::LightComponent(light));
-    lightNode->SetLocalTransform(DAVA::Matrix4::MakeTranslation(light->GetPosition()));
+
+    DAVA::TransformComponent* tc = lightNode->GetComponent<DAVA::TransformComponent>();
+    tc->SetLocalTranslation(light->GetPosition());
 
     editorScene->AddNode(cameraNode);
     editorScene->AddNode(lightNode);

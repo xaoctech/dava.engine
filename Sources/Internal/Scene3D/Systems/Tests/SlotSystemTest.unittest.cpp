@@ -3,6 +3,8 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/SlotComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Systems/SlotSystem.h"
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
@@ -73,7 +75,7 @@ DAVA_TESTCLASS (SlotSystemTest)
             aEntity->AddComponent(alfaComponent);
             components.push_back(alfaComponent);
             testScene->AddNode(aEntity.Get());
-            testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
+            testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), -0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
         }
 
         {
@@ -92,8 +94,8 @@ DAVA_TESTCLASS (SlotSystemTest)
             bEntity->AddComponent(gammaComponent);
             components.push_back(gammaComponent);
             testScene->AddNode(bEntity.Get());
-            testScene->slotSystem->SetAttachmentTransform(betaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(35.0f, 25.0f, 0.0f)));
-            testScene->slotSystem->SetAttachmentTransform(gammaComponent, Matrix4::MakeRotation(Vector3(2.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(35.0f, 25.0f, 0.0f)));
+            testScene->slotSystem->SetAttachmentTransform(betaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), -0.3f) * Matrix4::MakeTranslation(Vector3(35.0f, 25.0f, 0.0f)));
+            testScene->slotSystem->SetAttachmentTransform(gammaComponent, Matrix4::MakeRotation(Vector3(2.0f, 0.0f, 0.5f), -0.3f) * Matrix4::MakeTranslation(Vector3(35.0f, 25.0f, 0.0f)));
         }
 
         for (SlotComponent* component : components)
@@ -126,7 +128,7 @@ DAVA_TESTCLASS (SlotSystemTest)
         alfaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.yaml"));
         aEntity->AddComponent(alfaComponent);
         testScene->AddNode(aEntity.Get());
-        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
+        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), -0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
 
         testScene->slotSystem->AttachItemToSlot(testScene.Get(), FastName("TestSlot"), FastName("TestItem1"));
 
@@ -149,7 +151,7 @@ DAVA_TESTCLASS (SlotSystemTest)
         alfaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.yaml"));
         aEntity->AddComponent(alfaComponent);
         testScene->AddNode(aEntity.Get());
-        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
+        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), -0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
 
         testScene->slotSystem->AttachItemToSlot(testScene.Get(), FastName("TestSlot"), FastName("TestItem1"));
 
@@ -170,7 +172,7 @@ DAVA_TESTCLASS (SlotSystemTest)
         alfaComponent->SetConfigFilePath(FilePath("~res:/TestData/SlotSystemTest/slotConfig.yaml"));
         aEntity->AddComponent(alfaComponent);
         testScene->AddNode(aEntity.Get());
-        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), 0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
+        testScene->slotSystem->SetAttachmentTransform(alfaComponent, Matrix4::MakeRotation(Vector3(1.0f, 0.0f, 0.5f), -0.3f) * Matrix4::MakeTranslation(Vector3(30.0f, 25.0f, 0.0f)));
 
         testScene->slotSystem->AttachItemToSlot(testScene.Get(), FastName("TestSlot"), FastName("TestItem1"));
 
@@ -220,7 +222,7 @@ DAVA_TESTCLASS (SlotSystemTest)
                 TEST_VERIFY(testScene->slotSystem->LookUpLoadedEntity(component) == itemEntity);
                 TEST_VERIFY(testScene->slotSystem->LookUpSlot(itemEntity) == component);
 
-                if (itemEntity->GetLocalTransform() == component->GetAttachmentTransform())
+                if (GetTransformComponent(itemEntity)->GetLocalTransform() == component->GetAttachmentTransform())
                 {
                     if (itemEntity->GetChildrenCount() == 1)
                     {

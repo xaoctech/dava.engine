@@ -8,6 +8,8 @@
 #include "Systems/GameInputSystem.h"
 
 #include <Reflection/ReflectionRegistrator.h>
+#include <Math/Transform.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkInputComponent.h>
@@ -113,7 +115,8 @@ BotTaskComponent* ShooterBehaviorSystem::CreateInititalTask(ShooterBehaviorCompo
 
 BotTaskComponent* ShooterBehaviorSystem::CreateNextTask(ShooterBehaviorComponent* actor)
 {
-    Vector3 curPos3 = actor->GetEntity()->GetWorldTransform().GetTranslationVector();
+    const Transform& wt = actor->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransform();
+    Vector3 curPos3 = wt.GetTranslation();
     Vector2 curPos(curPos3.x, curPos3.y);
 
     Vector2 delta = curPos - ShooterBehaviorSystemDetail::CENTER;
@@ -140,9 +143,8 @@ BotTaskComponent* ShooterBehaviorSystem::CreateNextTask(ShooterBehaviorComponent
 
 BotTaskComponent* ShooterBehaviorSystem::CreateNextMoveTask(ShooterBehaviorComponent* actor)
 {
-    Entity* entity = actor->GetEntity();
-
-    Vector3 curPos3 = entity->GetWorldTransform().GetTranslationVector();
+    const Transform& wt = actor->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransform();
+    Vector3 curPos3 = wt.GetTranslation();
     Vector2 curPos(curPos3.x, curPos3.y);
     Vector2 delta = curPos - ShooterBehaviorSystemDetail::CENTER;
     float curDist = delta.Length();
@@ -170,7 +172,8 @@ BotTaskComponent* ShooterBehaviorSystem::CreateNextMoveTask(ShooterBehaviorCompo
 
 BotTaskComponent* ShooterBehaviorSystem::CreateNextAttackTask(ShooterBehaviorComponent* actor)
 {
-    Vector3 curPos3 = actor->GetEntity()->GetWorldTransform().GetTranslationVector();
+    const Transform& wt = actor->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransform();
+    Vector3 curPos3 = wt.GetTranslation();
 
     float closestSqrDist = FLOAT_MAX;
     ShooterBehaviorComponent* closestTarget = nullptr;
@@ -181,7 +184,8 @@ BotTaskComponent* ShooterBehaviorSystem::CreateNextAttackTask(ShooterBehaviorCom
             continue;
         }
 
-        Vector3 otherPos3 = otherAgent->GetEntity()->GetWorldTransform().GetTranslationVector();
+        const Transform& otherWt = actor->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransform();
+        Vector3 otherPos3 = otherWt.GetTranslation();
         float sqrDist = (curPos3 - otherPos3).SquareLength();
         if (sqrDist < closestSqrDist)
         {

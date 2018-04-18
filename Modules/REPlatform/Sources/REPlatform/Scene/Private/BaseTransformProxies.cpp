@@ -8,35 +8,41 @@
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
+#include <Math/Transform.h>
 #include <Particles/ParticleEmitterInstance.h>
 #include <Particles/ParticleForce.h>
+#include <Particles/ParticleLayer.h>
 #include <Physics/PhysicsModule.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
-#include <Particles/ParticleLayer.h>
+#include <Scene3D/Components/TransformComponent.h>
 /*
  * EntityTransformProxy
  */
 namespace DAVA
 {
-const Matrix4& EntityTransformProxy::GetWorldTransform(const Any& object)
+const Transform& EntityTransformProxy::GetWorldTransform(const Any& object)
 {
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<Entity>());
-    return obj.Cast<Entity>()->GetWorldTransform();
+
+    TransformComponent* tc = obj.Cast<Entity>()->GetComponent<TransformComponent>();
+    return tc->GetWorldTransform();
 }
 
-Matrix4 EntityTransformProxy::GetLocalTransform(const Any& object)
+const Transform& EntityTransformProxy::GetLocalTransform(const Any& object)
 {
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<Entity>());
-    return obj.Cast<Entity>()->GetLocalTransform();
+    TransformComponent* tc = obj.Cast<Entity>()->GetComponent<TransformComponent>();
+    return tc->GetLocalTransform();
 }
 
-void EntityTransformProxy::SetLocalTransform(Any& object, const Matrix4& matrix)
+void EntityTransformProxy::SetLocalTransform(Any& object, const Transform& transform)
 {
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<Entity>());
-    return obj.Cast<Entity>()->SetLocalTransform(matrix);
+    TransformComponent* tc = obj.Cast<Entity>()->GetComponent<TransformComponent>();
+    return tc->SetLocalTransform(transform);
 }
 
 bool EntityTransformProxy::SupportsTransformType(const Any& object, Selectable::TransformType type) const
@@ -91,10 +97,10 @@ bool EntityTransformProxy::TransformDependsFromObject(const Any& dependant, cons
 /*
  * EmitterTransformProxy
  */
-const Matrix4& EmitterTransformProxy::GetWorldTransform(const Any& object)
+const Transform& EmitterTransformProxy::GetWorldTransform(const Any& object)
 {
-    static Matrix4 currentMatrix;
-    currentMatrix.Identity();
+    static Transform currentMatrix;
+    currentMatrix = TransformUtils::IDENTITY;
 
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<ParticleEmitterInstance>());
@@ -103,35 +109,37 @@ const Matrix4& EmitterTransformProxy::GetWorldTransform(const Any& object)
     auto ownerComponent = emitterInstance->GetOwner();
     if ((ownerComponent == nullptr) || (ownerComponent->GetEntity() == nullptr))
     {
-        currentMatrix.SetTranslationVector(emitterInstance->GetSpawnPosition());
+        currentMatrix.SetTranslation(emitterInstance->GetSpawnPosition());
     }
     else
     {
-        const auto& entityTransform = ownerComponent->GetEntity()->GetWorldTransform();
+        TransformComponent* tc = ownerComponent->GetEntity()->GetComponent<TransformComponent>();
+        const Transform& entityTransform = tc->GetWorldTransform();
         Vector3 center = emitterInstance->GetSpawnPosition();
-        TransformPerserveLength(center, Matrix3(entityTransform));
-        currentMatrix.SetTranslationVector(center + entityTransform.GetTranslationVector());
+        TransformPerserveLength(center, Matrix3(TransformUtils::ToMatrix(entityTransform)));
+        currentMatrix.SetTranslation(center + entityTransform.GetTranslation());
     }
     return currentMatrix;
 }
 
-Matrix4 EmitterTransformProxy::GetLocalTransform(const Any& object)
+const Transform& EmitterTransformProxy::GetLocalTransform(const Any& object)
 {
+    static Transform currentTransform;
+    currentTransform = TransformUtils::IDENTITY;
+
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<ParticleEmitterInstance>());
     ParticleEmitterInstance* emitterInstance = obj.Cast<ParticleEmitterInstance>();
-
-    Matrix4 ret;
-    ret.SetTranslationVector(emitterInstance->GetSpawnPosition());
-    return ret;
+    currentTransform.SetTranslation(emitterInstance->GetSpawnPosition());
+    return currentTransform;
 }
 
-void EmitterTransformProxy::SetLocalTransform(Any& object, const Matrix4& matrix)
+void EmitterTransformProxy::SetLocalTransform(Any& object, const Transform& transform)
 {
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<ParticleEmitterInstance>());
     ParticleEmitterInstance* emitterInstance = obj.Cast<ParticleEmitterInstance>();
-    emitterInstance->SetSpawnPosition(Vector3(matrix._30, matrix._31, matrix._32));
+    emitterInstance->SetSpawnPosition(transform.GetTranslation());
 }
 
 bool EmitterTransformProxy::SupportsTransformType(const Any& object, Selectable::TransformType type) const
@@ -186,10 +194,10 @@ bool EmitterTransformProxy::TransformDependsFromObject(const Any& dependant, con
 /*
 * ForceTransformProxy
 */
-const Matrix4& ParticleForceTransformProxy::GetWorldTransform(const Any& object)
+const Transform& ParticleForceTransformProxy::GetWorldTransform(const Any& object)
 {
-    static Matrix4 currentMatrix;
-    currentMatrix.Identity();
+    static Transform currentMatrix;
+    currentMatrix = TransformUtils::IDENTITY;
 
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<ParticleForce>());
@@ -202,27 +210,31 @@ const Matrix4& ParticleForceTransformProxy::GetWorldTransform(const Any& object)
     ParticleEffectComponent* ownerComponent = emitterInstance->GetOwner();
     if ((ownerComponent == nullptr) || (ownerComponent->GetEntity() == nullptr))
     {
-        currentMatrix.SetTranslationVector(force->position);
+        currentMatrix.SetTranslation(force->position);
     }
     else
     {
+        TransformComponent* tc = ownerComponent->GetEntity()->GetComponent<TransformComponent>();
         if (force->worldAlign)
         {
-            currentMatrix.SetTranslationVector(force->position + ownerComponent->GetEntity()->GetWorldTransform().GetTranslationVector());
+            currentMatrix.SetTranslation(force->position + tc->GetWorldTransform().GetTranslation());
         }
         else
         {
-            const Matrix4& entityTransform = ownerComponent->GetEntity()->GetWorldTransform();
+            const Transform& entityTransform = tc->GetWorldTransform();
             Vector3 center = force->position;
-            TransformPerserveLength(center, Matrix3(entityTransform));
-            currentMatrix.SetTranslationVector(center + entityTransform.GetTranslationVector());
+            TransformPerserveLength(center, Matrix3(TransformUtils::ToMatrix(entityTransform)));
+            currentMatrix.SetTranslation(center + entityTransform.GetTranslation());
         }
     }
     return currentMatrix;
 }
 
-Matrix4 ParticleForceTransformProxy::GetLocalTransform(const Any& object)
+const Transform& ParticleForceTransformProxy::GetLocalTransform(const Any& object)
 {
+    static Transform currentMatrix;
+    currentMatrix = TransformUtils::IDENTITY;
+
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<ParticleForce>());
     ParticleForce* force = obj.Cast<ParticleForce>();
@@ -232,13 +244,13 @@ Matrix4 ParticleForceTransformProxy::GetLocalTransform(const Any& object)
     return ret;
 }
 
-void ParticleForceTransformProxy::SetLocalTransform(Any& object, const Matrix4& matrix)
+void ParticleForceTransformProxy::SetLocalTransform(Any& object, const Transform& transform)
 {
     Selectable obj(object);
     DVASSERT(obj.CanBeCastedTo<ParticleForce>());
     ParticleForce* force = obj.Cast<ParticleForce>();
 
-    force->position = matrix.GetTranslationVector();
+    force->position = transform.GetTranslation();
 }
 
 bool ParticleForceTransformProxy::SupportsTransformType(const Any& object, Selectable::TransformType type) const

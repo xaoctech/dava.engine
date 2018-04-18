@@ -1,12 +1,13 @@
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/TransformInterpolatedComponent.h"
 
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Scene3D/Components/TransformInterpolatedComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
+#include "Math/TransformUtils.h"
 
 namespace DAVA
 {
@@ -14,8 +15,9 @@ DAVA_VIRTUAL_REFLECTION_IMPL(TransformComponent)
 {
     ReflectionRegistrator<TransformComponent>::Begin()[M::CantBeCreatedManualyComponent(), M::CantBeDeletedManualyComponent(), M::DeveloperModeOnly()]
     .ConstructorByPointer()
-    .Field("worldMatrix", &TransformComponent::worldMatrix)[M::ReadOnly(), M::DisplayName("World Transform")]
-    .Field("parentMatrix", &TransformComponent::parentMatrix)[M::ReadOnly(), M::HiddenField()]
+    .Field("localMatrix", &TransformComponent::localTransform)[M::ReadOnly(), M::DisplayName("Local Transform")]
+    .Field("worldMatrix", &TransformComponent::worldTransform)[M::ReadOnly(), M::DisplayName("World Transform")]
+    .Field("parentMatrix", &TransformComponent::parentTransform)[M::ReadOnly(), M::HiddenField()]
     .End();
 }
 
@@ -23,124 +25,155 @@ Component* TransformComponent::Clone(Entity* toEntity)
 {
     TransformComponent* newTransform = new TransformComponent();
     newTransform->SetEntity(toEntity);
-    newTransform->position = position;
-    newTransform->rotation = rotation;
-    newTransform->scale = scale;
+    newTransform->localTransform = localTransform;
+    newTransform->worldTransform = worldTransform;
     newTransform->worldMatrix = worldMatrix;
     newTransform->parent = this->parent;
 
     return newTransform;
 }
 
-void TransformComponent::SetLocalTransform(const Matrix4& transform)
+void TransformComponent::SetLocalMatrix(const Matrix4& transform)
 {
-    transform.Decomposition(position, scale, rotation);
-    ApplyLocalTransfomChanged();
+    localTransform = Transform(transform);
+    UpdateWorldTransformForEmptyParent();
+    MarkLocalChanged();
 }
 
-void TransformComponent::SetLocalTransform(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
+void TransformComponent::SetLocalTransform(const Transform& transform)
 {
-    this->position = position;
-    this->rotation = rotation;
-    this->scale = scale;
-    ApplyLocalTransfomChanged();
+    localTransform = transform;
+    UpdateWorldTransformForEmptyParent();
+    MarkLocalChanged();
 }
 
-void TransformComponent::SetWorldTransform(const Matrix4& transform)
+void TransformComponent::SetLocalTranslation(const Vector3& translation)
 {
-    worldMatrix = transform;
-    ApplyWorldTransfomChanged();
+    localTransform.SetTranslation(translation);
+    UpdateWorldTransformForEmptyParent();
+    MarkLocalChanged();
 }
 
-void TransformComponent::SetParent(Entity* parent)
+void TransformComponent::SetLocalScale(const Vector3& scale)
 {
-    if (nullptr != parent)
+    localTransform.SetScale(scale);
+    UpdateWorldTransformForEmptyParent();
+    MarkLocalChanged();
+}
+
+void TransformComponent::SetLocalRotation(const Quaternion& rotation)
+{
+    localTransform.SetRotation(rotation);
+    UpdateWorldTransformForEmptyParent();
+    MarkLocalChanged();
+}
+
+void TransformComponent::SetWorldMatrix(const Matrix4& transform)
+{
+    worldTransform = Transform(transform);
+    MarkWorldChanged();
+}
+
+void TransformComponent::UpdateWorldTransformForEmptyParent()
+{
+    if (parent == nullptr)
     {
-        this->parent = parent;
-        parentMatrix = &(parent->GetComponent<TransformComponent>()->worldMatrix);
+        worldTransform = localTransform;
+        worldMatrix = TransformUtils::ToMatrix(worldTransform);
+    }
+}
+
+void TransformComponent::SetParent(Entity* node)
+{
+    parent = node;
+
+    if (node)
+    {
+        parentTransform = &node->GetComponent<TransformComponent>()->worldTransform;
     }
     else
     {
-        this->parent = nullptr;
-        parentMatrix = nullptr;
+        parentTransform = nullptr;
     }
 
-    ApplyParentChanged();
+    MarkParentChanged();
 }
 
 void TransformComponent::Serialize(KeyedArchive* archive, SerializationContext* serializationContext)
 {
     Component::Serialize(archive, serializationContext);
 
-    if (NULL != archive)
+    if (nullptr != archive)
     {
-        archive->SetVector3("tc.translation", position);
-        archive->SetQuaternion("tc.rotation", rotation);
-        archive->SetVector3("tc.scale", scale);
+        archive->SetVector3("tc.localTranslation", localTransform.GetTranslation());
+        archive->SetVector3("tc.localScale", localTransform.GetScale());
+        archive->SetVector4("tc.localRotation", localTransform.GetRotation().data);
     }
 }
 
 void TransformComponent::Deserialize(KeyedArchive* archive, SerializationContext* sceneFile)
 {
-    if (NULL != archive)
+    if (nullptr != archive)
     {
         if (archive->IsKeyExists("tc.localMatrix"))
         {
-            SetLocalTransform(archive->GetMatrix4("tc.localMatrix", Matrix4::IDENTITY));
+            localTransform = Transform(archive->GetMatrix4("tc.localMatrix", Matrix4::IDENTITY));
+            worldTransform = Transform(archive->GetMatrix4("tc.worldMatrix", Matrix4::IDENTITY));
+        }
+        else if (archive->IsKeyExists("tc.translation"))
+        {
+            // TODO: remove this branch when content get fixed
+            localTransform.SetTranslation(archive->GetVector3("tc.translation", Vector3::Zero));
+            localTransform.SetScale(archive->GetVector3("tc.scale", Vector3(1.f, 1.f, 1.f)));
+            localTransform.SetRotation(archive->GetQuaternion("tc.rotation", Quaternion::Identity.data));
         }
         else
         {
-            SetLocalTransform(archive->GetVector3("tc.translation", position),
-                              archive->GetQuaternion("tc.rotation", rotation),
-                              archive->GetVector3("tc.scale", scale));
+            localTransform.SetTranslation(archive->GetVector3("tc.localTranslation", Vector3::Zero));
+            localTransform.SetScale(archive->GetVector3("tc.localScale", Vector3(1.f, 1.f, 1.f)));
+            localTransform.SetRotation(archive->GetVector4("tc.localRotation", Quaternion::Identity.data).data);
         }
+        worldMatrix = TransformUtils::ToMatrix(worldTransform);
     }
 
     Component::Deserialize(archive, sceneFile);
 }
 
-void TransformComponent::ApplyLocalTransfomChanged()
+void TransformComponent::MarkLocalChanged()
 {
-    if (!parent)
-    {
-        worldMatrix = GetLocalTransform();
-        ApplyWorldTransfomChanged();
-    }
 
-    if (nullptr != entity)
+    if (entity && entity->GetScene())
     {
-        if (nullptr != entity->GetScene())
+        TransformSingleComponent* tsc = entity->GetScene()->GetSingleComponent<TransformSingleComponent>();
+        if (tsc)
         {
-            TransformSingleComponent* tsc = entity->GetScene()->GetSingleComponent<TransformSingleComponent>();
-            if (nullptr != tsc)
-            {
-                tsc->localTransformChanged.push_back(entity);
-            }
+            tsc->localTransformChanged.push_back(entity);
         }
     }
 }
 
-void TransformComponent::ApplyWorldTransfomChanged()
+void TransformComponent::MarkWorldChanged()
 {
-    if (nullptr != entity && nullptr != entity->GetScene())
+    if (entity && entity->GetScene())
     {
         TransformSingleComponent* tsc = entity->GetScene()->GetSingleComponent<TransformSingleComponent>();
-        if (nullptr != tsc)
+        if (tsc)
         {
             tsc->worldTransformChanged.Push(entity);
         }
     }
+    worldMatrix = TransformUtils::ToMatrix(worldTransform);
 }
 
-void TransformComponent::ApplyParentChanged()
+void TransformComponent::MarkParentChanged()
 {
-    if (nullptr != entity && nullptr != entity->GetScene())
+    if (entity && entity->GetScene())
     {
         TransformSingleComponent* tsc = entity->GetScene()->GetSingleComponent<TransformSingleComponent>();
-        if (nullptr != tsc)
+        if (tsc)
         {
             tsc->transformParentChanged.push_back(entity);
         }
     }
 }
-};
+}

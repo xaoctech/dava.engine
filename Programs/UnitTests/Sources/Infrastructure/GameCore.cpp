@@ -18,7 +18,7 @@
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectionRegistrator.h"
 
-#if defined(__DAVAENGINE_STEAM__) 
+#if defined(__DAVAENGINE_STEAM__)
 #include "Platform/Steam.h"
 #endif
 
@@ -38,7 +38,7 @@ extern const char* runOnlyTheseTestClasses;
 namespace
 {
 //runOnlyTheseTestClasses can be changed in RunOnlyThisTestClasses.h
-String runOnlyTheseTestClassesString(runOnlyTheseTestClasses);
+String runOnlyTheseTestClassesString(runOnlyTheseTestClasses); //""
 
 // List of names specifying which test classes shouldn't run. This list takes precedence over runOnlyTheseTests.
 // Names should be separated with ' ' or ',' or ';'

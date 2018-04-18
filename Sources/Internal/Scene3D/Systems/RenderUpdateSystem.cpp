@@ -20,6 +20,7 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Lod/LodComponent.h"
 #include "Scene3D/Scene.h"
+#include "Logger/Logger.h"
 
 namespace DAVA
 {
@@ -41,8 +42,8 @@ void RenderUpdateSystem::AddEntity(Entity* entity)
     RenderObject* renderObject = entity->GetComponent<RenderComponent>()->GetRenderObject();
     if (!renderObject)
         return;
-    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-    renderObject->SetWorldTransformPtr(worldTransformPointer);
+    Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
+    renderObject->SetWorldMatrixPtr(worldTransformPointer);
     UpdateActiveIndexes(entity, renderObject);
     entityObjectMap.emplace(entity, renderObject);
     GetScene()->GetRenderSystem()->RenderPermanent(renderObject);
@@ -91,8 +92,8 @@ void RenderUpdateSystem::Process(float32 timeElapsed)
                 if (renderObject)
                 {
                     // Update new transform pointer, and mark that transform is changed
-                    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-                    renderObject->SetWorldTransformPtr(worldTransformPointer);
+                    Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
+                    renderObject->SetWorldMatrixPtr(worldTransformPointer);
                     entity->GetScene()->renderSystem->MarkForUpdate(renderObject);
 
                     Matrix4 inverseWorldTransform = Matrix4::IDENTITY;

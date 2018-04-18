@@ -1,5 +1,8 @@
 #include "REPlatform/DataNodes/SelectableGroup.h"
 
+#include <Math/Transform.h>
+#include <Math/TransformUtils.h>
+
 namespace DAVA
 {
 bool SelectableGroup::operator==(const SelectableGroup& other) const
@@ -136,7 +139,7 @@ DAVA::Vector3 SelectableGroup::GetCommonWorldSpaceTranslationVector() const
     DAVA::AABBox3 tmp;
     for (const auto& item : objects)
     {
-        tmp.AddPoint(item.GetWorldTransform().GetTranslationVector());
+        tmp.AddPoint(item.GetWorldTransform().GetTranslation());
     }
     return tmp.GetCenter();
 }
@@ -190,7 +193,7 @@ DAVA::AABBox3 SelectableGroup::GetTransformedBoundingBox() const
     for (const auto& object : GetContent())
     {
         DAVA::AABBox3 transformed;
-        object.GetBoundingBox().GetTransformedBox(object.GetWorldTransform(), transformed);
+        object.GetBoundingBox().GetTransformedBox(TransformUtils::ToMatrix(object.GetWorldTransform()), transformed);
         result.AddAABBox(transformed);
     }
     return result;

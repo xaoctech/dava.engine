@@ -53,6 +53,19 @@ void MotionComponent::SetParameter(const FastName& parameterID, float32 value)
         found->second = value;
 }
 
+float32 MotionComponent::GetParameter(const FastName& parameterID) const
+{
+    auto it = parameters.find(parameterID);
+    if (it != parameters.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        return 0.0f;
+    }
+}
+
 Component* MotionComponent::Clone(Entity* toEntity)
 {
     MotionComponent* newComponent = new MotionComponent();
@@ -148,7 +161,7 @@ void MotionComponent::ReloadFromFile()
     }
     else if (descriptorPath.IsEqualToExtension(".yaml"))
     {
-        YamlParser* parser = YamlParser::Create(descriptorPath);
+        RefPtr<YamlParser> parser = YamlParser::Create(descriptorPath);
         if (parser != nullptr)
         {
             YamlNode* rootNode = parser->GetRootNode();
@@ -179,8 +192,6 @@ void MotionComponent::ReloadFromFile()
                 }
             }
         }
-
-        SafeRelease(parser);
     }
 }
 
@@ -194,12 +205,11 @@ Vector<FilePath> MotionComponent::GetDependencies() const
 
         if (descriptorPath.IsEqualToExtension(".yaml"))
         {
-            YamlParser* parser = YamlParser::Create(descriptorPath);
+            RefPtr<YamlParser> parser = YamlParser::Create(descriptorPath);
             if (parser != nullptr)
             {
                 Set<FilePath> dependencies;
                 GetDependenciesRecursive(parser->GetRootNode(), &dependencies);
-                SafeRelease(parser);
 
                 for (const FilePath& fp : dependencies)
                     result.push_back(fp);

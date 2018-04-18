@@ -1,7 +1,9 @@
 #include "REPlatform/Scene/Private/Systems/CollisionSystem/CollisionRenderObject.h"
 
+#include <Math/Transform.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Scene3D/Entity.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 namespace DAVA
 {
@@ -11,7 +13,8 @@ CollisionRenderObject::CollisionRenderObject(Entity* entity, btCollisionWorld* w
     if ((renderObject == nullptr) || (word == nullptr))
         return;
 
-    Matrix4 curEntityTransform = entity->GetWorldTransform();
+    TransformComponent* tc = entity->GetComponent<TransformComponent>();
+    Transform curEntityTransform = tc->GetWorldTransform();
 
     int maxVertexCount = 0;
     int bestLodIndex = 0;

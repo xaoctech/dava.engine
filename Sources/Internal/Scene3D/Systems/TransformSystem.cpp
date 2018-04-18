@@ -81,20 +81,29 @@ bool TransformSystem::UpdateEntity(Entity* entity, bool forceUpdate /* = false *
         forceUpdate = true;
 
         TransformComponent* tc = entity->GetComponent<TransformComponent>();
-        if (nullptr != tc->parentMatrix)
+        if (tc->parentTransform)
         {
-            Matrix4 transform = GetWorldTransform(tc, &updateDone);
-            const Matrix4& parentTransform = *tc->parentMatrix;
+            Transform localTransform(tc->localTransform);
+
+            TransformInterpolatedComponent* tic = tc->GetEntity()->GetComponent<TransformInterpolatedComponent>();
+            if (tic)
+            {
+                localTransform.SetTranslation(tic->translation);
+                localTransform.SetRotation(tic->rotation);
+                updateDone = false;
+            }
 
             AnimationComponent* animation = entity->GetComponent<AnimationComponent>();
             if (nullptr != animation)
             {
-                tc->SetWorldTransform(animation->animationTransform * transform * parentTransform);
+                tc->worldTransform = Transform(animation->animationTransform) * localTransform * *(tc->parentTransform);
             }
             else
             {
-                tc->SetWorldTransform(transform * parentTransform);
+                tc->worldTransform = localTransform * *(tc->parentTransform);
             }
+
+            tc->MarkWorldChanged();
         }
 
         // calculated number of recalculated entities transform
@@ -122,21 +131,6 @@ bool TransformSystem::UpdateEntity(Entity* entity, bool forceUpdate /* = false *
     }
 
     return updateDone;
-}
-
-Matrix4 TransformSystem::GetWorldTransform(TransformComponent* tc, bool* isFinal) const
-{
-    DVASSERT(nullptr != isFinal);
-
-    TransformInterpolatedComponent* tic = tc->GetEntity()->GetComponent<TransformInterpolatedComponent>();
-    if (tic)
-    {
-        *isFinal = false;
-        return Matrix4(tic->translation, tic->rotation, tc->GetScale());
-    }
-
-    *isFinal = true;
-    return Matrix4(tc->position, tc->rotation, tc->scale);
 }
 
 void TransformSystem::EntityNeedUpdate(Entity* entity)

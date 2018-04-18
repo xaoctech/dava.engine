@@ -37,7 +37,7 @@ void QualitySettingsSystem::Load(const FilePath& path)
 {
     if (GetEngineContext()->fileSystem->Exists(path))
     {
-        ScopedPtr<YamlParser> parser(YamlParser::Create(path));
+        RefPtr<YamlParser> parser(YamlParser::Create(path));
         YamlNode* rootNode = parser->GetRootNode();
 
         if (NULL != rootNode)
@@ -70,7 +70,7 @@ void QualitySettingsSystem::Load(const FilePath& path)
                         name->GetType() == YamlNode::TYPE_STRING &&
                         values->GetType() == YamlNode::TYPE_ARRAY)
                     {
-                        const Vector<YamlNode*>& v = values->AsVector();
+                        const auto& v = values->AsVector();
 
                         MAGrQ maGr;
                         maGr.curQuality = 0;

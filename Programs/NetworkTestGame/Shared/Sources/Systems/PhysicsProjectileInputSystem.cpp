@@ -100,16 +100,17 @@ void PhysicsProjectileInputSystem::ApplyDigitalActions(Entity* entity, const Vec
         {
             NetworkPlayerID playerID = entity->GetComponent<NetworkReplicationComponent>()->GetNetworkPlayerID();
 
-            TransformComponent* shooterTransform = entity->GetComponent<TransformComponent>();
+            const Transform& shooterTransform = entity->GetComponent<TransformComponent>()->GetLocalTransform();
             PhysicsProjectileComponent* projectileComponent = new PhysicsProjectileComponent();
 
             // Instantiate
             Entity* projectile = CreateProjectileModel();
             TransformComponent* projectileTransform = projectile->GetComponent<TransformComponent>();
-            projectileTransform->SetLocalTransform(shooterTransform->GetPosition(), shooterTransform->GetRotation(), shooterTransform->GetScale());
+            projectileTransform->SetLocalTransform(Transform(
+                    shooterTransform.GetTranslation(), shooterTransform.GetScale(), shooterTransform.GetRotation()));
             projectile->AddComponent(projectileComponent);
 
-            projectileComponent->SetInitialPosition(projectileTransform->GetPosition());
+            projectileComponent->SetInitialPosition(shooterTransform.GetTranslation());
 
             ComponentMask predictionComponentMask;
 
@@ -131,13 +132,13 @@ void PhysicsProjectileInputSystem::ApplyDigitalActions(Entity* entity, const Vec
 
                 dynamicBody->SetBodyFlags(PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
                 dynamicBody->SetLinearDamping(0.0f);
-                dynamicBody->SetLinearVelocity(entity->GetComponent<TransformComponent>()->GetRotation().ApplyToVectorFast(Vector3(0.0f, 30.0f, 0.0f)));
+                dynamicBody->SetLinearVelocity(shooterTransform.GetRotation().ApplyToVectorFast(Vector3(0.0f, 30.0f, 0.0f)));
             }
             else
             {
                 projectileComponent->SetProjectileType(PhysicsProjectileComponent::eProjectileTypes::GRENADE);
 
-                Vector3 velocity = (entity->GetComponent<TransformComponent>()->GetRotation()).ApplyToVectorFast(Vector3(0.0f, 15.0f, 10.0f));
+                Vector3 velocity = (shooterTransform.GetRotation()).ApplyToVectorFast(Vector3(0.0f, 15.0f, 10.0f));
                 dynamicBody->SetLinearVelocity(velocity);
                 dynamicBody->SetAngularVelocity(Vector3(-10.0f, 0.0f, 0.0f));
             }

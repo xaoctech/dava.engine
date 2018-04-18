@@ -104,13 +104,15 @@ void ShooterCameraSystem::Process(DAVA::float32 dt)
             DVASSERT(car != nullptr);
 
             Matrix4 rotationMatrixZ;
-            rotationMatrixZ.BuildRotation(Vector3::UnitZ, trackedAimComponent->GetFinalAngleZ());
+            rotationMatrixZ.BuildRotation(Vector3::UnitZ, -trackedAimComponent->GetFinalAngleZ());
 
             TransformComponent* focusedCarTransform = car->GetComponent<TransformComponent>();
             DVASSERT(focusedCarTransform != nullptr);
 
-            Vector3 finalPosition = focusedCarTransform->GetPosition() + SHOOTER_CAR_CAMERA_OFFSET * rotationMatrixZ;
-            Vector3 finalTarget = focusedCarTransform->GetPosition();
+            const Transform& carLocTrans = focusedCarTransform->GetLocalTransform();
+
+            Vector3 finalPosition = carLocTrans.GetTranslation() + SHOOTER_CAR_CAMERA_OFFSET * rotationMatrixZ;
+            Vector3 finalTarget = carLocTrans.GetTranslation();
 
             Camera* camera = cameraComponent->GetCamera();
             camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));

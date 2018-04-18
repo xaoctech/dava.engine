@@ -97,6 +97,7 @@ private:
     DAVA_VIRTUAL_REFLECTION(SkeletonComponent, Component);
 
     friend class SkeletonSystem;
+    friend struct SkeletonUtils;
 };
 
 inline uint32 SkeletonComponent::GetJointIndex(const FastName& uid) const

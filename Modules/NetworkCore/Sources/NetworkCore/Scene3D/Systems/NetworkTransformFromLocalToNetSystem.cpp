@@ -49,8 +49,9 @@ void NetworkTransformFromLocalToNetSystem::CopyFromLocalToNet(Entity* entity)
 {
     NetworkTransformComponent* netTransformComp = entity->GetComponent<NetworkTransformComponent>();
     TransformComponent* transformComp = entity->GetComponent<TransformComponent>();
-    netTransformComp->SetPosition(transformComp->GetPosition());
-    netTransformComp->SetOrientation(transformComp->GetRotation());
+    const Transform& localTransform = transformComp->GetLocalTransform();
+    netTransformComp->SetPosition(localTransform.GetTranslation());
+    netTransformComp->SetOrientation(localTransform.GetRotation());
 }
 
 } // namespace DAVA

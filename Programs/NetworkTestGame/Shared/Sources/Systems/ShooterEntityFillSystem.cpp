@@ -39,6 +39,9 @@
 #include <NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkMovementComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkMotionComponent.h>
+
+#include <NetworkPhysics/HitboxesDebugDrawComponent.h>
 
 #include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
 #include <Physics/Core/DynamicBodyComponent.h>
@@ -123,14 +126,20 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
 
     String name = "Player";
 
-    CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
-    controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
-    controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
-    controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-    controllerComponent->SetTypeMaskToCollideWith(SHOOTER_CCT_COLLIDE_WITH_MASK);
-    entity->AddComponent(controllerComponent);
+    const bool isServer = IsServer(GetScene());
+    const bool isClientOwner = IsClientOwner(entity);
 
-    if (IsServer(GetScene()))
+    if (isServer || isClientOwner)
+    {
+        CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
+        controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
+        controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
+        controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
+        controllerComponent->SetTypeMaskToCollideWith(SHOOTER_CCT_COLLIDE_WITH_MASK);
+        entity->AddComponent(controllerComponent);
+    }
+
+    if (isServer)
     {
         ShooterRoleComponent* roleComponent = entity->GetComponent<ShooterRoleComponent>();
         NetworkPlayerID playerId = roleComponent->playerID;
@@ -142,6 +151,9 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         replicationComponent->SetForReplication<NetworkInputComponent>(M::Privacy::PRIVATE);
         replicationComponent->SetForReplication<NetworkTransformComponent>(M::Privacy::PUBLIC);
         replicationComponent->SetForReplication<NetworkRemoteInputComponent>(M::Privacy::PUBLIC);
+        // TODO: NetworkMotionComponent should be send to everyone except owner. New type of privacy required
+        // For now it is set as public and predicted to avoid setting values from old frames
+        replicationComponent->SetForReplication<NetworkMotionComponent>(M::Privacy::PUBLIC);
         replicationComponent->SetForReplication<ShooterAimComponent>(M::Privacy::PUBLIC);
         replicationComponent->SetForReplication<ShooterCarUserComponent>(M::Privacy::PUBLIC);
         replicationComponent->SetForReplication<HealthComponent>(M::Privacy::PUBLIC);
@@ -149,6 +161,7 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         replicationComponent->SetForReplication<ShootCooldownComponent>(M::Privacy::PRIVATE);
         replicationComponent->SetForReplication<RocketSpawnComponent>(M::Privacy::PUBLIC);
         replicationComponent->SetForReplication<ShooterStateComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<HitboxesDebugDrawComponent>(M::Privacy::PRIVATE);
 
         entity->AddComponent(replicationComponent);
         entity->AddComponent(new NetworkPlayerComponent());
@@ -162,8 +175,15 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_MOVE_RIGHT);
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_ACCELERATE);
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_ATTACK_BULLET);
-
         entity->AddComponent(remoteInputComponent);
+
+        NetworkMotionComponent* animationComponent = new NetworkMotionComponent();
+        animationComponent->paramNames.push_back(FastName(MOTION_PARAM_RUNNING));
+        animationComponent->paramNames.push_back(FastName(MOTION_PARAM_DIRECTION_X));
+        animationComponent->paramNames.push_back(FastName(MOTION_PARAM_DIRECTION_Y));
+        entity->AddComponent(animationComponent);
+
+        entity->AddComponent(new HitboxesDebugDrawComponent());
 
         entity->AddComponent(new ShooterAimComponent());
         entity->AddComponent(new ShooterCarUserComponent());
@@ -177,13 +197,17 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         entity->AddComponent(new RocketSpawnComponent());
         entity->AddComponent(new ShooterStateComponent());
     }
-
-    if (!IsServer(GetScene()))
+    else
     {
-        if (IsClientOwner(GetScene(), entity))
+        NetworkDebugDrawComponent* debugDrawComponent = new NetworkDebugDrawComponent();
+        debugDrawComponent->box = entity->GetWTMaximumBoundingBoxSlow();
+        entity->AddComponent(debugDrawComponent);
+
+        if (isClientOwner)
         {
             ComponentMask predictionMask;
             predictionMask.Set<NetworkTransformComponent>();
+            predictionMask.Set<NetworkMotionComponent>();
             predictionMask.Set<ShooterAimComponent>();
             predictionMask.Set<RocketSpawnComponent>();
 
@@ -192,14 +216,8 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
 
             name = "My player";
         }
-        else
-        {
-            // No need for gravity for replicated CCTs
-            controllerComponent->SetMovementMode(CharacterControllerComponent::MovementMode::Flying);
-            name = "Enemy player";
-        }
 
-        entity->AddComponent(new NetworkMovementComponent());
+        // entity->AddComponent(new NetworkMovementComponent());
     }
 
     entity->SetName(name.c_str());
@@ -234,13 +252,6 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
     ScopedPtr<Entity> weaponEntity(weaponSourceEntity->Clone());
     weaponEntity->SetName("Weapon");
     entity->AddNode(weaponEntity);
-
-    if (IsClient(this))
-    {
-        NetworkDebugDrawComponent* debugDrawComponent = new NetworkDebugDrawComponent();
-        debugDrawComponent->box = entity->GetWTMaximumBoundingBoxSlow();
-        entity->AddComponent(debugDrawComponent);
-    }
 }
 
 void ShooterEntityFillSystem::FillCarEntity(DAVA::Entity* entity)
@@ -281,10 +292,11 @@ void ShooterEntityFillSystem::FillCarEntity(DAVA::Entity* entity)
 
         entity->AddComponent(replicationComponent);
 
+        const Transform& transform = entity->GetComponent<TransformComponent>()->GetLocalTransform();
         TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
         NetworkTransformComponent* networkTransform = new NetworkTransformComponent();
-        networkTransform->SetPosition(transformComponent->GetPosition());
-        networkTransform->SetOrientation(transformComponent->GetRotation());
+        networkTransform->SetPosition(transform.GetTranslation());
+        networkTransform->SetOrientation(transform.GetRotation());
         entity->AddComponent(networkTransform);
 
         entity->AddComponent(carReference->GetComponent<DynamicBodyComponent>()->Clone(entity));

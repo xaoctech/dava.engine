@@ -137,10 +137,10 @@ void GameCore::RegisterTests()
 
 void GameCore::LoadMaps(const String& testName, Vector<std::pair<String, String>>& mapsVector)
 {
-    YamlParser* testsParser = YamlParser::Create("~res:/tests.yaml");
+    RefPtr<YamlParser> testsParser = YamlParser::Create("~res:/tests.yaml");
     DVASSERT(testsParser, "can't open ~res:/tests.yaml");
 
-    YamlParser* mapsParser = YamlParser::Create("~res:/maps.yaml");
+    RefPtr<YamlParser> mapsParser = YamlParser::Create("~res:/maps.yaml");
     DVASSERT(mapsParser, "can't open ~res:/maps.yaml");
 
     YamlNode* testsRootNode = testsParser->GetRootNode();
@@ -158,9 +158,6 @@ void GameCore::LoadMaps(const String& testName, Vector<std::pair<String, String>
             mapsVector.push_back(std::pair<String, String>(mapName, mapPath));
         }
     }
-
-    SafeRelease(mapsParser);
-    SafeRelease(testsParser);
 }
 
 void GameCore::OnWindowCreated(DAVA::Window* w)

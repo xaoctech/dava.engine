@@ -10,6 +10,7 @@
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Entity/Component.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 #include <physx/PxRigidDynamic.h>
 
@@ -24,11 +25,12 @@ void EditorPhysicsSystem::RegisterEntity(DAVA::Entity* entity)
 {
     using namespace DAVA;
 
+    TransformComponent* tc = entity->GetComponent<TransformComponent>();
     if (entity->GetComponentCount<DynamicBodyComponent>() > 0 ||
         entity->GetComponentCount<StaticBodyComponent>() > 0)
     {
         EntityInfo& info = transformMap[entity];
-        info.originalTransform = entity->GetLocalTransform();
+        info.originalTransform = tc->GetWorldMatrix();
         info.isLocked = entity->GetLocked();
     }
     else
@@ -43,7 +45,7 @@ void EditorPhysicsSystem::RegisterEntity(DAVA::Entity* entity)
             if (shapesCount > 0)
             {
                 EntityInfo& info = transformMap[entity];
-                info.originalTransform = entity->GetLocalTransform();
+                info.originalTransform = tc->GetLocalMatrix();
                 info.isLocked = entity->GetLocked();
 
                 break;
@@ -150,8 +152,10 @@ void EditorPhysicsSystem::StoreActualTransform()
 {
     for (auto& node : transformMap)
     {
-        node.second.originalTransform = node.first->GetLocalTransform();
-        node.second.isLocked = node.first->GetLocked();
+        DAVA::Entity* entity = node.first;
+        EntityInfo& info = node.second;
+        info.originalTransform = entity->GetComponent<DAVA::TransformComponent>()->GetLocalMatrix();
+        info.isLocked = entity->GetLocked();
     }
 }
 
@@ -159,10 +163,12 @@ void EditorPhysicsSystem::RestoreTransform()
 {
     for (auto& node : transformMap)
     {
-        node.first->SetLocalTransform(node.second.originalTransform);
-        node.first->SetLocked(node.second.isLocked);
+        DAVA::Entity* entity = node.first;
+        EntityInfo& info = node.second;
+        entity->GetComponent<DAVA::TransformComponent>()->SetLocalMatrix(info.originalTransform);
+        entity->SetLocked(info.isLocked);
 
-        DAVA::PhysicsComponent* component = static_cast<DAVA::PhysicsComponent*>(node.first->GetComponent<DAVA::DynamicBodyComponent>());
+        DAVA::PhysicsComponent* component = static_cast<DAVA::PhysicsComponent*>(entity->GetComponent<DAVA::DynamicBodyComponent>());
         if (component != nullptr)
         {
             physx::PxRigidDynamic* actor = component->GetPxActor()->is<physx::PxRigidDynamic>();

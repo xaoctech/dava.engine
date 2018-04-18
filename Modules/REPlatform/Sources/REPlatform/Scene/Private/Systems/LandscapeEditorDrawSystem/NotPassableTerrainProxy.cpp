@@ -49,9 +49,9 @@ NotPassableTerrainProxy::~NotPassableTerrainProxy()
 
 void NotPassableTerrainProxy::LoadColorsArray()
 {
-    YamlParser* parser = YamlParser::Create("~res:/ResourceEditor/Configs/LandscapeAngle.yaml");
+    RefPtr<YamlParser> parser = YamlParser::Create("~res:/ResourceEditor/Configs/LandscapeAngle.yaml");
 
-    if (parser != 0)
+    if (parser.Valid())
     {
         YamlNode* rootNode = parser->GetRootNode();
         int32 anglesCount = rootNode->GetCount();
@@ -88,8 +88,6 @@ void NotPassableTerrainProxy::LoadColorsArray()
             angleColor.push_back(TerrainColor(Vector2(tangentMin, tangentMax), color));
         }
     }
-
-    SafeRelease(parser);
 }
 
 bool NotPassableTerrainProxy::PickColor(float32 tan, Color& color) const

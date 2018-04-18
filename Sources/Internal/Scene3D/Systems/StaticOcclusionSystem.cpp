@@ -117,8 +117,8 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
                 {
                     RenderObject* object = debugDrawComponent->GetRenderObject();
                     // Update new transform pointer, and mark that transform is changed
-                    const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-                    object->SetWorldTransformPtr(worldTransformPointer);
+                    Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
+                    object->SetWorldMatrixPtr(worldTransformPointer);
                     GetScene()->renderSystem->MarkForUpdate(object);
                 }
             }
@@ -391,10 +391,10 @@ void StaticOcclusionDebugDrawSystem::SetScene(Scene* scene)
 
 void StaticOcclusionDebugDrawSystem::AddEntity(Entity* entity)
 {
-    const Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
+    Matrix4* worldTransformPointer = GetTransformComponent(entity)->GetWorldMatrixPtr();
     //create render object
     ScopedPtr<RenderObject> debugRenderObject(new RenderObject());
-    debugRenderObject->SetWorldTransformPtr(worldTransformPointer);
+    debugRenderObject->SetWorldMatrixPtr(worldTransformPointer);
     ScopedPtr<RenderBatch> gridBatch(new RenderBatch());
     ScopedPtr<RenderBatch> coverBatch(new RenderBatch());
     gridBatch->SetMaterial(gridMaterial);

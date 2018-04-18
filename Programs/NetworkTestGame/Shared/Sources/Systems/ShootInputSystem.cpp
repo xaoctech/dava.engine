@@ -108,8 +108,8 @@ void ShootInputSystem::ApplyDigitalActions(Entity* shooter, const Vector<FastNam
                 const String cfgName = (isFirstShoot) ? "Ammo/DamageBullet" : "Ammo/StunBullet";
                 NetworkFactoryComponent* factoryComponent = CreateEntityWithFactoryComponent(cfgName, bulletId);
                 bullet = factoryComponent->GetEntity();
-                const TransformComponent* src = shooter->GetComponent<TransformComponent>();
-                factoryComponent->SetInitialTransform(src->GetPosition(), src->GetRotation(), 8.f);
+                const Transform& src = shooter->GetComponent<TransformComponent>()->GetLocalTransform();
+                factoryComponent->SetInitialTransform(src.GetTranslation(), src.GetRotation(), 8.f);
                 factoryComponent->OverrideField("DynamicBodyComponent/BodyFlags",
                                                 PhysicsComponent::eBodyFlags::DISABLE_GRAVITY);
                 factoryComponent->SetupAfterInit([](Entity* e) {

@@ -295,7 +295,7 @@ void ShooterAimSystem::UpdateCurrentAimControlPosition(ShooterAimComponent* aimC
     auto shootStartEntity = aimComponent->GetEntity()->FindByName(SHOOTER_GUN_BARREL_ENTITY_NAME);
     if (shootStartEntity != nullptr)
     {
-        Vector3 shootStart = shootStartEntity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector();
+        Vector3 shootStart = shootStartEntity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
         Vector3 shootVector = aimRayEnd - shootStart;
         float32 shootVectorLength = shootVector.Length();
         shootVector.Normalize();

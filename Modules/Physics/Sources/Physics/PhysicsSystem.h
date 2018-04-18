@@ -57,6 +57,7 @@ public:
     void ProcessFixed(float32 timeElapsed) override;
     void ProcessFixedFetch(float32 timeElapsed);
     void ProcessFixedSimulate(float32 timeElapsed);
+    void ProcessFixedUpdateTransforms(float32 timeElapsed);
     void PrepareForRemove() override;
 
     void SetSimulationEnabled(bool isEnabled);
@@ -75,6 +76,7 @@ public:
     PhysicsVehiclesSubsystem* GetVehiclesSystem();
 
     void SyncTransformToPhysx();
+    void SyncJointsTransformsWithPhysics(); // Shape transform <-> joint transform
 
     void ReSimulationStart() override;
     void ReSimulationEnd() override;
@@ -95,7 +97,6 @@ private:
     void ReleaseShape(CollisionShapeComponent* component);
     physx::PxShape* CreateShape(CollisionShapeComponent* component, PhysicsModule* physics);
 
-    void SyncEntityTransformToPhysx(Entity* entity);
     void UpdateComponents();
     void ApplyForces();
 
@@ -120,8 +121,6 @@ private:
     void ExecuteForEachPendingCCT(Function<void(CharacterControllerComponent*)> func);
 
     PolygonGroup* CreatePolygonGroupFromJoint(Entity* entity, const FastName& jointName); // Create polygon group for part of the mesh associated with specific joint
-
-    void SyncShapeTransformsToJoints(); // Shape transform -> joint transform
 
     void FreezeEverything();
     void UnfreezeEverything();

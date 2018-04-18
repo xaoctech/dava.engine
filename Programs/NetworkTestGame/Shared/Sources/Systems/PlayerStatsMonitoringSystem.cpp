@@ -94,7 +94,7 @@ void PlayerStatsMonitoringSystem::ProcessAgent(AgentInfo& agent)
         agent.lastHealthLogged = curHealth;
     }
 
-    const Vector3& curPos = entity->GetComponent<TransformComponent>()->GetPosition();
+    const Vector3& curPos = entity->GetComponent<TransformComponent>()->GetLocalTransform().GetTranslation();
     float dist = Distance(agent.lastPositionLogged, curPos);
     if (dist > PlayerStatsSystemDetail::DISTANCE_LOG_TOLERANCE || curHealth == 0)
     {

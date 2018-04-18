@@ -15,9 +15,9 @@
 #include <Entity/ComponentUtils.h>
 #include <Input/Keyboard.h>
 #include <Math/AABBox3.h>
-#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/Waypoint/PathComponent.h>
 #include <Scene3D/Components/Waypoint/WaypointComponent.h>
 #include <Utils/Utils.h>
@@ -228,7 +228,8 @@ void WayEditSystem::Process(float32 timeElapsed)
                 WaypointComponent* waypoint = entity->GetComponent<WaypointComponent>();
                 if (waypoint != nullptr && waypoint->GetWaypoint() != nullptr)
                 {
-                    waypoint->GetWaypoint()->position = entity->GetLocalTransform().GetTranslationVector();
+                    TransformComponent* tc = entity->GetComponent<TransformComponent>();
+                    waypoint->GetWaypoint()->position = tc->GetLocalTransform().GetTranslation();
                 }
             }
         }
@@ -338,7 +339,8 @@ bool WayEditSystem::Input(UIEvent* event)
                         }
                     }
 
-                    Matrix4 parentTransform = currentWayParent->GetWorldTransform();
+                    TransformComponent* tc = currentWayParent->GetComponent<TransformComponent>();
+                    Matrix4 parentTransform = tc->GetWorldMatrix();
                     parentTransform.Inverse();
 
                     Matrix4 waypointTransform;
@@ -562,8 +564,9 @@ void WayEditSystem::Draw()
         // and collision has not been calculated yet. We will draw this entity on next frame
         if (localBox.IsEmpty() == false)
         {
-            editorScene->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(localBox, e->GetWorldTransform(), Color(redValue, greenValue, blueValue, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
-            editorScene->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(localBox, e->GetWorldTransform(), Color(redValue, greenValue, blueValue, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
+            TransformComponent* tc = e->GetComponent<TransformComponent>();
+            editorScene->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(localBox, tc->GetWorldMatrix(), Color(redValue, greenValue, blueValue, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
+            editorScene->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(localBox, tc->GetWorldMatrix(), Color(redValue, greenValue, blueValue, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
         }
     }
 }
@@ -617,7 +620,9 @@ void WayEditSystem::PerformAdding(Entity* sourceEntity, Entity* clonedEntity)
 
     PathComponent::Waypoint* sourceWayPoint = sourceComponent->GetWaypoint();
     DVASSERT(sourceWayPoint != nullptr);
-    sourceWayPoint->position = sourceEntity->GetLocalTransform().GetTranslationVector();
+
+    TransformComponent* sourceTC = sourceEntity->GetComponent<TransformComponent>();
+    sourceWayPoint->position = sourceTC->GetLocalTransform().GetTranslation();
 
     PathComponent::Waypoint* clonedWayPoint = clonedComponent->GetWaypoint();
     DVASSERT(clonedWayPoint == sourceWayPoint);
@@ -626,7 +631,8 @@ void WayEditSystem::PerformAdding(Entity* sourceEntity, Entity* clonedEntity)
 
     clonedWayPoint = new PathComponent::Waypoint();
     clonedWayPoint->name = sourceWayPoint->name;
-    clonedWayPoint->position = clonedEntity->GetLocalTransform().GetTranslationVector();
+    TransformComponent* clonedTC = clonedEntity->GetComponent<TransformComponent>();
+    clonedWayPoint->position = clonedTC->GetLocalTransform().GetTranslation();
     KeyedArchive* propertiesCopy = new KeyedArchive(*sourceWayPoint->GetProperties());
     clonedWayPoint->SetProperties(propertiesCopy);
     SafeRelease(propertiesCopy);

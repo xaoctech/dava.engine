@@ -46,7 +46,7 @@ void DrawShootSystem::Process(DAVA::float32 timeElapsed)
             stateComponent->lastRaycastAttackFrameId = stateComponent->raycastAttackFrameId;
             Entity* aimingEntity = stateComponent->GetEntity();
             Entity* weaponBarrelEntity = aimingEntity->FindByName(SHOOTER_GUN_BARREL_ENTITY_NAME);
-            const Vector3& shootStart = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslationVector();
+            const Vector3& shootStart = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
 
             Vector3 aimRayOrigin;
             Vector3 aimRayDirection;

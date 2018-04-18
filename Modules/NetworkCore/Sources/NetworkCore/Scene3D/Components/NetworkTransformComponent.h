@@ -6,6 +6,7 @@
 #include "Entity/Component.h"
 #include "Base/Introspection.h"
 #include "Scene3D/Entity.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "NetworkCore/Private/NetworkSerialization.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Math/Vector.h"

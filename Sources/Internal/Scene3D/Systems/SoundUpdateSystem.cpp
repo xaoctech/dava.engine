@@ -48,7 +48,7 @@ void SoundUpdateSystem::ImmediateEvent(Component* component, uint32 event)
 {
     if (event == EventSystem::SOUND_COMPONENT_CHANGED)
     {
-        const Matrix4& worldTransform = GetTransformComponent(component->GetEntity())->GetWorldTransform();
+        const Matrix4& worldTransform = GetTransformComponent(component->GetEntity())->GetWorldMatrix();
         Vector3 translation = worldTransform.GetTranslationVector();
 
         SoundComponent* sc = GetSoundComponent(component->GetEntity());
@@ -82,7 +82,7 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
             for (Entity* entity : pair.second)
             {
                 SoundComponent* sc = entity->GetComponent<SoundComponent>();
-                const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldTransform();
+                const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldMatrix();
                 Vector3 translation = worldTransform.GetTranslationVector();
 
                 uint32 eventsCount = sc->GetEventsCount();
@@ -114,7 +114,7 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
         for (uint32 i = 0; i < autoCount; ++i)
         {
             AutoTriggerSound& autoTriggerSound = autoTriggerSounds[i];
-            float32 distanceSq = (listenerPosition - GetTransformComponent(autoTriggerSound.owner)->GetWorldTransformPtr()->GetTranslationVector()).SquareLength();
+            float32 distanceSq = (listenerPosition - GetTransformComponent(autoTriggerSound.owner)->GetWorldMatrixPtr()->GetTranslationVector()).SquareLength();
             if (distanceSq < autoTriggerSound.maxSqDistance)
             {
                 if (!autoTriggerSound.soundEvent->IsActive())

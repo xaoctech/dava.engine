@@ -64,7 +64,11 @@ DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsSystem)
 {
     ReflectionRegistrator<PhysicsSystem>::Begin()[M::Tags("base", "physics")]
     .ConstructorByPointer<Scene*>()
+    // Run simulation at the end of a frame, after gameplay code, so that user always works with the same physics state during a frame. It also gives opportunity to enable multithreaded simulation in the future
+    // Fetch results at the beginning of the next frame, before network snapshot system captures results
+    // Copy changed transforms to physics right after network replication system, so that every entity we received this frame had correct state in physics
     .Method("ProcessFixedFetch", &PhysicsSystem::ProcessFixedFetch)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 4.0f)]
+    .Method("ProcessFixedUpdateTransforms", &PhysicsSystem::ProcessFixedUpdateTransforms)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 21.0f)]
     .Method("ProcessFixedSimulate", &PhysicsSystem::ProcessFixedSimulate)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 1.0f)]
     .End();
 }
@@ -88,12 +92,12 @@ void LogVehicleCar(VehicleCarComponent* carComponent, String const& header)
 
     std::stringstream ss;
 
-    TransformComponent* t = entity->GetComponent<TransformComponent>();
+    const Transform& t = entity->GetComponent<TransformComponent>()->GetWorldTransform();
 
     //ss << Format("VEHICLE STATE %s (frame: %d) =============", header.c_str(), carComponent->GetEntity()->GetScene()->GetSingleComponent<NetworkTimeSingleComponent>()->GetFrameId()) << "\n";
 
     ss << Format("Actor global position: (%.10e, %.10e, %.10e), global rotation: (%.10e, %.10e, %.10e, %.10e)", actor->getGlobalPose().p.x, actor->getGlobalPose().p.y, actor->getGlobalPose().p.z, actor->getGlobalPose().q.x, actor->getGlobalPose().q.y, actor->getGlobalPose().q.z, actor->getGlobalPose().q.w) << "\n";
-    ss << Format("Entity transform: (%.10e, %.10e, %.10e), (%.10e, %.10e, %.10e, %.10e)", t->GetPosition().x, t->GetPosition().y, t->GetPosition().z, t->GetRotation().x, t->GetRotation().y, t->GetRotation().z, t->GetRotation().w) << "\n";
+    ss << Format("Entity transform: (%.10e, %.10e, %.10e), (%.10e, %.10e, %.10e, %.10e)", t.GetTranslation().x, t.GetTranslation().y, t.GetTranslation().z, t.GetRotation().x, t.GetRotation().y, t.GetRotation().z, t.GetRotation().w) << "\n";
 
     ss << Format("Actor mass: %f", actor->getMass()) << "\n";
 
@@ -182,64 +186,6 @@ void EraseComponent(T* component, Vector<T*>& pendingComponents, Vector<T*>& com
     }
 }
 
-void UpdateActorGlobalPose(physx::PxRigidActor* actor, const Vector3& position, const Quaternion& rotation)
-{
-    DVASSERT(actor != nullptr);
-
-    physx::PxVec3 pxNewPos = PhysicsMath::Vector3ToPxVec3(position);
-    physx::PxQuat pxNewQuat = PhysicsMath::QuaternionToPxQuat(rotation);
-    const physx::PxTransform& pxCurrentTransform = actor->getGlobalPose();
-
-    // Avoid updating global pose if it hasn't really changed to not wake up the actor
-    if ((pxCurrentTransform.p != pxNewPos) || !(pxCurrentTransform.q == pxNewQuat))
-    {
-        actor->setGlobalPose(physx::PxTransform(pxNewPos, pxNewQuat));
-    }
-}
-
-void UpdateShapeLocalPose(physx::PxShape* shape, const Vector3& position, const Quaternion& rotation)
-{
-    DVASSERT(shape != nullptr);
-
-    physx::PxVec3 pxNewPos = PhysicsMath::Vector3ToPxVec3(position);
-    physx::PxQuat pxNewQuat = PhysicsMath::QuaternionToPxQuat(rotation);
-    shape->setLocalPose(physx::PxTransform(pxNewPos, pxNewQuat));
-}
-
-void UpdateShapeGeometryScale(physx::PxShape* shape, const Vector3& scale)
-{
-    DVASSERT(shape != nullptr);
-
-    physx::PxVec3 pxNewScale = PhysicsMath::Vector3ToPxVec3(scale);
-
-    physx::PxGeometryHolder geometryHolder = shape->getGeometry();
-    physx::PxGeometryType::Enum geometryType = geometryHolder.getType();
-    if (geometryType == physx::PxGeometryType::eTRIANGLEMESH)
-    {
-        physx::PxTriangleMeshGeometry geometry;
-        bool extracted = shape->getTriangleMeshGeometry(geometry);
-        DVASSERT(extracted);
-
-        if (geometry.scale.scale != pxNewScale)
-        {
-            geometry.scale.scale = pxNewScale;
-            shape->setGeometry(geometry);
-        }
-    }
-    else if (geometryType == physx::PxGeometryType::eCONVEXMESH)
-    {
-        physx::PxConvexMeshGeometry geometry;
-        bool extracted = shape->getConvexMeshGeometry(geometry);
-        DVASSERT(extracted);
-
-        if (geometry.scale.scale != pxNewScale)
-        {
-            geometry.scale.scale = pxNewScale;
-            shape->setGeometry(geometry);
-        }
-    }
-}
-
 bool IsCollisionShapeType(const Type* componentType)
 {
     PhysicsModule* module = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
@@ -277,13 +223,7 @@ Vector3 AccumulateMeshInfo(Entity* e, Vector<PolygonGroup*>& groups)
         }
     }
 
-    Vector3 pos;
-    Vector3 scale;
-    Quaternion quat;
-    TransformComponent* transformComponent = GetTransformComponent(e);
-    transformComponent->GetLocalTransform().Decomposition(pos, scale, quat);
-
-    return scale;
+    return GetTransformComponent(e)->GetWorldTransform().GetScale();
 }
 
 PhysicsComponent* GetParentPhysicsComponent(Entity* entity)
@@ -707,11 +647,20 @@ void PhysicsSystem::ProcessFixedFetch(float32 timeElapsed)
     MoveCharacterControllers(timeElapsed);
     FetchResults(true);
 
-    SyncShapeTransformsToJoints();
+    SyncJointsTransformsWithPhysics();
 
     for (VehicleCarComponent* car : vehiclesSubsystem->cars->components)
     {
         vehiclesSubsystem->SaveSimulationParams(car);
+    }
+}
+
+void PhysicsSystem::ProcessFixedUpdateTransforms(float32 timeElapsed)
+{
+    if (isSimulationEnabled)
+    {
+        SyncTransformToPhysx();
+        SyncJointsTransformsWithPhysics();
     }
 }
 
@@ -846,8 +795,9 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
         }
 
         // Update entity's transform and its shapes down the hierarchy recursively
-        TransformComponent* transform = entity->GetComponent<TransformComponent>();
-        transform->SetLocalTransform(PhysicsMath::PxVec3ToVector3(rigidActor->getGlobalPose().p), PhysicsMath::PxQuatToQuaternion(rigidActor->getGlobalPose().q), physicsComponent->currentScale);
+        Matrix4 scaleMatrix = Matrix4::MakeScale(physicsComponent->currentScale);
+        TransformComponent* entityTransform = entity->GetComponent<TransformComponent>();
+        entityTransform->SetLocalMatrix(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
 
         Vector<CollisionShapeComponent*> shapes = PhysicsUtils::GetShapeComponents(entity);
         if (shapes.size() > 0)
@@ -879,9 +829,9 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
                 CollisionShapeComponent* shape = shapes[0];
                 if (shape->GetPxShape() != nullptr)
                 {
-                    const physx::PxTransform& shapeLocalPos = shape->GetPxShape()->getLocalPose();
+                    Matrix4 scaleMatrix = Matrix4::MakeScale(shape->scale);
                     TransformComponent* childTransform = child->GetComponent<TransformComponent>();
-                    childTransform->SetLocalTransform(PhysicsMath::PxVec3ToVector3(shapeLocalPos.p), PhysicsMath::PxQuatToQuaternion(shapeLocalPos.q), shape->scale);
+                    childTransform->SetLocalMatrix(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(shape->GetPxShape()->getLocalPose()));
                 }
             }
         }
@@ -1194,100 +1144,33 @@ void PhysicsSystem::SyncTransformToPhysx()
         // there is no need to handle it
         if (physicsEntities.find(entity) != physicsEntities.end())
         {
-            SyncEntityTransformToPhysx(entity);
-        }
-    }
-}
+            CharacterControllerComponent* controllerComponent = PhysicsUtils::GetCharacterControllerComponent(entity);
+            const physx::PxController* pxController = (controllerComponent == nullptr) ? nullptr : controllerComponent->GetPxController();
 
-void PhysicsSystem::SyncEntityTransformToPhysx(Entity* entity)
-{
-    auto updateBodyComponent = [](Entity* e, PhysicsComponent* component)
-    {
-        if (component != nullptr)
-        {
-            physx::PxActor* actor = component->GetPxActor();
-            if (actor != nullptr)
-            {
-                physx::PxRigidActor* rigidActor = actor->is<physx::PxRigidActor>();
-                DVASSERT(rigidActor != nullptr);
-
-                TransformComponent* transform = e->GetComponent<TransformComponent>();
-                PhysicsSystemDetail::UpdateActorGlobalPose(rigidActor, transform->GetPosition(), transform->GetRotation());
-                component->currentScale = transform->GetScale();
-
-                physx::PxU32 shapesCount = rigidActor->getNbShapes();
-                for (physx::PxU32 i = 0; i < shapesCount; ++i)
-                {
-                    physx::PxShape* shape = nullptr;
-                    rigidActor->getShapes(&shape, 1, i);
-
-                    // Update local pose for nested shapes
-                    CollisionShapeComponent* shapeComponent = CollisionShapeComponent::GetComponent(shape);
-                    DVASSERT(shapeComponent->GetEntity() != nullptr);
-                    if (shapeComponent->GetEntity() != e)
-                    {
-                        TransformComponent* childTransform = shapeComponent->GetEntity()->GetComponent<TransformComponent>();
-                        PhysicsSystemDetail::UpdateShapeLocalPose(shape, childTransform->GetPosition(), childTransform->GetRotation());
-                    }
-
-                    // Update geometry scale
-                    PhysicsSystemDetail::UpdateShapeGeometryScale(shape, transform->GetScale());
-                }
-            }
-        }
-    };
-
-    const bool isRootEntity = entity->GetParent() == entity->GetScene();
-
-    // Actors and CCTs can only be root entities since their positions are represented by global positions
-    // If passed entity is nested, then check for shapes and update their local positions
-    if (isRootEntity)
-    {
-        CharacterControllerComponent* controller = PhysicsUtils::GetCharacterControllerComponent(entity);
-        PhysicsComponent* bodyComponent = PhysicsUtils::GetBodyComponent(entity);
-
-        // Update actor
-        if (bodyComponent != nullptr)
-        {
-            updateBodyComponent(entity, bodyComponent);
-        }
-
-        // Update CCT if there is no body
-        if (controller != nullptr)
-        {
-            TransformComponent* transform = entity->GetComponent<TransformComponent>();
-            physx::PxController* pxController = controller->GetPxController();
+            physx::PxExtendedVec3 previousCctPos;
             if (pxController != nullptr)
             {
-                Vector3 currentPosition = PhysicsMath::PxExtendedVec3ToVector3(pxController->getFootPosition());
-                Vector3 newPosition = transform->GetPosition();
+                previousCctPos = pxController->getFootPosition();
+            }
 
-                if (!FLOAT_EQUAL(currentPosition.x, newPosition.x) ||
-                    !FLOAT_EQUAL(currentPosition.y, newPosition.y) ||
-                    !FLOAT_EQUAL(currentPosition.z, newPosition.z))
+            PhysicsUtils::CopyTransformToPhysics(entity);
+
+            if (pxController != nullptr)
+            {
+                physx::PxExtendedVec3 newCctPos = pxController->getFootPosition();
+
+                // If we moved CCT, remember it
+                // Will be used later to disable any collision while we teleport it during simulate step
+                if (!FLOAT_EQUAL(newCctPos.x, previousCctPos.x) ||
+                    !FLOAT_EQUAL(newCctPos.y, previousCctPos.y) ||
+                    !FLOAT_EQUAL(newCctPos.z, previousCctPos.z))
                 {
-                    pxController->setFootPosition(PhysicsMath::Vector3ToPxExtendedVec3(newPosition));
-
                     physx::PxShape* cctShape = nullptr;
                     pxController->getActor()->getShapes(&cctShape, 1, 0);
                     DVASSERT(cctShape != nullptr);
-                    teleportedCcts.insert({ controller, cctShape->getSimulationFilterData() });
+
+                    teleportedCcts.insert({ controllerComponent, cctShape->getSimulationFilterData() });
                 }
-            }
-        }
-    }
-    else
-    {
-        // Update shapes
-        Vector<CollisionShapeComponent*> shapeComponents = PhysicsUtils::GetShapeComponents(entity);
-        if (shapeComponents.size() > 0)
-        {
-            CollisionShapeComponent* shapeComponent = shapeComponents[0];
-            physx::PxShape* shape = shapeComponent->GetPxShape();
-            if (shape != nullptr)
-            {
-                TransformComponent* transform = entity->GetComponent<TransformComponent>();
-                PhysicsSystemDetail::UpdateShapeLocalPose(shapeComponent->GetPxShape(), transform->GetPosition(), transform->GetRotation());
             }
         }
     }
@@ -1519,10 +1402,10 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
                               DVASSERT(transformComponent != nullptr);
 
                               Vector3 newPosition = PhysicsMath::PxExtendedVec3ToVector3(controller->getFootPosition());
-                              Vector3 const& oldPosition = transformComponent->GetPosition();
+                              Vector3 const& oldPosition = transformComponent->GetWorldTransform().GetTranslation();
                               if (!FLOAT_EQUAL(newPosition.x, oldPosition.x) || !FLOAT_EQUAL(newPosition.y, oldPosition.y) || !FLOAT_EQUAL(newPosition.z, oldPosition.z))
                               {
-                                  transformComponent->SetLocalTransform(newPosition, transformComponent->GetRotation(), transformComponent->GetScale());
+                                  transformComponent->SetLocalTranslation(newPosition);
                               }
 
                               afterCCTMove.Emit(controllerComponent);
@@ -1613,10 +1496,12 @@ void PhysicsSystem::InitBodyComponent(PhysicsComponent* bodyComponent)
     TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
     DVASSERT(transformComponent != nullptr);
 
-    PhysicsSystemDetail::UpdateActorGlobalPose(createdActor, transformComponent->GetPosition(), transformComponent->GetRotation());
-    bodyComponent->currentScale = transformComponent->GetScale();
+    const Transform& transform = transformComponent->GetLocalTransform();
 
-    AttachShapesRecursively(entity, bodyComponent, transformComponent->GetScale());
+    PhysicsUtils::SetActorTransform(createdActor, transform.GetTranslation(), transform.GetRotation());
+    bodyComponent->currentScale = transform.GetScale();
+
+    AttachShapesRecursively(entity, bodyComponent, transform.GetScale());
 
     physicsScene->addActor(*createdActor);
 
@@ -1643,7 +1528,7 @@ void PhysicsSystem::InitShapeComponent(CollisionShapeComponent* shapeComponent)
         PhysicsComponent* physicsComponent = PhysicsSystemDetail::GetParentPhysicsComponent(entity);
         if (physicsComponent != nullptr)
         {
-            AttachShape(physicsComponent, shapeComponent, transformComponent->GetScale());
+            AttachShape(physicsComponent, shapeComponent, transformComponent->GetLocalTransform().GetScale());
 
             if (physicsComponent->GetType()->Is<DynamicBodyComponent>())
             {
@@ -1673,13 +1558,16 @@ void PhysicsSystem::InitCCTComponent(CharacterControllerComponent* cctComponent)
     PhysicsModule* physics = GetEngineContext()->moduleManager->GetModule<PhysicsModule>();
     DVASSERT(physics != nullptr);
 
+    TransformComponent* transformComp = entity->GetComponent<TransformComponent>();
+    DVASSERT(transformComp != nullptr);
+
     physx::PxController* controller = nullptr;
     if (cctComponent->GetType()->Is<BoxCharacterControllerComponent>())
     {
         BoxCharacterControllerComponent* boxCharacterControllerComponent = static_cast<BoxCharacterControllerComponent*>(cctComponent);
 
         physx::PxBoxControllerDesc desc;
-        desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
+        desc.position = PhysicsMath::Vector3ToPxExtendedVec3(transformComp->GetLocalTransform().GetTranslation());
         desc.halfHeight = boxCharacterControllerComponent->GetHalfHeight();
         desc.halfForwardExtent = boxCharacterControllerComponent->GetHalfForwardExtent();
         desc.halfSideExtent = boxCharacterControllerComponent->GetHalfSideExtent();
@@ -1696,7 +1584,7 @@ void PhysicsSystem::InitCCTComponent(CharacterControllerComponent* cctComponent)
         CapsuleCharacterControllerComponent* capsuleCharacterControllerComponent = static_cast<CapsuleCharacterControllerComponent*>(cctComponent);
 
         physx::PxCapsuleControllerDesc desc;
-        desc.position = PhysicsMath::Vector3ToPxExtendedVec3(entity->GetLocalTransform().GetTranslationVector());
+        desc.position = PhysicsMath::Vector3ToPxExtendedVec3(transformComp->GetLocalTransform().GetTranslation());
         desc.radius = capsuleCharacterControllerComponent->GetRadius();
         desc.height = capsuleCharacterControllerComponent->GetHeight();
         desc.contactOffset = capsuleCharacterControllerComponent->GetContactOffset();
@@ -1989,33 +1877,16 @@ PolygonGroup* PhysicsSystem::CreatePolygonGroupFromJoint(Entity* entity, const F
     return polygonGroup;
 }
 
-void PhysicsSystem::SyncShapeTransformsToJoints()
+void PhysicsSystem::SyncJointsTransformsWithPhysics()
 {
-    // TODO: optimize
-    // No need to traverse all shapes every time
-    for (CollisionShapeComponent* shape : shapes->components)
+    for (DynamicBodyComponent* dynamicBody : dynamicBodies->components)
     {
-        const FastName& jointName = shape->GetJointName();
-        if (shape->GetEntity() != nullptr && jointName.IsValid() && jointName.size() > 0)
-        {
-            SkeletonComponent* skeletonComponent = shape->GetEntity()->GetComponent<SkeletonComponent>();
-            if (skeletonComponent != nullptr)
-            {
-                uint32 index = skeletonComponent->GetJointIndex(jointName);
+        DVASSERT(dynamicBody != nullptr);
 
-                if (shape->GetJointSyncDirection() == CollisionShapeComponent::JointSyncDirection::FromPhysics)
-                {
-                    skeletonComponent->SetJointPosition(index, shape->GetLocalPosition());
-                    skeletonComponent->SetJointOrientation(index, shape->GetLocalOrientation());
-                }
-                else
-                {
-                    const JointTransform& jointTransform = skeletonComponent->GetJointObjectSpaceTransform(index);
-                    shape->SetLocalPosition(jointTransform.GetPosition() + jointTransform.GetOrientation().ApplyToVectorFast(shape->GetJointOffset()));
-                    shape->SetLocalOrientation(jointTransform.GetOrientation());
-                }
-            }
-        }
+        Entity* entity = dynamicBody->GetEntity();
+        DVASSERT(entity != nullptr);
+
+        PhysicsUtils::SyncJointsTransformsWithPhysics(entity);
     }
 }
 

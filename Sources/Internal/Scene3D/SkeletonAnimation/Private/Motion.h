@@ -54,6 +54,12 @@ public:
     void AddTransition(const FastName& trigger, MotionTransitionInfo* transitionInfo, Motion* dstMotion, uint32 srcPhase = std::numeric_limits<uint32>::max());
     const TransitionInfo& GetTransitionInfo(const FastName& trigger) const;
 
+    uint32 GetCurrentPhaseIndex() const;
+    void SetCurrentPhaseIndex(uint32 value);
+
+    float32 GetCurrentPhase() const;
+    void SetCurrentPhase(float32 value);
+
 protected:
     struct TransitionKey
     {
@@ -122,6 +128,26 @@ inline bool Motion::IsPhaseEndReached(uint32 phaseIndex) const
 inline bool Motion::IsMarkerReached(const FastName& marker) const
 {
     return reachedMarkersSet.count(marker) > 0;
+}
+
+inline uint32 Motion::GetCurrentPhaseIndex() const
+{
+    return animationCurrPhaseIndex;
+}
+
+inline void Motion::SetCurrentPhaseIndex(uint32 value)
+{
+    animationCurrPhaseIndex = value;
+}
+
+inline float32 Motion::GetCurrentPhase() const
+{
+    return animationPhase;
+}
+
+inline void Motion::SetCurrentPhase(float32 value)
+{
+    animationPhase = value;
 }
 
 } //ns

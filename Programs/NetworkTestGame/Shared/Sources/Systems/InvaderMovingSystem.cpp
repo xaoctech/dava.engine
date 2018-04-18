@@ -123,7 +123,9 @@ void InvaderMovingSystem::ApplyDigitalActions(Entity* entity, const Vector<FastN
     if (!vec.IsZero())
     {
         TransformComponent* transComp = entity->GetComponent<TransformComponent>();
-        transComp->SetLocalTransform(transComp->GetPosition() + vec, transComp->GetRotation(), Vector3(1.0, 1.0, 1.0));
+        const Transform& lt = transComp->GetLocalTransform();
+        transComp->SetLocalTransform(Transform(
+                lt.GetTranslation() + vec, Vector3(1.0, 1.0, 1.0), lt.GetRotation()));
     }
 }
 
@@ -140,7 +142,9 @@ void InvaderMovingSystem::ApplyAnalogActions(Entity* entity, const AnalogActions
             Vector2 newPos2 = GetWorldTeleportPosition(analogPos);
             Vector3 newPos(newPos2.x, newPos2.y, 0.f);
             TransformComponent* transComp = entity->GetComponent<TransformComponent>();
-            transComp->SetLocalTransform(newPos, transComp->GetRotation(), transComp->GetScale());
+            const Transform& lt = transComp->GetLocalTransform();
+            transComp->SetLocalTransform(Transform(
+                    newPos, lt.GetScale(), lt.GetRotation()));
         }
     }
 }

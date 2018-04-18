@@ -11,6 +11,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/SkeletonAnimation/JointTransform.h"
+#include "Scene3D/SkeletonAnimation/SkeletonUtils.h"
 #include "Scene3D/Systems/EventSystem.h"
 
 #define RE_DEBUG_PROCESS_TEST_SKINNED_MESHES 0
@@ -21,7 +22,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonSystem)
 {
     ReflectionRegistrator<SkeletonSystem>::Begin()[M::Tags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &SkeletonSystem::Process)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::NORMAL, 4.0f)]
+    .Method("ProcessFixed", &SkeletonSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 1.2f)]
     .End();
 }
 
@@ -73,7 +74,7 @@ void SkeletonSystem::ImmediateEvent(Component* component, uint32 event)
         RebuildSkeleton(static_cast<SkeletonComponent*>(component));
 }
 
-void SkeletonSystem::Process(float32 timeElapsed)
+void SkeletonSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_SKELETON_SYSTEM);
 
@@ -94,7 +95,7 @@ void SkeletonSystem::Process(float32 timeElapsed)
 
             if (component->startJoint != SkeletonComponent::INVALID_JOINT_INDEX)
             {
-                UpdateJointTransforms(component);
+                SkeletonUtils::UpdateJointTransforms(component);
                 RenderObject* ro = GetRenderObject(entities[i]);
                 if (ro != nullptr && (RenderObject::TYPE_SKINNED_MESH == ro->GetType()))
                 {
@@ -114,7 +115,7 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
         SkeletonComponent* component = GetSkeletonComponent(entity);
         if (component->drawSkeleton)
         {
-            const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldTransform();
+            const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldMatrix();
 
             Vector<Vector3> positions(component->GetJointsCount());
             for (uint32 i = 0; i < component->GetJointsCount(); ++i)
@@ -144,51 +145,6 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
             }
         }
     }
-}
-
-void SkeletonSystem::UpdateJointTransforms(SkeletonComponent* skeleton)
-{
-    DVASSERT(!skeleton->configUpdated);
-
-    uint32 count = skeleton->GetJointsCount();
-    for (uint32 currJoint = skeleton->startJoint; currJoint < count; ++currJoint)
-    {
-        uint32 parentJoint = skeleton->jointInfo[currJoint] & SkeletonComponent::INFO_PARENT_MASK;
-        if ((skeleton->jointInfo[currJoint] & SkeletonComponent::FLAG_MARKED_FOR_UPDATED) || ((parentJoint != SkeletonComponent::INVALID_JOINT_INDEX) && (skeleton->jointInfo[parentJoint] & SkeletonComponent::FLAG_UPDATED_THIS_FRAME)))
-        {
-            //calculate object space transforms
-            if (parentJoint == SkeletonComponent::INVALID_JOINT_INDEX) //root
-            {
-                skeleton->objectSpaceTransforms[currJoint] = skeleton->localSpaceTransforms[currJoint]; //just copy
-            }
-            else
-            {
-                skeleton->objectSpaceTransforms[currJoint] = skeleton->objectSpaceTransforms[parentJoint].AppendTransform(skeleton->localSpaceTransforms[currJoint]);
-            }
-
-            //calculate final transform including bindTransform
-            skeleton->finalTransforms[currJoint] = skeleton->objectSpaceTransforms[currJoint].AppendTransform(skeleton->inverseBindTransforms[currJoint]);
-
-            if (!skeleton->jointsArray[currJoint].bbox.IsEmpty())
-            {
-                skeleton->objectSpaceBoxes[currJoint] = skeleton->objectSpaceTransforms[currJoint].ApplyToAABBox(skeleton->jointsArray[currJoint].bbox);
-            }
-            else
-            {
-                skeleton->objectSpaceBoxes[currJoint].Empty();
-            }
-
-            //  add [was updated]  remove [marked for update]
-            skeleton->jointInfo[currJoint] &= ~SkeletonComponent::FLAG_MARKED_FOR_UPDATED;
-            skeleton->jointInfo[currJoint] |= SkeletonComponent::FLAG_UPDATED_THIS_FRAME;
-        }
-        else
-        {
-            /*  remove was updated  - note that as bones come in descending order we do not care that was updated flag would be cared to next frame*/
-            skeleton->jointInfo[currJoint] &= ~SkeletonComponent::FLAG_UPDATED_THIS_FRAME;
-        }
-    }
-    skeleton->startJoint = SkeletonComponent::INVALID_JOINT_INDEX;
 }
 
 void SkeletonSystem::UpdateSkinnedMesh(SkeletonComponent* skeleton, SkinnedMesh* skinnedMeshObject)

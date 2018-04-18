@@ -17,7 +17,8 @@ using namespace DAVA;
 
 namespace GameServerDetail
 {
-static const int32 MAX_UPDATE_DURATION_US = 4000;
+static const int32 MaxUpdateDurationUs = 4000;
+static const float32 AvgElementWeight = 0.05f;
 }
 
 GameServer::GameServer(uint32 host, uint16 port, uint8 clientsNumber_)
@@ -39,6 +40,7 @@ GameServer::~GameServer()
 
 void GameServer::UpdateConsoleMode()
 {
+    using namespace GameServerDetail;
     int64 delta = 0;
     if (frameTimeUs > 0)
     {
@@ -53,7 +55,7 @@ void GameServer::UpdateConsoleMode()
             SetPoisonPill(4);
 
         Logger::Error("Last frame duration exceeded limits: %lld", delta);
-        delta = 0;
+        delta = NetworkTimeSingleComponent::FrameDurationUs - networkTimeAvgUs;
     }
     {
         DAVA_PROFILER_CPU_SCOPE("while(udpServer.Update())");
@@ -62,6 +64,8 @@ void GameServer::UpdateConsoleMode()
         {
             udpServer.Update();
         }
+        int64 diff = SystemTimer::GetUs() - beginUs;
+        networkTimeAvgUs = AvgElementWeight * diff + (1.f - AvgElementWeight) * networkTimeAvgUs;
     }
     frameTimeUs = SystemTimer::GetUs();
 
@@ -86,7 +90,7 @@ void GameServer::UpdateGUIMode()
     int64 updUs = SystemTimer::GetUs();
     while (!disableNetworkInReplayMode && udpServer.Update())
     {
-        if (SystemTimer::GetUs() - updUs > MAX_UPDATE_DURATION_US)
+        if (SystemTimer::GetUs() - updUs > MaxUpdateDurationUs)
         {
             break;
         }

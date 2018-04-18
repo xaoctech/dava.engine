@@ -176,10 +176,11 @@ void NetworkMovementSystem::OnMovementEntityAdded(Entity* entity)
 {
     NetworkMovementComponent* nmc = entity->GetComponent<NetworkMovementComponent>();
     TransformComponent* tc = entity->GetComponent<TransformComponent>();
+    const Transform& localTransform = tc->GetLocalTransform();
 
     NetworkMovementComponent::MoveState moveState;
-    moveState.translation = tc->GetPosition();
-    moveState.rotation = tc->GetRotation();
+    moveState.translation = localTransform.GetTranslation();
+    moveState.rotation = localTransform.GetRotation();
     moveState.frameId = timeSingleComponent->GetFrameId();
 
     size_t historySize = settings->interpolationFrameOffset + 1;
@@ -208,29 +209,30 @@ void NetworkMovementSystem::ProcessFixed(float32 timeElapsed)
         if (nullptr != nmc)
         {
             TransformComponent* tc = e->GetComponent<TransformComponent>();
+            const Transform& localTransform = tc->GetLocalTransform();
             NetworkMovementComponent::MoveState& lastMoveState = nmc->HistoryBack();
 
             if (!isResimulation)
             {
-                DVASSERT(frameId >= lastMoveState.frameId);
+                //DVASSERT(frameId >= lastMoveState.frameId);
                 if (frameId > lastMoveState.frameId)
                 {
                     // add new changed transform to movement history
                     // it will be used to interpolate between
                     NetworkMovementComponent::MoveState moveState;
-                    moveState.translation = tc->GetPosition();
-                    moveState.rotation = tc->GetRotation();
+                    moveState.translation = localTransform.GetTranslation();
+                    moveState.rotation = localTransform.GetRotation();
                     moveState.frameId = frameId;
                     nmc->HistoryPushBack(std::move(moveState));
 
                     //Logger::Info("%u | history add %f", frameId, tc->GetPosition().y);
                 }
-                else
+                else if (frameId == lastMoveState.frameId)
                 {
                     // position was changed more than once per current frame,
                     // so update it to the last one
-                    lastMoveState.translation = tc->GetPosition();
-                    lastMoveState.rotation = tc->GetRotation();
+                    lastMoveState.translation = localTransform.GetTranslation();
+                    lastMoveState.rotation = localTransform.GetRotation();
 
                     //Logger::Info("%u | history up %f", frameId, lastMoveState.translation.y);
                 }
@@ -259,15 +261,15 @@ void NetworkMovementSystem::ProcessFixed(float32 timeElapsed)
                     // That vector and rotation will be decreased in time
                     // by NetworkMovementSystem.
                     nmc->smoothCorrection.frameId = lastMoveState.frameId;
-                    nmc->smoothCorrection.translation = curSmoothPos - tc->GetPosition();
-                    nmc->smoothCorrection.rotation = curSmoothRotation * tc->GetRotation().GetInverse();
+                    nmc->smoothCorrection.translation = curSmoothPos - localTransform.GetTranslation();
+                    nmc->smoothCorrection.rotation = curSmoothRotation * localTransform.GetRotation().GetInverse();
                     nmc->smoothCorrectionTimeLeft = settings->smoothingTime;
 
                     // if re-simulation happens, interpolation history
                     // has wrong state and shouldn't forget to change it
                     // to the right state
-                    lastMoveState.translation = tc->GetPosition();
-                    lastMoveState.rotation = tc->GetRotation();
+                    lastMoveState.translation = localTransform.GetTranslation();
+                    lastMoveState.rotation = localTransform.GetRotation();
                 }
             }
         }

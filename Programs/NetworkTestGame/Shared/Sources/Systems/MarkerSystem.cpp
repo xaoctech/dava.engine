@@ -57,7 +57,6 @@ void MarkerSystem::SimulateHealthBar(DAVA::Entity* tank)
     Color c(0.0f, 1.0f, 0.0f, 0.5f);
     const HealthComponent* healthComponent = tank->GetComponent<HealthComponent>();
 
-    TransformComponent* trans = bar->GetComponent<TransformComponent>();
     float percentage = healthComponent->GetHealth() / static_cast<float32>(maxHealth);
     float32 z = percentage * maxHealthBarHeight;
 
@@ -91,9 +90,12 @@ void MarkerSystem::SimulateHealthBar(DAVA::Entity* tank)
         c = Color::Blue;
     }
 
-    if (isSpawn || isStun || z != trans->GetScale().z)
+    TransformComponent* trans = bar->GetComponent<TransformComponent>();
+    const Transform& lt = trans->GetLocalTransform();
+    if (isSpawn || isStun || z != lt.GetScale().z)
     {
-        trans->SetLocalTransform(trans->GetPosition(), trans->GetRotation(), Vector3(0.01f, 0.01f, z));
+        trans->SetLocalTransform(Transform(
+                lt.GetTranslation(), Vector3(0.01f, 0.01f, z), lt.GetRotation()));
 
         RenderObject* ro = GetRenderObject(bar);
         ro->GetRenderBatch(0)->GetMaterial()->SetPropertyValue(NMaterialParamName::PARAM_FLAT_COLOR, c.color);
@@ -121,7 +123,8 @@ void MarkerSystem::ProcessFixed(DAVA::float32 timeElapsed)
             position = Vector3(0.5f, 0.f, 1.0f);
         }
 
-        trans->SetLocalTransform(position, trans->GetRotation(), Vector3(0.01f, 0.01f, z));
+        trans->SetLocalTransform(Transform(
+                position, Vector3(0.01f, 0.01f, z), trans->GetLocalTransform().GetRotation()));
         tank->AddNode(bar);
         bar->SetName("HealthBar");
         tankToBar[tank] = bar;

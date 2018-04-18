@@ -51,7 +51,8 @@ void CubesPlayerConnectSystem::CreatePlayer(const DAVA::FastName& token) const
         bigCubeComponent->playerId = playerId;
         playerEntity->AddComponent(bigCubeComponent);
 
-        playerEntity->GetComponent<TransformComponent>()->SetLocalTransform({ -0.5f, 15.0f, 5.f }, {}, Vector3::Zero + 1.f);
+        playerEntity->GetComponent<TransformComponent>()->SetLocalTransform(Transform(
+                { -0.5f, 15.0f, 5.f }, Vector3::Zero + 1.f, {}));
 
         GetScene()->AddNode(playerEntity);
     }

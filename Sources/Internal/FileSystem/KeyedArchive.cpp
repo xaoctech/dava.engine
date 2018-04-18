@@ -227,8 +227,8 @@ bool KeyedArchive::Load(const uint8* data, uint32 size)
 
 bool KeyedArchive::LoadFromYamlFile(const FilePath& pathName)
 {
-    ScopedPtr<YamlParser> parser(YamlParser::Create(pathName));
-    return (parser.get() != nullptr) && LoadFromYamlNode(parser->GetRootNode());
+    RefPtr<YamlParser> parser(YamlParser::Create(pathName));
+    return (parser.Get() != nullptr) && LoadFromYamlNode(parser->GetRootNode());
 }
 
 bool KeyedArchive::LoadFromYamlNode(const YamlNode* rootNode)
@@ -265,10 +265,10 @@ bool KeyedArchive::LoadFromYamlNode(const YamlNode* rootNode)
 
 bool KeyedArchive::SaveToYamlFile(const FilePath& pathName) const
 {
-    ScopedPtr<YamlNode> node(YamlNode::CreateMapNode());
+    RefPtr<YamlNode> node(YamlNode::CreateMapNode());
     node->Set(VariantType::TYPENAME_KEYED_ARCHIVE, VariantType(const_cast<KeyedArchive*>(this)));
 
-    return YamlEmitter::SaveToYamlFile(pathName, node);
+    return YamlEmitter::SaveToYamlFile(pathName, node.Get());
 }
 
 void KeyedArchive::SetBool(const String& key, bool value)

@@ -1,5 +1,8 @@
 #include "Classes/Modification/Private/ModificationData.h"
 
+#include <Math/Transform.h>
+#include <Math/TransformUtils.h>
+
 const char* ModificationData::transformTypeField = "type";
 const char* ModificationData::transformPivotField = "pivot";
 const char* ModificationData::transformInLocalField = "transformInLocal";
@@ -116,13 +119,13 @@ void ModificationData::RecalculateValueFields()
             if (selection.GetSize() == 1)
             {
                 const Selectable& selectedObject = selection.GetFirst();
-                DAVA::Matrix4 localMatrix = selectedObject.GetLocalTransform();
+                const DAVA::Transform& localTransform = selectedObject.GetLocalTransform();
 
                 switch (GetTransformType())
                 {
                 case Selectable::TransformType::Translation:
                 {
-                    DAVA::Vector3 translation = localMatrix.GetTranslationVector();
+                    const DAVA::Vector3& translation = localTransform.GetTranslation();
                     xValue = translation.x;
                     yValue = translation.y;
                     zValue = translation.z;
@@ -130,46 +133,40 @@ void ModificationData::RecalculateValueFields()
                 }
                 case Selectable::TransformType::Rotation:
                 {
-                    DAVA::Vector3 pos, scale, rotate;
-                    if (localMatrix.Decomposition(pos, scale, rotate))
+                    const DAVA::Vector3& rotate = localTransform.GetRotation().GetEuler();
+                    float32 newXValue = DAVA::RadToDeg(rotate.x);
+                    float32 newYValue = DAVA::RadToDeg(rotate.y);
+                    float32 newZValue = DAVA::RadToDeg(rotate.z);
+
+                    auto setValue = [](float32 newValue, Any& value)
                     {
-                        float32 newXValue = DAVA::RadToDeg(rotate.x);
-                        float32 newYValue = DAVA::RadToDeg(rotate.y);
-                        float32 newZValue = DAVA::RadToDeg(rotate.z);
-
-                        auto setValue = [](float32 newValue, Any& value)
+                        if (value.CanGet<float32>())
                         {
-                            if (value.CanGet<float32>())
+                            static const DAVA::float32 eps = 0.001f;
+                            float32 origValue = value.Get<float32>();
+                            if (fabs(origValue - newValue) < eps)
                             {
-                                static const DAVA::float32 eps = 0.001f;
-                                float32 origValue = value.Get<float32>();
-                                if (fabs(origValue - newValue) < eps)
-                                {
-                                    return;
-                                }
-                                if ((180.f - fabs(origValue) < eps) && (180.f - fabs(newValue) < eps))
-                                {
-                                    return;
-                                }
+                                return;
                             }
-                            value = newValue;
-                        };
+                            if ((180.f - fabs(origValue) < eps) && (180.f - fabs(newValue) < eps))
+                            {
+                                return;
+                            }
+                        }
+                        value = newValue;
+                    };
 
-                        setValue(newXValue, xValue);
-                        setValue(newYValue, yValue);
-                        setValue(newZValue, zValue);
-                    }
+                    setValue(newXValue, xValue);
+                    setValue(newYValue, yValue);
+                    setValue(newZValue, zValue);
                     break;
                 }
                 case Selectable::TransformType::Scale:
                 {
-                    DAVA::Vector3 pos, scale, rotate;
-                    if (localMatrix.Decomposition(pos, scale, rotate))
-                    {
-                        xValue = scale.x;
-                        yValue = scale.y;
-                        zValue = scale.z;
-                    }
+                    const DAVA::Vector3& scale = localTransform.GetScale();
+                    xValue = scale.x;
+                    yValue = scale.y;
+                    zValue = scale.z;
                     break;
                 }
                 default:

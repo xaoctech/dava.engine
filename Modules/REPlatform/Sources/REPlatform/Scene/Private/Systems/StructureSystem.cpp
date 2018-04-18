@@ -18,11 +18,12 @@
 
 #include <TArc/Core/Deprecated.h>
 
-#include <Scene3D/Components/ComponentHelpers.h>
-#include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <FileSystem/FileSystem.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/CustomPropertiesComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 namespace DAVA
 {
@@ -325,7 +326,9 @@ void StructureSystem::ReloadInternal(InternalMapping& mapping, const FilePath& n
                     {
                         Entity* before = origEntity->GetParent()->GetNextChild(origEntity);
 
-                        newEntityInstance->SetLocalTransform(origEntity->GetLocalTransform());
+                        TransformComponent* origTC = origEntity->GetComponent<TransformComponent>();
+                        TransformComponent* newTC = newEntityInstance->GetComponent<TransformComponent>();
+                        newTC->SetLocalTransform(origTC->GetLocalTransform());
                         newEntityInstance->SetID(origEntity->GetID());
                         newEntityInstance->SetSceneID(origEntity->GetSceneID());
                         newEntityInstance->SetNotRemovable(origEntity->GetNotRemovable());
@@ -377,9 +380,8 @@ void StructureSystem::Add(const FilePath& newModelPath, const Vector3 pos)
                 entityPos = camPosition + camDirection * bboxSize;
             }
 
-            Matrix4 transform = loadedEntity->GetLocalTransform();
-            transform.SetTranslationVector(entityPos);
-            loadedEntity->SetLocalTransform(transform);
+            TransformComponent* tc = loadedEntity->GetComponent<TransformComponent>();
+            tc->SetLocalTranslation(entityPos);
 
             sceneEditor->Exec(std::unique_ptr<Command>(new EntityAddCommand(loadedEntity, sceneEditor)));
 

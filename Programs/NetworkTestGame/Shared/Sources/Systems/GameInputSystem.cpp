@@ -256,11 +256,13 @@ void GameInputSystem::ApplyDigitalActions(Entity* entity,
 
         if (!vec.IsZero() || angle != 0.0f)
         {
-            Quaternion rotation = transComp->GetRotation();
-            Vector3 position = transComp->GetPosition();
+            const Transform& transform = transComp->GetLocalTransform();
+            Quaternion rotation = transform.GetRotation();
+            Vector3 position = transform.GetTranslation();
             rotation *= Quaternion::MakeRotation(Vector3::UnitZ, -angle);
             position += rotation.ApplyToVectorFast(vec);
-            transComp->SetLocalTransform(position, rotation, Vector3(1.0, 1.0, 1.0));
+            transComp->SetLocalTransform(Transform(
+                    position, Vector3(1.0, 1.0, 1.0), rotation));
         }
     }
     
@@ -352,11 +354,13 @@ void GameInputSystem::ApplyAnalogActions(Entity* entity,
                 float32 angle = ROT_SPEED * duration * analogPos.x;
 
                 TransformComponent* transComp = entity->GetComponent<TransformComponent>();
-                Quaternion rotation = transComp->GetRotation();
-                Vector3 position = transComp->GetPosition();
+                const Transform& transform = transComp->GetLocalTransform();
+                Quaternion rotation = transform.GetRotation();
+                Vector3 position = transform.GetTranslation();
                 rotation *= Quaternion::MakeRotation(Vector3::UnitZ, -angle);
                 position += rotation.ApplyToVectorFast(vec);
-                transComp->SetLocalTransform(position, rotation, Vector3(1.0, 1.0, 1.0));
+                transComp->SetLocalTransform(Transform(
+                        position, Vector3(1.0, 1.0, 1.0), rotation));
             }
         }
         else if (action.first.actionId == TELEPORT)
@@ -367,7 +371,9 @@ void GameInputSystem::ApplyAnalogActions(Entity* entity,
                 Vector2 newPos2 = GetWorldTeleportPosition(analogPos);
                 Vector3 newPos(newPos2.x, newPos2.y, 0.f);
                 TransformComponent* transComp = entity->GetComponent<TransformComponent>();
-                transComp->SetLocalTransform(newPos, transComp->GetRotation(), transComp->GetScale());
+                const Transform& transform = transComp->GetLocalTransform();
+                transComp->SetLocalTransform(Transform(
+                        newPos, transform.GetScale(),transform.GetRotation()));
             }
         }
     }

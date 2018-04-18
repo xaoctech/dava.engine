@@ -6,7 +6,9 @@
 #include <Debug/DVAssert.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/TextComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Utils/Utils.h>
+#include <Math/Transform.h>
 
 EditorTextSystem::EditorTextSystem(DAVA::Scene* scene)
     : SceneSystem(scene, DAVA::ComponentUtils::MakeMask<DAVA::TextComponent>())
@@ -54,7 +56,8 @@ void EditorTextSystem::Draw()
             }
         }
 
-        Vector3 position = entity->GetWorldTransform().GetTranslationVector();
+        TransformComponent* transform = entity->GetComponent<TransformComponent>();
+        Vector3 position = transform->GetWorldTransform().GetTranslation();
         Vector2 position2D = drawSystem->ToPos2d(position);
         position2D.y += textHeight / 2.f;
 

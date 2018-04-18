@@ -249,10 +249,10 @@ bool UIPackageLoader::LoadControlByName(const FastName& name, AbstractUIPackageB
 
 void UIPackageLoader::LoadStyleSheets(const YamlNode* styleSheetsNode, AbstractUIPackageBuilder* builder)
 {
-    const Vector<YamlNode*>& styleSheetMap = styleSheetsNode->AsVector();
+    const auto& styleSheetMap = styleSheetsNode->AsVector();
     const UIStyleSheetPropertyDataBase* propertyDB = UIStyleSheetPropertyDataBase::Instance();
 
-    for (YamlNode* styleSheetNode : styleSheetMap)
+    for (const auto& styleSheetNode : styleSheetMap)
     {
         const YamlNode* properties = styleSheetNode->Get("properties");
 
@@ -729,9 +729,9 @@ void UIPackageLoader::ProcessLegacyStaticText(const ReflectedType* ref, const Ya
                     if (fittingNode)
                     {
                         Any res;
-                        const Vector<YamlNode*>& fittingsFlags = fittingNode->AsVector();
+                        const auto& fittingsFlags = fittingNode->AsVector();
                         bool enlarge = false, reduce = false, points = false;
-                        for (YamlNode* flag : fittingsFlags)
+                        for (const auto& flag : fittingsFlags)
                         {
                             String flagName = flag->AsString();
                             enlarge = enlarge || (flagName == "ENLARGE");

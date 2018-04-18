@@ -55,6 +55,21 @@ public:
     const Vector<std::pair<FastName, FastName>>& GetReachedMarkers() const;
     const Vector<FastName>& GetEndedMotions() const;
 
+    uint32 GetMotionCount() const;
+    const Motion* GetMotion(uint32 index) const;
+    Motion* GetMotion(uint32 index);
+
+    const Motion* GetCurrentMotion() const;
+    void SetCurrentMotion(Motion* value);
+
+    const Motion* GetNextMotion() const;
+    void SetNextMotion(Motion* value);
+
+    MotionTransition& GetMotionTransition();
+    const MotionTransition& GetMotionTransition() const;
+
+    const Vector<MotionTransitionInfo>& GetTransitions() const;
+
 protected:
     FastName layerID;
     eMotionBlend blendMode = BLEND_COUNT;
@@ -118,6 +133,58 @@ inline const Vector<std::pair<FastName, FastName>>& MotionLayer::GetReachedMarke
 inline const Vector<FastName>& MotionLayer::GetEndedMotions() const
 {
     return endedMotions;
+}
+
+inline uint32 MotionLayer::GetMotionCount() const
+{
+    return motions.size();
+}
+
+inline const Motion* MotionLayer::GetMotion(uint32 index) const
+{
+    DVASSERT(index < motions.size());
+    return &motions[index];
+}
+
+inline Motion* MotionLayer::GetMotion(uint32 index)
+{
+    DVASSERT(index < motions.size());
+    return &motions[index];
+}
+
+inline const Motion* MotionLayer::GetCurrentMotion() const
+{
+    return currentMotion;
+}
+
+inline void MotionLayer::SetCurrentMotion(Motion* value)
+{
+    currentMotion = value;
+}
+
+inline const Motion* MotionLayer::GetNextMotion() const
+{
+    return nextMotion;
+}
+
+inline void MotionLayer::SetNextMotion(Motion* value)
+{
+    nextMotion = value;
+}
+
+inline const MotionTransition& MotionLayer::GetMotionTransition() const
+{
+    return motionTransition;
+}
+
+inline MotionTransition& MotionLayer::GetMotionTransition()
+{
+    return motionTransition;
+}
+
+inline const Vector<MotionTransitionInfo>& MotionLayer::GetTransitions() const
+{
+    return transitions;
 }
 
 } //ns

@@ -430,11 +430,11 @@ void QuickEdPackageBuilder::ProcessCustomData(const YamlNode* customDataNode)
 
 void QuickEdPackageBuilder::ProcessGuides(const DAVA::YamlNode* guidesNode)
 {
-    const UnorderedMap<String, YamlNode*>& controlsMap = guidesNode->AsMap();
+    const auto& controlsMap = guidesNode->AsMap();
     for (const auto& controlsMapItem : controlsMap)
     {
         const String& controlName = controlsMapItem.first;
-        YamlNode* allGuidesNode = controlsMapItem.second;
+        YamlNode* allGuidesNode = controlsMapItem.second.Get();
         PackageNode::Guides& guides = allGuides[controlName];
 
         Vector<QuickEdPackageBuilderDetails::GuidesOrientation> orientations = { { "Vertical", &guides[Vector2::AXIS_X] }, { "Horizontal", &guides[Vector2::AXIS_Y] } };
@@ -443,7 +443,7 @@ void QuickEdPackageBuilder::ProcessGuides(const DAVA::YamlNode* guidesNode)
             const YamlNode* guideValuesNode = allGuidesNode->Get(orientation.type);
             if (guideValuesNode != nullptr)
             {
-                const Vector<YamlNode*>& valuesNodes = guideValuesNode->AsVector();
+                const auto& valuesNodes = guideValuesNode->AsVector();
                 PackageNode::AxisGuides* values = orientation.values;
                 if (values->empty() == false)
                 {
@@ -453,7 +453,7 @@ void QuickEdPackageBuilder::ProcessGuides(const DAVA::YamlNode* guidesNode)
                 std::transform(valuesNodes.begin(),
                                valuesNodes.end(),
                                std::back_inserter(*values),
-                               [](YamlNode* node) {
+                               [](const RefPtr<YamlNode>& node) {
                                    return node->AsFloat();
                                });
             }

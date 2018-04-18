@@ -371,7 +371,7 @@ FastName FMODSoundSystem::FindGroupByEvent(const SoundEvent* soundEvent)
 
 void FMODSoundSystem::ParseSFXConfig(const FilePath& configPath)
 {
-    YamlParser* parser = YamlParser::Create(configPath);
+    RefPtr<YamlParser> parser = YamlParser::Create(configPath);
     if (parser)
     {
         YamlNode* rootNode = parser->GetRootNode();
@@ -385,7 +385,6 @@ void FMODSoundSystem::ParseSFXConfig(const FilePath& configPath)
             }
         }
     }
-    SafeRelease(parser);
 }
 
 void FMODSoundSystem::LoadFEV(const FilePath& filePath)

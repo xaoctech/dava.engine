@@ -888,11 +888,11 @@ RefPtr<YamlNode> ProjectData::SerializeToYamlNode() const
 {
     RefPtr<YamlNode> root(YamlNode::CreateMapNode(false));
 
-    YamlNode* headerNode(YamlNode::CreateMapNode(false));
+    RefPtr<YamlNode> headerNode(YamlNode::CreateMapNode(false));
     headerNode->Add("version", CURRENT_PROJECT_FILE_VERSION);
     root->Add("Header", headerNode);
 
-    YamlNode* propertiesNode(YamlNode::CreateMapNode(false));
+    RefPtr<YamlNode> propertiesNode(YamlNode::CreateMapNode(false));
     propertiesNode->Add("ResourceDirectory", resourceDirectory.relative);
     propertiesNode->Add("PluginsDirectory", pluginsDirectory.relative);
 
@@ -909,22 +909,22 @@ RefPtr<YamlNode> ProjectData::SerializeToYamlNode() const
     propertiesNode->Add("TextsDirectory", textsDirectory.relative);
     propertiesNode->Add("DefaultLanguage", defaultLanguage);
 
-    YamlNode* gfxDirsNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
+    RefPtr<YamlNode> gfxDirsNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
     for (const auto& gfxDir : gfxDirectories)
     {
-        YamlNode* gfxDirNode(YamlNode::CreateMapNode(false));
+        RefPtr<YamlNode> gfxDirNode(YamlNode::CreateMapNode(false));
         gfxDirNode->Add("directory", gfxDir.directory.relative);
         gfxDirNode->Add("scale", gfxDir.scale);
         gfxDirsNode->Add(gfxDirNode);
     }
     propertiesNode->Add("GfxDirectories", gfxDirsNode);
 
-    YamlNode* libraryNode(YamlNode::CreateMapNode(false));
+    RefPtr<YamlNode> libraryNode(YamlNode::CreateMapNode(false));
 
-    YamlNode* controlsNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
+    RefPtr<YamlNode> controlsNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
     for (const PinnedControl& pinnedControl : pinnedControls)
     {
-        YamlNode* controlNode(YamlNode::CreateMapNode(false));
+        RefPtr<YamlNode> controlNode(YamlNode::CreateMapNode(false));
         controlNode->Add("package", pinnedControl.packagePath.relative);
         controlNode->Add("control", pinnedControl.controlName);
         if (!pinnedControl.iconPath.relative.empty())
@@ -935,10 +935,10 @@ RefPtr<YamlNode> ProjectData::SerializeToYamlNode() const
     }
     libraryNode->Add("Controls", controlsNode);
 
-    YamlNode* sectionsNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
+    RefPtr<YamlNode> sectionsNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
     for (const LibrarySection& pinnedControl : librarySections)
     {
-        YamlNode* sectionNode(YamlNode::CreateMapNode(false));
+        RefPtr<YamlNode> sectionNode(YamlNode::CreateMapNode(false));
         sectionNode->Add("package", pinnedControl.packagePath.relative);
         if (!pinnedControl.iconPath.relative.empty())
         {
