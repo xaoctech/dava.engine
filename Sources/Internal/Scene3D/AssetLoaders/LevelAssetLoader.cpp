@@ -42,11 +42,9 @@ size_t LevelKeyHash(const Any& v)
     return hashFn(key.path.GetAbsolutePathname());
 }
 
-size_t EntityKeyHash(const Any& v)
+size_t LevelEntityKeyHash(const Any& v)
 {
     const LevelEntity::Key& key = v.Get<LevelEntity::Key>();
-    std::hash<Level*> levelHash;
-    std::hash<uint32> indexHash;
 
     size_t seed;
     HashCombine(seed, key.level);
@@ -200,8 +198,8 @@ void ReadChunkTable(File* file,
                     Asset<Level> level,
                     const AABBox3& worldBounds_)
 {
-    level->loadedChunkGrid = new Level::ChunkGrid(worldBounds_);
-    Level::ChunkGrid& chunkGrid = *level->loadedChunkGrid;
+    level->loadedChunkGrid.SetWorldBounds(worldBounds_);
+    Level::ChunkGrid& chunkGrid = level->loadedChunkGrid;
 
     Level::ChunkBounds worldChunkBounds;
     uint32 chunkXCount;
@@ -280,7 +278,7 @@ void ReadAllEntities(File* file, Asset<Level> level, SerializationContext* seria
 LevelAssetLoader::LevelAssetLoader()
 {
     AnyHash<Level::Key>::Register(&LevelAssetLoaderDetail::LevelKeyHash);
-    AnyHash<LevelEntity::Key>::Register(&LevelAssetLoaderDetail::EntityKeyHash);
+    AnyHash<LevelEntity::Key>::Register(&LevelAssetLoaderDetail::LevelEntityKeyHash);
 }
 
 AssetFileInfo LevelAssetLoader::GetAssetFileInfo(const Any& assetKey) const
@@ -391,7 +389,8 @@ bool LevelAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode 
     Vector<AABBox3> entitiesBoxes;
     AABBox3 worldBounds = LevelAssetLoaderDetail::ComputeEntitiesBoxesAndWorldExtents(scene, entitiesBoxes);
 
-    Level::ChunkGrid chunkGrid(worldBounds);
+    Level::ChunkGrid chunkGrid;
+    chunkGrid.SetWorldBounds(worldBounds);
     currentHeader.worldBounds = worldBounds;
 
     file->Write(&currentHeader, sizeof(Level::Header));
@@ -404,7 +403,8 @@ bool LevelAssetLoader::SaveAssetFromData(const Any& data, File* file, eSaveMode 
 
 Vector<const Type*> LevelAssetLoader::GetAssetKeyTypes() const
 {
-    return Vector<const Type*>{ Type::Instance<Level::Key>(), Type::Instance<LevelEntity::Key>() };
+    return Vector<const Type*>{ Type::Instance<Level::Key>(),
+                                Type::Instance<LevelEntity::Key>() };
 }
 
 Vector<String> LevelAssetLoader::GetDependsOnFiles(const AssetBase* asset) const

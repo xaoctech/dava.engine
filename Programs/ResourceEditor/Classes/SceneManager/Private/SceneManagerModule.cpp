@@ -784,8 +784,19 @@ void SceneManagerModule::CreateNewScene(DAVA::SceneData::eEditMode mode)
     std::unique_ptr<SceneData> sceneData = std::make_unique<SceneData>();
 
     DAVA::FilePath scenePath = QString("%1 %2.%3").arg(newSceneName).arg(++newSceneCounter).arg(newSceneName.toLower()).toStdString();
-    sceneData->scene = OpenSceneImpl(scenePath, sceneData->mode);
+
     sceneData->mode = mode;
+    sceneData->scene.ConstructInplace();
+    sceneData->scene->SetScenePath(scenePath);
+
+    if (sceneData->mode == SceneData::Level)
+    {
+        LevelControllerSystem* system = new LevelControllerSystem(sceneData->scene.Get());
+        system->CreateLevel();
+        sceneData->scene->AddSystem(system);
+    }
+
+    sceneData->scene->EnableEditorSystems();
 
     CreateSceneProperties(sceneData.get(), true);
     DAVA::Vector<std::unique_ptr<DAVA::TArcDataNode>> initialData;
@@ -1396,19 +1407,19 @@ DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::F
 {
     using namespace DAVA;
 
-    DAVA::RefPtr<SceneEditor2> scene(new SceneEditor2());
+    RefPtr<SceneEditor2> scene(new SceneEditor2());
     FilePath newScenePath = scenePath;
 
     ContextAccessor* accessor = GetAccessor();
-    const DAVA::EngineContext* engineCtx = accessor->GetEngineContext();
+    const EngineContext* engineCtx = accessor->GetEngineContext();
 
     if (engineCtx->fileSystem->Exists(scenePath))
     {
         if (scenePath.GetExtension() == ".sc2")
         {
             newScenePath.ReplaceExtension(".level");
-            DAVA::SceneFileV2::eError sceneWasLoaded = scene->LoadScene(scenePath);
-            if (sceneWasLoaded != DAVA::SceneFileV2::ERROR_NO_ERROR)
+            SceneFileV2::eError sceneWasLoaded = scene->LoadScene(scenePath);
+            if (sceneWasLoaded != SceneFileV2::ERROR_NO_ERROR)
             {
                 ModalMessageParams params;
                 params.buttons = ModalMessageParams::Ok;
@@ -1419,7 +1430,7 @@ DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::F
             }
             else
             {
-                DAVA::SceneFileConverter::ConvertSceneToLevelFormat(scene.Get(), scenePath.GetDirectory());
+                SceneFileConverter::ConvertSceneToLevelFormat(scene.Get(), scenePath.GetDirectory());
                 scene->SetLoaded(false);
                 scene->SetChanged();
             }
@@ -1429,7 +1440,7 @@ DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::F
         else if (scenePath.GetExtension() == ".level")
         {
             mode = SceneData::Level;
-            auto callbackFn = [waitHandle](DAVA::uint32 loaded, DAVA::uint32 count) {
+            auto callbackFn = [waitHandle](uint32 loaded, uint32 count) {
                 if (waitHandle != nullptr)
                 {
                     if (loaded == 0)

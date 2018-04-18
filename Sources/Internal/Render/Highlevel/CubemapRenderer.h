@@ -22,16 +22,16 @@ public:
     void RenderCubemap(RenderSystem* renderSystem, RenderPass* renderPass, const Vector3& point,
                        const Asset<Texture>& target, const Asset<Texture>& depthStencil, uint32 drawLayersMask);
 
-    void ConvoluteDiffuseCubemap(Asset<Texture>& inputTexture, rhi::HTexture cubemapOutput,
+    void ConvoluteDiffuseCubemap(const Asset<Texture>& inputTexture, rhi::HTexture cubemapOutput,
                                  uint32 outputWidth, uint32 outputHeight, uint32 outputMipLevels);
 
-    void ConvoluteSpecularCubemap(Asset<Texture>& inputTexture, Asset<Texture>& outputTexture, uint32 outputMipLevels);
+    void ConvoluteSpecularCubemap(const Asset<Texture>& inputTexture, const Asset<Texture>& outputTexture, uint32 outputMipLevels);
 
-    void EdgeFilterCubemap(Asset<Texture>& inputTexture, Asset<Texture>& outputTexture, uint32 outputMipLevels);
+    void EdgeFilterCubemap(const Asset<Texture>& inputTexture, const Asset<Texture>& outputTexture, uint32 outputMipLevels);
     void CopyCubemap(const Asset<Texture>& inputTexture, uint32 inputStartMip, uint32 mipCount,
                      const Asset<Texture>& outputTexture, uint32 outputStartMip);
 
-    void ConvoluteSphericalHarmonics(Asset<Texture>& input, rhi::HTexture target);
+    void ConvoluteSphericalHarmonics(const Asset<Texture>& input, rhi::HTexture target);
 
     void InvalidateMaterials();
 

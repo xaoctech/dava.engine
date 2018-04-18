@@ -153,7 +153,7 @@ void CubemapRenderer::RenderFace(RenderSystem* renderSystem, RenderPass* renderP
     renderSystem->SetDrawCamera(oldDrawCamera);
 }
 
-void CubemapRenderer::ConvoluteDiffuseCubemap(Asset<Texture>& inputTexture, rhi::HTexture cubemapOutput, uint32 outputWidth, uint32 outputHeight, uint32 outputMipLevels)
+void CubemapRenderer::ConvoluteDiffuseCubemap(const Asset<Texture>& inputTexture, rhi::HTexture cubemapOutput, uint32 outputWidth, uint32 outputHeight, uint32 outputMipLevels)
 {
     cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);
 
@@ -178,7 +178,7 @@ void CubemapRenderer::ConvoluteDiffuseCubemap(Asset<Texture>& inputTexture, rhi:
     }
 }
 
-void CubemapRenderer::ConvoluteSphericalHarmonics(Asset<Texture>& inputTexture, rhi::HTexture target)
+void CubemapRenderer::ConvoluteSphericalHarmonics(const Asset<Texture>& inputTexture, rhi::HTexture target)
 {
     cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);
     if (cubemapFunctionsMaterial->PreBuildMaterial(SH_DIFFUSE_CONVOLUTION))
@@ -188,7 +188,7 @@ void CubemapRenderer::ConvoluteSphericalHarmonics(Asset<Texture>& inputTexture, 
     }
 }
 
-void CubemapRenderer::ConvoluteSpecularCubemap(Asset<Texture>& inputTexture, Asset<Texture>& outputTexture, uint32 outputMipLevels)
+void CubemapRenderer::ConvoluteSpecularCubemap(const Asset<Texture>& inputTexture, const Asset<Texture>& outputTexture, uint32 outputMipLevels)
 {
     cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);
 
@@ -250,7 +250,7 @@ void CubemapRenderer::ConvoluteSpecularCubemap(Asset<Texture>& inputTexture, Ass
     }
 }
 
-void CubemapRenderer::EdgeFilterCubemap(Asset<Texture>& inputTexture, Asset<Texture>& outputTexture, uint32 outputMipLevels)
+void CubemapRenderer::EdgeFilterCubemap(const Asset<Texture>& inputTexture, const Asset<Texture>& outputTexture, uint32 outputMipLevels)
 {
     if (cubemapFunctionsMaterial->HasLocalTexture(SRC_SAMPLER_NAME))
         cubemapFunctionsMaterial->SetTexture(SRC_SAMPLER_NAME, inputTexture);

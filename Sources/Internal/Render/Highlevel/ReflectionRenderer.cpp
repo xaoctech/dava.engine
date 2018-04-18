@@ -80,7 +80,7 @@ ReflectionRenderer::~ReflectionRenderer()
     SafeRelease(debugDrawProbe);
 }
 
-Asset<Texture> ReflectionRenderer::GetTemporaryFramebuffer()
+const Asset<Texture>& ReflectionRenderer::GetTemporaryFramebuffer()
 {
     if (sharedTextures.temporaryFramebuffer == nullptr)
     {
@@ -96,7 +96,7 @@ Asset<Texture> ReflectionRenderer::GetTemporaryFramebuffer()
     return sharedTextures.temporaryFramebuffer;
 }
 
-Asset<Texture> ReflectionRenderer::GetTemporaryFramebufferDepth()
+const Asset<Texture>& ReflectionRenderer::GetTemporaryFramebufferDepth()
 {
     if (sharedTextures.temporaryFramebufferDepth == nullptr)
     {
@@ -111,7 +111,7 @@ Asset<Texture> ReflectionRenderer::GetTemporaryFramebufferDepth()
     return sharedTextures.temporaryFramebufferDepth;
 }
 
-Asset<Texture> ReflectionRenderer::GetDownsampledFramebuffer()
+const Asset<Texture>& ReflectionRenderer::GetDownsampledFramebuffer()
 {
     if (sharedTextures.downsampledFramebuffer == nullptr)
     {
@@ -120,7 +120,7 @@ Asset<Texture> ReflectionRenderer::GetDownsampledFramebuffer()
     return sharedTextures.downsampledFramebuffer;
 }
 
-Asset<Texture> ReflectionRenderer::GetGlobalProbeSpecularConvolution()
+const Asset<Texture>& ReflectionRenderer::GetGlobalProbeSpecularConvolution()
 {
     if (sharedTextures.globalProbeSpecularConvolution == nullptr)
     {

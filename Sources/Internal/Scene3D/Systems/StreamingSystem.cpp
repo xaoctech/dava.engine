@@ -15,7 +15,7 @@ StreamingSystem::StreamingSystem(Scene* scene)
  */
 //void StreamingSystem::RequestGlobalChunk()
 //{
-//    Level::Chunk* chunk = &level->loadedChunkGrid->specialStreamingSettingsChunk;
+//    Level::Chunk* chunk = &level->loadedChunkGrid.specialStreamingSettingsChunk;
 //
 //    uint32 index = 0;
 //    for (uint32 entityIndex : chunk->entitiesIndices)
@@ -29,8 +29,8 @@ StreamingSystem::StreamingSystem(Scene* scene)
 void StreamingSystem::ChunkBecomeVisible(const Level::ChunkCoord& chunkCoord)
 {
     const Asset<Level>& level = GetLoadedLevel();
-    uint32 chunkAddress = level->loadedChunkGrid->GetChunkAddress(chunkCoord);
-    Level::Chunk* chunk = level->loadedChunkGrid->GetChunk(chunkAddress);
+    uint32 chunkAddress = level->loadedChunkGrid.GetChunkAddress(chunkCoord);
+    Level::Chunk* chunk = level->loadedChunkGrid.GetChunk(chunkAddress);
     DVASSERT(chunk != nullptr);
 
     if (chunk->state == Level::Chunk::STATE_NOT_REQUESTED)
@@ -50,8 +50,8 @@ void StreamingSystem::ChunkBecomeVisible(const Level::ChunkCoord& chunkCoord)
 void StreamingSystem::ChunkBecomeInvisible(const Level::ChunkCoord& chunkCoord)
 {
     const Asset<Level>& level = GetLoadedLevel();
-    uint32 chunkAddress = level->loadedChunkGrid->GetChunkAddress(chunkCoord);
-    Level::Chunk* chunk = level->loadedChunkGrid->GetChunk(chunkAddress);
+    uint32 chunkAddress = level->loadedChunkGrid.GetChunkAddress(chunkCoord);
+    Level::Chunk* chunk = level->loadedChunkGrid.GetChunk(chunkAddress);
     DVASSERT(chunk != nullptr);
 
     if (chunk->state == Level::Chunk::STATE_REQUESTED)

@@ -50,50 +50,100 @@ Level::Level(const Any& assetKey)
 {
 }
 
-Level::~Level()
+Level::Chunk::Chunk(const Level::Chunk& other)
+    : entitiesIndices(other.entitiesIndices)
+    , entitiesLoaded(other.entitiesLoaded)
+    , state(other.state)
+    , visitedLastFrameIndex(other.visitedLastFrameIndex)
 {
-    SafeDelete(loadedChunkGrid);
 }
 
-Level::ChunkGrid::ChunkGrid(const AABBox3& worldBounds_)
-    : worldBounds(worldBounds_)
+Level::Chunk::Chunk(Level::Chunk&& other)
 {
-    Vector3 size = worldBounds.GetSize();
+    std::swap(entitiesIndices, other.entitiesIndices);
+    std::swap(entitiesLoaded, other.entitiesLoaded);
+    state = other.state;
+    visitedLastFrameIndex = other.visitedLastFrameIndex;
+}
 
+Level::Chunk& Level::Chunk::operator=(const Level::Chunk& other)
+{
+    entitiesIndices = other.entitiesIndices;
+    entitiesLoaded = other.entitiesLoaded;
+    state = other.state;
+    visitedLastFrameIndex = other.visitedLastFrameIndex;
+    return *this;
+}
+
+Level::Chunk& Level::Chunk::operator=(Level::Chunk&& other)
+{
+    entitiesIndices = std::move(other.entitiesIndices);
+    entitiesLoaded = std::move(other.entitiesLoaded);
+    state = other.state;
+    visitedLastFrameIndex = other.visitedLastFrameIndex;
+    return *this;
+}
+
+void Level::ChunkGrid::SetWorldBounds(const AABBox3& newWorldBounds)
+{
+    if (worldBounds.IsInside(newWorldBounds) == true)
+    {
+        return;
+    }
+
+    Map<Level::ChunkCoord, Chunk> chunks;
+    for (int32 y = worldChunkBounds.min.y; y <= worldChunkBounds.max.y; ++y)
+    {
+        for (int32 x = worldChunkBounds.min.x; x <= worldChunkBounds.max.x; ++x)
+        {
+            Level::ChunkCoord coord(x, y);
+            Level::Chunk* chunk = GetChunk(coord);
+            DVASSERT(chunk != nullptr);
+
+            chunks[coord] = std::move(*chunk);
+        }
+    }
+
+    worldBounds = newWorldBounds;
     worldChunkBounds = ProjectBoxOnGrid(worldBounds);
 
     chunkXCount = worldChunkBounds.max.x - worldChunkBounds.min.x + 1;
     chunkYCount = worldChunkBounds.max.y - worldChunkBounds.min.y + 1;
 
     chunkData.resize(chunkXCount * chunkYCount);
+
+    for (auto& node : chunks)
+    {
+        Level::Chunk* chunk = GetChunk(node.first);
+        if (chunk != nullptr)
+        {
+            *chunk = std::move(node.second);
+        }
+    }
 }
 
-void Level::ChunkGrid::SetWorldBounds(const AABBox3& newWorldBounds)
-{
-}
-
-Level::ChunkBounds Level::ChunkGrid::ProjectBoxOnGrid(const AABBox3& entityBox)
+Level::ChunkBounds Level::ChunkGrid::ProjectBoxOnGrid(const AABBox3& entityBox) const
 {
     ChunkBounds bounds;
 
-    bounds.min.x = (int32)(entityBox.min.x / chunkSize);
-    bounds.min.y = (int32)(entityBox.min.y / chunkSize);
+    bounds.min.x = (int32)(std::floor(entityBox.min.x / chunkSize));
+    bounds.min.y = (int32)(std::floor(entityBox.min.y / chunkSize));
 
-    bounds.max.x = (int32)(entityBox.max.x / chunkSize);
-    bounds.max.y = (int32)(entityBox.max.y / chunkSize);
+    bounds.max.x = (int32)(std::floor(entityBox.max.x / chunkSize));
+    bounds.max.y = (int32)(std::floor(entityBox.max.y / chunkSize));
 
     return bounds;
 }
 
-Level::ChunkCoord Level::ChunkGrid::GetChunkCoord(const Vector3& position)
+Level::ChunkCoord Level::ChunkGrid::GetChunkCoord(const Vector3& position) const
 {
     ChunkCoord coord;
-    coord.x = (int32)(position.x / chunkSize);
-    coord.y = (int32)(position.y / chunkSize);
+    coord.x = (int32)(std::floor(position.x / chunkSize));
+    coord.y = (int32)(std::floor(position.y / chunkSize));
     return coord;
 }
 
-uint32 Level::ChunkGrid::GetChunkAddress(const ChunkCoord& coord)
+uint32 Level::ChunkGrid::GetChunkAddress(const ChunkCoord& coord) const
 {
     uint32 address = (coord.y - worldChunkBounds.min.y) * chunkXCount + (coord.x - worldChunkBounds.min.x);
     return address;

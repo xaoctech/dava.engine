@@ -11,6 +11,7 @@
 #include <Render/Highlevel/Light.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Components/StreamingSettingsComponent.h>
 #include <Scene3D/Entity.h>
 
 namespace DAVA
@@ -26,6 +27,7 @@ EditorLightSystem::EditorLightSystem(Scene* scene)
     cameraLight->SetLocked(true);
     cameraLight->SetName(FastName(ResourceEditor::EDITOR_CAMERA_LIGHT));
     cameraLight->AddComponent(new LightComponent(light));
+    cameraLight->AddComponent(new StreamingSettingsComponent());
 
     if (isEnabled)
     {

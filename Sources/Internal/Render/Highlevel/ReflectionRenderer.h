@@ -40,7 +40,7 @@ public:
 
     void SetDebugDrawProbe(ReflectionProbe* probe);
 
-    Asset<Texture> GetGlobalProbeSpecularConvolution();
+    const Asset<Texture>& GetGlobalProbeSpecularConvolution();
 
 private:
     struct SphericalHarmonicsUpdate
@@ -86,9 +86,9 @@ private:
     void RenderReflectionProbe(ReflectionProbe* probe);
     void DrawDebugInfo();
 
-    Asset<Texture> GetTemporaryFramebuffer();
-    Asset<Texture> GetTemporaryFramebufferDepth();
-    Asset<Texture> GetDownsampledFramebuffer();
+    const Asset<Texture>& GetTemporaryFramebuffer();
+    const Asset<Texture>& GetTemporaryFramebufferDepth();
+    const Asset<Texture>& GetDownsampledFramebuffer();
 
 private:
     RenderSystem* renderSystem = nullptr;

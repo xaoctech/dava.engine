@@ -29,7 +29,6 @@ public:
     };
 
     Level(const Any& assetKey);
-    ~Level();
 
     /*
         Targets: up to 4 millions of objects.
@@ -68,6 +67,14 @@ public:
             STATE_NOT_REQUESTED,
             STATE_REQUESTED,
         };
+
+        Chunk() = default;
+
+        Chunk(const Chunk& other);
+        Chunk(Chunk&& other);
+
+        Chunk& operator=(const Chunk& other);
+        Chunk& operator=(Chunk&& other);
 
         Vector<uint32> entitiesIndices;
         Vector<Asset<LevelEntity>> entitiesLoaded;
@@ -109,8 +116,8 @@ public:
 
     struct ChunkBounds
     {
-        ChunkCoord min;
-        ChunkCoord max;
+        ChunkCoord min = ChunkCoord(0, 0);
+        ChunkCoord max = ChunkCoord(-1, -1);
 
         bool operator==(const ChunkBounds& other) const
         {
@@ -137,15 +144,15 @@ public:
     struct ChunkGrid
     {
         const float32 chunkSize = 100.0f; // 100x100 square meters
-        ChunkGrid(const AABBox3& worldBounds);
+        ChunkGrid() = default;
 
         void SetWorldBounds(const AABBox3& newWorldBounds);
 
-        uint32 GetChunkAddress(const ChunkCoord& coord);
+        uint32 GetChunkAddress(const ChunkCoord& coord) const;
         Chunk* GetChunk(uint32 address);
         Chunk* GetChunk(const ChunkCoord& coord);
-        ChunkBounds ProjectBoxOnGrid(const AABBox3& entityBox);
-        ChunkCoord GetChunkCoord(const Vector3& position);
+        ChunkBounds ProjectBoxOnGrid(const AABBox3& entityBox) const;
+        ChunkCoord GetChunkCoord(const Vector3& position) const;
 
         ChunkBounds worldChunkBounds;
         uint32 chunkXCount = 0;
@@ -156,7 +163,7 @@ public:
     };
 
     // Actual level vars
-    ChunkGrid* loadedChunkGrid = nullptr;
+    ChunkGrid loadedChunkGrid;
     Vector<EntityInfo> loadedInfoArray;
     UnorderedMap<uint32, Entity*> entitiesAddedToScene;
     RefPtr<File> levelFile;

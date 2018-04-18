@@ -25,6 +25,7 @@
 #include <Render/RenderHelper.h>
 #include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/StreamingSettingsComponent.h>
 #include <Scene3D/Components/Controller/RotationControllerComponent.h>
 #include <Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h>
 #include <Scene3D/Components/Controller/WASDControllerComponent.h>
@@ -509,6 +510,7 @@ void SceneCameraSystem::CreateDebugCameras()
         topCameraEntity->AddComponent(new CameraComponent(topCamera));
         topCameraEntity->AddComponent(new WASDControllerComponent());
         topCameraEntity->AddComponent(new RotationControllerComponent());
+        topCameraEntity->AddComponent(new StreamingSettingsComponent());
         if (scene->GetChildrenCount() > 0)
         {
             scene->InsertBeforeNode(topCameraEntity, scene->GetChild(0));

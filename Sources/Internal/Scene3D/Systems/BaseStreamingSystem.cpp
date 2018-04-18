@@ -39,10 +39,10 @@ void BaseStreamingSystem::Process(float32 timeElapsed)
         Vector3 movementDirection = camera->GetPosition() - cameraPosition;
         cameraPosition = camera->GetPosition();
 
-        Level::ChunkCoord currentCameraPosInChunk = level->loadedChunkGrid->GetChunkCoord(cameraPosition);
+        Level::ChunkCoord currentCameraPosInChunk = level->loadedChunkGrid.GetChunkCoord(cameraPosition);
 
         float32 visibilityRadiusMeters = 200.0f; // 1000 meters visibility
-        int32 chunkVisibilityRadius = 5; //(visibilityRadiusMeters / loadedChunkGrid->chunkSize) / 2;
+        int32 chunkVisibilityRadius = 5; //(visibilityRadiusMeters / loadedChunkGrid.chunkSize) / 2;
 
         if (previousCameraPos != currentCameraPosInChunk)
         {
@@ -50,20 +50,17 @@ void BaseStreamingSystem::Process(float32 timeElapsed)
 
             std::queue<Level::ChunkCoord> queue;
             queue.push(currentCameraPosInChunk);
-#if defined(STREAMING_DEBUG_DRAW)
-            currentChunk = currentCameraPosInChunk;
-#endif
-            Level::ChunkGrid* loadedChunkGrid = level->loadedChunkGrid;
+            Level::ChunkGrid& loadedChunkGrid = level->loadedChunkGrid;
 
             while (!queue.empty())
             {
                 Level::ChunkCoord currentPos = queue.front();
                 queue.pop();
 
-                if ((currentPos.x < loadedChunkGrid->worldChunkBounds.min.x)
-                    || (currentPos.x > loadedChunkGrid->worldChunkBounds.max.x)
-                    || (currentPos.y < loadedChunkGrid->worldChunkBounds.min.y)
-                    || (currentPos.y > loadedChunkGrid->worldChunkBounds.max.y))
+                if ((currentPos.x < loadedChunkGrid.worldChunkBounds.min.x)
+                    || (currentPos.x > loadedChunkGrid.worldChunkBounds.max.x)
+                    || (currentPos.y < loadedChunkGrid.worldChunkBounds.min.y)
+                    || (currentPos.y > loadedChunkGrid.worldChunkBounds.max.y))
                 {
                     // Exit from streaming update if we out of streaming area
                     // STREAMING_COMPLETE Should we unload all chunks???
@@ -74,25 +71,19 @@ void BaseStreamingSystem::Process(float32 timeElapsed)
                 distance.x = currentPos.x - currentCameraPosInChunk.x;
                 distance.y = currentPos.y - currentCameraPosInChunk.y;
                 int32 squareDistance = distance.x * distance.x + distance.y * distance.y;
-                uint32 address = loadedChunkGrid->GetChunkAddress(currentPos);
+                uint32 address = loadedChunkGrid.GetChunkAddress(currentPos);
 
-                Level::Chunk* chunk = loadedChunkGrid->GetChunk(address);
+                Level::Chunk* chunk = loadedChunkGrid.GetChunk(address);
                 uint32 globalFrameIndex = Engine::Instance()->GetGlobalFrameIndex();
                 if (chunk->visitedLastFrameIndex != globalFrameIndex)
                 {
                     chunk->visitedLastFrameIndex = globalFrameIndex;
                     if (squareDistance < chunkVisibilityRadius * chunkVisibilityRadius)
                     {
-                        bool inserted = loadedChunks.insert(currentPos).second;
-
-                        if (inserted == true)
-                        {
-                            ChunkBecomeVisible(currentPos);
-                        }
+                        ChunkBecomeVisible(currentPos);
                     }
                     else
                     {
-                        loadedChunks.erase(currentPos);
                         ChunkBecomeInvisible(currentPos);
                     }
 
@@ -101,10 +92,10 @@ void BaseStreamingSystem::Process(float32 timeElapsed)
                         Level::ChunkCoord newPos = currentPos;
                         newPos.x += shifts[direction][0];
                         newPos.y += shifts[direction][1];
-                        if ((newPos.x >= loadedChunkGrid->worldChunkBounds.min.x)
-                            && (newPos.x <= loadedChunkGrid->worldChunkBounds.max.x)
-                            && (newPos.y >= loadedChunkGrid->worldChunkBounds.min.y)
-                            && (newPos.y <= loadedChunkGrid->worldChunkBounds.max.y))
+                        if ((newPos.x >= loadedChunkGrid.worldChunkBounds.min.x)
+                            && (newPos.x <= loadedChunkGrid.worldChunkBounds.max.x)
+                            && (newPos.y >= loadedChunkGrid.worldChunkBounds.min.y)
+                            && (newPos.y <= loadedChunkGrid.worldChunkBounds.max.y))
                         {
                             queue.push(newPos);
                         }
@@ -114,42 +105,52 @@ void BaseStreamingSystem::Process(float32 timeElapsed)
             previousCameraPos = currentCameraPosInChunk;
         }
 
-#if defined(STREAMING_DEBUG_DRAW)
-        Level::ChunkCoord min = level->loadedChunkGrid->worldChunkBounds.min;
-        Level::ChunkCoord max = level->loadedChunkGrid->worldChunkBounds.max;
-        RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-
-        float32 chunkSize = level->loadedChunkGrid->chunkSize;
-        float32 halfChunkSize = chunkSize * 0.5;
-        for (int32 y = min.y; y <= max.y + 1; ++y)
+        if (drawChunkGrid == true)
         {
-            for (int32 x = min.x; x <= max.x + 1; ++x)
+            Level::ChunkCoord min = level->loadedChunkGrid.worldChunkBounds.min;
+            Level::ChunkCoord max = level->loadedChunkGrid.worldChunkBounds.max;
+            RenderHelper* drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+
+            float32 chunkSize = level->loadedChunkGrid.chunkSize;
+            float32 halfChunkSize = chunkSize * 0.5;
+            for (int32 y = min.y; y <= max.y; ++y)
             {
-                float32 centerX = x * chunkSize + halfChunkSize;
-                float32 centerY = y * chunkSize + halfChunkSize;
-                AABBox3 box(Vector3(centerX, centerY, 0.0), chunkSize);
-
-                Level::ChunkCoord coord(x, y);
-                Color boxColor = Color(0.5, 0.5, 0.5, 0.3);
-                if (coord == currentChunk)
+                for (int32 x = min.x; x <= max.x; ++x)
                 {
-                    boxColor = Color(0.0, 1.0, 0.0, 0.5);
-                }
-                else if (loadedChunks.count(coord) > 0)
-                {
-                    boxColor = Color(0.0, 0.0, 1.0, 0.5);
-                }
+                    float32 centerX = x * chunkSize + halfChunkSize;
+                    float32 centerY = y * chunkSize + halfChunkSize;
+                    AABBox3 box(Vector3(centerX, centerY, 0.0), chunkSize);
 
-                drawer->DrawAABox(box, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
+                    Level::ChunkCoord coord(x, y);
+                    Level::Chunk* chunk = level->loadedChunkGrid.GetChunk(coord);
+                    Color boxColor = Color(0.5, 0.5, 0.5, 0.3);
+                    if (coord == currentCameraPosInChunk)
+                    {
+                        boxColor = Color(0.0, 1.0, 0.0, 0.5);
+                    }
+                    else if (chunk->state == Level::Chunk::STATE_REQUESTED)
+                    {
+                        boxColor = Color(0.0, 0.0, 1.0, 0.5);
+                    }
+
+                    drawer->DrawAABox(box, boxColor, RenderHelper::DRAW_SOLID_DEPTH);
+                }
             }
         }
-#endif
     }
 }
 
 void BaseStreamingSystem::PrepareForRemove()
 {
     UnloadLevel();
+}
+
+void BaseStreamingSystem::CreateLevelImpl()
+{
+    AssetManager* assetManager = GetEngineContext()->assetManager;
+    level = assetManager->CreateAsset<Level>(Level::Key(FilePath("")));
+    previousCameraPos = Level::ChunkCoord(std::numeric_limits<int32>::min(), std::numeric_limits<int32>::min());
+    assetManager->RegisterListener(&entityAssetListener, Type::Instance<LevelEntity>());
 }
 
 void BaseStreamingSystem::LoadLevelImpl(const FilePath& path)
@@ -167,7 +168,7 @@ void BaseStreamingSystem::UnloadLevel()
         return;
     }
 
-    for (Level::Chunk& chunk : level->loadedChunkGrid->chunkData)
+    for (Level::Chunk& chunk : level->loadedChunkGrid.chunkData)
     {
         chunk.entitiesLoaded.clear();
     }
