@@ -2,8 +2,9 @@ cmake_minimum_required (VERSION 3.0)
 
 project ( Server )
 
-set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../../Sources/CMake/Modules/" )
+set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../../Sources/CMake/Modules/" "${CMAKE_CURRENT_LIST_DIR}/../")
 include      ( CMake-common )
+include      ( NetworkTestGame-common )
 
 set ( DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
 
@@ -40,3 +41,9 @@ endif()
 
 setup_main_executable()
 convert_graphics()
+
+if( USE_RESOURCE_SYSTEM )
+    download_resources()
+else()
+    copy_resources()
+endif()

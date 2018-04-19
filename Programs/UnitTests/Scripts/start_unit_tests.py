@@ -200,6 +200,7 @@ while continue_process_stdout:
                         sub_process.send_signal(signal.SIGINT)
                     continue_process_stdout = False
         else:
+            sub_process.wait()
             continue_process_stdout = False
     except IOError as err:
         sys.stdout.write(err.message)

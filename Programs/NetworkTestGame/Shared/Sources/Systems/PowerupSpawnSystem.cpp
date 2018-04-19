@@ -114,7 +114,7 @@ Entity* PowerupSpawnSystem::AddBonusModel(Entity* bonus)
     if (!refBonusModel)
     {
         ScopedPtr<Scene> modelScene(new Scene());
-        SceneFileV2::eError ret = modelScene->LoadScene("~res:/Maps/00_global_content/stones/stn_01_flatstone.sc2");
+        SceneFileV2::eError ret = modelScene->LoadScene("~res:/3d/Maps/00_global_content/stones/stn_01_flatstone.sc2");
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == ret);
         refBonusModel.reset(modelScene->GetEntityByID(1)->Clone());
     }

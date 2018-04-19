@@ -2,8 +2,9 @@ cmake_minimum_required (VERSION 3.0)
 
 project ( Client )
 
-set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../../Sources/CMake/Modules/" )
+set          ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/../../../Sources/CMake/Modules/" "${CMAKE_CURRENT_LIST_DIR}/../" )
 include      ( CMake-common )
+include      ( NetworkTestGame-common )
 
 set ( DAVA_COMPONENTS DAVA_DISABLE_AUTOTESTS )
 
@@ -22,13 +23,18 @@ include_directories   ( "Sources" "${CMAKE_CURRENT_LIST_DIR}/../Shared/Sources")
 
 define_source                  ( SOURCE "Sources" "${CMAKE_CURRENT_LIST_DIR}/../Shared/Sources")
 
-set( MIX_APP_DATA "Data = ${DAVA_ROOT_DIR}/Programs/Data")
-
-if( ANDROID )
-	list( APPEND MIX_APP_DATA "Data = ${CMAKE_CURRENT_LIST_DIR}/../DataAndroid" )
+if( USE_RESOURCE_SYSTEM )
+    set( MIX_APP_DATA   "Data = ${DAVA_ROOT_DIR}/Programs/Data"
+                        "Data = ${CMAKE_CURRENT_LIST_DIR}/../Data" )
 else()
+    set( MIX_APP_DATA    "Data = ${DAVA_ROOT_DIR}/Programs/Data")
+    if( ANDROID )
+	list( APPEND MIX_APP_DATA "Data = ${CMAKE_CURRENT_LIST_DIR}/../DataAndroid" )
+    else()
 	list( APPEND MIX_APP_DATA "Data = ${CMAKE_CURRENT_LIST_DIR}/../Data" )
+    endif()
 endif()
+
 
 set( MACOS_PLIST                ${CMAKE_CURRENT_LIST_DIR}/Platforms/Mac/Info.plist )
 set( IOS_PLISTT                 ${CMAKE_CURRENT_LIST_DIR}/Platforms/Ios/Info.plist )
@@ -58,16 +64,12 @@ if (WIN32)
     set( EXECUTABLE_FLAG WIN32 )
 endif()
 
+
 setup_main_executable()
 convert_graphics()
 
-
-#remove executabled from Data
-if (IOS)
-ADD_CUSTOM_COMMAND( TARGET DATA_COPY_${PROJECT_NAME}  
-                  COMMAND ${CMAKE_COMMAND} -E remove
-                   ${MIX_APP_DIR}/Data/PVRTexToolCLI.exe
-                   ${MIX_APP_DIR}/Data/PVRTexToolCLI
-                )
+if( USE_RESOURCE_SYSTEM )
+    download_resources()
+else()
+    copy_resources()
 endif()
-

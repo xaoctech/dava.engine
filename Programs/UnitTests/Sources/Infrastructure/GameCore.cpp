@@ -67,7 +67,8 @@ String disableTheseTestClasses =
 "AtomicTest "
 "ReflectionTest "
 "UIScriptTest "
-"NetworkRemoteInputSystemTest";
+"NetworkRemoteInputSystemTest "
+"UIDataBindingTest ";
 #endif
 
 bool teamcityOutputEnabled = false; // Flag whether to enable TeamCity output

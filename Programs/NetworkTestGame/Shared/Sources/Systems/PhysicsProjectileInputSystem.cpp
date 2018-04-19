@@ -75,7 +75,7 @@ Entity* PhysicsProjectileInputSystem::CreateProjectileModel() const
     if (nullptr == bulletModel)
     {
         ScopedPtr<Scene> model(new Scene());
-        SceneFileV2::eError err = model->LoadScene("~res:/Sniper_2.sc2");
+        SceneFileV2::eError err = model->LoadScene("~res:/3d/Objects/Sniper_2.sc2");
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
         bulletModel = model->GetEntityByID(1)->GetChild(1)->Clone();
     }

@@ -107,7 +107,7 @@ void MarkerSystem::ProcessFixed(DAVA::float32 timeElapsed)
     for (Entity* tank : pendingEntities)
     {
         ScopedPtr<Scene> model(new Scene(0));
-        SceneFileV2::eError ret = model->LoadScene("~res:/tst.sc2");
+        SceneFileV2::eError ret = model->LoadScene("~res:/3d/Objects/tst.sc2");
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == ret);
         Entity* bar = model->GetEntityByID(1)->Clone();
         RenderObject* ro = GetRenderObject(bar);

@@ -170,12 +170,16 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
     engine.update.Connect(this, [this](float32 frameDelta) { Update(frameDelta, false); });
     engine.backgroundUpdate.Connect(this, [this](float32 frameDelta) { Update(frameDelta, true); });
 
-    GetPrimaryWindow()->update.Connect(this, [this](Window*, float32) {
-        if (profilerEnabled->GetValue().Get<bool>())
-        {
-            DrawProfilerDebugWindow();
-        }
-    });
+    Window* primaryWindow = GetPrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->update.Connect(this, [this](Window*, float32) {
+            if (profilerEnabled->GetValue().Get<bool>())
+            {
+                DrawProfilerDebugWindow();
+            }
+        });
+    }
 
     gestureChecker.debugGestureMatch.Connect([this]() {
         bool isEnabled = profilerEnabled->GetValue().Get<bool>();
@@ -334,7 +338,11 @@ DLCManagerImpl::~DLCManagerImpl()
 
     engine.update.Disconnect(this);
     engine.backgroundUpdate.Disconnect(this);
-    GetPrimaryWindow()->update.Disconnect(this);
+    Window* primaryWindow = GetPrimaryWindow();
+    if (primaryWindow != nullptr)
+    {
+        primaryWindow->update.Disconnect(this);
+    }
 
     ClearResouces();
 }

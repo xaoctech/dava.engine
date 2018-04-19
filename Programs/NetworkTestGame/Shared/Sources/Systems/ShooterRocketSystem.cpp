@@ -294,7 +294,7 @@ Entity* ShooterRocketSystem::GetRocketModel()
     if (nullptr == rocketModel)
     {
         ScopedPtr<Scene> model(new Scene());
-        SceneFileV2::eError err = model->LoadScene("~res:/Rocket.sc2");
+        SceneFileV2::eError err = model->LoadScene("~res:/3d/Objects/Rocket.sc2");
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
         rocketModel = model->GetEntityByID(1)->Clone();
         rocketModel->SetName("RocketModel");

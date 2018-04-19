@@ -486,14 +486,12 @@ inline const Matrix4& Matrix4::operator*=(const Matrix4& m)
     return *this;
 }
 
-//TODO: SERVER_COMPLETE
-void SinCosFast(float angleInRadians, float& sine, float& cosine);
 inline void Matrix4::BuildRotation(const Vector3& r, float32 angleInRadians)
 {
     angleInRadians = -angleInRadians; // simple way to fix rotation dirrection :)
 
-    float32 sinA, cosA;
-    SinCosFast(angleInRadians, sinA, cosA);
+    float32 cosA = std::cos(angleInRadians);
+    float32 sinA = std::sin(angleInRadians);
     Identity();
     _data[0][0] = cosA + (1 - cosA) * r.x * r.x;
     _data[0][1] = (1 - cosA) * r.x * r.y - r.z * sinA;

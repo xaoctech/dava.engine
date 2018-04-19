@@ -61,7 +61,7 @@ void InvaderEntityFillSystem::ProcessFixed(DAVA::float32 timeElapsed)
 
 void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
 {
-    String filePath("~res:/Sniper_2.sc2");
+    String filePath("~res:/3d/Objects/Sniper_2.sc2");
     entity->SetName("Invader");
 
     if (IsServer(this))
@@ -115,7 +115,7 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
             NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
             Logger::Debug("[PlayerEntitySystem::Process] Set player:%d vehicle:%d", netReplComp->GetNetworkPlayerID(), entity->GetID());
             entity->SetName("MyInvader");
-            filePath = "~res:/Sniper_1.sc2";
+            filePath = "~res:/3d/Objects/Sniper_1.sc2";
 
             Camera* camera = new Camera();
             camera->SetUp(Vector3(0.f, 0.f, 1.f));

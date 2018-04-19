@@ -1,7 +1,7 @@
 import sys
 import os
 import shutil
-from subprocess import check_call
+from subprocess import check_call, CalledProcessError
 
 _DF_PATH='/tmp/dava.framework'
 _ROOT_DIR = os.getcwd() + '/../../..'
@@ -16,4 +16,8 @@ script = (
 )
 for cmd in script:
     print cmd
-    check_call(cmd.split())
+    try:
+        check_call(cmd.split())
+    except CalledProcessError as e:
+        print "The following command returns non-zero code (%s):\n\t$>%s" % (e.returncode, ' '.join(e.cmd))
+        sys.exit(e.returncode)
