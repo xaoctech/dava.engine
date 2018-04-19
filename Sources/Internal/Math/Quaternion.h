@@ -313,26 +313,21 @@ inline void Quaternion::GetMatrix(Matrix4* m) const
 inline void Quaternion::Mul(const Quaternion* q2, Quaternion* res) const
 {
     const Quaternion* q1 = this;
-    //    float32 A, B, C, D, E, F, G, H;
-    //
-    //    A = (q1->w + q1->x) * (q2->w + q2->x);
-    //    B = (q1->z - q1->y) * (q2->y - q2->z);
-    //    C = (q1->x - q1->w) * (q2->y + q2->z);
-    //    D = (q1->y + q1->z) * (q2->x - q2->w);
-    //    E = (q1->x + q1->z) * (q2->x + q2->y);
-    //    F = (q1->x - q1->z) * (q2->x - q2->y);
-    //    G = (q1->w + q1->y) * (q2->w - q2->z);
-    //    H = (q1->w - q1->y) * (q2->w + q2->z);
-    //
-    //    res->w = B + (-E - F + G + H) * 0.5f;
-    //    res->x = A - (E + F + G + H) * 0.5f;
-    //    res->y = -C + (E - F + G - H) * 0.5f;
-    //    res->z = -D + (E - F - G + H) * 0.5f;
+    float32 A, B, C, D, E, F, G, H;
 
-    res->x = q1->x * q2->w + q1->y * q2->z - q1->z * q2->y + q1->w * q2->x;
-    res->y = -q1->x * q2->z + q1->y * q2->w + q1->z * q2->x + q1->w * q2->y;
-    res->z = q1->x * q2->y - q1->y * q2->x + q1->z * q2->w + q1->w * q2->z;
-    res->w = -q1->x * q2->x - q1->y * q2->y - q1->z * q2->z + q1->w * q2->w;
+    A = (q1->w + q1->x) * (q2->w + q2->x);
+    B = (q1->z - q1->y) * (q2->y - q2->z);
+    C = (q1->x - q1->w) * (q2->y + q2->z);
+    D = (q1->y + q1->z) * (q2->x - q2->w);
+    E = (q1->x + q1->z) * (q2->x + q2->y);
+    F = (q1->x - q1->z) * (q2->x - q2->y);
+    G = (q1->w + q1->y) * (q2->w - q2->z);
+    H = (q1->w - q1->y) * (q2->w + q2->z);
+
+    res->w = B + (-E - F + G + H) * 0.5f;
+    res->x = A - (E + F + G + H) * 0.5f;
+    res->y = -C + (E - F + G - H) * 0.5f;
+    res->z = -D + (E - F - G + H) * 0.5f;
 }
 
 inline Quaternion& Quaternion::operator*=(const Quaternion& q)

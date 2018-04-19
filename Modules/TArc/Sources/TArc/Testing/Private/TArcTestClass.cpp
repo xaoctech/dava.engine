@@ -1,22 +1,23 @@
+#include "TArc/Core/ControllerModule.h"
 #include "TArc/Testing/TArcTestClass.h"
 #include "TArc/Testing/MockInvoker.h"
-#include "TArc/Core/ControllerModule.h"
 #include "TArc/WindowSubSystem/UI.h"
 
 #include "TArc/SharedModules/SettingsModule/SettingsModule.h"
 #include "TArc/SharedModules/ThemesModule/ThemesModule.h"
 
+#include <Debug/DebuggerDetection.h>
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <Engine/PlatformApiQt.h>
 #include <FileSystem/FileSystem.h>
-#include <Debug/DebuggerDetection.h>
 #include <UnitTests/UnitTests.h>
 
-#include <QTimer>
-#include <QApplication>
-#include <QAbstractEventDispatcher>
 #include <gmock/gmock-spec-builders.h>
+#include <QAbstractEventDispatcher>
+#include <QApplication>
+#include <QTest>
+#include <QTimer>
 
 namespace DAVA
 {
@@ -293,6 +294,17 @@ QList<QWidget*> TArcTestClass::LookupWidget(const WindowKey& wndKey, const QStri
 QWidget* TArcTestClass::GetRenderWidgetTestTarget()
 {
     return GetContextManager()->GetRenderWidget()->findChild<QWidget*>(RenderWidget::BackendWidgetName);
+}
+
+void TArcTestClass::SelectByMouseRect(QWidget* widget, QPoint startPoint, QPoint endPoint)
+{
+    QTest::mousePress(widget, Qt::LeftButton, Qt::KeyboardModifiers(), startPoint);
+    QMouseEvent event((QEvent::MouseMove), endPoint, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    qApp->sendEvent(widget, &event);
+    if (QCursor::pos() != endPoint)
+        QCursor::setPos(endPoint);
+
+    QTest::mouseRelease(widget, Qt::LeftButton, Qt::KeyboardModifiers(), endPoint);
 }
 
 void TArcTestClass::CreateTestedModules()
