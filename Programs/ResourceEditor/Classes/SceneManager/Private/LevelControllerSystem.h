@@ -23,9 +23,12 @@ public:
 
     void Process(DAVA::float32 timeElapsed) override;
 
-    using TLoadingProgressCallback = DAVA::Function<void(DAVA::uint32 /*loaded*/, DAVA::uint32 /*summary count*/)>;
     void CreateLevel();
-    void LoadLevel(const DAVA::FilePath& filepath, const TLoadingProgressCallback& callback);
+    void LoadLevel(const DAVA::FilePath& filepath);
+    using TLoadingProgressCallback = DAVA::Function<void(DAVA::uint32 /*loaded*/, DAVA::uint32 /*summary count*/)>;
+    void LoadEntities(const TLoadingProgressCallback& callback);
+
+    void SetDrawChunksGrid(bool drawChunkGrid);
 
 protected:
     void ChunkBecomeVisible(const DAVA::Level::ChunkCoord& coord) override;
@@ -53,4 +56,8 @@ private:
     DAVA::UnorderedMap<DAVA::Entity*, EntityMappingNode> entityMapping;
     DAVA::UnorderedSet<DAVA::Entity*> globalChunkEntities;
     DAVA::UnorderedSet<DAVA::uint32> freeEntityInfoIndexes;
+
+    DAVA::UnorderedSet<DAVA::Entity*> pendingRechunk;
+
+    bool inLoadingProcess = false;
 };

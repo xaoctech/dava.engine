@@ -88,6 +88,21 @@ public:
     }
 };
 
+class StreamingSettings : public DAVA::SettingsNode
+{
+public:
+    bool drawChunksGrid = false;
+
+private:
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(StreamingSettings, SettingsNode)
+    {
+        DAVA::ReflectionRegistrator<StreamingSettings>::Begin()[DAVA::M::DisplayName("Streaming")]
+        .ConstructorByPointer()
+        .Field("drawChunksGrid", &StreamingSettings::drawChunksGrid)[DAVA::M::DisplayName("Draw chunks grid")]
+        .End();
+    }
+};
+
 DAVA::Any SaveButtonTextFn(const DAVA::Any& value, bool saveAs)
 {
     QString result = "Save";
@@ -119,6 +134,9 @@ SceneManagerModule::SceneManagerModule()
     using namespace DAVA;
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneData);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GlobalSceneSettings);
+
+    using namespace SceneManagerModuleDetail;
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StreamingSettings);
 }
 
 SceneManagerModule::~SceneManagerModule()
@@ -285,6 +303,30 @@ void SceneManagerModule::PostInit()
                                {
                                    recentItems->Truncate();
                                });
+    }
+
+    {
+        FieldDescriptor fieldDescr;
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneManagerModuleDetail::StreamingSettings>();
+        fieldDescr.fieldName = DAVA::FastName("drawChunksGrid");
+
+        fieldBinder->BindField(fieldDescr, [this](const DAVA::Any& v) {
+            if (v.IsEmpty())
+            {
+                return;
+            }
+
+            bool drawChunksGrid = v.Get<bool>();
+
+            GetAccessor()->ForEachContext([drawChunksGrid](const DAVA::DataContext& ctx) {
+                DAVA::SceneData* sceneData = ctx.GetData<DAVA::SceneData>();
+                LevelControllerSystem* levelControllerSystem = sceneData->GetScene()->GetSystem<LevelControllerSystem>();
+                if (levelControllerSystem != nullptr)
+                {
+                    levelControllerSystem->SetDrawChunksGrid(drawChunksGrid);
+                }
+            });
+        });
     }
 
     operations.push_back(std::make_shared<RESimpleFileOperation>(QIcon(), "Add prefab", REFileOperation::eOperationType::IMPORT, "Prefab (*.prefab)", MakeFunction(this, &SceneManagerModule::AddSceneByPath)));
@@ -614,45 +656,43 @@ void SceneManagerModule::CreateSceneActions()
         ui->AddAction(mainWindowKey, menuToolbarPlacementInfo, action);
     }
 
+    // Save level
     {
-      // Save level
-      {
-      QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/savescene.png"), QString("Save level"));
-    makeActionBindable(action, { QKeySequence(Qt::CTRL + Qt::Key_S) });
+        QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/savescene.png"), QString("Save level"));
+        makeActionBindable(action, { QKeySequence(Qt::CTRL + Qt::Key_S) });
 
-    FieldDescriptor fieldDescr;
-    fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-    fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-    action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-        return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
-    });
+        FieldDescriptor fieldDescr;
+        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        });
 
-    fieldDescr.fieldName = DAVA::FastName("editMode");
-    action->SetStateUpdationFunction(QtAction::Text, fieldDescr, DAVA::Bind(&SceneManagerModuleDetail::SaveButtonTextFn, DAVA::_1, false));
+        fieldDescr.fieldName = DAVA::FastName("editMode");
+        action->SetStateUpdationFunction(QtAction::Text, fieldDescr, DAVA::Bind(&SceneManagerModuleDetail::SaveButtonTextFn, DAVA::_1, false));
 
-    connections.AddConnection(action, &QAction::triggered, DAVA::Bind(static_cast<void (SceneManagerModule::*)(bool)>(&SceneManagerModule::SaveScene), this, false));
-    ui->AddAction(mainWindowKey, menuToolbarPlacementInfo, action);
-}
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(static_cast<void (SceneManagerModule::*)(bool)>(&SceneManagerModule::SaveScene), this, false));
+        ui->AddAction(mainWindowKey, menuToolbarPlacementInfo, action);
+    }
 
-// Save level
-{
-    QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/savescene.png"), QString("Save level"));
-    makeActionBindable(action, { QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S) });
+    // Save level as
+    {
+        QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/savescene.png"), QString("Save level as..."));
+        makeActionBindable(action, { QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S) });
 
-    FieldDescriptor fieldDescr;
-    fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
-    fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
-    action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-        return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
-    });
+        FieldDescriptor fieldDescr;
+        fieldDescr.fieldName = DAVA::FastName(SceneData::scenePropertyName);
+        fieldDescr.type = DAVA::ReflectedTypeDB::Get<SceneData>();
+        action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
+            return value.CanCast<SceneData::TSceneType>() && value.Cast<SceneData::TSceneType>().Get() != nullptr;
+        });
 
-    fieldDescr.fieldName = DAVA::FastName("editMode");
-    action->SetStateUpdationFunction(QtAction::Text, fieldDescr, DAVA::Bind(&SceneManagerModuleDetail::SaveButtonTextFn, DAVA::_1, true));
+        fieldDescr.fieldName = DAVA::FastName("editMode");
+        action->SetStateUpdationFunction(QtAction::Text, fieldDescr, DAVA::Bind(&SceneManagerModuleDetail::SaveButtonTextFn, DAVA::_1, true));
 
-    connections.AddConnection(action, &QAction::triggered, DAVA::Bind(static_cast<void (SceneManagerModule::*)(bool)>(&SceneManagerModule::SaveScene), this, true));
-    ui->AddAction(mainWindowKey, menuToolbarPlacementInfo, action);
-}
-}
+        connections.AddConnection(action, &QAction::triggered, DAVA::Bind(static_cast<void (SceneManagerModule::*)(bool)>(&SceneManagerModule::SaveScene), this, true));
+        ui->AddAction(mainWindowKey, menuToolbarPlacementInfo, action);
+    }
 
 // Separator
 {
@@ -793,6 +833,9 @@ void SceneManagerModule::CreateNewScene(DAVA::SceneData::eEditMode mode)
     {
         LevelControllerSystem* system = new LevelControllerSystem(sceneData->scene.Get());
         system->CreateLevel();
+
+        bool drawChunksGrid = GetAccessor()->GetGlobalContext()->GetData<SceneManagerModuleDetail::StreamingSettings>()->drawChunksGrid;
+        system->SetDrawChunksGrid(drawChunksGrid);
         sceneData->scene->AddSystem(system);
     }
 
@@ -972,6 +1015,10 @@ void SceneManagerModule::SaveScene(bool saveAs)
     if (saveAs == true)
     {
         saveAsPath = GetSceneSavePath(data);
+        if (saveAsPath.IsEmpty())
+        {
+            return;
+        }
     }
 
     // if it wasn't, we should create properties holder for it
@@ -1454,9 +1501,13 @@ DAVA::RefPtr<DAVA::SceneEditor2> SceneManagerModule::OpenSceneImpl(const DAVA::F
                 }
             };
             LevelControllerSystem* system = new LevelControllerSystem(scene.Get());
+            system->LoadLevel(scenePath);
             scene->AddSystem(system);
-            system->LoadLevel(scenePath, callbackFn);
+            system->LoadEntities(callbackFn);
             scene->SetLoaded(true);
+
+            bool drawChunksGrid = GetAccessor()->GetGlobalContext()->GetData<SceneManagerModuleDetail::StreamingSettings>()->drawChunksGrid;
+            system->SetDrawChunksGrid(drawChunksGrid);
         }
         else if (scenePath.GetExtension() == ".prefab")
         {

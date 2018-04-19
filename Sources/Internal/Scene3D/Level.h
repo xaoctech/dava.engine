@@ -102,12 +102,12 @@ public:
 
         bool operator<(const ChunkCoord& other) const
         {
-            if (x != other.x)
+            if (y != other.y)
             {
-                return x < other.x;
+                return y < other.y;
             }
 
-            return y < other.y;
+            return x < other.x;
         }
 
         int32 x = 0;
@@ -153,6 +153,7 @@ public:
         Chunk* GetChunk(const ChunkCoord& coord);
         ChunkBounds ProjectBoxOnGrid(const AABBox3& entityBox) const;
         ChunkCoord GetChunkCoord(const Vector3& position) const;
+        bool IsInBounds(const ChunkCoord& coord) const;
 
         ChunkBounds worldChunkBounds;
         uint32 chunkXCount = 0;

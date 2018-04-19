@@ -105,6 +105,12 @@ void Level::ChunkGrid::SetWorldBounds(const AABBox3& newWorldBounds)
     }
 
     worldBounds = newWorldBounds;
+    worldBounds.min.x = std::floor(worldBounds.min.x);
+    worldBounds.min.y = std::floor(worldBounds.min.y);
+    worldBounds.min.z = std::floor(worldBounds.min.z);
+    worldBounds.max.x = std::ceil(worldBounds.max.x);
+    worldBounds.max.y = std::ceil(worldBounds.max.y);
+    worldBounds.max.z = std::ceil(worldBounds.max.z);
     worldChunkBounds = ProjectBoxOnGrid(worldBounds);
 
     chunkXCount = worldChunkBounds.max.x - worldChunkBounds.min.x + 1;
@@ -114,11 +120,13 @@ void Level::ChunkGrid::SetWorldBounds(const AABBox3& newWorldBounds)
 
     for (auto& node : chunks)
     {
-        Level::Chunk* chunk = GetChunk(node.first);
-        if (chunk != nullptr)
+        if (IsInBounds(node.first) == false)
         {
-            *chunk = std::move(node.second);
+            continue;
         }
+        Level::Chunk* chunk = GetChunk(node.first);
+        DVASSERT(chunk != nullptr);
+        *chunk = std::move(node.second);
     }
 }
 
@@ -141,6 +149,14 @@ Level::ChunkCoord Level::ChunkGrid::GetChunkCoord(const Vector3& position) const
     coord.x = (int32)(std::floor(position.x / chunkSize));
     coord.y = (int32)(std::floor(position.y / chunkSize));
     return coord;
+}
+
+bool Level::ChunkGrid::IsInBounds(const ChunkCoord& coord) const
+{
+    bool outOfWorld = coord.x < worldChunkBounds.min.x || coord.x > worldChunkBounds.max.x ||
+    coord.y < worldChunkBounds.min.y || coord.y > worldChunkBounds.max.y;
+
+    return outOfWorld == false;
 }
 
 uint32 Level::ChunkGrid::GetChunkAddress(const ChunkCoord& coord) const

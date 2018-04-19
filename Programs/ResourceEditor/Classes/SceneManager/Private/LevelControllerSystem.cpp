@@ -1,5 +1,7 @@
 #include "Classes/SceneManager/Private/LevelControllerSystem.h"
 
+#include <TArc/Utils/ScopedValueGuard.h>
+
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <Math/AABBox3.h>
@@ -17,13 +19,14 @@ struct ReChunkEntityInfo
 {
     DAVA::Level::ChunkBounds oldBounds;
     DAVA::Level::ChunkBounds newBounds;
+    bool addToGlobal = false;
+    bool removeFromGlobal = false;
 };
 } // namespace LevelControllerSystemDetail
 
 LevelControllerSystem::LevelControllerSystem(DAVA::Scene* scene)
     : BaseStreamingSystem(scene)
 {
-    drawChunkGrid = true;
 }
 
 void LevelControllerSystem::RegisterEntity(DAVA::Entity* entity)
@@ -34,11 +37,12 @@ void LevelControllerSystem::RegisterEntity(DAVA::Entity* entity)
         return;
     }
 
+    SCOPED_VALUE_GUARD(bool, inLoadingProcess, true, void());
+
     Entity* streamedEntity = GetStreamedEntity(entity);
     if (streamedEntity != entity)
     {
-        Vector<Entity*> rechunkEntities{ streamedEntity };
-        RechunkEntities(rechunkEntities);
+        pendingRechunk.insert(streamedEntity);
     }
     else
     {
@@ -101,8 +105,7 @@ void LevelControllerSystem::UnregisterEntity(DAVA::Entity* entity)
     Entity* streamedEntity = GetStreamedEntity(entity);
     if (streamedEntity != entity)
     {
-        Vector<Entity*> rechunkEntities{ streamedEntity };
-        RechunkEntities(rechunkEntities);
+        pendingRechunk.insert(streamedEntity);
     }
     else
     {
@@ -137,16 +140,12 @@ void LevelControllerSystem::UnregisterEntity(DAVA::Entity* entity)
 
 void LevelControllerSystem::RegisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    using namespace DAVA;
-    Vector<Entity*> entities = { entity };
-    RechunkEntities(entities);
+    pendingRechunk.insert(entity);
 }
 
 void LevelControllerSystem::UnregisterComponent(DAVA::Entity* entity, DAVA::Component* component)
 {
-    using namespace DAVA;
-    Vector<Entity*> entities = { entity };
-    RechunkEntities(entities);
+    pendingRechunk.insert(entity);
 }
 
 void LevelControllerSystem::Process(DAVA::float32 timeElapsed)
@@ -159,12 +158,12 @@ void LevelControllerSystem::Process(DAVA::float32 timeElapsed)
     Scene* scene = GetScene();
 
     TransformSingleComponent* tsc = scene->GetSingletonComponent<TransformSingleComponent>();
-    if (tsc->localTransformChanged.empty() == false)
+    pendingRechunk.insert(tsc->localTransformChanged.begin(), tsc->localTransformChanged.end());
+    if (pendingRechunk.empty() == false)
     {
-        Vector<Entity*> transformedEntities = tsc->localTransformChanged;
-        std::sort(transformedEntities.begin(), transformedEntities.end());
-        transformedEntities.erase(std::unique(transformedEntities.begin(), transformedEntities.end()), transformedEntities.end());
+        Vector<Entity*> transformedEntities(pendingRechunk.begin(), pendingRechunk.end());
         RechunkEntities(transformedEntities);
+        pendingRechunk.clear();
     }
     BaseStreamingSystem::Process(timeElapsed);
 }
@@ -174,11 +173,17 @@ void LevelControllerSystem::CreateLevel()
     CreateLevelImpl();
 }
 
-void LevelControllerSystem::LoadLevel(const DAVA::FilePath& filepath, const TLoadingProgressCallback& callback)
+void LevelControllerSystem::LoadLevel(const DAVA::FilePath& filepath)
+{
+    LoadLevelImpl(filepath);
+}
+
+void LevelControllerSystem::LoadEntities(const TLoadingProgressCallback& callback)
 {
     using namespace DAVA;
 
-    LoadLevelImpl(filepath);
+    ScopedValueGuard<bool> guard(inLoadingProcess, true);
+
     Asset<Level> level = GetLoadedLevel();
 
     auto foreachChunk = [](Level* level, const Function<void(Level::Chunk * chunk)>& fn) {
@@ -199,8 +204,9 @@ void LevelControllerSystem::LoadLevel(const DAVA::FilePath& filepath, const TLoa
     AssetManager* assetManager = GetEngineContext()->assetManager;
     auto loadEntities = [&](Level::Chunk* chunk) {
         uint32 index = 0;
-        for (uint32 entityIndex : chunk->entitiesIndices)
+        for (size_t i = 0; i < chunk->entitiesIndices.size(); ++i)
         {
+            uint32 entityIndex = chunk->entitiesIndices[i];
             LevelEntity::Key key(level.get(), entityIndex);
             Asset<LevelEntity> levelEntity = assetManager->GetAsset<LevelEntity>(key, AssetManager::SYNC);
             chunk->entitiesLoaded[index++] = levelEntity;
@@ -222,6 +228,11 @@ void LevelControllerSystem::LoadLevel(const DAVA::FilePath& filepath, const TLoa
     {
         globalChunkEntities.emplace(levelEntity->rootEntity);
     }
+}
+
+void LevelControllerSystem::SetDrawChunksGrid(bool drawChunkGrid_)
+{
+    drawChunkGrid = drawChunkGrid_;
 }
 
 void LevelControllerSystem::ChunkBecomeVisible(const DAVA::Level::ChunkCoord& coord)
@@ -258,8 +269,11 @@ void LevelControllerSystem::ChunkBecomeInvisible(const DAVA::Level::ChunkCoord& 
             if (entity->rootEntity->GetVisible() == true)
             {
                 int32& refCount = visibileInChunkCount[entity];
-                DVASSERT(refCount > 0);
-                --refCount;
+                if (refCount > 0)
+                {
+                    --refCount;
+                }
+
                 if (refCount == 0)
                 {
                     entity->rootEntity->SetVisible(false);
@@ -286,6 +300,9 @@ void LevelControllerSystem::RechunkEntities(DAVA::Vector<DAVA::Entity*>& entitie
     {
         if (entity != nullptr && rechunkEntities.count(entity) == 0)
         {
+            bool addToGlobal = entity->GetComponent<StreamingSettingsComponent>();
+            bool removeFromGlobal = globalChunkEntities.count(entity) > 0;
+
             auto iter = entityMapping.find(entity);
             if (iter == entityMapping.end())
             {
@@ -302,9 +319,10 @@ void LevelControllerSystem::RechunkEntities(DAVA::Vector<DAVA::Entity*>& entitie
 
             Level::ChunkBounds oldBounds = level->loadedChunkGrid.ProjectBoxOnGrid(oldBox);
             Level::ChunkBounds newBounds = level->loadedChunkGrid.ProjectBoxOnGrid(newBox);
-            if (oldBounds != newBounds)
+
+            if (oldBounds != newBounds || addToGlobal != removeFromGlobal)
             {
-                rechunkEntities.emplace(entity, ReChunkEntityInfo{ oldBounds, newBounds });
+                rechunkEntities.emplace(entity, ReChunkEntityInfo{ oldBounds, newBounds, addToGlobal, removeFromGlobal });
             }
         }
     }
@@ -321,16 +339,15 @@ void LevelControllerSystem::RechunkEntities(DAVA::Vector<DAVA::Entity*>& entitie
         Level::ChunkBounds oldBounds = node.second.oldBounds;
         Level::ChunkBounds newBounds = node.second.newBounds;
 
-        Set<Level::ChunkCoord> chunksToRemove;
-        Set<Level::ChunkCoord> chunksToAdd;
-        bool addToGlobal = entity->GetComponent<StreamingSettingsComponent>();
-        bool removeFromGlobal = globalChunkEntities.count(entity) > 0;
-
-        if (addToGlobal == true && removeFromGlobal == true)
+        if (node.second.addToGlobal == true && node.second.removeFromGlobal == true)
         {
             continue;
         }
 
+        Set<Level::ChunkCoord> chunksToRemove;
+        Set<Level::ChunkCoord> chunksToAdd;
+
+        if (node.second.addToGlobal == false && node.second.removeFromGlobal == false)
         {
             Set<Level::ChunkCoord> oldChunks;
             Set<Level::ChunkCoord> newChunks;
@@ -340,13 +357,21 @@ void LevelControllerSystem::RechunkEntities(DAVA::Vector<DAVA::Entity*>& entitie
             std::set_difference(oldChunks.begin(), oldChunks.end(), newChunks.begin(), newChunks.end(), std::inserter(chunksToRemove, chunksToRemove.begin()));
             std::set_difference(newChunks.begin(), newChunks.end(), oldChunks.begin(), oldChunks.end(), std::inserter(chunksToAdd, chunksToAdd.begin()));
         }
+        else if (node.second.addToGlobal == true)
+        {
+            ForEachInBounds(oldBounds, [&chunksToRemove](const Level::ChunkCoord& coord) { chunksToRemove.insert(coord); });
+        }
+        else if (node.second.removeFromGlobal == true)
+        {
+            ForEachInBounds(oldBounds, [&chunksToAdd](const Level::ChunkCoord& coord) { chunksToAdd.insert(coord); });
+        }
 
         auto assetIter = entityMapping.find(entity);
         DVASSERT(assetIter != entityMapping.end());
         EntityMappingNode& mappingNode = assetIter->second;
 
         {
-            if (addToGlobal == false)
+            if (node.second.addToGlobal == false)
             {
                 for (const Level::ChunkCoord& coord : chunksToAdd)
                 {
@@ -363,10 +388,15 @@ void LevelControllerSystem::RechunkEntities(DAVA::Vector<DAVA::Entity*>& entitie
         }
 
         {
-            if (removeFromGlobal == false)
+            if (node.second.removeFromGlobal == false)
             {
                 for (const Level::ChunkCoord& coord : chunksToRemove)
                 {
+                    if (level->loadedChunkGrid.IsInBounds(coord) == false)
+                    {
+                        continue;
+                    }
+
                     Level::Chunk* chunk = level->loadedChunkGrid.GetChunk(coord);
                     RemoveFromChunk(chunk, mappingNode.asset, mappingNode.entityInfoIndex);
                 }
@@ -457,7 +487,7 @@ void LevelControllerSystem::AddToChunk(DAVA::Level::Chunk* chunk, const DAVA::As
     DVASSERT(std::find(chunk->entitiesLoaded.begin(), chunk->entitiesLoaded.end(), levelEntity) == chunk->entitiesLoaded.end());
     chunk->entitiesIndices.push_back(entityInfoIndex);
     chunk->entitiesLoaded.push_back(levelEntity);
-};
+}
 
 void LevelControllerSystem::RemoveFromChunk(DAVA::Level::Chunk* chunk, const DAVA::Asset<DAVA::LevelEntity>& levelEntity, DAVA::uint32 entityInfoIndex) const
 {
@@ -469,7 +499,7 @@ void LevelControllerSystem::RemoveFromChunk(DAVA::Level::Chunk* chunk, const DAV
     DVASSERT(entityInfoIndex == *removeInfoIndexIter);
     chunk->entitiesLoaded.erase(removeAssetIter);
     chunk->entitiesIndices.erase(removeInfoIndexIter);
-};
+}
 
 void LevelControllerSystem::ForEachInBounds(const DAVA::Level::ChunkBounds& bounds, const DAVA::Function<void(const DAVA::Level::ChunkCoord& coord)>& callback)
 {
