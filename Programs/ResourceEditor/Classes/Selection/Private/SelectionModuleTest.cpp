@@ -51,15 +51,31 @@ DAVA_TARC_TESTCLASS(SelectionModuleTest)
         widget->setFocus(Qt::MouseFocusReason);
     }
 
+    void SkipUIFrames()
+    {
+        for (int32 i = 0; i < FRAME_SKIP; ++i)
+            EXPECT_CALL(*this, AfterWrappersSync());
+    }
+
+    void SetUpTest(bool autoSelectNewEntity)
+    {
+        GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->autoSelectNewEntity = autoSelectNewEntity;
+        InvokeOperation(CreateFirstSceneOperation.ID);
+    }
+
+    void TearDownTest()
+    {
+        InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
+    }
+
     DAVA_TEST (SelectEntityTest)
     {
-        ContextAccessor* accessor = GetAccessor();
-        accessor->GetGlobalContext()->GetData<GlobalSceneSettings>()->autoSelectNewEntity = false;
-        InvokeOperation(CreateFirstSceneOperation.ID);
-        SceneEditor2* scene = accessor->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
+        SetUpTest(false);
+        SceneEditor2* scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
         ScopedPtr<Entity> node(new Entity());
         scene->AddNode(node);
-        Vector3 newPosition(25, 25, 0);
+        node->SetLocked(false);
+        Vector3 newPosition(25.0f, 25.0f, 0.0f);
         Transform newTransform(newPosition);
         TransformComponent* tc = node->GetComponent<TransformComponent>();
         scene->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(node.get()), tc->GetLocalTransform(), newTransform)));
@@ -79,28 +95,25 @@ DAVA_TARC_TESTCLASS(SelectionModuleTest)
             SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
             TEST_VERIFY(selectionGroup.GetSize() == 1);
             TEST_VERIFY(selectionGroup.ContainsObject(node.get()));
-            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
         };
 
-        auto& expectation = EXPECT_CALL(*this, AfterWrappersSync());
-        for (int32 i = 0; i < FRAME_SKIP; ++i)
-        {
-            expectation.WillOnce(::testing::Return());
-        }
-        expectation.WillOnce(::testing::Invoke([this, renderWidget]() {
-            SetFocus(renderWidget);
-        }));
-        expectation.WillOnce(::testing::Invoke(stepMouseClick));
-        expectation.WillOnce(::testing::Invoke(stepCheckSelection));
-        expectation.WillOnce(::testing::Return());
+        ::testing::InSequence sequence;
+        SkipUIFrames();
+        EXPECT_CALL(*this, AfterWrappersSync())
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::SetFocus, this, renderWidget)))
+        .WillOnce(::testing::Invoke(stepMouseClick))
+        .WillOnce(::testing::Invoke(stepCheckSelection))
+        .WillOnce(::testing::Invoke([node]() { node->SetLocked(true); }))
+        .WillOnce(::testing::Invoke(stepMouseClick))
+        .WillOnce(::testing::Invoke(stepCheckSelection))
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::TearDownTest, this)))
+        .WillOnce(::testing::Return());
     }
 
     DAVA_TEST (SelectionSomeEntityTest)
     {
-        ContextAccessor* accessor = GetAccessor();
-        accessor->GetGlobalContext()->GetData<GlobalSceneSettings>()->autoSelectNewEntity = false;
-        InvokeOperation(CreateFirstSceneOperation.ID);
-        SceneEditor2* scene = accessor->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
+        SetUpTest(false);
+        SceneEditor2* scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
         QWidget* widget = GetRenderWidgetTestTarget();
         ScopedPtr<Entity> node1(new Entity());
         ScopedPtr<Entity> node2(new Entity());
@@ -129,26 +142,168 @@ DAVA_TARC_TESTCLASS(SelectionModuleTest)
             TEST_VERIFY(selectionGroup.ContainsObject(node2.get()));
         };
 
-        auto stepSetFocus = [this, widget]()
+        ::testing::InSequence sequence;
+        SkipUIFrames();
+        EXPECT_CALL(*this, AfterWrappersSync())
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::SetFocus, this, widget)))
+        .WillOnce(::testing::Invoke(stepMouseMove))
+        .WillOnce(::testing::Invoke(stepCheckSelection))
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::TearDownTest, this)))
+        .WillOnce(::testing::Return());
+    }
+
+    DAVA_TEST (SelectionAfterRemoveTest)
+    {
+        SetUpTest(true);
+        SceneEditor2* scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
+        RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
+
+        auto startTest = [this, scene]
         {
-            SetFocus(widget);
+            ScopedPtr<Entity> node1(new Entity());
+            scene->AddNode(node1);
+            scene->Update(0.01f);
+            SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.GetSize() == 1);
+            TEST_VERIFY(selectionGroup.ContainsObject(node1.get()));
+
+            ScopedPtr<Entity> node2(new Entity());
+            scene->AddNode(node2);
+            scene->Update(0.01f);
+            selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.GetSize() == 1);
+            TEST_VERIFY(selectionGroup.ContainsObject(node1.get()) == false);
+            TEST_VERIFY(selectionGroup.ContainsObject(node2.get()));
+
+            scene->RemoveNode(node2);
+            scene->Update(0.01f);
+            selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.IsEmpty());
         };
 
-        auto stepCloseScene = [this]()
+        ::testing::InSequence sequence;
+        SkipUIFrames();
+        EXPECT_CALL(*this, AfterWrappersSync())
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::SetFocus, this, renderWidget)))
+        .WillOnce(::testing::Invoke(startTest))
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::TearDownTest, this)))
+        .WillOnce(::testing::Return());
+    }
+
+    DAVA_TEST (SelectionSolidEntity)
+    {
+        SetUpTest(false);
+        SceneEditor2* scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
+        QWidget* widget = GetRenderWidgetTestTarget();
+        ScopedPtr<Entity> node1(new Entity());
+        ScopedPtr<Entity> node2(new Entity());
+        ScopedPtr<Entity> node3(new Entity());
+
+        node1.get()->AddNode(node2);
+        node1.get()->AddNode(node3);
+        scene->AddNode(node1);
+
+        Rect viewport = scene->GetSystem<SceneCameraSystem>()->GetViewportRect();
+
+        auto stepSelectViewportByMouse = [this, scene, widget, viewport]()
         {
-            InvokeOperation(DAVA::CloseAllScenesOperation.ID, false);
+            QPoint startPoint(widget->x() + viewport.x, widget->y() + viewport.y);
+            QPoint endPoint(startPoint.x() + viewport.dx, startPoint.y() + viewport.dy);
+
+            SelectByMouseRect(widget, startPoint, endPoint);
         };
 
-        auto& expectation = EXPECT_CALL(*this, AfterWrappersSync());
-        for (int32 i = 0; i < FRAME_SKIP; ++i)
+        auto stepClick = [this, scene, node3]
         {
-            expectation.WillOnce(::testing::Return());
-        }
-        expectation.WillOnce(::testing::Invoke(stepSetFocus));
-        expectation.WillOnce(::testing::Invoke(stepMouseMove));
-        expectation.WillOnce(::testing::Invoke(stepCheckSelection));
-        expectation.WillOnce(::testing::Invoke(stepCloseScene));
-        expectation.WillOnce(::testing::Return());
+            RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
+            Rect r(renderWidget->childrenRect().x(), renderWidget->childrenRect().y(), renderWidget->childrenRect().width(), renderWidget->childrenRect().height());
+            Vector2 nodePos = scene->GetCurrentCamera()->GetOnScreenPosition(node3->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation(), r);
+            QTest::mouseClick(GetRenderWidgetTestTarget(), Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(nodePos.x, nodePos.y));
+        };
+
+        auto stepMoveThirdEntity = [scene, node3]
+        {
+            Vector3 newPosition(15.0f, 15.0f, 0.0f);
+            Matrix4 newTransform = Matrix4::MakeTranslation(newPosition);
+
+            scene->Exec(std::unique_ptr<Command>(new TransformCommand(Selectable(node3.get()), node3->GetComponent<TransformComponent>()->GetLocalTransform(), newTransform)));
+        };
+
+        auto stepClickNotInEntity = [this, scene, node1]
+        {
+            float32 scale = 2.f * GetAccessor()->GetGlobalContext()->GetData<GlobalSceneSettings>()->debugBoxScale;
+            Vector3 left = scene->GetCurrentCamera()->GetLeft();
+            Matrix4 sourceMatrix = node1->GetComponent<TransformComponent>()->GetWorldMatrix();
+            Vector3 offsetPoint = (scale * left) * sourceMatrix;
+
+            RenderWidget* renderWidget = GetContextManager()->GetRenderWidget();
+            Rect r(renderWidget->childrenRect().x(), renderWidget->childrenRect().y(), renderWidget->childrenRect().width(), renderWidget->childrenRect().height());
+            Vector2 pos = scene->GetCurrentCamera()->GetOnScreenPosition(offsetPoint, r);
+
+            QTest::mouseClick(GetRenderWidgetTestTarget(), Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(pos.x, pos.y));
+        };
+
+        auto stepCheckEmptySelection = [this, scene, node1, node2, node3]()
+        {
+            SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.IsEmpty());
+            TEST_VERIFY(selectionGroup.ContainsObject(node1.get()) == false);
+            TEST_VERIFY(selectionGroup.ContainsObject(node2.get()) == false);
+            TEST_VERIFY(selectionGroup.ContainsObject(node3.get()) == false);
+        };
+
+        auto stepCheckRectSelectionWithSolidFalse = [this, scene, node1, node2, node3]()
+        {
+            SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.GetSize() == 3);
+            TEST_VERIFY(selectionGroup.ContainsObject(node1.get()));
+            TEST_VERIFY(selectionGroup.ContainsObject(node2.get()));
+            TEST_VERIFY(selectionGroup.ContainsObject(node3.get()));
+        };
+
+        auto stepCheckSelectionWithSolidTrue = [this, scene, node1, node2, node3]()
+        {
+            SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.GetSize() == 1);
+            TEST_VERIFY(selectionGroup.ContainsObject(node1.get()));
+            TEST_VERIFY(selectionGroup.ContainsObject(node2.get()) == false);
+            TEST_VERIFY(selectionGroup.ContainsObject(node3.get()) == false);
+        };
+
+        auto stepCheckClickSelectionWithSolidFalse = [this, scene, node1, node2, node3]()
+        {
+            SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.GetSize() == 1);
+            TEST_VERIFY(selectionGroup.ContainsObject(node1.get()) == false);
+            TEST_VERIFY(selectionGroup.ContainsObject(node2.get()) == false);
+            TEST_VERIFY(selectionGroup.ContainsObject(node3.get()));
+        };
+
+        ::testing::InSequence sequence;
+        SkipUIFrames();
+        EXPECT_CALL(*this, AfterWrappersSync())
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::SetFocus, this, widget)))
+
+        .WillOnce(::testing::Invoke([node1] { node1->SetSolid(false); }))
+        .WillOnce(::testing::Invoke(stepClickNotInEntity))
+        .WillOnce(::testing::Invoke(stepCheckEmptySelection))
+
+        .WillOnce(::testing::Invoke(stepMoveThirdEntity))
+        .WillOnce(::testing::Invoke(stepSelectViewportByMouse))
+        .WillOnce(::testing::Invoke(stepCheckRectSelectionWithSolidFalse))
+
+        .WillOnce(::testing::Invoke(stepClick))
+        .WillOnce(::testing::Invoke(stepCheckClickSelectionWithSolidFalse))
+
+        .WillOnce(::testing::Invoke([node1] { node1->SetSolid(true); }))
+        .WillOnce(::testing::Invoke(stepSelectViewportByMouse))
+        .WillOnce(::testing::Invoke(stepCheckSelectionWithSolidTrue))
+
+        .WillOnce(::testing::Invoke(stepClick))
+        .WillOnce(::testing::Invoke(stepCheckSelectionWithSolidTrue))
+
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::TearDownTest, this)))
+        .WillOnce(::testing::Return());
     }
 
     MOCK_METHOD0_VIRTUAL(AfterWrappersSync, void());
