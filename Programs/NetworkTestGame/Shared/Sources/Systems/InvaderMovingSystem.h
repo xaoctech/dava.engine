@@ -22,7 +22,7 @@ static const DAVA::FastName RIGHT("RIGHT");
 static const DAVA::FastName ACCELERATE("ACCELERATE");
 static const DAVA::FastName TELEPORT("TELEPORT");
 
-DAVA::Vector2 GetNormalizedTeleportPosition(const DAVA::Vector2& pos);
+static const DAVA::float32 TELEPORT_HALF_RANGE = 2000.f;
 }
 
 class InvaderMovingSystem : public DAVA::BaseSimulationSystem

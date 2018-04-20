@@ -229,7 +229,7 @@ void GameModeSystemCars::OnClientConnected(const FastName& token)
         // Position the car slightly above the ground
         TransformComponent* carTransform = car->GetComponent<TransformComponent>();
         carTransform->SetLocalTransform(Transform(
-                Vector3(0.0f, 0.0f, 14.5f), Vector3(1.0f, 1.0f, 1.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
+        Vector3(0.0f, 0.0f, 14.5f), Vector3(1.0f, 1.0f, 1.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
 
         GetScene()->AddNode(car);
     }

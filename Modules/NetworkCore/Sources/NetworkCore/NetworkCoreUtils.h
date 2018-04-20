@@ -22,7 +22,7 @@ bool IsClientOwner(SceneSystem* sceneSystem, const Entity* entity);
 bool IsClientOwner(const Entity* entity);
 
 Entity* GetEntityWithNetworkId(Scene* scene, NetworkID networkId);
-M::OwnershipRelation GetPlayerOwnershipRelation(const Entity* entity, NetworkPlayerID playerId);
+M::OwnershipRelation GetPlayerOwnershipRelation(NetworkPlayerID playerId, NetworkPlayerID entityOwnerId);
 
 // TODO: --> move to NetworkInputUtils
 Vector<ActionsSingleComponent::Actions>& GetCollectedActionsForClient(Scene* scene, const Entity* clientEntity);

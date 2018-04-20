@@ -80,7 +80,7 @@ ScopedPtr<Entity> PowerupSpawnSystem::CreateBonusEntityOnServer()
     float32 posY = static_cast<float32>(Random::Instance()->RandFloat(100.) - 50.);
 
     bonus->GetComponent<TransformComponent>()->SetLocalTransform(Transform(
-            Vector3(posX, posY, 0), Vector3(1.f, 1.f, 1.f), Quaternion()));
+    Vector3(posX, posY, 0), Vector3(1.f, 1.f, 1.f), Quaternion()));
 
     PowerupDescriptor descr;
     descr.type = Random::Instance()->Rand() % 2 ? PowerupType::HEALTH : PowerupType::SPEED;

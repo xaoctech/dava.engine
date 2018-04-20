@@ -2,6 +2,7 @@
 
 #include "NetworkCore/Compression/CompressorRegistrar.h"
 
+// Include Components
 #include "NetworkCore/Scene3D/Components/NetworkDebugDrawComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkInputComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkPlayerComponent.h"
@@ -14,6 +15,7 @@
 #include "NetworkCore/Scene3D/Components/NetworkMotionComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkFactoryComponent.h"
 
+// Include Systems
 #include "NetworkCore/Scene3D/Systems/NetworkDebugDrawSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDebugPredictDrawSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkDebugResimulationDrawSystem.h"
@@ -43,6 +45,7 @@
 #include "NetworkCore/Scene3D/Systems/NetworkMotionSystem.h"
 #include "NetworkCore/Scene3D/Systems/ReplayServerSystem.h"
 
+// Include SingleComponents
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkDeltaSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"

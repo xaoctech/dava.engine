@@ -1,11 +1,12 @@
 import sys
 import json
 import psutil
+from collections import defaultdict
 
 NET_IO_FILENAME = '/tmp/net_io_counters'
 
 response = {
-    'resimulation': 0,
+    'resimulation': defaultdict(int),
     'metrics': {},
     'traffic': {
         'send': {'bytes': {}, 'packets': {}},
@@ -113,8 +114,8 @@ def load_typestat(line):
 
 @noexcept
 def load_resimulation(line):
-    resimulation = int(line.split(' ')[-1])
-    response['resimulation'] = max(response.get('resimulation', 0), resimulation)
+    entityNetworkId = int(line.split(' ')[-1])
+    response['resimulation'][entityNetworkId] += 1
 
 if __name__ == '__main__':
     assert len(sys.argv) > 1, 'Usage: $> python analyzer_agent.py start|stop'

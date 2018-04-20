@@ -1,5 +1,7 @@
 #include "ShooterUtils.h"
 #include "ShooterConstants.h"
+#include "Components/GameStunnableComponent.h"
+#include "Components/HealthComponent.h"
 #include "Components/ShooterRoleComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
@@ -255,7 +257,7 @@ void InitializeScene(DAVA::Scene& scene)
             Entity* car = new Entity();
             TransformComponent* transformComponent = car->GetComponent<TransformComponent>();
             transformComponent->SetLocalTransform(Transform(
-                    GetRandomCarSpawnPosition(), Vector3(1.0f, 1.0f, 1.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
+            GetRandomCarSpawnPosition(), Vector3(1.0f, 1.0f, 1.0f), Quaternion(0.0f, 0.0f, 0.0f, 1.0f)));
 
             ShooterRoleComponent* roleComponent = new ShooterRoleComponent();
             roleComponent->playerID = 0;
@@ -298,4 +300,21 @@ DAVA::uint32 GetBodyPartDamage(const DAVA::FastName& jointName)
     {
         return 2;
     }
+}
+
+bool CanAct(const DAVA::Entity* entity)
+{
+    const HealthComponent* healthComponent = entity->GetComponent<HealthComponent>();
+    if (healthComponent && healthComponent->GetHealth() == 0)
+    {
+        return false;
+    }
+
+    const GameStunnableComponent* stunComp = entity->GetComponent<GameStunnableComponent>();
+    if (stunComp && stunComp->IsStunned())
+    {
+        return false;
+    }
+
+    return true;
 }

@@ -17,5 +17,5 @@ for i in $(seq 1 ${count}); do
     token=${i}${host_id}
     ${log_stats} && stats_log_file="game-stats-${token}.log" || stats_log_file=""
     ${BOT_APP} --slow-down 0.03 --host ${host} --port ${port} --token ${token} --bot ${bot_kind} --game-stats-log ${stats_log_file} </dev/null 1>${stdout} 2>${stderr} &
-    sleep 3
+    sleep 0.3
 done

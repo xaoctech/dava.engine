@@ -3,7 +3,7 @@
 
 #include "Components/HealthComponent.h"
 #include "Components/PlayerInvaderComponent.h"
-#include "Components/AI/InvaderBehaviorComponent.h"
+#include "Bots/InvaderBehaviorComponent.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/SingleComponents/ActionsSingleComponent.h"
 #include "Scene3D/Components/TransformComponent.h"

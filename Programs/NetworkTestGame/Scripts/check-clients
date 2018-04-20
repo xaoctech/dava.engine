@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# set -e
+
+name=${1:-dev}
+tag=${2:-""}
+dir=${3:-dev}
+secret=${4:-secret.tfvars}
+
+SSH_OPTS="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+hosts=(`aws/aws-ips ${dir} ${secret}`)
+
+for host in ${hosts[@]}; do
+	count=`ssh ${SSH_OPTS} ec2-user@${host} "ps auxc | grep Client | wc -l" 2>/dev/null`
+	(>&1 echo "[${host}]: Alive clients: ${count}")
+done

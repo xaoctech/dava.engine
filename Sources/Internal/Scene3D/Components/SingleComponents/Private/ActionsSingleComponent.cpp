@@ -242,4 +242,20 @@ uint64 GetAnalogPrecisionMask(AnalogPrecision precision)
     DVASSERT(false && "Unknown precision");
     return 0;
 }
+
+void NormalizeAnalog(Vector2& value, float32 domain)
+{
+    DVASSERT(domain > 0);
+
+    value.x = Clamp(value.x / domain, -1.f, 1.f);
+    value.y = Clamp(value.y / domain, -1.f, 1.f);
+}
+
+void DenormalizeAnalog(Vector2& value, float32 domain)
+{
+    DVASSERT(domain > 0);
+
+    value.x *= domain;
+    value.y *= domain;
+}
 }

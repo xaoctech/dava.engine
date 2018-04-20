@@ -18,7 +18,7 @@ class Entity;
 
 namespace GameInputSystemDetail
 {
-DAVA::Vector2 GetNormalizedTeleportPosition(const DAVA::Vector2& pos);
+static const DAVA::float32 TELEPORT_HALF_RANGE = 2000.f;
 }
 
 class GameInputSystem : public DAVA::BaseSimulationSystem

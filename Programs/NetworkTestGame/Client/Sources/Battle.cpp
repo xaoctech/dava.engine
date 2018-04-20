@@ -10,10 +10,10 @@
 #include "Systems/PhysicsProjectileInputSystem.h"
 #include "Systems/PhysicsProjectileSystem.h"
 #include "Systems/PlayerEntitySystem.h"
-#include "Systems/BotSystem.h"
-#include "Systems/AI/BotTaskSystem.h"
-#include "Systems/AI/ShooterBehaviorSystem.h"
-#include "Systems/AI/InvaderBehaviorSystem.h"
+#include "Bots/BotSystem.h"
+#include "Bots/BotTaskSystem.h"
+#include "Bots/TankBattleRoyaleBehaviorSystem.h"
+#include "Bots/InvaderBehaviorSystem.h"
 
 #include "Components/GameStunnableComponent.h"
 #include "Components/HealthComponent.h"
@@ -144,7 +144,12 @@ void Battle::SetupTestGame()
 
         switch (optionsSingleComp->options.playerKind.GetId())
         {
-        case (PlayerKind::Id::SHOOTER_BOT):
+        case (PlayerKind::Id::TANK_BATTLE_ROYALE_BOT):
+        {
+            tags.insert({ FastName("tankbot"), FastName("taskbot") });
+            break;
+        }
+        case (PlayerKind::Id::SHOOTER_BATTLE_ROYALE_BOT):
         {
             tags.insert({ FastName("shooterbot"), FastName("taskbot") });
             break;

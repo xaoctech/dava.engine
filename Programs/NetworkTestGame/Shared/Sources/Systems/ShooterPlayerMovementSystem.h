@@ -14,6 +14,11 @@ class VehicleCarComponent;
 class CharacterControllerComponent;
 }
 
+namespace ShooterMovementSystemDetail
+{
+static const DAVA::float32 TELEPORT_HALF_RANGE = 2000.f;
+}
+
 // Responsible for moving and rotating character entities
 class ShooterMovementSystem final : public DAVA::BaseSimulationSystem
 {
@@ -34,7 +39,7 @@ private:
     void BeforeCharacterMove(DAVA::CharacterControllerComponent* cct);
     void AfterCharacterMove(DAVA::CharacterControllerComponent* cct);
     void MoveCharacter(DAVA::Entity* player, const DAVA::Vector3& offset, DAVA::float32 duration) const;
-    void MoveCar(DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer, DAVA::float32 duration) const;
+    void MoveCar(DAVA::Entity* player, DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer, DAVA::float32 duration) const;
 
 private:
     DAVA::EntityGroup* entityGroup = nullptr;

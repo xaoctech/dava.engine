@@ -172,6 +172,8 @@ void TestClient::OnLoopStarted()
 
     if (playerKind.IsBot())
     {
+        GetEngineContext()->uiControlSystem->vcs->RegisterAvailableResourceSize(1024, 768, "Gfx");
+
         botBattle = std::make_unique<Battle>();
         BattleOptions battleOptions = BattleOptions::FromKeyedArchive(clientOptions);
         botBattle->Initialize(battleOptions);

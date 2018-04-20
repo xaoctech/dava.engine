@@ -48,6 +48,7 @@ public:
 
     bool isEnemyPredicted;
     bool isEnemyRewound;
+    bool collideCharacters;
     bool compareInputs;
     COLLISION_RESOLVE_MODE collisionResolveMode = COLLISION_RESOLVE_MODE_NONE;
 

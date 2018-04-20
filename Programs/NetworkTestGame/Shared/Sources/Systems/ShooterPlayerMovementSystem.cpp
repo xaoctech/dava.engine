@@ -12,6 +12,7 @@
 #include <Engine/Window.h>
 #include <DeviceManager/DeviceManager.h>
 #include <Input/Keyboard.h>
+#include <Input/Keyboard.h>
 #include <Input/Mouse.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
@@ -68,6 +69,7 @@ ShooterMovementSystem::ShooterMovementSystem(DAVA::Scene* scene)
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_MOVE_RIGHT, eInputElements::KB_D, keyboardId);
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ACCELERATE, eInputElements::KB_LSHIFT, keyboardId);
     actionsSingleComponent->AddAvailableAnalogAction(SHOOTER_ACTION_ANALOG_MOVE, AnalogPrecision::ANALOG_UINT16);
+    actionsSingleComponent->AddAvailableAnalogAction(SHOOTER_ACTION_TELEPORT, AnalogPrecision::ANALOG_UINT16);
 
     entityGroup = scene->AquireEntityGroup<ShooterAimComponent>();
 }
@@ -98,6 +100,11 @@ void ShooterMovementSystem::ProcessFixed(DAVA::float32 dt)
     for (Entity* entity : entityGroup->GetEntities())
     {
         if (!IsServer(this) && !IsClientOwner(this, entity))
+        {
+            continue;
+        }
+
+        if (!CanAct(entity))
         {
             continue;
         }
@@ -165,7 +172,7 @@ void ShooterMovementSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA
                 }
             }
 
-            MoveCar(car, acceleration, steer, duration);
+            MoveCar(entity, car, acceleration, steer, duration);
         }
     }
     // Moving character
@@ -234,7 +241,7 @@ void ShooterMovementSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA:
                 VehicleCarComponent* car = carEntity->GetComponent<VehicleCarComponent>();
                 if (car != nullptr)
                 {
-                    MoveCar(car, -analogActionState.y, -analogActionState.x, duration);
+                    MoveCar(entity, car, -analogActionState.y, -analogActionState.x, duration);
                 }
             }
             else
@@ -247,6 +254,17 @@ void ShooterMovementSystem::ApplyAnalogActions(DAVA::Entity* entity, const DAVA:
 
                 MoveCharacter(entity, Vector3(-analogActionState.x * SHOOTER_MOVEMENT_SPEED, analogActionState.y * SHOOTER_MOVEMENT_SPEED, 0.0f), duration);
             }
+        }
+        else if (action.first.actionId == SHOOTER_ACTION_TELEPORT)
+        {
+            NetworkReplicationComponent* networkReplicationComponent = entity->GetComponent<NetworkReplicationComponent>();
+            NetworkPlayerID playerId = networkReplicationComponent->GetNetworkPlayerID();
+
+            DenormalizeAnalog(analogActionState, ShooterMovementSystemDetail::TELEPORT_HALF_RANGE);
+            Vector3 pos(analogActionState.x, analogActionState.y, 18.f);
+            TransformComponent* transformComp = entity->GetComponent<TransformComponent>();
+            const Transform& transform = transformComp->GetLocalTransform();
+            transformComp->SetLocalTransform(Transform(pos, transform.GetScale(), transform.GetRotation()));
         }
     }
 }
@@ -296,7 +314,7 @@ void ShooterMovementSystem::RotateEntityTowardsCurrentAim(DAVA::Entity* entity)
         !FLOAT_EQUAL(intermediateOrientation.w, currentOrientation.w))
     {
         transformComponent->SetLocalTransform(Transform(
-                transform.GetTranslation(), transform.GetScale(), intermediateOrientation));
+        transform.GetTranslation(), transform.GetScale(), intermediateOrientation));
     }
 }
 
@@ -477,7 +495,7 @@ void ShooterMovementSystem::MoveCharacter(DAVA::Entity* player, const DAVA::Vect
     }
 }
 
-void ShooterMovementSystem::MoveCar(DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer, DAVA::float32 duration) const
+void ShooterMovementSystem::MoveCar(DAVA::Entity* player, DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer, DAVA::float32 duration) const
 {
     using namespace DAVA;
 
@@ -493,4 +511,11 @@ void ShooterMovementSystem::MoveCar(DAVA::VehicleCarComponent* car, DAVA::float3
     }
 
     car->SetAnalogAcceleration(std::abs(Clamp(acceleration, -1.0f, 1.0f)));
+
+    // move player with car
+    // TODO: change hierarchy so that playerCarUserComponent is a child of the car. Can't do that right now since replication system fails when hierarchy changes
+    Vector3 carPosition = car->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
+    TransformComponent* transformComponent = player->GetComponent<TransformComponent>();
+    const Transform& transform = transformComponent->GetLocalTransform();
+    transformComponent->SetLocalTransform(Transform(carPosition + SHOOTER_CAR_UNDERGROUND_OFFSET, transform.GetScale(), transform.GetRotation()));
 }

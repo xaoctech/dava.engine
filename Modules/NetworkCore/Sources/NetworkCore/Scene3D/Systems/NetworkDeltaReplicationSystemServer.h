@@ -19,12 +19,30 @@ class NetworkGameModeSingleComponent;
 class NetworkTimeSingleComponent;
 class NetworkServerConnectionsSingleComponent;
 
+namespace NetworkDeltaReplicationSystemDetail
+{
+struct FrameRange;
+class DiffCache;
+}
+
 class NetworkDeltaReplicationSystemServer : public NetworkDeltaReplicationSystemBase
 {
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkDeltaReplicationSystemServer, NetworkDeltaReplicationSystemBase);
 
-    NetworkDeltaReplicationSystemServer(Scene* scene);
+    struct DiffParams
+    {
+        NetworkID entityId;
+        uint32 frameIdBase = 0;
+        uint32 frameId = 0;
+        M::OwnershipRelation ownership;
+        uint8* buff = nullptr;
+        size_t buffSize = 0;
+
+        size_t outDiffSize = 0;
+    };
+
+    explicit NetworkDeltaReplicationSystemServer(Scene* scene);
     ~NetworkDeltaReplicationSystemServer() override;
 
     void RemoveEntity(Entity* entity) override;
@@ -32,42 +50,15 @@ public:
     void OnReceive(const FastName& token, const Vector<uint8>& data);
 
 protected:
-    virtual size_t CreateDiff(SnapshotSingleComponent::CreateDiffParams& params);
+    virtual size_t CreateDiff(DiffParams& params);
 
 private:
     const PacketHeader emptyPacketHeader = {};
     const uint32 emptyPacketHeaderSize = emptyPacketHeader.GetSize();
     const EntityHeader emptyEntityHeader = {};
     const uint32 entHeaderSize = emptyEntityHeader.GetSize();
-    static const SequenceId MAX_SENT_COUNT = 1000;
 
     PreAllocatedBlock tmpBlock = {};
-
-    struct FrameRange
-    {
-        uint8 GetFrameCount() const
-        {
-            DVASSERT(baseFrameId <= currFrameId);
-            if (baseFrameId > 0)
-            {
-                uint32 diff = currFrameId - baseFrameId;
-                return static_cast<uint8>((diff < uint8(~0)) ? diff : 0);
-            }
-
-            return 0;
-        }
-
-        void Clear()
-        {
-            baseFrameId = 0;
-            currFrameId = 0;
-        }
-
-        uint32 baseFrameId = 0;
-        uint32 currFrameId = 0;
-        uint32 delFrameId = 0;
-    };
-
     enum class WriteResult : uint8
     {
         CONTINUE,
@@ -82,8 +73,8 @@ private:
         uint32 frameId = 0;
     };
 
-    using SeqToSentFrames = Array<SequenceData, MAX_SENT_COUNT>;
-    using EntityToBaseFrames = UnorderedMap<NetworkID, FrameRange>;
+    using SeqToSentFrames = Array<SequenceData, MaxSentCount>;
+    using EntityToBaseFrames = UnorderedMap<NetworkID, NetworkDeltaReplicationSystemDetail::FrameRange>;
     using RemovedEntityToOwnership = UnorderedMap<NetworkID, M::OwnershipRelation>;
 
     struct ResponderEnvironment
@@ -109,6 +100,8 @@ private:
         SequenceId maxSeq = 0;
     };
 
+    std::unique_ptr<NetworkDeltaReplicationSystemDetail::DiffCache> diffCache;
+
     void OnClientConnect(const FastName& token);
     void OnClientDisconnect(const FastName& token);
 
@@ -121,7 +114,6 @@ private:
     void SendMtuBlock(ResponderEnvironment& env);
     void SendTmpBlock(ResponderEnvironment& env);
 
-    UnorderedMap<const Responder*, NetworkPlayerID> responderToPlayerID;
     Vector<ResponderData> responderDataList;
     NetworkPlayerID playerIdUpperBound;
 

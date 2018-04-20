@@ -204,6 +204,11 @@ void ShooterPlayerAttackSystem::ProcessFixed(DAVA::float32 dt)
             continue;
         }
 
+        if (!CanAct(entity))
+        {
+            continue;
+        }
+
         const Vector<ActionsSingleComponent::Actions>& allActions = GetCollectedActionsForClient(GetScene(), entity);
         for (const auto& actions : allActions)
         {
@@ -327,7 +332,7 @@ void ShooterPlayerAttackSystem::SpawnBullet(DAVA::Entity* player, DAVA::uint32 c
     DVASSERT(bulletTransformComponent != nullptr);
 
     bulletTransformComponent->SetLocalTransform(Transform(
-            barrelTransform.GetTranslation(), Vector3(1.0f, 1.0f, 1.0f), barrelTransform.GetRotation()));
+    barrelTransform.GetTranslation(), Vector3(1.0f, 1.0f, 1.0f), barrelTransform.GetRotation()));
 
     GetScene()->AddNode(bullet);
 }
@@ -475,7 +480,7 @@ void ShooterPlayerAttackSystem::RocketAttack(DAVA::Entity* aimingEntity, DAVA::u
 
             const Transform& weaponTrans = weaponBarrelEntity->GetComponent<TransformComponent>()->GetWorldTransform();
             rocket->GetComponent<TransformComponent>()->SetLocalTransform(Transform(
-                    weaponTrans.GetTranslation(), weaponTrans.GetScale(), weaponTrans.GetRotation()));
+            weaponTrans.GetTranslation(), weaponTrans.GetScale(), weaponTrans.GetRotation()));
 
             // effect: rocket shot
             NetworkID shotEffectId = NetworkID::CreatePlayerActionId(playerID, clientFrameId, 2);

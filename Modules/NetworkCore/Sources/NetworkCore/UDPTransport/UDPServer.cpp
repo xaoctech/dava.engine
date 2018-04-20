@@ -31,7 +31,7 @@ UDPResponder::UDPResponder(const UDPResponder& responder)
 {
 }
 
-void UDPResponder::Send(const uint8* data, size_t size, const PacketParams& param) const
+void UDPResponder::Send(const uint8* data, size_t size, const PacketParams& param, const AckCallback& callback) const
 {
     if (size > PacketParams::MAX_PACKET_SIZE)
     {
@@ -47,6 +47,17 @@ void UDPResponder::Send(const uint8* data, size_t size, const PacketParams& para
     }
 
     ENetPacket* packet = enet_packet_create(buffer, csize, param.BuildFlags());
+    if (callback)
+    {
+        DVASSERT(param.isReliable);
+        if (param.isReliable)
+        {
+            packetToAckCallback.emplace(packet, callback);
+            packet->freeCallback = &UDPResponder::OnFreeCallback;
+            packet->userData = const_cast<void*>(static_cast<const void*>(this));
+        }
+    }
+
     ThrowIfENetError(enet_peer_send(peer, param.channelID, packet), "ENET_PEER_SEND");
     trafficLogger->LogSending(csize, param.channelID);
 }
@@ -104,6 +115,17 @@ bool UDPResponder::RttIsBetter() const
 float32 UDPResponder::GetPacketLoss() const
 {
     return DAVA::GetPacketLoss(peer, packetLosses);
+}
+
+void UDPResponder::OnFreeCallback(ENetPacket* packet)
+{
+    const UDPResponder* responder = static_cast<const UDPResponder*>(packet->userData);
+    UnorderedMap<ENetPacket*, AckCallback>& pktToClb = responder->packetToAckCallback;
+    const auto& findIt = pktToClb.find(packet);
+    DVASSERT(findIt != pktToClb.end());
+    const AckCallback& callback = findIt->second;
+    callback();
+    pktToClb.erase(findIt);
 }
 
 UDPResponder::~UDPResponder()

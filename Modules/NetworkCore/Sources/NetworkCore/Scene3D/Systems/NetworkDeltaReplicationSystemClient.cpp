@@ -31,90 +31,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaReplicationSystemClient)
     .End();
 }
 
-ElasticBuffer::ElasticBuffer()
-    : size(PRIMARY_BUFF_SIZE)
-    , buff(std::make_unique<uint8[]>(size))
-    , idx(0)
-{
-}
-
-ElasticBuffer::~ElasticBuffer()
-{
-    if (idx > 0)
-    {
-        Logger::Warning("Release fallback buffer level:%llu size:%llu", idx, offset);
-    }
-}
-
-ElasticBuffer::ElasticBuffer(uint32 size, uint32 idx)
-    : size(size)
-    , buff(std::make_unique<uint8[]>(size))
-    , idx(idx)
-{
-}
-
-void ElasticBuffer::Reset()
-{
-    offset = 0;
-    fallback.reset();
-}
-
-const uint8* ElasticBuffer::Insert(const uint8* srcBuff, uint32 srcSize, uint32 align)
-{
-    DVASSERT(IsPowerOf2(align));
-
-    uint32 dstSize = srcSize;
-    if (0 != ((align - 1) & dstSize))
-    {
-        dstSize &= ~(align - 1);
-        dstSize += align;
-    }
-
-    if (dstSize <= size - offset)
-    {
-        uint8* insertPos = buff.get() + offset;
-        Memcpy(insertPos, srcBuff, srcSize);
-        offset += dstSize;
-        DVASSERT(offset <= size);
-        return insertPos;
-    }
-
-    if (!fallback)
-    {
-        if (idx >= EXT_PAGE_MAX_COUNT || dstSize > FALLBACK_BUFF_SIZE)
-        {
-            return nullptr;
-        }
-
-        fallback.reset(new ElasticBuffer(FALLBACK_BUFF_SIZE, idx + 1));
-    }
-
-    return fallback->Insert(srcBuff, srcSize);
-}
-
-uint32 ElasticBuffer::GetOffset() const
-{
-    return offset;
-}
-
-uint32 ElasticBuffer::GetFallbackCount() const
-{
-    if (fallback)
-    {
-        return 1 + fallback->GetFallbackCount();
-    }
-    return 0;
-}
-
-const ElasticBuffer& ElasticBuffer::GetTail() const
-{
-    if (fallback)
-    {
-        return fallback->GetTail();
-    }
-    return *this;
-}
-
 NetworkDeltaReplicationSystemClient::NetworkDeltaReplicationSystemClient(Scene* scene)
     : NetworkDeltaReplicationSystemBase(scene)
 {
@@ -125,7 +41,7 @@ NetworkDeltaReplicationSystemClient::NetworkDeltaReplicationSystemClient(Scene* 
     replicationSingleComponent = scene->GetSingleComponentForWrite<NetworkReplicationSingleComponent>(this);
     deltaSingleComponent = scene->GetSingleComponentForWrite<NetworkDeltaSingleComponent>(this);
     statsComp = scene->GetSingleComponentForWrite<NetworkStatisticsSingleComponent>(this);
-    netConnectionComp = scene->GetSingleComponent<NetworkClientConnectionSingleComponent>();
+    netConnectionComp = scene->GetSingleComponentForRead<NetworkClientConnectionSingleComponent>(this);
 }
 
 void NetworkDeltaReplicationSystemClient::ProcessReceivePackets(float32 timeElapsed)
@@ -245,7 +161,7 @@ void NetworkDeltaReplicationSystemClient::OnReceive(const Vector<uint8>& packet)
         const uint8* insertPos = elasticBuffer.Insert(buff, static_cast<uint32>(diffSize));
         if (nullptr == insertPos)
         {
-            Logger::Error("Buffer overrun size:%llu", diffSize);
+            Logger::Error("Buffer overrun size:%lu", diffSize);
             DVASSERT(0);
             return;
         }

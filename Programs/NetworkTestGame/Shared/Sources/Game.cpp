@@ -9,6 +9,7 @@
 #include "Components/GameStunnableComponent.h"
 #include "Components/HealthComponent.h"
 #include "Components/DamageComponent.h"
+#include "Components/ExternalImpulseComponent.h"
 #include "Components/PhysicsProjectileComponent.h"
 #include "Components/PlayerTankComponent.h"
 #include "Components/PlayerCarComponent.h"
@@ -24,17 +25,13 @@
 #include "Components/SpeedModifierComponent.h"
 #include "Components/RocketSpawnComponent.h"
 #include "Components/ShooterStateComponent.h"
-#include "Components/AI/MoveToPointTaskComponent.h"
-#include "Components/AI/AttackTaskComponent.h"
-#include "Components/AI/ShooterBehaviorComponent.h"
-#include "Components/AI/InvaderBehaviorComponent.h"
-#include "Components/AI/WaitTaskComponent.h"
-#include "Components/AI/CompositeTaskComponent.h"
-#include "Components/AI/DodgeCenterTaskComponent.h"
-#include "Components/AI/RandomMovementTaskComponent.h"
-#include "Components/AI/SlideToBorderTaskComponent.h"
-#include "Components/AI/WagToBorderTaskComponent.h"
-#include "Components/AI/ShootIfSeeingTargetTaskComponent.h"
+#include "Bots/BehaviorComponent.h"
+#include "Bots/BattleRoyaleBehaviorComponent.h"
+#include "Bots/InvaderBehaviorComponent.h"
+#include "Bots/CommonTaskComponents.h"
+#include "Bots/InvaderTaskComponents.h"
+#include "Bots/ShooterTaskComponents.h"
+#include "Bots/TankTaskComponents.h"
 #include "Visibility/ObserverComponent.h"
 #include "Visibility/ObservableComponent.h"
 #include "Visibility/ObservableIdComponent.h"
@@ -50,7 +47,7 @@
 #include "Components/SingleComponents/GameModeSingleComponent.h"
 #include "Components/SingleComponents/StatsLoggingSingleComponent.h"
 
-#include "Systems/BotSystem.h"
+#include "Bots/BotSystem.h"
 #include "Systems/DamageSystem.h"
 #include "Systems/ExplosionEffectSystem.h"
 #include "Systems/GameInputSystem.h"
@@ -75,6 +72,7 @@
 #include "Systems/ShooterAimSystem.h"
 #include "Systems/ShooterCharacterAnimationSystem.h"
 #include "Systems/ShooterEntityFillSystem.h"
+#include "Systems/ShooterExternalImpulseSystem.h"
 #include "Systems/ShooterPlayerAttackSystem.h"
 #include "Systems/ShooterPlayerConnectSystem.h"
 #include "Systems/ShooterPlayerMovementSystem.h"
@@ -92,9 +90,11 @@
 #include "Visibility/ShooterVisibilitySystem.h"
 #include "Visibility/SimpleVisibilitySystem.h"
 
-#include "Systems/AI/ShooterBehaviorSystem.h"
-#include "Systems/AI/InvaderBehaviorSystem.h"
-#include "Systems/AI/BotTaskSystem.h"
+#include "Bots/BehaviorSystem.h"
+#include "Bots/ShooterBattleRoyaleBehaviorSystem.h"
+#include "Bots/TankBattleRoyaleBehaviorSystem.h"
+#include "Bots/InvaderBehaviorSystem.h"
+#include "Bots/BotTaskSystem.h"
 
 #include "GameModes/Cubes/CubesEntityFillSystem.h"
 #include "GameModes/Cubes/CubesGameplaySystem.h"
@@ -125,6 +125,7 @@ void RegisterGameComponents()
     // Components
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DamageComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ExplosionEffectComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ExternalImpulseComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameStunnableComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameStunningComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HealthComponent);
@@ -147,16 +148,25 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SpeedModifierComponent);
 
     // Bots related components
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(AttackTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BattleRoyaleBehaviorComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BehaviorComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CompositeTaskComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DodgeCenterTaskComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InvaderBehaviorComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MoveToPointTaskComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RandomMovementTaskComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterBehaviorComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShootIfSeeingTargetTaskComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SlideToBorderTaskComponent);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WagToBorderTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InvaderDodgeCenterTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InvaderShootIfSeeingTargetTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InvaderSlideToBorderTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InvaderWagToBorderTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterAttackStandingStillTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterAttackPursuingTargetTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterAttackCirclingAroundTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterAttackWaggingTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterDriveTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterHangAroundTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterMoveToPointShortestTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterMoveToPointWindingTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TankAttackTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TankMoveToPointTaskComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TankRandomMovementTaskComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WaitTaskComponent);
 
     // Visibility components
@@ -203,6 +213,7 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterCarSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterCharacterAnimationSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterEntityFillSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterExternalImpulseSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterMovementSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterPlayerAttackSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterPlayerConnectSystem);
@@ -216,10 +227,12 @@ void RegisterGameComponents()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StatsLoggingSystem);
 
     // Bots related systems
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BehaviorSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BotSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BotTaskSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(InvaderBehaviorSystem);
-    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterBehaviorSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ShooterBattleRoyaleBehaviorSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TankBattleRoyaleBehaviorSystem);
 
     RegisterReflectionForGamemode::Cubes();
 }

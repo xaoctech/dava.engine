@@ -537,6 +537,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
 
     vehiclesSubsystem = new PhysicsVehiclesSubsystem(scene, physicsScene);
     controllerManager = PxCreateControllerManager(*physicsScene);
+    controllerManager->setOverlapRecoveryModule(false); // TODO: remove this when cars prediction is done
 
     // Component groups for all physics components
     staticBodies = scene->AquireComponentGroup<StaticBodyComponent, StaticBodyComponent>();
@@ -1416,10 +1417,15 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
 void PhysicsSystem::UpdateCCTFilterData(CharacterControllerComponent* cctComponent, uint32 typeMask, uint32 typeMaskToCollideWith)
 {
     DVASSERT(cctComponent != nullptr);
-    DVASSERT(cctComponent->controller != nullptr);
+
+    physx::PxController* controller = cctComponent->GetPxController();
+    if (controller == nullptr)
+    {
+        return;
+    }
 
     physx::PxShape* controllerShape = nullptr;
-    cctComponent->controller->getActor()->getShapes(&controllerShape, 1, 0);
+    controller->getActor()->getShapes(&controllerShape, 1, 0);
     DVASSERT(controllerShape != nullptr);
 
     // Setup word 0 to be the same for every CCT since physx filters out CCTs whose words do not intersect for some reason

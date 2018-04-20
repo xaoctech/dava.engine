@@ -14,31 +14,6 @@ class NetworkDeltaSingleComponent;
 class NetworkStatisticsSingleComponent;
 class NetworkClientConnectionSingleComponent;
 
-class ElasticBuffer
-{
-public:
-    static const uint32 PRIMARY_BUFF_SIZE = PacketParams::MAX_PACKET_SIZE * 512; //2Mb
-    static const uint32 FALLBACK_BUFF_SIZE = PacketParams::MAX_PACKET_SIZE * 256; //1Mb
-    static const uint32 EXT_PAGE_MAX_COUNT = 5;
-
-    ElasticBuffer();
-    ~ElasticBuffer();
-    void Reset();
-    const uint8* Insert(const uint8* srcBuff, uint32 srcSize, uint32 align = 4);
-    uint32 GetOffset() const;
-    uint32 GetFallbackCount() const;
-    const ElasticBuffer& GetTail() const;
-
-private:
-    explicit ElasticBuffer(uint32 size, uint32 idx);
-
-    uint32 offset = 0;
-    uint32 size = 0;
-    std::unique_ptr<uint8[]> buff = nullptr;
-    std::unique_ptr<ElasticBuffer> fallback = nullptr;
-    const uint32 idx = 0;
-};
-
 class NetworkDeltaReplicationSystemClient : public NetworkDeltaReplicationSystemBase
 {
 public:

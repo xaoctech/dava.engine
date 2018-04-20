@@ -3,7 +3,7 @@
 
 #include "Components/HealthComponent.h"
 #include "Components/PlayerInvaderComponent.h"
-#include "Components/AI/InvaderBehaviorComponent.h"
+#include "Bots/InvaderBehaviorComponent.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/SingleComponents/ActionsSingleComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
@@ -36,21 +36,6 @@ namespace InvaderMovingSystemDetail
 static const Vector3 MOVE_SPEED(0.f, 30.f, 0.f);
 static const Vector3 SLIDE_SPEED(30.f, 0.f, 0.f);
 static const float32 ACCELERATION = 2.0f;
-
-static const float32 TELEPORT_HALF_RANGE = 2000.f;
-
-Vector2 GetNormalizedTeleportPosition(const Vector2& worldPosition)
-{
-    Vector2 normalizedPos;
-    normalizedPos.x = Clamp(worldPosition.x / TELEPORT_HALF_RANGE, -1.f, 1.f);
-    normalizedPos.y = Clamp(worldPosition.y / TELEPORT_HALF_RANGE, -1.f, 1.f);
-    return normalizedPos;
-}
-
-inline Vector2 GetWorldTeleportPosition(const Vector2& normalizedPosition)
-{
-    return Vector2(normalizedPosition.x * TELEPORT_HALF_RANGE, normalizedPosition.y * TELEPORT_HALF_RANGE);
-}
 }
 
 InvaderMovingSystem::InvaderMovingSystem(Scene* scene)
@@ -125,7 +110,7 @@ void InvaderMovingSystem::ApplyDigitalActions(Entity* entity, const Vector<FastN
         TransformComponent* transComp = entity->GetComponent<TransformComponent>();
         const Transform& lt = transComp->GetLocalTransform();
         transComp->SetLocalTransform(Transform(
-                lt.GetTranslation() + vec, Vector3(1.0, 1.0, 1.0), lt.GetRotation()));
+        lt.GetTranslation() + vec, Vector3(1.0, 1.0, 1.0), lt.GetRotation()));
     }
 }
 
@@ -139,12 +124,12 @@ void InvaderMovingSystem::ApplyAnalogActions(Entity* entity, const AnalogActions
         if (it.first.actionId == TELEPORT)
         {
             Vector2 analogPos = ConvertFixedPrecisionToAnalog(it.first.precision, it.second);
-            Vector2 newPos2 = GetWorldTeleportPosition(analogPos);
-            Vector3 newPos(newPos2.x, newPos2.y, 0.f);
+            DenormalizeAnalog(analogPos, InvaderMovingSystemDetail::TELEPORT_HALF_RANGE);
+            Vector3 newPos(analogPos.x, analogPos.y, 0.f);
             TransformComponent* transComp = entity->GetComponent<TransformComponent>();
             const Transform& lt = transComp->GetLocalTransform();
             transComp->SetLocalTransform(Transform(
-                    newPos, lt.GetScale(), lt.GetRotation()));
+            newPos, lt.GetScale(), lt.GetRotation()));
         }
     }
 }

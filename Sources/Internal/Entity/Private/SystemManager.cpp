@@ -43,7 +43,7 @@ void CollectMethods(UnorderedMap<SP::Type, Set<SysTypeToMethod>>& methods, const
             if (meta != nullptr)
             {
                 const auto& argsType = method->fn.GetInvokeParams().argsType;
-                if (argsType.size() == 2 && argsType[0] == type->Pointer() && argsType[1]->Is<float32>())
+                if (argsType.size() == 2 && argsType[0]->IsPointer() && argsType[1]->Is<float32>())
                 {
                     DVASSERT(methods[meta->type].count({ type, method.get() }) == 0, "Order already in use. System will not be added.");
                     methods[meta->type].emplace(type, method.get());

@@ -94,8 +94,9 @@ void Snapshot::RemoveEntity(NetworkID parentEntityId, NetworkID entityId)
                 SnapshotEntity::Children* children = &parentIt->second.children;
 
                 children->erase(std::remove_if(children->begin(), children->end(), [entityId](NetworkID id) {
-                    return (entityId == id);
-                }), children->end());
+                                    return (entityId == id);
+                                }),
+                                children->end());
             }
         }
     }

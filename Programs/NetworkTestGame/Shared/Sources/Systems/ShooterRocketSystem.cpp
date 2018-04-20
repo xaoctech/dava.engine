@@ -32,11 +32,11 @@
 #include "Visibility/SimpleVisibilityShapeComponent.h"
 
 #include <Physics/Core/BoxShapeComponent.h>
-#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+
 #include <Physics/CollisionSingleComponent.h>
 #include <Physics/Core/DynamicBodyComponent.h>
 #include <Physics/PhysicsSystem.h>
-
+#include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
 using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterRocketSystem)
@@ -157,7 +157,7 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
                 float32 angle = (subRocketIdx - (subRocketCount / 2.f)) * DEG_TO_RAD * 45.f;
                 Quaternion subRotation = rotation * Quaternion::MakeRotation(Vector3::UnitZ, -angle);
                 subTrunsComp->SetLocalTransform(Transform(
-                        position, Vector3(1.f, 1.0f, 1.0f), subRotation));
+                position, Vector3(1.f, 1.0f, 1.0f), subRotation));
                 GetScene()->AddNode(subRocket);
             }
         }
@@ -198,7 +198,7 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
 
     position += rotation.ApplyToVectorFast(Vector3(0, ShooterRocketComponent::MOVE_SPEED, 0) * timeElapsed);
     transComp->SetLocalTransform(Transform(
-            position, Vector3(1.0, 1.0, 1.0), rotation));
+    position, Vector3(1.0, 1.0, 1.0), rotation));
     rocketComp->SetDistance(distance + 1);
 }
 
@@ -253,7 +253,7 @@ void ShooterRocketSystem::SimulateRocket2(DAVA::Entity* rocket)
     position += rotation.ApplyToVectorFast(Vector3(0, ShooterRocketComponent::MOVE_SPEED, 0) * timeElapsed);
 
     transComp->SetLocalTransform(Transform(
-            position, Vector3(1.0, 1.0, 1.0), rotation));
+    position, Vector3(1.0, 1.0, 1.0), rotation));
     rocketComp->SetDistance(distance + 1);
 }
 

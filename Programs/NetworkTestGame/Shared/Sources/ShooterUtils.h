@@ -65,3 +65,5 @@ void InitializeScene(DAVA::Scene& scene);
 DAVA::Vector3 GetRandomPlayerSpawnPosition();
 
 DAVA::uint32 GetBodyPartDamage(const DAVA::FastName& jointName);
+
+bool CanAct(const DAVA::Entity* entity);

@@ -2,6 +2,7 @@
 #include "Components/ShooterAimComponent.h"
 #include "Components/ShooterRoleComponent.h"
 #include "Components/ShooterCarUserComponent.h"
+#include "Components/RocketSpawnComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 #include "Visibility/ObserverComponent.h"
 #include "ShooterUtils.h"
@@ -28,7 +29,9 @@
 #include <Physics/Core/PhysicsUtils.h>
 
 #include <NetworkCore/NetworkCoreUtils.h>
+#include <NetworkCore/Scene3D/Components/NetworkPredictComponent.h>
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
+#include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCarSystem)
 {
@@ -207,7 +210,7 @@ DAVA::Entity* ShooterCarSystem::GetTargetCar(ShooterAimComponent* aimComponent) 
             DVASSERT(targetTransformComponent != nullptr);
             const Transform& targetWt = targetTransformComponent->GetWorldTransform();
 
-            if (Distance(targetWt.GetTranslation(), shooterWt.GetTranslation()) < 3.5f)
+            if (Distance(targetWt.GetTranslation(), shooterWt.GetTranslation()) < SHOOTER_CAR_MAX_INTERACT_DISTANCE)
             {
                 return aimRayEndEntity;
             }
@@ -291,12 +294,13 @@ void ShooterCarSystem::TryPutInCar(ShooterCarUserComponent* playerCarUserCompone
             playerCarUserComponent->carNetworkId = carReplicationComponent->GetNetworkID();
             playerCarUserComponent->passengerIndex = carInfo.firstFreeIndex;
 
-            // Teleport playerCarUserComponent under the ground for now
+            // Drop playerCarUserComponent under the ground for now
             // TODO: change hierarchy so that playerCarUserComponent is a child of the car. Can't do that right now since replication system fails when hierarchy changes
             TransformComponent* carUserTransformComponent = playerEntity->GetComponent<TransformComponent>();
             const Transform& carUserTransform = carUserTransformComponent->GetLocalTransform();
+            Vector3 position = carUserTransform.GetTranslation() + SHOOTER_CAR_UNDERGROUND_OFFSET;
             carUserTransformComponent->SetLocalTransform(Transform(
-                    Vector3(0.0f, 0.0f, 0.0f), carUserTransform.GetScale(), carUserTransform.GetRotation()));
+            position, carUserTransform.GetScale(), carUserTransform.GetRotation()));
 
             // Hack: make all objects in the scene unconditionally visible for playerCarUserComponent
             ObserverComponent* observerComp = playerEntity->GetComponent<ObserverComponent>();
@@ -331,7 +335,7 @@ void ShooterCarSystem::MoveOutOfCar(ShooterCarUserComponent* playerCarUserCompon
     TransformComponent* carUserTransformComponent = playerEntity->GetComponent<TransformComponent>();
     const Transform& carUserTransform = carUserTransformComponent->GetLocalTransform();
     carUserTransformComponent->SetLocalTransform(Transform(
-            nodePositionWorldSpace, carUserTransform.GetScale(), carUserTransform.GetRotation()));
+    nodePositionWorldSpace, carUserTransform.GetScale(), carUserTransform.GetRotation()));
 
     // Reset his aim angle around X axis
 
@@ -445,15 +449,62 @@ void ShooterCarSystem::ToggleCharacterStateIfRequired(DAVA::Entity* player) cons
             // Will be recreated when playerCarUserComponent gets out
             player->RemoveComponent<CapsuleCharacterControllerComponent>();
         }
+
+        NetworkPredictComponent* networkPredictComponent = player->GetComponent<NetworkPredictComponent>();
+        if (networkPredictComponent != nullptr &&
+            networkPredictComponent->GetPredictionMask().IsSet<NetworkTransformComponent>())
+        {
+            // remove all components from prediction mask except aiming component
+            // will be restored when player gets out
+            player->RemoveComponent<NetworkPredictComponent>();
+
+            EntitiesManager* entitiesManager = GetScene()->GetEntitiesManager();
+            entitiesManager->UpdateCaches();
+
+            ComponentMask predictionMask;
+            predictionMask.Set<ShooterAimComponent>();
+
+            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionMask);
+            player->AddComponent(networkPredictComponent);
+        }
     }
-    else if (player->GetComponent<CapsuleCharacterControllerComponent>() == nullptr)
+    else
     {
-        // Recreate CCT once we got out
-        CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
-        controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
-        controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
-        controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-        controllerComponent->SetTypeMaskToCollideWith(SHOOTER_CCT_COLLIDE_WITH_MASK);
-        player->AddComponent(controllerComponent);
+        if (player->GetComponent<CapsuleCharacterControllerComponent>() == nullptr)
+        {
+            const BattleOptionsSingleComponent* optionsComponent = GetScene()->GetSingleComponentForRead<BattleOptionsSingleComponent>(this);
+
+            // Recreate CCT once we got out
+            CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
+            controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
+            controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
+            controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
+            uint32 collisionMask = SHOOTER_CCT_COLLIDE_WITH_MASK;
+            if (!optionsComponent->collideCharacters)
+            {
+                collisionMask &= ~SHOOTER_CHARACTER_COLLISION_TYPE;
+            }
+            controllerComponent->SetTypeMaskToCollideWith(collisionMask);
+            player->AddComponent(controllerComponent);
+        }
+
+        NetworkPredictComponent* networkPredictComponent = player->GetComponent<NetworkPredictComponent>();
+        if (networkPredictComponent != nullptr &&
+            !networkPredictComponent->GetPredictionMask().IsSet<NetworkTransformComponent>())
+        {
+            // restore proper prediction mask once we got out
+            player->RemoveComponent<NetworkPredictComponent>();
+
+            EntitiesManager* entitiesManager = GetScene()->GetEntitiesManager();
+            entitiesManager->UpdateCaches();
+
+            ComponentMask predictionMask;
+            predictionMask.Set<NetworkTransformComponent>();
+            predictionMask.Set<ShooterAimComponent>();
+            predictionMask.Set<RocketSpawnComponent>();
+
+            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionMask);
+            player->AddComponent(networkPredictComponent);
+        }
     }
 }

@@ -113,7 +113,7 @@ void ShootSystem::NextState(Entity* bullet, ShootComponent* shootComponent, DAVA
         TransformComponent* transformComp = bullet->GetComponent<TransformComponent>();
         Vector3 moveVector(0.f, ShootComponent::MOVE_SPEED * timeElapsed, 0.f);
         transformComp->SetLocalTransform(Transform(
-                Matrix4::MakeTranslation(moveVector) * transformComp->GetLocalMatrix()));
+        Matrix4::MakeTranslation(moveVector) * transformComp->GetLocalMatrix()));
         shootComponent->SetDistance(shootComponent->GetDistance() + 1);
         return;
     }

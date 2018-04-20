@@ -74,11 +74,10 @@ append_property(EXTERNAL_TEST_FOLDERS "${DAVA_ROOT_DIR}/Programs/NetworkTestGame
 define_source                  ( SOURCE "Sources"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/*.cpp"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Systems/*.cpp"
-                                "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Systems/AI/*.cpp"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Components/*.cpp"
-                                "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Components/AI/*.cpp"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Components/SingleComponents/*.cpp"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Visibility/*.cpp"
+                                "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/Bots/*.cpp"
                                 "${DAVA_ROOT_DIR}/Programs/NetworkTestGame/Shared/Sources/GameModes/Cubes/*.cpp"
                                 )
 

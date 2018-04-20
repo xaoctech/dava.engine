@@ -24,9 +24,151 @@
 #include <Reflection/ReflectedObject.h>
 #include <Reflection/ReflectedType.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <FeatureManager/FeatureManager.h>
 
 namespace DAVA
 {
+namespace NetworkDeltaReplicationSystemDetail
+{
+// BaseFrameId for each player entity per entity tries to round to nearest common and acknowledged frame (sharedFrameId).
+// As a consequence, cache hit count will increase. O(N^2) versus O(N*(SnapshotHistorySize / SharedFramePeriod).
+// On the other hand increasing this value leads to growth delta diff.
+static const uint32 SharedFramePeriod = 16;
+static_assert((SharedFramePeriod & (SharedFramePeriod - 1)) == 0, "Should be PowerOf2 or Zero");
+// BaseFrameId should not be too old.
+static const uint32 MaxFrameCountOverhead = SharedFramePeriod * 2;
+static_assert(SharedFramePeriod < MaxFrameCountOverhead, "Should be greater than SharedFramePeriod");
+
+bool IsEntitySharedOnFrame(NetworkID netEntityId, uint32 frameId)
+{
+    DAVA_IF_FEATURE(SharedFrame)
+    {
+        const uint32 smoothFrameId = frameId + static_cast<uint32>(netEntityId);
+        const uint32 sharedFramePeriod = SharedFramePeriod;
+        return (sharedFramePeriod && (smoothFrameId % sharedFramePeriod) == 0);
+    }
+
+    return false;
+}
+
+struct FrameRange
+{
+    uint8 GetFrameOffset(uint32 fromFrameId) const
+    {
+        DVASSERT(fromFrameId <= currFrameId);
+        if (fromFrameId)
+        {
+            uint32 diff = currFrameId - fromFrameId;
+            return static_cast<uint8>((diff < uint8(~0)) ? diff : 0);
+        }
+
+        return 0;
+    }
+
+    uint32 baseFrameId = 0;
+    uint32 currFrameId = 0;
+    uint32 delFrameId = 0;
+    uint32 sharedFrameId = 0;
+};
+
+class DiffCache
+{
+    static const uint32 DumpStatisticSec = 30;
+
+public:
+    struct Key
+    {
+        M::OwnershipRelation ownership;
+        NetworkID entityId;
+        uint32 frameIdBase;
+
+        bool operator==(const Key& k) const
+        {
+            return entityId == k.entityId && frameIdBase == k.frameIdBase && ownership == k.ownership;
+        }
+    };
+
+    struct Value
+    {
+        const uint8* buff = nullptr;
+        uint32 size = 0;
+    };
+
+    const Value* Find(const NetworkDeltaReplicationSystemServer::DiffParams& params) const
+    {
+        ++stats.findCount;
+        const auto& findIt = index.find({ params.ownership, params.entityId, params.frameIdBase });
+        if (findIt == index.end())
+        {
+            ++stats.missCount;
+            return nullptr;
+        }
+
+        ++stats.hitCount;
+        const DiffCache::Value& value = findIt->second;
+        return &value;
+    }
+
+    void Set(const NetworkDeltaReplicationSystemServer::DiffParams& params)
+    {
+        const uint8* insPtr = buffer.Insert(params.buff, static_cast<uint32>(params.outDiffSize), 1);
+        Value value = { insPtr, static_cast<uint32>(params.outDiffSize) };
+        Key key = { params.ownership, params.entityId, params.frameIdBase };
+        index.emplace(std::move(key), std::move(value));
+    }
+
+    void Reset(float32 timeElapsed)
+    {
+        buffer.Reset();
+        index.clear();
+
+        ++stats.numberOfFrames;
+        stats.time += timeElapsed;
+        if (DumpStatisticSec != 0 && static_cast<uint32>(stats.time) > DumpStatisticSec)
+        {
+            const auto getPercent = [this](uint32 val)
+            {
+                return static_cast<uint32>(100 * (val / static_cast<float32>(stats.findCount)));
+            };
+
+            const auto getAvgPerFrame = [this](uint32 val)
+            {
+                return static_cast<uint32>(val / static_cast<float32>(stats.numberOfFrames));
+            };
+
+            Logger::Debug("[DeltaDiffCache] about per frame:\n\t[Get]:%lu\n\t[Hit]:%lu (%d%%)\n\t[Mis]:%lu (%d%%)",
+                          getAvgPerFrame(stats.findCount), getAvgPerFrame(stats.hitCount), getPercent(stats.hitCount),
+                          getAvgPerFrame(stats.missCount), getPercent(stats.missCount));
+            stats = {};
+        }
+    }
+
+private:
+    struct Stats
+    {
+        uint32 hitCount = 0;
+        uint32 missCount = 0;
+        uint32 findCount = 0;
+        uint32 numberOfFrames = 0;
+        float32 time = 0.f;
+    };
+
+    struct Hash
+    {
+        size_t operator()(const Key& k) const
+        {
+            // leave high 3 bits for ownership, middle 8 bits for frameId and fill others with entityId
+            return (k.ownership << 29 | k.frameIdBase << 21 | static_cast<DAVA::uint32>(k.entityId));
+        }
+    };
+
+    ElasticBuffer buffer;
+    UnorderedMap<Key, Value, Hash> index;
+    mutable Stats stats;
+};
+
+} //namespace NetworkDeltaReplicationSystemDetail
+
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaReplicationSystemServer)
 {
     ReflectionRegistrator<NetworkDeltaReplicationSystemServer>::Begin()[M::Tags("network", "server")]
@@ -39,6 +181,7 @@ NetworkDeltaReplicationSystemServer::NetworkDeltaReplicationSystemServer(Scene* 
     : NetworkDeltaReplicationSystemBase(scene)
     , responderDataList(MAX_NETWORK_PLAYERS_COUNT)
     , playerIdUpperBound(0)
+    , diffCache(std::make_unique<NetworkDeltaReplicationSystemDetail::DiffCache>())
 {
     DVASSERT(IsServer(scene));
 
@@ -80,9 +223,9 @@ void NetworkDeltaReplicationSystemServer::RemoveEntity(Entity* entity)
             auto findIt = data.baseFrames.find(netEntityId);
             if (findIt != data.baseFrames.end())
             {
-                FrameRange& frameRange = findIt->second;
+                NetworkDeltaReplicationSystemDetail::FrameRange& frameRange = findIt->second;
                 frameRange.delFrameId = frameId;
-                data.removedEntities[netEntityId] = GetPlayerOwnershipRelation(entity, entPlayerId);
+                data.removedEntities[netEntityId] = GetPlayerOwnershipRelation(playerId, entPlayerId);
             }
         }
     }
@@ -116,11 +259,13 @@ void NetworkDeltaReplicationSystemServer::ProcessFixed(float32 timeElapsed)
         OnReceive(recvPacket.token, recvPacket.data);
     }
 
+    diffCache->Reset(timeElapsed);
     for (NetworkPlayerID playerId = 0; playerId <= playerIdUpperBound; ++playerId)
     {
         ResponderData& data = responderDataList[playerId];
-        if (!data.token.empty() && server->HasResponder(data.token))
+        if (!data.token.empty())
         {
+            DVASSERT(server->HasResponder(data.token));
             ProcessAckPackets(data);
             ProcessResponder(data, playerId);
         }
@@ -128,14 +273,51 @@ void NetworkDeltaReplicationSystemServer::ProcessFixed(float32 timeElapsed)
 }
 
 size_t
-NetworkDeltaReplicationSystemServer::CreateDiff(SnapshotSingleComponent::CreateDiffParams& params)
+NetworkDeltaReplicationSystemServer::CreateDiff(DiffParams& params)
 {
-    if (snapshotSingleComponent->GetServerDiff(params))
+    DVASSERT(params.buff != nullptr);
+    DVASSERT(params.buffSize > 0);
+    DVASSERT(params.frameIdBase <= params.frameId);
+    // Diff will be cached if it can be used for other player. For example each diff with ownership OWNER is unique,
+    // Opposite scene's diff is shared for all.
+    const bool canBeCached = params.ownership != M::OwnershipRelation::OWNER || params.entityId == NetworkID::SCENE_ID;
+    Snapshot* snapshotBase = snapshotSingleComponent->GetServerSnapshot(params.frameIdBase);
+    if (nullptr == snapshotBase)
     {
-        return params.outDiffSize;
+        params.frameIdBase = 0;
     }
 
-    return 0;
+    if (canBeCached)
+    {
+        const NetworkDeltaReplicationSystemDetail::DiffCache::Value* result = diffCache->Find(params);
+        if (result)
+        {
+            if (result->size > params.buffSize)
+            {
+                return 0;
+            }
+
+            Memcpy(params.buff, result->buff, result->size);
+
+            return result->size;
+        }
+    }
+
+    Snapshot* snapshot = snapshotSingleComponent->GetServerSnapshot(params.frameId);
+    DVASSERT(snapshot != nullptr);
+    DVASSERT(snapshot != snapshotBase);
+
+    size_t diffSize = SnapshotUtils::CreateSnapshotDiff(snapshotBase, snapshot, params.entityId, params.ownership, params.buff, params.buffSize);
+    if (diffSize > 0)
+    {
+        params.outDiffSize = diffSize;
+        if (canBeCached)
+        {
+            diffCache->Set(params);
+        }
+    }
+
+    return diffSize;
 }
 
 void NetworkDeltaReplicationSystemServer::OnReceive(const FastName& token, const Vector<uint8>& data)
@@ -153,6 +335,7 @@ void NetworkDeltaReplicationSystemServer::ProcessAckPackets(ResponderData& respo
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkDeltaReplicationSystemServer::ProcessAckPackets");
 
+    using namespace NetworkDeltaReplicationSystemDetail;
     const Responder& responder = server->GetResponder(responderData.token);
 
     SeqToSentFrames& seqToSentFrames = responderData.sentFrames;
@@ -166,7 +349,7 @@ void NetworkDeltaReplicationSystemServer::ProcessAckPackets(ResponderData& respo
         }
 
         const SequenceId maxSeqId = responderData.maxSeq;
-        const SequenceId minSeqId = maxSeqId - MAX_SENT_COUNT;
+        const SequenceId minSeqId = maxSeqId - MaxSentCount;
         bool inRange = false;
         if (minSeqId < maxSeqId)
         {
@@ -187,11 +370,11 @@ void NetworkDeltaReplicationSystemServer::ProcessAckPackets(ResponderData& respo
 
         if (!inRange)
         {
-            Logger::Error("Ack was skipped. Enlarge MAX_SENT_COUNT");
+            Logger::Error("Ack was skipped. Enlarge MaxSentCount");
             continue;
         }
 
-        SequenceData& seqData = seqToSentFrames[sequenceId % MAX_SENT_COUNT];
+        SequenceData& seqData = seqToSentFrames[sequenceId % MaxSentCount];
         if (0 == seqData.frameId)
         {
             Logger::Error("Unknown seqId:%d frameId:%zu responder:%s", sequenceId, seqData.frameId, responder.GetToken().c_str());
@@ -203,13 +386,17 @@ void NetworkDeltaReplicationSystemServer::ProcessAckPackets(ResponderData& respo
             auto findIt = entityToBaseFrames.find(netEntityId);
             if (findIt != entityToBaseFrames.end())
             {
-                FrameRange& frameRange = findIt->second;
-                if (frameRange.baseFrameId <= seqData.frameId && seqData.frameId <= frameRange.currFrameId)
+                FrameRange& range = findIt->second;
+                if (range.baseFrameId <= seqData.frameId && seqData.frameId <= range.currFrameId)
                 {
-                    frameRange.baseFrameId = seqData.frameId;
+                    if (IsEntitySharedOnFrame(netEntityId, seqData.frameId))
+                    {
+                        range.sharedFrameId = seqData.frameId;
+                    }
+                    range.baseFrameId = seqData.frameId;
                 }
 
-                if (frameRange.delFrameId > 0 && frameRange.delFrameId <= frameRange.baseFrameId)
+                if (range.delFrameId > 0 && range.delFrameId <= range.baseFrameId)
                 {
                     responderData.removedEntities.erase(netEntityId);
                     entityToBaseFrames.erase(netEntityId);
@@ -226,6 +413,7 @@ void NetworkDeltaReplicationSystemServer::ProcessAckPackets(ResponderData& respo
 void NetworkDeltaReplicationSystemServer::OnClientConnect(const FastName& token)
 {
     const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
+    Logger::Debug("[NetworkDeltaReplicationSystemServer::OnClientConnect] Set %d token:%s", playerID, token.c_str());
     playerIdUpperBound = std::max(playerID, playerIdUpperBound);
 
     ResponderData& data = responderDataList[playerID];
@@ -234,13 +422,11 @@ void NetworkDeltaReplicationSystemServer::OnClientConnect(const FastName& token)
 
 void NetworkDeltaReplicationSystemServer::OnClientDisconnect(const FastName& token)
 {
-    if (server->HasResponder(token))
+    Logger::Debug("[NetworkDeltaReplicationSystemServer::OnClientDisconnect] Wipe state token:%s", token.c_str());
+    const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
+    if (playerID)
     {
-        Logger::Debug("[NetworkDeltaReplicationSystemServer::OnClientDisconnect] Wipe state token:%s", token.c_str());
-        const NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
-
         ResponderData& data = responderDataList[playerID];
-
         data.token = FastName();
         data.acks.clear();
         data.baseFrames.clear();
@@ -252,18 +438,33 @@ void NetworkDeltaReplicationSystemServer::OnClientDisconnect(const FastName& tok
 NetworkDeltaReplicationSystemServer::WriteResult
 NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::OwnershipRelation ownership, ResponderEnvironment& env)
 {
+    using namespace NetworkDeltaReplicationSystemDetail;
+
     FrameRange& range = env.entityToBaseFrames[netEntityId];
     range.currFrameId = env.frameId;
 
     if (!tmpBlock.size)
     {
+        uint32 baseFrameId = range.baseFrameId;
+        DAVA_IF_FEATURE(SharedFrame)
+        {
+            if (range.sharedFrameId && range.baseFrameId > range.sharedFrameId)
+            {
+                const uint32 frameCountOverhead = range.baseFrameId - range.sharedFrameId;
+                if (frameCountOverhead < MaxFrameCountOverhead)
+                {
+                    baseFrameId = range.sharedFrameId;
+                }
+            }
+        }
+
         const uint32 tmpHeadersOffset = emptyPacketHeaderSize + entHeaderSize;
-        SnapshotSingleComponent::CreateDiffParams params;
+        DiffParams params;
         params.buff = tmpBlock.buff + tmpHeadersOffset;
-        params.buffSize = tmpBlock.SIZE - tmpHeadersOffset;
+        params.buffSize = tmpBlock.Size - tmpHeadersOffset;
         params.entityId = netEntityId;
         params.frameId = range.currFrameId;
-        params.frameIdBase = range.baseFrameId;
+        params.frameIdBase = baseFrameId;
         params.ownership = ownership;
         const size_t diffSize = CreateDiff(params);
         // We can save net-traffic by ignoring to send touch-info for static objects.
@@ -276,23 +477,9 @@ NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Owner
                 return WriteResult::CONTINUE;
             }
         }
-#if 0
-        static UnorderedMap<uint32, uint32> stats;
-        static uint32 counter__ = 0;
-        stats[diffSize]++;
-        counter__++;
-        if (counter__ > 50000)
-        {
-            counter__ = 0;
-            for (auto& pair : stats)
-            {
-                Logger::Info("%u %u", pair.first, pair.second);
-            }
-        }
-#endif
 
 #ifdef __DAVAENGINE_DEBUG__
-        CheckTrafficLimit(netEntityId, diffSize);
+        CheckTrafficLimit(netEntityId, static_cast<uint32>(diffSize));
 #endif
 
         DVASSERT(diffSize > 0, "Snapshot diff size bigger than BIG_BUFFER_SIZE");
@@ -303,23 +490,28 @@ NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Owner
             return WriteResult::EXCEPTION;
         }
 
-        range.baseFrameId = params.outFrameIdBase;
+        if (!params.frameIdBase)
+        {
+            range.baseFrameId = 0;
+            range.sharedFrameId = 0;
+        }
+
         EntityHeader entHeader;
         entHeader.netEntityId = netEntityId;
-        entHeader.frameOffset = range.GetFrameCount();
+        entHeader.frameOffset = range.GetFrameOffset(params.frameIdBase);
         entHeader.Save(tmpBlock.buff + emptyPacketHeaderSize);
-        tmpBlock.size = tmpHeadersOffset + static_cast<uint32>(diffSize);
+        tmpBlock.size = static_cast<uint32>(tmpHeadersOffset + diffSize);
 
         if (0 == entHeader.frameOffset || tmpBlock.size > NetworkCoreUtils::ENET_DEFAULT_MTU_UNCOMPRESSED)
         {
             DVASSERT(tmpBlock.size <= NetworkCoreUtils::ENET_DEFAULT_MTU_UNCOMPRESSED || 0 == entHeader.frameOffset,
                      "Size tmpger than MTU is possible only for full sync");
-            //Logger::Debug("[WriteEntity] Full sync netEntityId:%d frameId:%d size:%d", netEntityId.networkID, range.currFrameId, tmpBlock.size);
             /*
              *  Huge and full diff are sent by reliable channel.
              *  Sooner or later client will receive full sync and depended diff together.
              */
             range.baseFrameId = range.currFrameId;
+            range.sharedFrameId = 0;
             return WriteResult::FULL_SYNC;
         }
     }
@@ -331,12 +523,12 @@ NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Owner
         Memcpy(mtuBlock.buff + mtuBlock.size, tmpBlock.buff + emptyPacketHeaderSize, copySize);
         mtuBlock.size += copySize;
         tmpBlock.size = 0;
-        SequenceData& seqData = env.seqToSentFrames[env.sequenceId % MAX_SENT_COUNT];
+        SequenceData& seqData = env.seqToSentFrames[env.sequenceId % MaxSentCount];
         if (seqData.frameId != env.frameId)
         {
             if (seqData.frameId > 0)
             {
-                //                Logger::Warning("Nack seqId:%d lostFrameId:%zu currFrame:%zu", env.sequenceId, seqData.frameId, env.frameId);
+                // Client hasn't confirmed this seqId.
                 seqData.networkIds.clear();
             }
             seqData.frameId = env.frameId;
@@ -352,9 +544,9 @@ NetworkDeltaReplicationSystemServer::WriteEntity(NetworkID netEntityId, M::Owner
 
 void NetworkDeltaReplicationSystemServer::SendMtuBlock(ResponderEnvironment& env)
 {
+    PacketParams packetParams = PacketParams::Unreliable(PacketParams::DELTA_REPLICATION_CHANNEL_ID);
     env.pktHeader.frameId = env.frameId;
     env.pktHeader.sequenceId = env.sequenceId;
-    PacketParams packetParams = PacketParams::Unreliable(PacketParams::DELTA_REPLICATION_CHANNEL_ID);
     env.pktHeader.Save(mtuBlock.buff);
     env.responder.Send(mtuBlock.buff, mtuBlock.size, packetParams);
     env.pktHeader.Reset();
@@ -371,7 +563,7 @@ void NetworkDeltaReplicationSystemServer::SendMtuBlock(ResponderEnvironment& env
 void NetworkDeltaReplicationSystemServer::SendTmpBlock(ResponderEnvironment& env)
 {
     const PacketHeader tmpPacketHeader = { true, nullptr, 0, env.frameId };
-    PacketParams packetParams = PacketParams::Reliable(PacketParams::DELTA_REPLICATION_CHANNEL_ID);
+    const PacketParams packetParams = PacketParams::Reliable(PacketParams::DELTA_REPLICATION_CHANNEL_ID);
     tmpPacketHeader.Save(tmpBlock.buff);
     env.responder.Send(tmpBlock.buff, tmpBlock.size, packetParams);
     tmpBlock.size = 0;
@@ -383,6 +575,7 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& respon
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkDeltaReplicationSystemServer::ProcessResponder");
 
+    using namespace NetworkDeltaReplicationSystemDetail;
     const Responder& responder = server->GetResponder(responderData.token);
 
     const uint32 frameId = timeComp->GetFrameId();
@@ -421,19 +614,24 @@ void NetworkDeltaReplicationSystemServer::ProcessResponder(ResponderData& respon
                 continue;
             }
 
+            NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
+            const NetworkID netEntityId = netReplComp->GetNetworkID();
             if (info.fresh)
             {
                 info.fresh = false;
             }
-            else if (info.period > 1 && (frameId + entity->GetID()) % info.period > 0)
+            else if (info.period > 1)
             {
-                /* Throttling. */
-                continue;
+                const uint8 sendPeriod = static_cast<uint8>(pow(2.0, info.period - 1));
+                const uint32 smoothFrameId = frameId + static_cast<uint32>(netEntityId);
+                if ((smoothFrameId % sendPeriod) && !IsEntitySharedOnFrame(netEntityId, frameId))
+                {
+                    /* Throttling. */
+                    continue;
+                }
             }
 
-            NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
-            const NetworkID netEntityId = netReplComp->GetNetworkID();
-            M::OwnershipRelation ownership = GetPlayerOwnershipRelation(entity, playerId);
+            M::OwnershipRelation ownership = GetPlayerOwnershipRelation(playerId, netReplComp->GetNetworkPlayerID());
             ProcessEntity(netEntityId, ownership, env);
         }
     }

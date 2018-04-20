@@ -22,5 +22,4 @@ public:
 
 private:
     DAVA::ComponentGroup<HealthComponent>* healthComponents = nullptr;
-    DAVA::ComponentGroupOnAdd<HealthComponent>* healthComponentsPending = nullptr;
 };

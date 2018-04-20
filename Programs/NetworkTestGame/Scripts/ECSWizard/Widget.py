@@ -3,7 +3,7 @@
 
 import sys, os
 
-from configs import config, ROOT, REFLECTION_REGISTER
+from configs import config, ROOT, REFLECTION_REGISTER, FILE
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, QRadioButton, QButtonGroup, QMessageBox
 
 def on_create(widget, txt, type_grop, place_grop):
@@ -22,21 +22,31 @@ def on_create(widget, txt, type_grop, place_grop):
 
         os.system('mv %s%s.* %s/%s' % (name, resource, ROOT, place_cfg[resource]))
 
-        refl_register_file = place_cfg[REFLECTION_REGISTER]
+        refl_register_config = place_cfg[REFLECTION_REGISTER]
+        refl_register_file = refl_register_config[FILE]
+        refl_include_prefix = refl_register_config[resource]
         in_filename = '%s/%s' % (ROOT, refl_register_file)
         out_filename = '%s/%s.back' % (ROOT, refl_register_file)
-        was_found = False
-        tag = '// %s' % resource
+        has_register_tag = False
+        has_include_tag = False
+        register_tag = '// %s' % resource
+        include_tag = '// Include %s' % resource
         with open(in_filename, 'rt') as fin:
             with open(out_filename, 'wt') as fout:
                 for line in fin:
                     fout.write(line)
-                    if tag in line:
-                        was_found = True
+                    if register_tag in line:
+                        has_register_tag = True
                         fout.write('    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(%s%s);\n' % (name, resource))
+                    if include_tag in line:
+                        has_include_tag = True
+                        fout.write('#include "%s/%s%s.h"\n' % (refl_include_prefix, name, resource))
 
-        if not was_found:
-            raise Exception('tag %s not found' % tag)
+        if not has_register_tag:
+            raise Exception('%s not found' % register_tag)
+
+        if not has_include_tag:
+            raise Exception('%s not found' % include_tag)
 
         os.system('mv %s %s' % (out_filename, in_filename))
 

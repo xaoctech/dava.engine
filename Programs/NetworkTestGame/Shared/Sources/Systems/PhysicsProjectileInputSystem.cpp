@@ -107,7 +107,7 @@ void PhysicsProjectileInputSystem::ApplyDigitalActions(Entity* entity, const Vec
             Entity* projectile = CreateProjectileModel();
             TransformComponent* projectileTransform = projectile->GetComponent<TransformComponent>();
             projectileTransform->SetLocalTransform(Transform(
-                    shooterTransform.GetTranslation(), shooterTransform.GetScale(), shooterTransform.GetRotation()));
+            shooterTransform.GetTranslation(), shooterTransform.GetScale(), shooterTransform.GetRotation()));
             projectile->AddComponent(projectileComponent);
 
             projectileComponent->SetInitialPosition(shooterTransform.GetTranslation());

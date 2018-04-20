@@ -7,36 +7,6 @@
 #include <Debug/ProfilerCPU.h>
 #include <Reflection/ReflectionRegistrator.h>
 
-struct ServerDiffCacheKey
-{
-    DAVA::NetworkID entityId;
-    DAVA::uint32 frameIdBase;
-
-    bool operator==(const ServerDiffCacheKey& k) const
-    {
-        return entityId == k.entityId && frameIdBase == k.frameIdBase;
-    }
-};
-
-namespace std
-{
-template <>
-struct hash<ServerDiffCacheKey>
-{
-    std::size_t operator()(const ServerDiffCacheKey& k) const
-    {
-#if 1
-        // leave high 8 bits for frameId and fill others with entityId
-        return (k.frameIdBase << 24 | static_cast<DAVA::uint32>(k.entityId));
-#else
-        // using Cantor pairing function
-        // see https://stackoverflow.com/questions/919612/mapping-two-integers-to-one-in-a-unique-and-deterministic-way
-        return ((k.frameIdBase + k.entityId) * (k.frameIdBase + k.entityId + 1) >> 1) + k.frameIdBase
-#endif
-    }
-};
-} // namespace std
-
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SnapshotSingleComponent)
@@ -48,69 +18,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(SnapshotSingleComponent)
 
 namespace SnapshotSingleComponentDetails
 {
-class ServerDiffCache
-{
-public:
-    struct CachedDiff
-    {
-        void* buff = nullptr;
-        size_t size = 0;
-    };
-
-    CachedDiff GetCache(const SnapshotSingleComponent::CreateDiffParams& params)
-    {
-        if (params.ownership == M::OwnershipRelation::ENEMY && params.frameId == cacheFrameId)
-        {
-            auto it = cache.find({ params.entityId, params.frameIdBase });
-            if (it != cache.end())
-            {
-                cacheHitCount++;
-                return it->second;
-            }
-        }
-
-        return CachedDiff();
-    }
-
-    void SetCache(const SnapshotSingleComponent::CreateDiffParams& params)
-    {
-        if (params.frameId != cacheFrameId)
-        {
-            cacheFrameId = params.frameId;
-            cache.clear();
-            memPoolPos = 0;
-        }
-
-        if (params.ownership == M::OwnershipRelation::ENEMY)
-        {
-            DVASSERT(params.entityId != NetworkID::INVALID);
-            DVASSERT(params.buffSize > 0);
-
-            size_t spaceLeft = memPool.size() - memPoolPos;
-
-            if (params.outDiffSize < spaceLeft)
-            {
-                void* cacheBuff = &memPool[memPoolPos];
-                ::memcpy(cacheBuff, params.buff, params.outDiffSize);
-                memPoolPos += params.outDiffSize;
-
-                ServerDiffCacheKey key{ params.entityId, params.outFrameIdBase };
-                CachedDiff val{ cacheBuff, static_cast<uint32>(params.outDiffSize) };
-
-                cache[key] = val;
-            }
-        }
-    }
-
-private:
-    uint32 cacheFrameId = 0;
-    size_t cacheHitCount = 0;
-    size_t memPoolPos = 0;
-    std::array<uint8, 1024 * 1024 * 4> memPool; // 4 mb
-
-    UnorderedMap<ServerDiffCacheKey, CachedDiff> cache;
-};
-
 Snapshot* GetSnapshot(SnapshotSingleComponent::SnapshotHistory& history, size_t& pos, uint32 frameId, bool create)
 {
     Snapshot* ret = nullptr;
@@ -209,8 +116,6 @@ SnapshotSingleComponent::SnapshotSingleComponent()
 
     ResetServerHistory();
     ResetClientHistory();
-
-    serverDiffCache.reset(new SnapshotSingleComponentDetails::ServerDiffCache());
 }
 
 Snapshot* SnapshotSingleComponent::GetServerSnapshot(uint32 frameId)
@@ -251,64 +156,6 @@ void SnapshotSingleComponent::ResetClientHistory()
         clientHistory[i].Clear();
     }
     clientHistoryPos = 0;
-}
-
-bool SnapshotSingleComponent::GetServerDiff(CreateDiffParams& params)
-{
-    DVASSERT(params.buff != nullptr);
-    DVASSERT(params.buffSize > 0);
-    DVASSERT(params.frameIdBase <= params.frameId);
-
-    Snapshot* snapshotBase = GetServerSnapshot(params.frameIdBase);
-
-    if (nullptr == snapshotBase)
-    {
-        params.outFrameIdBase = 0;
-    }
-    else
-    {
-        params.outFrameIdBase = params.frameIdBase;
-    }
-
-    // WARNING: returning cache depends on params.outFrameIdBase,
-    // so make sure that its filled before calling cache getter
-
-    SnapshotSingleComponentDetails::ServerDiffCache::CachedDiff diff = serverDiffCache->GetCache(params);
-    if (nullptr != diff.buff)
-    {
-        if (diff.size <= params.buffSize)
-        {
-            ::memcpy(params.buff, diff.buff, diff.size);
-            params.outDiffSize = diff.size;
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
-        Snapshot* snapshot = GetServerSnapshot(params.frameId);
-
-        DVASSERT(snapshot != nullptr);
-        DVASSERT(snapshot != snapshotBase);
-
-        size_t diffSz = SnapshotUtils::CreateSnapshotDiff(snapshotBase, snapshot, params.entityId, params.ownership, params.buff, params.buffSize);
-
-        if (diffSz > 0)
-        {
-            params.outDiffSize = diffSz;
-            serverDiffCache->SetCache(params);
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
 }
 
 bool SnapshotSingleComponent::ApplyServerDiff(ApplyDiffParams& params, SnapshotApplyCallback cb)

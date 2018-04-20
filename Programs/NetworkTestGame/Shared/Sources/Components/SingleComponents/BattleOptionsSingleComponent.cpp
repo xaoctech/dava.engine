@@ -26,7 +26,8 @@ DAVA_VIRTUAL_REFLECTION_IMPL(BattleOptionsSingleComponent)
     .ConstructorByPointer()
     .Field("GameModeId", &BattleOptionsSingleComponent::gameModeId)[M::Replicable()]
     .Field("IsEnemyPredicted", &BattleOptionsSingleComponent::isEnemyPredicted)[M::Replicable()]
-    .Field("isEnemyRewound", &BattleOptionsSingleComponent::isEnemyRewound)[M::Replicable()]
+    .Field("IsEnemyRewound", &BattleOptionsSingleComponent::isEnemyRewound)[M::Replicable()]
+    .Field("CollideCharacters", &BattleOptionsSingleComponent::collideCharacters)[M::Replicable()]
     .Field("CompareInputs", &BattleOptionsSingleComponent::compareInputs)[M::Replicable()]
     .Field("CollisionResolveMode", &BattleOptionsSingleComponent::collisionResolveMode)[M::Replicable()]
     .End();

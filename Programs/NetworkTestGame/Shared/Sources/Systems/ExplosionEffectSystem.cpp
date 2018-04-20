@@ -123,7 +123,7 @@ void ExplosionEffectSystem::ProcessNewEffects(DAVA::Scene* scene)
 
             TransformComponent* transformComponent = effectEntity->GetComponent<TransformComponent>();
             transformComponent->SetLocalTransform(Transform(
-                    descriptor.position, Vector3{ 1.f, 1.f, 1.f }, descriptor.rotation));
+            descriptor.position, Vector3{ 1.f, 1.f, 1.f }, descriptor.rotation));
 
             scene->AddNode(effectEntity);
         }

@@ -7,6 +7,7 @@
 #include "Components/ShooterAimComponent.h"
 #include "Components/ShooterProjectileComponent.h"
 #include "Components/ShooterCarUserComponent.h"
+#include "Components/ExternalImpulseComponent.h"
 #include "Components/HealthComponent.h"
 #include "Components/GameStunnableComponent.h"
 #include "Components/ShootCooldownComponent.h"
@@ -18,6 +19,8 @@
 
 #include "Visibility/CharacterVisibilityShapeComponent.h"
 #include "Visibility/ObservableComponent.h"
+
+#include "Bots/BattleRoyaleBehaviorComponent.h"
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Entity.h>
@@ -131,11 +134,18 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
 
     if (isServer || isClientOwner)
     {
+        const BattleOptionsSingleComponent* optionsComponent = GetScene()->GetSingleComponentForRead<BattleOptionsSingleComponent>(this);
+
         CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
         controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
         controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
         controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-        controllerComponent->SetTypeMaskToCollideWith(SHOOTER_CCT_COLLIDE_WITH_MASK);
+        uint32 collisionMask = SHOOTER_CCT_COLLIDE_WITH_MASK;
+        if (!optionsComponent->collideCharacters)
+        {
+            collisionMask &= ~SHOOTER_CHARACTER_COLLISION_TYPE;
+        }
+        controllerComponent->SetTypeMaskToCollideWith(collisionMask);
         entity->AddComponent(controllerComponent);
     }
 
@@ -143,6 +153,14 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
     {
         ShooterRoleComponent* roleComponent = entity->GetComponent<ShooterRoleComponent>();
         NetworkPlayerID playerId = roleComponent->playerID;
+
+        TransformComponent* transformComponent = entity->GetComponent<TransformComponent>();
+        const Transform& transform = transformComponent->GetLocalTransform();
+        Vector3 position = GetRandomPlayerSpawnPosition();
+        transformComponent->SetLocalTransform(Transform(position, transform.GetScale(), transform.GetRotation()));
+
+        ExternalImpulseComponent* impulseComponent = new ExternalImpulseComponent();
+        entity->AddComponent(impulseComponent);
 
         NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(NetworkID::CreatePlayerOwnId(playerId));
 
@@ -161,6 +179,7 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         replicationComponent->SetForReplication<ShootCooldownComponent>(M::Privacy::PRIVATE);
         replicationComponent->SetForReplication<RocketSpawnComponent>(M::Privacy::PUBLIC);
         replicationComponent->SetForReplication<ShooterStateComponent>(M::Privacy::PUBLIC);
+        replicationComponent->SetForReplication<ExternalImpulseComponent>(M::Privacy::PRIVATE);
         replicationComponent->SetForReplication<HitboxesDebugDrawComponent>(M::Privacy::PRIVATE);
 
         entity->AddComponent(replicationComponent);
@@ -209,12 +228,21 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
             predictionMask.Set<NetworkTransformComponent>();
             predictionMask.Set<NetworkMotionComponent>();
             predictionMask.Set<ShooterAimComponent>();
+            predictionMask.Set<ExternalImpulseComponent>();
             predictionMask.Set<RocketSpawnComponent>();
 
             NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionMask);
             entity->AddComponent(networkPredictComponent);
 
             name = "My player";
+        }
+
+        BattleOptionsSingleComponent* optionsComp = GetScene()->GetSingleComponent<BattleOptionsSingleComponent>();
+        if (optionsComp->options.playerKind.GetId() == PlayerKind::Id::SHOOTER_BATTLE_ROYALE_BOT)
+        {
+            bool isActor = IsClientOwner(this, entity);
+            BattleRoyaleBehaviorComponent* behaviorComponent = new BattleRoyaleBehaviorComponent();
+            entity->AddComponent(behaviorComponent);
         }
 
         // entity->AddComponent(new NetworkMovementComponent());

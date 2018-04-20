@@ -5,7 +5,7 @@
 #include "ShooterUtils.h"
 #include "Systems/GameInputSystem.h"
 #include "Systems/PlayerEntitySystem.h"
-#include "Systems/BotSystem.h"
+#include "Bots/BotSystem.h"
 #include "Systems/MarkerSystem.h"
 #include "Systems/GameModeSystem.h"
 #include "Systems/GameModeSystemCars.h"
@@ -54,6 +54,8 @@
 #include <Scene3D/Systems/Controller/WASDControllerSystem.h>
 #include <Scene3D/Systems/Controller/RotationControllerSystem.h>
 #include <UI/UIControlSystem.h>
+
+#include <FeatureManager/FeatureManager.h>
 
 #include <Physics/PhysicsSystem.h>
 
@@ -149,6 +151,7 @@ TestServer::TestServer(Engine& engine, GameMode::Id gameModeId, uint16 port, uin
     : gameModeId(gameModeId)
     , gameServer(HOST, port, clientsNumber)
 {
+    GetEngineContext()->featureManager->InitFromConfig("~res:/FeatureManager/features.yaml");
     profilePath = CommandLineParser::GetCommandParam("--profile");
     isGUI = CommandLineParser::CommandIsFound("--gui");
     hasPoisonPill = CommandLineParser::CommandIsFound("--poisonpill");
@@ -443,6 +446,14 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
     case GameMode::Id::SHOOTER:
         isShooterGm = true;
         tags.insert({ FastName("gm_shooter"), FastName("controller") });
+        if (!gameStatsLogPath.empty())
+        {
+            tags.insert({ FastName("monitor_game_stats"), FastName("log_game_stats") });
+        }
+        if (!CommandLineParser::CommandIsFound("--no_respawn"))
+        {
+            tags.insert(FastName("respawn"));
+        }
         break;
     case GameMode::Id::INVADERS:
         tags.insert({ FastName("gm_invaders"), FastName("simple_visibility") });
@@ -492,6 +503,7 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
     optionsSingleComponent->options.gameStatsLogPath = gameStatsLogPath;
     optionsSingleComponent->isEnemyPredicted = CommandLineParser::CommandIsFound("--predict_enemy");
     optionsSingleComponent->isEnemyRewound = CommandLineParser::CommandIsFound("--rewind_enemy");
+    optionsSingleComponent->collideCharacters = !CommandLineParser::CommandIsFound("--no-character-collision");
     optionsSingleComponent->compareInputs = !CommandLineParser::CommandIsFound("--no-compare-inputs");
     optionsSingleComponent->isSet = true;
 

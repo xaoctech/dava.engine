@@ -55,7 +55,6 @@ static const FastName TELEPORT("TELEPORT");
 
 static const Vector3 MOV_SPEED(0.f, 10.f, 0.f);
 static const float32 ROT_SPEED = 60.f * DEG_TO_RAD;
-static const float32 TELEPORT_HALF_RANGE = 2000.f;
 
 #ifndef SERVER
 static const float32 CAM_MOVE_SPEED_MIN = 100.f;
@@ -101,19 +100,6 @@ bool CompareTransform(const T& lhs, const T& rhs, uint32 size, float32 epsilon, 
     }
     return true;
 }
-
-Vector2 GetNormalizedTeleportPosition(const Vector2& worldPosition)
-{
-    Vector2 normalizedPos;
-    normalizedPos.x = Clamp(worldPosition.x / TELEPORT_HALF_RANGE, -1.f, 1.f);
-    normalizedPos.y = Clamp(worldPosition.y / TELEPORT_HALF_RANGE, -1.f, 1.f);
-    return normalizedPos;
-}
-
-inline Vector2 GetWorldTeleportPosition(const Vector2& normalizedPosition)
-{
-    return Vector2(normalizedPosition.x * TELEPORT_HALF_RANGE, normalizedPosition.y * TELEPORT_HALF_RANGE);
-}
 }
 
 GameInputSystem::GameInputSystem(Scene* scene)
@@ -135,8 +121,8 @@ GameInputSystem::GameInputSystem(Scene* scene)
     actionsSingleComponent->CollectDigitalAction(CAM_BKWD, eInputElements::KB_DOWN, keyboardId);
     actionsSingleComponent->CollectDigitalAction(CAM_LEFT, eInputElements::KB_LEFT, keyboardId);
     actionsSingleComponent->CollectDigitalAction(CAM_RIGHT, eInputElements::KB_RIGHT, keyboardId);
-    actionsSingleComponent->CollectDigitalAction(CAM_UP, eInputElements::KB_PAGEUP, keyboardId);
-    actionsSingleComponent->CollectDigitalAction(CAM_DOWN, eInputElements::KB_PAGEDOWN, keyboardId);
+    actionsSingleComponent->CollectDigitalAction(CAM_UP, eInputElements::KB_EQUALS, keyboardId);
+    actionsSingleComponent->CollectDigitalAction(CAM_DOWN, eInputElements::KB_MINUS, keyboardId);
 
     actionsSingleComponent->AddAvailableAnalogAction(LMOVE, AnalogPrecision::ANALOG_UINT8);
     actionsSingleComponent->AddAvailableAnalogAction(RMOVE, AnalogPrecision::ANALOG_UINT8);
@@ -262,7 +248,7 @@ void GameInputSystem::ApplyDigitalActions(Entity* entity,
             rotation *= Quaternion::MakeRotation(Vector3::UnitZ, -angle);
             position += rotation.ApplyToVectorFast(vec);
             transComp->SetLocalTransform(Transform(
-                    position, Vector3(1.0, 1.0, 1.0), rotation));
+            position, Vector3(1.0, 1.0, 1.0), rotation));
         }
     }
     
@@ -360,7 +346,7 @@ void GameInputSystem::ApplyAnalogActions(Entity* entity,
                 rotation *= Quaternion::MakeRotation(Vector3::UnitZ, -angle);
                 position += rotation.ApplyToVectorFast(vec);
                 transComp->SetLocalTransform(Transform(
-                        position, Vector3(1.0, 1.0, 1.0), rotation));
+                position, Vector3(1.0, 1.0, 1.0), rotation));
             }
         }
         else if (action.first.actionId == TELEPORT)
@@ -368,12 +354,12 @@ void GameInputSystem::ApplyAnalogActions(Entity* entity,
             if (GetScene()->GetSystem<GameModeSystem>() != nullptr)
             {
                 Vector2 analogPos = ConvertFixedPrecisionToAnalog(action.first.precision, action.second);
-                Vector2 newPos2 = GetWorldTeleportPosition(analogPos);
-                Vector3 newPos(newPos2.x, newPos2.y, 0.f);
+                DenormalizeAnalog(analogPos, GameInputSystemDetail::TELEPORT_HALF_RANGE);
+                Vector3 newPos(analogPos.x, analogPos.y, 0.f);
                 TransformComponent* transComp = entity->GetComponent<TransformComponent>();
                 const Transform& transform = transComp->GetLocalTransform();
                 transComp->SetLocalTransform(Transform(
-                        newPos, transform.GetScale(),transform.GetRotation()));
+                newPos, transform.GetScale(), transform.GetRotation()));
             }
         }
     }

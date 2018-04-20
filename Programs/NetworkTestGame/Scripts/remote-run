@@ -6,11 +6,8 @@ bot_kind=random
 log_stats=false
 
 OPTIND=1
-while getopts ":c:b:s" opt; do
+while getopts ":b:s" opt; do
   case $opt in
-    c)
-      clients_num=$OPTARG
-      ;;
     b)
       bot_kind=$OPTARG
       ;;
@@ -47,6 +44,7 @@ for host in ${hosts[@]}; do
 		clients_num_per_host=$((clients_num_per_host + clients_num - hosts_num * clients_num_per_host))
 	fi
 
+	echo "Starting ${clients_num_per_host} clients on [${host}]"
 	ssh ${ssh_opts} ec2-user@${host} \
         "LD_LIBRARY_PATH=~/_game/app BOT_APP=~/_game/app/Client bash ~/run_bots.sh ${clients_num_per_host} ${server} ${port} ${host_id} ${bot_kind} ${log_stats} </dev/null 1>clients-out.log 2>clients-err.log &"
 

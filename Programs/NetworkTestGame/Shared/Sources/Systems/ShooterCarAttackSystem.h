@@ -22,5 +22,4 @@ public:
 
 private:
     DAVA::ComponentGroup<DAVA::CapsuleCharacterControllerComponent>* ccts;
-    DAVA::UnorderedMap<DAVA::CapsuleCharacterControllerComponent*, DAVA::Vector3> pushedCcts;
 };

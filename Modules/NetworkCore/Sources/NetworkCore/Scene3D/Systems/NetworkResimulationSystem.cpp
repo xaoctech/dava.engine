@@ -133,6 +133,13 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
 
         mispredictedEntitiesCount += static_cast<uint32>(predictionSingleComponent->mispredictedEntities.size());
 
+        for (const auto& p : predictionSingleComponent->mispredictedEntities)
+        {
+            NetworkReplicationComponent* replicationComponent = p.first->GetComponent<NetworkReplicationComponent>();
+            DVASSERT(replicationComponent != nullptr);
+            Logger::Info("[Resimulation] entity %u", replicationComponent->GetNetworkID());
+        }
+
         const auto& resimulatingEntities = networkResimulationSingleComponent->GetResimulatingEntities();
 
         resimulatedEntitiesCount += static_cast<uint32>(resimulatingEntities.size());
@@ -268,7 +275,6 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
         }
 
         BaseSimulationSystem::ReSimulationOff();
-        Logger::Info("[Resimulation] total count: %u", mispredictedEntitiesCount);
 
         LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "#< Resimulate Done\n");
     }

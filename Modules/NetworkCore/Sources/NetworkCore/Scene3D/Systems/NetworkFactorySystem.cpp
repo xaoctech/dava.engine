@@ -94,7 +94,7 @@ void NetworkFactorySystem::ProcessFixed(float32 timeElapsed)
             initTrans = *fc->initialTransformPtr;
         }
         transComp->SetLocalTransform(Transform(
-                initTrans.position, localTransform.GetScale() * fc->scale, initTrans.rotation));
+        initTrans.position, localTransform.GetScale() * fc->scale, initTrans.rotation));
 
         Vector<const Type*> predictComponentTypes;
         for (const auto& componentIt : entityCfg->components)
@@ -174,16 +174,13 @@ uint8 NetworkFactorySystem::GetCurrentDomain(NetworkPlayerID playerId)
         return D::Server;
     }
 
-    if (IsClient(this))
+    const NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
+    DVASSERT(netGameModeComp);
+    if (netGameModeComp->GetNetworkPlayerID() == playerId)
     {
-        const NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
-        DVASSERT(netGameModeComp);
-        if (netGameModeComp->GetNetworkPlayerID() == playerId)
-        {
-            return D::ClientOwner;
-        }
-
-        return D::ClientNotOwner;
+        return D::ClientOwner;
     }
+
+    return D::ClientNotOwner;
 };
 }

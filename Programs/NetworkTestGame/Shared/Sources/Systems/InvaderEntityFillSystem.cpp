@@ -4,7 +4,7 @@
 #include "Components/HealthComponent.h"
 #include "Components/PlayerInvaderComponent.h"
 #include "Components/ShootCooldownComponent.h"
-#include "Components/AI/InvaderBehaviorComponent.h"
+#include "Bots/InvaderBehaviorComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 #include "Visibility/ObserverComponent.h"
 #include "Visibility/ObservableComponent.h"
@@ -62,15 +62,16 @@ void InvaderEntityFillSystem::ProcessFixed(DAVA::float32 timeElapsed)
 void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
 {
     String filePath("~res:/3d/Objects/Sniper_2.sc2");
-    entity->SetName("Invader");
+    String name = "Invader";
 
     if (IsServer(this))
     {
         PlayerInvaderComponent* invComponent = entity->GetComponent<PlayerInvaderComponent>();
         NetworkPlayerID playerId = invComponent->playerId;
-        NetworkID invaderId = NetworkID::CreatePlayerOwnId(playerId);
 
-        Logger::Debug("[InvaderEntityFillSystem] Create Invader %u For Player ID : %d", static_cast<uint32>(invaderId), playerId);
+        Logger::Debug("[InvaderEntityFillSystem] Create invader %u for player %d", entity->GetID(), playerId);
+
+        NetworkID invaderId = NetworkID::CreatePlayerOwnId(playerId);
 
         NetworkReplicationComponent* replicationComponent = new NetworkReplicationComponent(invaderId);
         replicationComponent->SetForReplication<PlayerInvaderComponent>(M::Privacy::PUBLIC);
@@ -112,9 +113,10 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
         const bool isClientOwner = IsClientOwner(this, entity);
         if (isClientOwner)
         {
+            name = "My invader";
+
             NetworkReplicationComponent* netReplComp = entity->GetComponent<NetworkReplicationComponent>();
             Logger::Debug("[PlayerEntitySystem::Process] Set player:%d vehicle:%d", netReplComp->GetNetworkPlayerID(), entity->GetID());
-            entity->SetName("MyInvader");
             filePath = "~res:/3d/Objects/Sniper_1.sc2";
 
             Camera* camera = new Camera();
@@ -130,6 +132,10 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
             GetScene()->SetCurrentCamera(camera);
             entity->AddComponent(new CameraComponent(camera));
         }
+        else
+        {
+            name = "Enemy invader";
+        }
 
         if (isClientOwner || optionsComp->isEnemyPredicted)
         {
@@ -138,6 +144,8 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
             entity->AddComponent(networkPredictComponent);
         }
     }
+
+    entity->SetName(name.c_str());
 
     Entity* invaderModel = GetModel(filePath);
     if (IsClient(this))
@@ -149,7 +157,7 @@ void InvaderEntityFillSystem::FillEntity(DAVA::Entity* entity)
         if (optionsComp->options.playerKind.GetId() == PlayerKind::Id::INVADER_BOT)
         {
             bool isActor = IsClientOwner(this, entity);
-            InvaderBehaviorComponent* behaviorComponent = new InvaderBehaviorComponent(isActor);
+            InvaderBehaviorComponent* behaviorComponent = new InvaderBehaviorComponent();
             entity->AddComponent(behaviorComponent);
         }
     }

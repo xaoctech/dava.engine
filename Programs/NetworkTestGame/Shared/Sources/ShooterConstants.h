@@ -16,6 +16,7 @@ static const DAVA::FastName SHOOTER_ACTION_ATTACK_BULLET("FIRST_SHOOT");
 static const DAVA::FastName SHOOTER_ACTION_ATTACK_ROCKET("SHOOTER_ATTACK_ROCKET");
 static const DAVA::FastName SHOOTER_ACTION_ATTACK_ROCKET2("SHOOTER_ATTACK_ROCKET2");
 static const DAVA::FastName SHOOTER_ACTION_INTERACT("SECOND_SHOOT");
+static const DAVA::FastName SHOOTER_ACTION_TELEPORT("SHOOTER_TELEPORT");
 
 // Character traits
 static const DAVA::float32 SHOOTER_CHARACTER_CAPSULE_HEIGHT = 1.0f;
@@ -23,6 +24,7 @@ static const DAVA::float32 SHOOTER_CHARACTER_CAPSULE_RADIUS = 0.35f;
 static const DAVA::Vector3 SHOOTER_CHARACTER_FORWARD = DAVA::Vector3(0.0f, -1.0f, 0.0f);
 static const DAVA::Vector3 SHOOTER_CHARACTER_RIGHT = DAVA::Vector3(-1.0f, 0.0f, 0.0f);
 static const DAVA::Vector3 SHOOTER_CHARACTER_LOOK_FROM = DAVA::Vector3(-0.17f, -0.37f, 1.8f); // Used for raycasting to camera position to avoid looking through obstacles
+static const DAVA::Vector3 SHOOTER_CHARACTER_AIM_TO = DAVA::Vector3(0.f, 0.f, 1.5f);
 static const DAVA::uint32 SHOOTER_CHARACTER_MAX_HEALTH = 10;
 static const DAVA::float32 SHOOTER_CHARACTER_ROTATION_SPEED = 0.20f;
 static const DAVA::float32 SHOOTER_MOVEMENT_SPEED = 2.0f; // m/s
@@ -36,18 +38,20 @@ static const DAVA::uint32 SHOOTER_SHOOT_COOLDOWN_FRAMES = 10; // How often a use
 static const DAVA::uint32 SHOOTER_STATIC_COLLISION_TYPE = 1 << 3;
 static const DAVA::uint32 SHOOTER_CHARACTER_COLLISION_TYPE = 1 << 4;
 static const DAVA::uint32 SHOOTER_PROJECTILE_COLLISION_TYPE = 1 << 5;
-static const DAVA::uint32 SHOOTER_GRENADE_COLLISION_TYPE = 1 << 6;
 static const DAVA::uint32 SHOOTER_CCT_COLLIDE_WITH_MASK = UINT32_MAX;
 
 // Scene & models constants
 static const DAVA::FastName SHOOTER_GUN_BARREL_ENTITY_NAME = DAVA::FastName("shot_auto"); // Name of child entity in weapon model which is used to retrieve position of a gun barrel for raycasting etc.
 static const DAVA::Vector3 SHOOTER_CAR_PASSENGER_NODES_POSITIONS[4] = { DAVA::Vector3(0.0f, -1.7f, 0.0f), DAVA::Vector3(0.0f, 1.7f, 0.0f), DAVA::Vector3(1.0f, -1.7f, 0.0f), DAVA::Vector3(1.0f, 1.7f, 0.0f) };
 static const DAVA::Vector3 SHOOTER_CAR_CAMERA_OFFSET = DAVA::Vector3(0.0f, 10.0f, 4.0f);
+static const DAVA::Vector3 SHOOTER_CAR_UNDERGROUND_OFFSET = DAVA::Vector3(0.0f, 0.0f, -10.f);
 
 // Cars specific constants
 static const DAVA::uint32 SHOOTER_NUM_CARS = 5;
 static const DAVA::uint32 SHOOTER_MAX_NUM_PASSENGERS = 4;
+static const DAVA::float32 SHOOTER_CAR_MAX_INTERACT_DISTANCE = 3.5f;
 static const DAVA::float32 SHOOTER_CAR_IMPULSE_MAGNITUDE_PER_DAMAGE = 5000.0f;
+static const DAVA::float32 SHOOTER_CAR_IMPULSE_MAGNITUDE_PER_VELOCITY = 2000.0f;
 
 // Visibility constants
 static const DAVA::float32 SHOOTER_MAX_VISIBILITY_RADIUS = 500.f;

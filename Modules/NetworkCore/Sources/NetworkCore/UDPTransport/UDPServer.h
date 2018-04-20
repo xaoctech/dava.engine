@@ -16,7 +16,8 @@ namespace DAVA
 class Responder
 {
 public:
-    virtual void Send(const uint8* data, size_t size, const PacketParams& param) const = 0;
+    using AckCallback = Function<void()>;
+    virtual void Send(const uint8* data, size_t size, const PacketParams& param, const AckCallback& callback = {}) const = 0;
     virtual uint32 GetRtt() const = 0;
     virtual float32 GetPacketLoss() const = 0;
     virtual const FastName& GetToken() const = 0;
@@ -40,7 +41,7 @@ public:
     UDPResponder(const UDPResponder& responder);
     ~UDPResponder() override;
 
-    void Send(const uint8* data, size_t size, const PacketParams& param) const override;
+    void Send(const uint8* data, size_t size, const PacketParams& param, const AckCallback& callback) const override;
     uint32 GetRtt() const override;
     float32 GetPacketLoss() const override;
     const FastName& GetToken() const override;
@@ -54,6 +55,9 @@ public:
     bool RttIsBetter() const override;
 
 private:
+    static void OnFreeCallback(ENetPacket* packet);
+    mutable UnorderedMap<ENetPacket*, AckCallback> packetToAckCallback;
+
     ENetPeer* peer;
     TrafficLogger* trafficLogger;
     FastName token;

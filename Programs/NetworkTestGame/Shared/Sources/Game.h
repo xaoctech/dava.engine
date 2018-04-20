@@ -31,7 +31,8 @@ public:
     {
         NORMAL_PLAYER,
         RANDOM_BOT,
-        SHOOTER_BOT,
+        TANK_BATTLE_ROYALE_BOT,
+        SHOOTER_BATTLE_ROYALE_BOT,
         INVADER_BOT
     };
 
@@ -66,9 +67,13 @@ inline PlayerKind::PlayerKind(const DAVA::String& name)
     {
         id = Id::INVADER_BOT;
     }
+    else if (name == "tank")
+    {
+        id = Id::TANK_BATTLE_ROYALE_BOT;
+    }
     else if (name == "shooter")
     {
-        id = Id::SHOOTER_BOT;
+        id = Id::SHOOTER_BATTLE_ROYALE_BOT;
     }
     else
     {

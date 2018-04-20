@@ -95,7 +95,7 @@ void MarkerSystem::SimulateHealthBar(DAVA::Entity* tank)
     if (isSpawn || isStun || z != lt.GetScale().z)
     {
         trans->SetLocalTransform(Transform(
-                lt.GetTranslation(), Vector3(0.01f, 0.01f, z), lt.GetRotation()));
+        lt.GetTranslation(), Vector3(0.01f, 0.01f, z), lt.GetRotation()));
 
         RenderObject* ro = GetRenderObject(bar);
         ro->GetRenderBatch(0)->GetMaterial()->SetPropertyValue(NMaterialParamName::PARAM_FLAT_COLOR, c.color);
@@ -124,7 +124,7 @@ void MarkerSystem::ProcessFixed(DAVA::float32 timeElapsed)
         }
 
         trans->SetLocalTransform(Transform(
-                position, Vector3(0.01f, 0.01f, z), trans->GetLocalTransform().GetRotation()));
+        position, Vector3(0.01f, 0.01f, z), trans->GetLocalTransform().GetRotation()));
         tank->AddNode(bar);
         bar->SetName("HealthBar");
         tankToBar[tank] = bar;

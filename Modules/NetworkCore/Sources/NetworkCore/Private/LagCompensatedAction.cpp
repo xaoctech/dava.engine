@@ -174,12 +174,16 @@ void LagCompensatedAction::Invoke(Scene& scene, const NetworkPlayerID& playerId,
     const NetworkTimeSingleComponent* timeSingleComponent = scene.GetSingleComponent<NetworkTimeSingleComponent>();
     DVASSERT(timeSingleComponent != nullptr);
 
+    SnapshotSingleComponent* snapshotSingleComponent = scene.GetSingleComponent<SnapshotSingleComponent>();
+    DVASSERT(snapshotSingleComponent != nullptr);
+
     const int32 playerViewDelay = timeSingleComponent->GetClientViewDelay(playerToken, clientFrameId);
 
-    // If we couldn't get player view delay, lag compensation is not possible, invoke without
-    if (playerViewDelay < 0)
+    // If player view delay is invalid (beyond snapshot history) or client frame id is 0 (client input buffer is empty),
+    // lag compensation is not possible, invoke without
+    if (playerViewDelay < 0 || playerViewDelay >= snapshotSingleComponent->serverHistory.size() || clientFrameId == 0)
     {
-        Logger::Error("LagCompensatedAction::Invoke: player's view delay is negative, skipping lag compensation. Player's token: %s, view delay: %d", playerToken.c_str(), playerViewDelay);
+        Logger::Error("LagCompensatedAction::Invoke: player's view delay is invalid, skipping lag compensation. Player's token: %s, view delay: %d, client frame: %u", playerToken.c_str(), playerViewDelay, clientFrameId);
         InvokeWithoutLagCompensation(scene);
         return;
     }
@@ -187,11 +191,8 @@ void LagCompensatedAction::Invoke(Scene& scene, const NetworkPlayerID& playerId,
     // Frame we should revert components to
     const uint32 finalFrameId = clientFrameId - playerViewDelay;
 
-    SnapshotSingleComponent* snapshotSingleComponent = scene.GetSingleComponent<SnapshotSingleComponent>();
-    DVASSERT(snapshotSingleComponent != nullptr);
-
     Snapshot* snapshot = snapshotSingleComponent->GetServerSnapshot(finalFrameId);
-    DVASSERT(snapshot != nullptr);
+    DVASSERT(snapshot != nullptr, Format("failed to get snapshot for final frame %d (%d - %d)", finalFrameId, clientFrameId, playerViewDelay).c_str());
 
     // Lag compensation only works with replicated entities
     EntityGroup* networkEntities = scene.AquireEntityGroup<NetworkReplicationComponent>();

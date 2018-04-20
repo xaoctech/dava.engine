@@ -7,11 +7,6 @@
 
 namespace DAVA
 {
-namespace SnapshotSingleComponentDetails
-{
-class ServerDiffCache;
-}
-
 class SnapshotSingleComponent : public SingleComponent
 {
 public:
@@ -35,19 +30,6 @@ public:
     void ResetServerHistory();
     void ResetClientHistory();
 
-    struct CreateDiffParams
-    {
-        NetworkID entityId;
-        uint32 frameIdBase = 0;
-        uint32 frameId = 0;
-        M::OwnershipRelation ownership;
-        uint8* buff = nullptr;
-        size_t buffSize = 0;
-
-        size_t outDiffSize = 0;
-        uint32 outFrameIdBase = 0;
-    };
-
     struct ApplyDiffParams
     {
         NetworkID entityId;
@@ -59,10 +41,6 @@ public:
         size_t outDiffSize = 0;
     };
 
-    bool GetServerDiff(CreateDiffParams& params);
     bool ApplyServerDiff(ApplyDiffParams& params, SnapshotApplyCallback cb);
-
-private:
-    std::unique_ptr<SnapshotSingleComponentDetails::ServerDiffCache> serverDiffCache;
 };
 } // namespace DAVA

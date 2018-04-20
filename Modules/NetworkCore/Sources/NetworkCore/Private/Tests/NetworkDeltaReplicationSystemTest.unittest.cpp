@@ -28,7 +28,7 @@ const float32 TICK = 1.f / 60.f;
 class UDPResponderMock : public Responder
 {
 public:
-    void Send(const uint8* data_, size_t size_, const PacketParams& param) const override
+    void Send(const uint8* data_, size_t size_, const PacketParams& param, const AckCallback&) const override
     {
         data.resize(size_);
         Memcpy(data.data(), data_, size_);
@@ -175,7 +175,7 @@ struct DeltaReplicationSystemServerMock : public NetworkDeltaReplicationSystemSe
     {
     }
 
-    size_t CreateDiff(SnapshotSingleComponent::CreateDiffParams& params) override
+    size_t CreateDiff(NetworkDeltaReplicationSystemServer::DiffParams& params) override
     {
         EntityInfo& eInfo = info[params.entityId];
         eInfo.frameId = params.frameId;
@@ -704,11 +704,11 @@ DAVA_TESTCLASS (ElasticBufferTest)
     DAVA_TEST (AllocateTest)
     {
         ElasticBuffer buffer;
-        const size_t srcSize = ElasticBuffer::PRIMARY_BUFF_SIZE / 1024;
+        const size_t srcSize = ElasticBuffer::PrimaryBuffSize / 1024;
         const std::unique_ptr<uint8[]> srcBuff(new uint8[srcSize]);
 
         size_t offset = 0;
-        for (; offset < ElasticBuffer::PRIMARY_BUFF_SIZE - srcSize;)
+        for (; offset < ElasticBuffer::PrimaryBuffSize - srcSize;)
         {
             offset += srcSize;
             const uint8* res = buffer.Insert(srcBuff.get(), srcSize);
@@ -718,7 +718,7 @@ DAVA_TESTCLASS (ElasticBufferTest)
             TEST_VERIFY(&buffer.GetTail() == &buffer);
         }
 
-        const size_t fallbackSize = ElasticBuffer::FALLBACK_BUFF_SIZE;
+        const size_t fallbackSize = ElasticBuffer::FallbackBuffSize;
         const std::unique_ptr<uint8[]> fallbackBuff(new uint8[fallbackSize]);
 
         const size_t epochCount = 3;

@@ -85,11 +85,8 @@ Entity* GetEntityWithNetworkId(Scene* scene, NetworkID networkId)
     return nullptr;
 }
 
-M::OwnershipRelation GetPlayerOwnershipRelation(const Entity* entity, NetworkPlayerID playerId)
+M::OwnershipRelation GetPlayerOwnershipRelation(NetworkPlayerID playerId, NetworkPlayerID entityOwnerId)
 {
-    const NetworkReplicationComponent* replicationComponent = entity->GetComponent<NetworkReplicationComponent>();
-    DVASSERT(replicationComponent);
-    const NetworkPlayerID entityOwnerId = replicationComponent->GetNetworkPlayerID();
     if (entityOwnerId == playerId)
     {
         return M::OwnershipRelation::OWNER;

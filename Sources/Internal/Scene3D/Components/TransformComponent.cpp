@@ -141,7 +141,6 @@ void TransformComponent::Deserialize(KeyedArchive* archive, SerializationContext
 
 void TransformComponent::MarkLocalChanged()
 {
-
     if (entity && entity->GetScene())
     {
         TransformSingleComponent* tsc = entity->GetScene()->GetSingleComponent<TransformSingleComponent>();

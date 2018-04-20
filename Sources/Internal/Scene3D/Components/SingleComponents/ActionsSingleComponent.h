@@ -135,5 +135,8 @@ template <typename T>
 Vector2 ConvertAnalogToFixedPrecision(AnalogPrecision precision, Vector2 value);
 Vector2 ConvertFixedPrecisionToAnalog(AnalogPrecision precision, Vector2 value);
 
+void NormalizeAnalog(Vector2& value, float32 domain);
+void DenormalizeAnalog(Vector2& value, float32 domain);
+
 uint64 GetAnalogPrecisionMask(AnalogPrecision precision);
 }

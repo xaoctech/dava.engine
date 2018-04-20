@@ -27,7 +27,7 @@ void NetworkTransformUtils::CopyToTransform(const NetworkTransformComponent* net
         transform.GetRotation() != networkOrientation)
     {
         transformComponent->SetLocalTransform(Transform(
-                networkPosition, transform.GetScale(), networkOrientation));
+        networkPosition, transform.GetScale(), networkOrientation));
     }
 }
 }

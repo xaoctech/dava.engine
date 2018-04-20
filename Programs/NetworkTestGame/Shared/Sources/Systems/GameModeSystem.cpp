@@ -7,7 +7,6 @@
 #include "Components/PlayerTankComponent.h"
 #include "Systems/PowerupSpawnSystem.h"
 #include "Systems/PowerupSystem.h"
-#include "Components/AI/ShooterBehaviorComponent.h"
 
 #include <Logger/Logger.h>
 #include <Scene3D/Components/CameraComponent.h>

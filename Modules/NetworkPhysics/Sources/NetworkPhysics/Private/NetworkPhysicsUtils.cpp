@@ -87,9 +87,9 @@ bool GetRaycastHitInPast(Scene& scene, const ComponentMask& possibleComponents,
         DVASSERT(transformComponent != nullptr);
 
         transformComponent->SetLocalTransform(Transform(
-                networkTransformComponent->GetPosition(),
-                transformComponent->GetLocalTransform().GetScale(),
-                networkTransformComponent->GetOrientation()));
+        networkTransformComponent->GetPosition(),
+        transformComponent->GetLocalTransform().GetScale(),
+        networkTransformComponent->GetOrientation()));
     }
 
     PhysicsSystem* physicsSystem = scene.GetSystem<PhysicsSystem>();

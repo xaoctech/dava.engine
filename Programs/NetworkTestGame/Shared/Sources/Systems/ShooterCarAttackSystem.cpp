@@ -1,5 +1,6 @@
 #include "Systems/ShooterCarAttackSystem.h"
 #include "Components/HealthComponent.h"
+#include "Components/ExternalImpulseComponent.h"
 #include "ShooterConstants.h"
 #include "ShooterUtils.h"
 
@@ -54,33 +55,6 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
     const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
     DVASSERT(collisionSingleComponent != nullptr);
 
-    static Vector<CapsuleCharacterControllerComponent*> pushedCctsToRemove;
-
-    for (auto& kvp : pushedCcts)
-    {
-        CapsuleCharacterControllerComponent* cct = kvp.first;
-        if (cct->IsGrounded())
-        {
-            cct->SetMovementMode(CharacterControllerComponent::MovementMode::Walking);
-            pushedCctsToRemove.push_back(cct);
-        }
-    }
-
-    for (CapsuleCharacterControllerComponent* pushedCctToRemove : pushedCctsToRemove)
-    {
-        pushedCcts.erase(pushedCctToRemove);
-    }
-    pushedCctsToRemove.clear();
-
-    for (auto& kvp : pushedCcts)
-    {
-        CapsuleCharacterControllerComponent* cct = kvp.first;
-        Vector3& velocity = kvp.second;
-
-        velocity.z -= 9.81f * dt;
-        cct->Move(velocity * dt);
-    }
-
     for (CapsuleCharacterControllerComponent* cctComponent : ccts->components)
     {
         Entity* cctEntity = cctComponent->GetEntity();
@@ -89,7 +63,10 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
         DynamicBodyComponent* cctMirrorBodyComponent = cctEntity->GetComponent<DynamicBodyComponent>();
         DVASSERT(cctMirrorBodyComponent != nullptr);
 
-        if (pushedCcts.find(cctComponent) == pushedCcts.end())
+        ExternalImpulseComponent* impulseComponent = cctEntity->GetComponent<ExternalImpulseComponent>();
+        DVASSERT(impulseComponent != nullptr);
+
+        if (impulseComponent->IsZero())
         {
             Vector<CollisionInfo> collisions = collisionSingleComponent->GetCollisionsWithEntity(cctEntity);
             if (collisions.size() > 0)
@@ -125,15 +102,14 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
                             normal.Normalize();
                         }
 
-                        Vector3 velocity = normal * static_cast<float32>(damage) * 2.0f;
                         if (IsCar(collisions[0].first))
                         {
-                            velocity.x *= -1.0f;
-                            velocity.y *= -1.0f;
+                            normal.x *= -1.0f;
+                            normal.y *= -1.0f;
                         }
 
-                        cctComponent->SetMovementMode(CharacterControllerComponent::MovementMode::Flying);
-                        pushedCcts[cctComponent] = velocity;
+                        impulseComponent->magnitude = impulseMagnitude;
+                        impulseComponent->direction = normal;
                     }
                 }
             }

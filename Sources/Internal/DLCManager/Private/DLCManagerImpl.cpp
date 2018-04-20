@@ -744,8 +744,6 @@ PackRequest* DLCManagerImpl::CreateNewRemoteRequest(const String& requestedPackN
 {
     DVASSERT(nullptr == FindRequest(requestedPackName));
 
-    log << " requested: " << requestedPackName << std::endl;
-
     PackRequest* request = PrepareNewRemoteRequest(requestedPackName);
 
     // we have to do it recursively becouse order of dependency metter
@@ -761,6 +759,8 @@ PackRequest* DLCManagerImpl::CreateNewRemoteRequest(const String& requestedPackN
             CreateNewRemoteRequest(depPackName);
         }
     }
+
+    log << "requested: " << requestedPackName << std::endl;
 
     AddRequest(request);
 
@@ -1592,7 +1592,7 @@ void DLCManagerImpl::SetRequestPriority(const IRequest* request)
 
     if (request != nullptr)
     {
-        log << __FUNCTION__ << " request: " << request->GetRequestedPackName() << std::endl;
+        log << "set_request_priority: " << request->GetRequestedPackName() << std::endl;
 
         PackRequest* req = CastToPackRequest(request);
 
@@ -1619,12 +1619,14 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
     // now we can work without CDN, so always wait for initialization is done
     if (!IsInitialized())
     {
+        log << "error: can't remove pack: " << requestedPackName << " initialization not finished yet." << std::endl;
         return;
     }
 
     if (HasLocalMeta() && GetLocalMeta().HasPack(requestedPackName))
     {
-        Logger::Error("local pack: %s can't be removed", requestedPackName.c_str());
+        log << "error: pack " << requestedPackName << " is local and can't be removed" << std::endl;
+        DVASSERT(false);
         return;
     }
 
@@ -1633,19 +1635,34 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
     {
         PackRequest* packRequest = CastToPackRequest(request);
 
-        const Vector<uint32>& directDependencies = packRequest->GetDirectDependencies();
-
-        for (uint32 dependent : directDependencies)
-        {
-            const String& depPackName = metaRemote->GetPackInfo(dependent).packName;
-            PackRequest* depRequest = FindRequest(depPackName);
-            if (nullptr != depRequest)
+        // check requestedPackName itself is not dependency from other pack in queue
+        // WARNING you may delete packs ONLY without external dependency
+        auto CheckOtherParentPackInQueue = [&]() {
+            if (!metaRemote)
             {
-                // make copy name to prevent UB, after deleting pack
-                const String packToRemove = depRequest->GetRequestedPackName();
-                RemovePack(packToRemove);
+                return false;
             }
-        }
+            const Vector<PackRequest*>& inQueueRequests = requestManager->GetRequests();
+
+            auto IsParentDependency = [&](const PackRequest* parentPack) {
+                const String& parentPackName = parentPack->GetRequestedPackName();
+                uint32 parentIndex = metaRemote->GetPackIndex(parentPackName);
+                uint32 childIndex = metaRemote->GetPackIndex(requestedPackName);
+                if (parentIndex != childIndex && metaRemote->HasDependency(parentIndex, childIndex))
+                {
+                    log << "error: try remove pack: " << requestedPackName << " but this pack is dependency from: " << parentPackName << " currently in request queue." << std::endl;
+                    return true;
+                }
+                return false;
+            };
+
+            bool parentDependencyExists = std::any_of(begin(inQueueRequests), end(inQueueRequests), IsParentDependency);
+            return parentDependencyExists;
+        };
+
+        DVASSERT(CheckOtherParentPackInQueue() == false); // only for debug
+
+        const Vector<uint32>& directDependencies = packRequest->GetDirectDependencies();
 
         requestManager->Remove(packRequest);
 
@@ -1654,6 +1671,8 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
         {
             requests.erase(it);
         }
+
+        log << "removing: " << requestedPackName << std::endl;
 
         delete request;
 
@@ -1687,6 +1706,24 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
                 Logger::Error("can't delete files: %s", errMsg.c_str());
             }
         }
+
+        // now remove dependencies
+        // we have to remove packs in reverse order for debug purpeses see: CheckOtherParentPackInQueue
+        for (uint32 dependent : directDependencies)
+        {
+            const String& depPackName = metaRemote->GetPackInfo(dependent).packName;
+            PackRequest* depRequest = FindRequest(depPackName);
+            if (nullptr != depRequest)
+            {
+                // make copy name to prevent UB, after deleting pack
+                const String packToRemove = depRequest->GetRequestedPackName();
+                RemovePack(packToRemove);
+            }
+        }
+    }
+    else
+    {
+        log << "error: can't remove not found pack: " << requestedPackName << std::endl;
     }
 }
 
@@ -1700,6 +1737,7 @@ void DLCManagerImpl::ResetQueue()
 
     if (IsInitialized() && requestManager)
     {
+        log << "reset_queue" << std::endl;
         // do NOT use reference
         const Vector<PackRequest*> requests = requestManager->GetRequests();
 
@@ -1710,6 +1748,10 @@ void DLCManagerImpl::ResetQueue()
             RemoveRemoteRequest(r);
             delete r;
         }
+    }
+    else
+    {
+        log << "error: can't reset_queue - initialization not finished yet.";
     }
 }
 
@@ -1911,6 +1953,8 @@ bool DLCManagerImpl::IsRequestingEnabled() const
 void DLCManagerImpl::SetRequestingEnabled(bool value)
 {
     DVASSERT(Thread::IsMainThread());
+
+    log << "requesting_enabled: " << std::boolalpha << value << std::noboolalpha << std::endl;
 
     if (value)
     {
