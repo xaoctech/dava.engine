@@ -1,5 +1,9 @@
-#include "DAVAEngine.h"
 #include "UnitTests/UnitTests.h"
+
+#include "Asset/AssetManager.h"
+#include "Engine/Engine.h"
+#include "Platform/DeviceInfo.h"
+#include "Render/TextureAssetLoader.h"
 
 using namespace DAVA;
 
@@ -7,17 +11,19 @@ DAVA_TESTCLASS (GPUFamilyTest)
 {
     DAVA_TEST (TestPrimaryGPU)
     {
-        TEST_VERIFY(Texture::GetPrimaryGPUForLoading() == DeviceInfo::GetGPUFamily());
-        
+        TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+
+        TEST_VERIFY(loader->GetPrimaryGPUForLoading() == DeviceInfo::GetGPUFamily());
+
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WINDOWS__) || defined(__DAVAENGINE_WIN_UAP__)
-        TEST_VERIFY(Texture::GetPrimaryGPUForLoading() == eGPUFamily::GPU_DX11);
+        TEST_VERIFY(loader->GetPrimaryGPUForLoading() == eGPUFamily::GPU_DX11);
 #elif defined(__DAVAENGINE_LINUX__)
         // TODO: linux
-        TEST_VERIFY(Texture::GetPrimaryGPUForLoading() == eGPUFamily::GPU_ORIGIN);
+        TEST_VERIFY(loader->GetPrimaryGPUForLoading() == eGPUFamily::GPU_ORIGIN);
 #elif defined(__DAVAENGINE_IPHONE__)
-        TEST_VERIFY(Texture::GetPrimaryGPUForLoading() == eGPUFamily::GPU_POWERVR_IOS);
+        TEST_VERIFY(loader->GetPrimaryGPUForLoading() == eGPUFamily::GPU_POWERVR_IOS);
 #elif defined(__DAVAENGINE_ANDROID__)
-        eGPUFamily gpu = Texture::GetPrimaryGPUForLoading();
+        eGPUFamily gpu = loader->GetPrimaryGPUForLoading();
 
         TEST_VERIFY(
         gpu == eGPUFamily::GPU_POWERVR_ANDROID
@@ -32,8 +38,9 @@ DAVA_TESTCLASS (GPUFamilyTest)
 
     DAVA_TEST (TestGPUForLoading)
     {
-        const Vector<eGPUFamily>& gpuLoadingOrder = Texture::GetGPULoadingOrder();
-        
+        TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+        const Vector<eGPUFamily>& gpuLoadingOrder = loader->GetGPULoadingOrder();
+
 #if defined(__DAVAENGINE_ANDROID__)
         if (DeviceInfo::GetGPUFamily() == eGPUFamily::GPU_MALI)
         {

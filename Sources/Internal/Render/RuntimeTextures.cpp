@@ -36,7 +36,9 @@ const FastName RUNTIME_TEXTURE_NAMES[RuntimeTextures::RUNTIME_TEXTURES_COUNT] =
   FastName("hammersleySet"),
   FastName("noiseTexture64x64"),
   FastName("directionalShadowMap"),
-  FastName("velocityBuffer")
+  FastName("velocityBuffer"),
+  FastName("precomputedTransmittance"),
+  FastName("precomputedScattering"),
 };
 
 const static PixelFormat REFLECTION_PIXEL_FORMAT = PixelFormat::FORMAT_RGB565;
@@ -213,7 +215,35 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
 
     switch (semantic)
     {
-    case RuntimeTextures::TEXTURE_REFLECTION:
+    case TEXTURE_ATMOSPHERE_TRANSMITTANCE:
+    {
+        runtimeTextureSizes[semantic] = Size2i(256, 256);
+        runtimeTextures[semantic] = ServiceTextures::GenerateAtmosphericTransmittanceTexture(runtimeTextureSizes[semantic].dx, runtimeTextureSizes[semantic].dy);
+
+        samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].addrW = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].magFilter = rhi::TEXFILTER_LINEAR;
+        samplerDescriptors[semantic].minFilter = rhi::TEXFILTER_LINEAR;
+        samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
+
+        break;
+    };
+    case TEXTURE_ATMOSPHERE_SCATTERING:
+    {
+        runtimeTextureSizes[semantic] = Size2i(32, 32);
+        runtimeTextures[semantic] = ServiceTextures::GenerateAtmosphericScatteringTexture(runtimeTextureSizes[semantic].dx, runtimeTextureSizes[semantic].dy, 32);
+
+        samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].addrW = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].magFilter = rhi::TEXFILTER_LINEAR;
+        samplerDescriptors[semantic].minFilter = rhi::TEXFILTER_LINEAR;
+        samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
+
+        break;
+    };
+    case TEXTURE_REFLECTION:
     {
         PixelFormatDescriptor formatDesc = PixelFormatDescriptor::GetPixelFormatDescriptor(REFLECTION_PIXEL_FORMAT);
         PixelFormat format = rhi::DeviceCaps().textureFormat[formatDesc.format].renderable ? REFLECTION_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
@@ -236,7 +266,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         break;
     }
 
-    case RuntimeTextures::TEXTURE_REFRACTION:
+    case TEXTURE_REFRACTION:
     {
         PixelFormatDescriptor formatDesc = PixelFormatDescriptor::GetPixelFormatDescriptor(REFRACTION_PIXEL_FORMAT);
         PixelFormat format = rhi::DeviceCaps().textureFormat[formatDesc.format].renderable ? REFRACTION_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
@@ -259,7 +289,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         break;
     }
 
-    case RuntimeTextures::TEXTURE_UVPICKING:
+    case TEXTURE_UVPICKING:
     {
         PixelFormatDescriptor formatDesc = PixelFormatDescriptor::GetPixelFormatDescriptor(PICKING_PIXEL_FORMAT);
         PixelFormat format = rhi::DeviceCaps().textureFormat[formatDesc.format].renderable ? PICKING_PIXEL_FORMAT : PixelFormat::FORMAT_RGBA8888;
@@ -274,7 +304,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         break;
     }
 
-    case RuntimeTextures::TEXTURE_VELOCITY:
+    case TEXTURE_VELOCITY:
     {
         descriptor.cpuAccessRead = false;
         descriptor.cpuAccessWrite = false;
@@ -286,10 +316,17 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         descriptor.format = rhi::TEXTURE_FORMAT_RG16F;
         runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
         runtimeTexturesFormat[semantic] = VELOCITY_PIXEL_FORMAT;
+
+        samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].addrW = rhi::TEXADDR_CLAMP;
+        samplerDescriptors[semantic].magFilter = rhi::TEXFILTER_NEAREST;
+        samplerDescriptors[semantic].minFilter = rhi::TEXFILTER_NEAREST;
+        samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
         break;
     }
 
-    case RuntimeTextures::TEXTURE_SHARED_DEPTHBUFFER:
+    case TEXTURE_SHARED_DEPTHBUFFER:
     {
         descriptor.cpuAccessRead = false;
         descriptor.cpuAccessWrite = false;
@@ -304,7 +341,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         break;
     }
 
-    case RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER:
+    case TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER:
     {
         rhi::TextureFormat textureFormat = (Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward) ? rhi::TEXTURE_FORMAT_D16 : rhi::TEXTURE_FORMAT_D32F;
 
@@ -334,14 +371,14 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         samplerDescriptors[semantic].comparisonFunction = rhi::CMP_LESSEQUAL;
         break;
     }
-    case RuntimeTextures::TEXTURE_GBUFFER_0:
-    case RuntimeTextures::TEXTURE_GBUFFER_1:
-    case RuntimeTextures::TEXTURE_GBUFFER_2:
-    case RuntimeTextures::TEXTURE_GBUFFER_3:
-    case RuntimeTextures::TEXTURE_GBUFFER_0_COPY:
-    case RuntimeTextures::TEXTURE_GBUFFER_1_COPY:
-    case RuntimeTextures::TEXTURE_GBUFFER_2_COPY:
-    case RuntimeTextures::TEXTURE_GBUFFER_3_COPY:
+    case TEXTURE_GBUFFER_0:
+    case TEXTURE_GBUFFER_1:
+    case TEXTURE_GBUFFER_2:
+    case TEXTURE_GBUFFER_3:
+    case TEXTURE_GBUFFER_0_COPY:
+    case TEXTURE_GBUFFER_1_COPY:
+    case TEXTURE_GBUFFER_2_COPY:
+    case TEXTURE_GBUFFER_3_COPY:
     {
         descriptor.memoryless = memorylessFetchAttachments && (semantic != RuntimeTextures::TEXTURE_GBUFFER_3);
         descriptor.autoGenMipmaps = false;
@@ -376,7 +413,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
         break;
     }
-    case RuntimeTextures::TEXTURE_INDIRECT_SPECULAR_LOOKUP:
+    case TEXTURE_INDIRECT_SPECULAR_LOOKUP:
     {
 #if (LOAD_BRDF_LOOKUP_TEXTURE)
         ScopedPtr<Image> image(ImageSystem::LoadSingleMip("~res:/Textures/brdflookup.png"));
@@ -397,7 +434,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
 #endif
         break;
     }
-    case RuntimeTextures::TEXTURE_HAMMERSLEY_SET:
+    case TEXTURE_HAMMERSLEY_SET:
     {
         runtimeTextures[semantic] = ServiceTextures::CreateHammersleySet(1024);
         samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
@@ -408,7 +445,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
         break;
     }
-    case RuntimeTextures::TEXTURE_SCREEN_SPACE_NOISE:
+    case TEXTURE_SCREEN_SPACE_NOISE:
     {
 #if (USE_BLUE_NOISE_TEXTURE)
         RefPtr<Image> image(ImageSystem::LoadSingleMip("~res:/Textures/bluenoise.png"));

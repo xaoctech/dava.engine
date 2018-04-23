@@ -167,6 +167,15 @@ enum class RenderFlow : uint32
     FirstValid = LDRForward
 };
 
+enum class LandscapeQuality : uint32
+{
+    Low = 0,
+    Medium,
+    Full,
+
+    Count
+};
+
 static const int32 INDEX_FORMAT_SIZE[2] = { 2, 4 };
 
 const int32 STENCILOP_COUNT = 8; //rhi::StencilOperation

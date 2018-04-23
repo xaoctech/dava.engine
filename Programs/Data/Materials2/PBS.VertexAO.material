@@ -66,3 +66,7 @@ RenderTechnique:
             RenderState:
                 depthFunc: "CMP_EQUAL"
                 depthWrite: false
+        ImposterPass:
+            SupportedRenderFlows: ["all"]
+            UniqueDefines: ["BAKE_IMPOSTER"]
+            Shader: "~res:/Materials2/Shaders/deferred-pbs"

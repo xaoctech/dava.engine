@@ -170,15 +170,14 @@ Entity* CreateLandscapeEnity(const FilePath& scenePathname)
     //setup textures
     NMaterial* material = landscape->GetPageMaterials(0, 0); // GFX_COMPLETE
     DVASSERT(material != nullptr);
-    material->SetQualityGroup(Landscape::LANDSCAPE_QUALITY_NAME);
 
     auto setupTexture = [&](const String& fileName, const FastName& slotName)
     {
-        FilePath textuePathname = scenePathname;
-        textuePathname.ReplaceFilename(fileName);
-        CreateTextureFiles(textuePathname, 2048u, 2048u, PixelFormat::FORMAT_RGBA8888, GetEngineContext()->random->Rand(255));
+        FilePath texturePathname = scenePathname;
+        texturePathname.ReplaceFilename(fileName);
+        CreateTextureFiles(texturePathname, 2048u, 2048u, PixelFormat::FORMAT_RGBA8888, GetEngineContext()->random->Rand(255));
 
-        Texture::PathKey key(textuePathname);
+        Texture::PathKey key(texturePathname);
         Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
         material->AddTexture(slotName, texture);
     };

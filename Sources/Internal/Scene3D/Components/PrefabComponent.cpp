@@ -93,5 +93,11 @@ void PrefabComponent::OnAssetReloaded(const Asset<AssetBase>& original, const As
 {
     DVASSERT(original == prefab);
     prefab = std::static_pointer_cast<Prefab>(reloaded);
+
+    Scene* scene = entity->GetScene();
+    if (scene != nullptr)
+    {
+        scene->GetSingletonComponent<PrefabSingleComponent>()->changedPrefabComponent.insert(this);
+    }
 }
 }

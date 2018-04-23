@@ -2,6 +2,7 @@
 
 #if defined __DAVAENGINE_MACOS__ && !defined DISABLE_NATIVE_WEBVIEW
 
+#include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
 #include "Platform/Steam.h"
 #include "Render/2D/Sprite.h"
@@ -549,10 +550,11 @@ void WebViewControl::RenderToTextureAndSetAsBackgroundSpriteToControl(UIWebView&
 
         DVASSERT(imageRGB);
         {
-            RefPtr<Texture> tex(Texture::CreateFromData(imageRGB.Get(), false));
+            Texture::UniqueTextureKey key(imageRGB, false);
+            Asset<Texture> tex = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
             const Rect& rect = uiWebViewControl.GetRect();
             {
-                RefPtr<Sprite> sprite(Sprite::CreateFromTexture(tex.Get(), 0, 0, w, h, rect.dx, rect.dy));
+                RefPtr<Sprite> sprite(Sprite::CreateFromTexture(tex, 0, 0, w, h, rect.dx, rect.dy));
                 UIControlBackground* bg = uiWebViewControl.GetOrCreateComponent<UIControlBackground>();
                 bg->SetSprite(sprite.Get(), 0);
             }

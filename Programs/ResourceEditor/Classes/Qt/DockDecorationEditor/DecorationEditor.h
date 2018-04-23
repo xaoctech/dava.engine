@@ -93,7 +93,7 @@ private:
     QStandardItemModel* variationListModel = nullptr;
     QStandardItemModel* densityTableModel = nullptr;
 
-    QCheckBox* maskCheckBox[4];
+    QSpinBox* layerIndexEdit = nullptr;
     QCheckBox* cullfaceCheckBox = nullptr;
     QCheckBox* orientCheckbox = nullptr;
     QCheckBox* tintCheckBox = nullptr;

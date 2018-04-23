@@ -1,11 +1,13 @@
+#include "Scene3D/Components/MeshComponent.h"
+
 #include "Asset/AssetManager.h"
 #include "Engine/Engine.h"
-#include "Scene3D/Components/MeshComponent.h"
 #include "Scene3D/Components/SingleComponents/RenderObjectSingleComponent.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Render/Highlevel/Mesh.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
+#include "Render/Highlevel/Mesh.h"
 
 namespace DAVA
 {

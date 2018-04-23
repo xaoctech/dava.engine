@@ -45,15 +45,6 @@ public:
     void SetLandscapeHeight(float32 height);
     float32 GetLandscapeHeight() const;
 
-    void SetMiddleLODLevel(uint32 level);
-    uint32 GetMiddleLODLevel() const;
-
-    void SetMacroLODLevel(uint32 level);
-    uint32 GetMacroLODLevel() const;
-
-    void SetMaxTexturingLevel(uint32 level);
-    uint32 GetMaxTexturingLevel() const;
-
     void SetTessellationLevelCount(uint32 levelCount);
     uint32 GetTessellationLevelCount() const;
 
@@ -70,9 +61,6 @@ private:
     float32 landscapeHeight = 0.f;
     float32 landscapeSize = 0.f;
 
-    uint32 middleLODLevel = 0u;
-    uint32 macroLODLevel = 0u;
-    uint32 maxTexturingLevel = 10;
     uint32 tessellationLevelCount = 3;
     float32 tessellationHeight = 0.4f;
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Asset/Asset.h>
 #include <Base/Set.h>
 #include <Scene3D/Components/CameraComponent.h>
 
@@ -47,7 +48,7 @@ private:
     DAVA::IServer* server;
     DAVA::NetworkPlayerID playerId;
     DAVA::Camera* camera;
-    DAVA::Texture* cubesTexture;
+    DAVA::Asset<DAVA::Texture> cubesTexture;
 
     DAVA::Set<DAVA::Entity*> smallCubes;
     DAVA::Entity* bigCube = nullptr;

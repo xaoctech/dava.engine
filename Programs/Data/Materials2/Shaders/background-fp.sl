@@ -3,6 +3,7 @@
 #include "include/all-input.h"
 #include "include/structures.h"
 #include "include/math.h"
+#include "include/atmosphere-helpers.h"
 #include "include/atmosphere.h"
 
 #ensuredefined CUBEMAP_ENVIRONMENT_TEXTURE 0

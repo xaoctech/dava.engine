@@ -686,7 +686,6 @@ void ShaderSource::InlineFunctions()
                                 DAVA::Logger::Error("Inlining of %s in %s will cause error:\n"
                                                     "variable '%s' is uninitialized when used within its own initialization",
                                                     func_decl->name, arg_decl->fileName, arg_decl->name);
-                                DVASSERT(0);
                             }
                         }
 

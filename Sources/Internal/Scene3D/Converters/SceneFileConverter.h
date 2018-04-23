@@ -9,7 +9,7 @@
 
 namespace DAVA
 {
-class Mesh;
+class RenderObject;
 class Geometry;
 class Scene;
 class Entity;
@@ -23,7 +23,7 @@ public:
     static void ConvertRenderComponentsRecursive(Entity* entity, const FilePath& rootFolder);
 
 protected:
-    static bool ConvertMesh(Mesh* mesh, Entity* entity, const FilePath& assetsPath);
+    static bool ConvertMesh(RenderObject* ro, Entity* entity, const FilePath& assetsPath);
     static bool ConvertLandscape(Landscape* landscape, Entity* entity, const FilePath& assetsPath);
     static FilePath ConvertDecoration(const FilePath& decorationPath);
 

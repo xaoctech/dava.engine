@@ -40,13 +40,14 @@ Component* LandscapeComponent::Clone(Entity* toEntity)
     newComponent->SetLandscapeMaterialPath(GetLandscapeMaterialPath());
     newComponent->SetLandscapeSize(GetLandscapeSize());
     newComponent->SetLandscapeHeight(GetLandscapeHeight());
-    newComponent->SetMiddleLODLevel(GetMiddleLODLevel());
-    newComponent->SetMacroLODLevel(GetMacroLODLevel());
-    newComponent->SetMaxTexturingLevel(GetMaxTexturingLevel());
     newComponent->SetTessellationLevelCount(GetTessellationLevelCount());
     newComponent->SetTessellationHeight(GetTessellationHeight());
     newComponent->landscape->SetFlags(landscape->GetFlags());
-    newComponent->landscape->GetDecorationData()->CopyParameters(landscape->GetDecorationData());
+
+    for (uint32 i = 0; i < static_cast<uint32>(LandscapeQuality::Count); ++i)
+    {
+        newComponent->landscape->settings[i].CopySettings(&landscape->settings[i]);
+    }
     newComponent->landscape->subdivision->SetMetrics(landscape->subdivision->GetMetrics());
 
     return newComponent;
@@ -69,10 +70,6 @@ void LandscapeComponent::Serialize(KeyedArchive* archive, SerializationContext* 
     archive->SetFloat("landscapeHeight", landscapeHeight);
     archive->SetFloat("landscapeSize", landscapeSize);
 
-    archive->SetUInt32("middleLODLevel", middleLODLevel);
-    archive->SetUInt32("macroLODLevel", macroLODLevel);
-    archive->SetUInt32("maxTexturingLevel", maxTexturingLevel);
-
     archive->SetUInt32("tessellationLevelCount", tessellationLevelCount);
     archive->SetFloat("tessellationHeight", tessellationHeight);
 
@@ -87,9 +84,14 @@ void LandscapeComponent::Serialize(KeyedArchive* archive, SerializationContext* 
         }
     }
 
-    landscape->GetDecorationData()->Save(archive, serializationContext);
+    for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
+    {
+        ScopedPtr<KeyedArchive> qualityArchive(new KeyedArchive());
+        landscape->settings[q].Save(qualityArchive, serializationContext);
+        archive->SetArchive(Format("landscape.settings.%d", q), qualityArchive);
+    }
+
     landscape->SaveFlags(archive, serializationContext);
-    landscape->subdivision->GetMetrics().Save(archive);
 }
 
 void LandscapeComponent::Deserialize(KeyedArchive* archive, SerializationContext* serializationContext)
@@ -103,10 +105,6 @@ void LandscapeComponent::Deserialize(KeyedArchive* archive, SerializationContext
     SetLandscapeHeight(archive->GetFloat("landscapeHeight"));
     SetLandscapeSize(archive->GetFloat("landscapeSize"));
 
-    SetMiddleLODLevel(archive->GetUInt32("middleLODLevel"));
-    SetMacroLODLevel(archive->GetUInt32("macroLODLevel"));
-    SetMaxTexturingLevel(archive->GetUInt32("maxTexturingLevel"));
-
     SetTessellationLevelCount(archive->GetUInt32("tessellationLevelCount"));
     SetTessellationHeight(archive->GetFloat("tessellationHeight"));
 
@@ -119,12 +117,17 @@ void LandscapeComponent::Deserialize(KeyedArchive* archive, SerializationContext
             SetPageMaterialPath(l, i, serializationContext->GetScenePath() + archive->GetString(Format("layer%u_lod%u_materialPath", l, i)));
     }
 
-    landscape->GetDecorationData()->Load(archive, serializationContext);
+    landscape->settings[uint32(LandscapeQuality::Full)].Load(archive, serializationContext); //back-compatibility
+    for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
+    {
+        KeyedArchive* qualityArchive = archive->GetArchive(Format("landscape.settings.%d", q));
+        if (qualityArchive != nullptr)
+            landscape->settings[q].Load(qualityArchive, serializationContext);
+    }
+
     landscape->LoadFlags(archive, serializationContext);
 
-    LandscapeSubdivision::SubdivisionMetrics metrics;
-    metrics.Load(archive);
-    landscape->subdivision->SetMetrics(metrics);
+    landscape->ApplyQualitySettings();
 }
 
 Landscape* LandscapeComponent::GetLandscape() const
@@ -201,39 +204,6 @@ void LandscapeComponent::SetLandscapeHeight(float32 height)
 float32 LandscapeComponent::GetLandscapeHeight() const
 {
     return landscapeHeight;
-}
-
-void LandscapeComponent::SetMiddleLODLevel(uint32 level)
-{
-    middleLODLevel = level;
-    landscape->SetMiddleLODLevel(middleLODLevel);
-}
-
-uint32 LandscapeComponent::GetMiddleLODLevel() const
-{
-    return middleLODLevel;
-}
-
-void LandscapeComponent::SetMacroLODLevel(uint32 level)
-{
-    macroLODLevel = level;
-    landscape->SetMacroLODLevel(macroLODLevel);
-}
-
-uint32 LandscapeComponent::GetMacroLODLevel() const
-{
-    return macroLODLevel;
-}
-
-void LandscapeComponent::SetMaxTexturingLevel(uint32 level)
-{
-    maxTexturingLevel = level;
-    landscape->SetMaxTexturingLevel(maxTexturingLevel);
-}
-
-uint32 LandscapeComponent::GetMaxTexturingLevel() const
-{
-    return maxTexturingLevel;
 }
 
 void LandscapeComponent::SetTessellationLevelCount(uint32 levelCount)

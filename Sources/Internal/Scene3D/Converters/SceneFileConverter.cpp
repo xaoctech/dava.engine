@@ -7,22 +7,24 @@
 #include "FileSystem/FileSystem.h"
 #include "Scene3D/Prefab.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/Components/BillboardComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
-#include "Scene3D/Components/PrefabComponent.h"
-#include "Scene3D/Components/MeshComponent.h"
-#include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/LandscapeComponent.h"
-#include "Scene3D/Components/SpeedTreeComponent.h"
 #include "Scene3D/Components/LightmapComponent.h"
 #include "Scene3D/Components/LightmapDataComponent.h"
+#include "Scene3D/Components/MeshComponent.h"
+#include "Scene3D/Components/PrefabComponent.h"
+#include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/SpeedTreeComponent.h"
 #include "Render/3D/Geometry.h"
 #include "Render/Material/Material.h"
-#include "Render/Highlevel/MeshLODDescriptor.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Highlevel/Mesh.h"
+#include "Render/Highlevel/BillboardRenderObject.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/LandscapeSubdivision.h"
+#include "Render/Highlevel/Mesh.h"
+#include "Render/Highlevel/MeshLODDescriptor.h"
+#include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 #include "Render/Shader/ShaderDescriptor.h"
 
@@ -124,7 +126,8 @@ void SceneFileConverter::ConvertRenderComponentsRecursive(Entity* entity, const 
         case RenderObject::TYPE_MESH:
         case RenderObject::TYPE_SKINNED_MESH:
         case RenderObject::TYPE_SPEED_TREE:
-            converted = ConvertMesh(static_cast<Mesh*>(renderObject), entity, assetsPath);
+        case RenderObject::TYPE_BILLBOARD:
+            converted = ConvertMesh(renderObject, entity, assetsPath);
             break;
 
         case RenderObject::TYPE_LANDSCAPE:
@@ -139,11 +142,11 @@ void SceneFileConverter::ConvertRenderComponentsRecursive(Entity* entity, const 
     }
 }
 
-bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath& assetsPath)
+bool SceneFileConverter::ConvertMesh(RenderObject* ro, Entity* entity, const FilePath& assetsPath)
 {
     AssetManager* assetManager = GetEngineContext()->assetManager;
 
-    int32 lodCount = mesh->GetMaxLodIndex() + 1;
+    int32 lodCount = ro->GetMaxLodIndex() + 1;
 
     Vector<MeshLODDescriptor> lodDescriptors(Max(1, lodCount));
     if (lodCount == 0)
@@ -164,14 +167,25 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
     LightmapComponent* lightmapComponent = new LightmapComponent();
     bool hasLightmapInfo = false;
 
-    uint32 batchCount = mesh->GetRenderBatchCount();
-    lightmapComponent->SetParamsCount(mesh->GetRenderBatchCount());
+    uint32 batchCount = ro->GetRenderBatchCount();
+    lightmapComponent->SetParamsCount(ro->GetRenderBatchCount());
+
+    Mesh* mesh = nullptr;
+    switch (ro->GetType())
+    {
+    case RenderObject::TYPE_MESH:
+    case RenderObject::TYPE_SKINNED_MESH:
+    case RenderObject::TYPE_SPEED_TREE:
+        mesh = static_cast<Mesh*>(ro);
+    default:
+        break;
+    };
 
     int32 lodIndex = -1, switchIndex = -1;
     Vector<uint32> lodBatchesCount(Max(1, lodCount));
     for (uint32 b = 0; b < batchCount; ++b)
     {
-        RenderBatch* batch = mesh->GetRenderBatch(b, lodIndex, switchIndex);
+        RenderBatch* batch = ro->GetRenderBatch(b, lodIndex, switchIndex);
         NMaterial* material = batch->GetMaterial();
 
         //////////////////////////////////////////////////////////////////////////
@@ -204,7 +218,10 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
             lodDesc.geometryAsset->AddPolygonGroup(batch->GetPolygonGroup());
         }
         DVASSERT(batchDesc.geometryIndex < lodDesc.geometryAsset->GetPolygonGroupCount());
-        batchDesc.jointTargets = mesh->GetJointTargets(batch);
+        if (mesh != nullptr)
+        {
+            batchDesc.jointTargets = mesh->GetJointTargets(batch);
+        }
 
         lodDesc.batchDescriptors.emplace_back(batchDesc);
     }
@@ -217,21 +234,30 @@ bool SceneFileConverter::ConvertMesh(Mesh* mesh, Entity* entity, const FilePath&
         }
     }
 
-    if (mesh->GetType() == RenderObject::TYPE_SPEED_TREE)
+    if (ro->GetType() == RenderObject::TYPE_SPEED_TREE)
     {
         SpeedTreeComponent* speedTreeComponent = entity->GetComponent<SpeedTreeComponent>();
         DVASSERT(speedTreeComponent != nullptr);
 
         speedTreeComponent->SetMeshDescriptor(lodDescriptors);
-        speedTreeComponent->GetSpeedTreeObject()->SetFlags(mesh->GetFlags());
-        speedTreeComponent->GetSpeedTreeObject()->SetStaticOcclusionIndex(mesh->GetStaticOcclusionIndex());
+        speedTreeComponent->GetSpeedTreeObject()->SetFlags(ro->GetFlags());
+        speedTreeComponent->GetSpeedTreeObject()->SetStaticOcclusionIndex(ro->GetStaticOcclusionIndex());
+    }
+    else if (ro->GetType() == RenderObject::TYPE_BILLBOARD)
+    {
+        BillboardComponent* billboardComponent = new BillboardComponent();
+        billboardComponent->SetMeshDescriptor(lodDescriptors);
+        billboardComponent->GetBillboard()->SetFlags(ro->GetFlags());
+        billboardComponent->GetBillboard()->SetStaticOcclusionIndex(ro->GetStaticOcclusionIndex());
+
+        entity->AddComponent(billboardComponent);
     }
     else
     {
         MeshComponent* meshComponent = new MeshComponent();
         meshComponent->SetMeshDescriptor(lodDescriptors);
-        meshComponent->GetMesh()->SetFlags(mesh->GetFlags());
-        meshComponent->GetMesh()->SetStaticOcclusionIndex(mesh->GetStaticOcclusionIndex());
+        meshComponent->GetMesh()->SetFlags(ro->GetFlags());
+        meshComponent->GetMesh()->SetStaticOcclusionIndex(ro->GetStaticOcclusionIndex());
 
         entity->AddComponent(meshComponent);
     }
@@ -251,16 +277,20 @@ bool SceneFileConverter::ConvertLandscape(Landscape* landscape, Entity* entity, 
     landscapeComponent->SetHeightmapPath(landscape->GetHeightmapPathname());
     landscapeComponent->SetLandscapeSize(landscape->GetLandscapeSize());
     landscapeComponent->SetLandscapeHeight(landscape->GetLandscapeHeight());
-    landscapeComponent->SetMiddleLODLevel(landscape->GetMiddleLODLevel());
-    landscapeComponent->SetMacroLODLevel(landscape->GetMacroLODLevel());
-    landscapeComponent->SetMaxTexturingLevel(landscape->GetMaxTexturingLevel());
     landscapeComponent->SetTessellationLevelCount(landscape->GetTessellationLevels());
     landscapeComponent->SetTessellationHeight(landscape->GetTessellationHeight());
     landscapeComponent->GetLandscape()->GetSubdivision()->SetMetrics(landscape->GetSubdivision()->GetMetrics());
 
-    DecorationData* decoration = landscapeComponent->GetLandscape()->GetDecorationData();
-    decoration->CopyParameters(landscape->GetDecorationData());
-    decoration->SetDecorationPath(ConvertDecoration(decoration->GetDecorationPath()));
+    landscapeComponent->GetLandscape()->quality = landscape->quality;
+    for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
+    {
+        Landscape::LandscapeSettings& settingSrc = landscape->settings[q];
+        Landscape::LandscapeSettings& settingDst = landscapeComponent->GetLandscape()->settings[q];
+
+        settingDst.CopySettings(&settingSrc);
+        settingDst.decorationData.SetDecorationPath(ConvertDecoration(settingSrc.decorationData.GetDecorationPath()));
+    }
+    landscapeComponent->GetLandscape()->ApplyQualitySettings();
 
     AssetManager* assetManager = GetEngineContext()->assetManager;
     Asset<Material> landscapeMaterialAsset = CreateMaterialAsset(landscape->GetLandscapeMaterial(), assetsPath);

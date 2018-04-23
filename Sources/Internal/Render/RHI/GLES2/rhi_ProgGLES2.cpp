@@ -203,9 +203,9 @@ Handle ProgGLES2::InstanceConstBuffer(uint32 bufIndex)
     Handle handle = InvalidHandle;
 
     DVASSERT(bufIndex < countof(cbuf));
-    DVASSERT(prog != 0);
+    // DVASSERT(prog != 0);
 
-    if (bufIndex < countof(cbuf) && cbuf[bufIndex].location != DAVA::InvalidIndex)
+    if ((prog != 0) && (bufIndex < countof(cbuf)) && (cbuf[bufIndex].location != DAVA::InvalidIndex))
     {
         handle = ConstBufGLES2Pool::Alloc();
 

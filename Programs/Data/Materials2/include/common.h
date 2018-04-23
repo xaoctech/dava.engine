@@ -32,7 +32,6 @@
 #ensuredefined FORWARD_LIGHT 0
 
 #ensuredefined ORIENT_ON_LANDSCAPE 0
-#ensuredefined DECORATION_DRAW_LEVELS 0
 #ensuredefined LANDSCAPE_PATCHES 0
 #ensuredefined LANDSCAPE_USE_INSTANCING 0
 #ensuredefined LANDSCAPE_VT_PAGE 0

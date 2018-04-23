@@ -662,13 +662,14 @@ void CommandBufferGLES2_t::Execute()
                 if (apply_fb)
                 {
                     Handle ds = (passCfg.UsingMSAA()) ? passCfg.depthStencilBuffer.multisampleTexture : passCfg.depthStencilBuffer.texture;
-                    GLuint fbo = TextureGLES2::GetFrameBuffer(rt, rt_face, rt_level, rt_count, ds);
-                    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, fbo));
-                    _GLES2_Bound_FrameBuffer = fbo;
+                    TextureGLES2::Framebuffer framebuffer = TextureGLES2::GetFrameBuffer(rt, rt_face, rt_level, rt_count, ds);
+                    GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer.identifier));
                     
-                    #if defined(__DAVAENGINE_MACOS__)
+                #if defined(__DAVAENGINE_MACOS__)
                     do_clear = true;
-                    #endif
+                #endif
+
+                    _GLES2_Bound_FrameBuffer = framebuffer.identifier;
                 }
 
 
@@ -683,6 +684,8 @@ void CommandBufferGLES2_t::Execute()
 
                     if (passCfg.colorBuffer[0].loadAction == LOADACTION_CLEAR)
                     {
+                        // GFX_COMPLETE Now it doesn't matter what color you choose to clear non 0 attachments, they always will be cleared by 0 attachment's color.
+
                         GL_CALL(glClearColor(passCfg.colorBuffer[0].clearColor[0], passCfg.colorBuffer[0].clearColor[1], passCfg.colorBuffer[0].clearColor[2], passCfg.colorBuffer[0].clearColor[3]));
                         flags |= GL_COLOR_BUFFER_BIT;
                     }
@@ -1378,10 +1381,8 @@ static void _GLES2_ExecuteQueuedCommands(const CommonImpl::Frame& frame)
 #endif
 
     Trace("\n\n-------------------------------\nexecuting frame %u\n", frame_n);
-    for (std::vector<RenderPassGLES2_t *>::iterator p = pass.begin(), p_end = pass.end(); p != p_end; ++p)
+    for (RenderPassGLES2_t* pp : pass)
     {
-        RenderPassGLES2_t* pp = *p;
-
         for (uint32 b = 0; b != pp->cmdBuf.size(); ++b)
         {
             Handle cb_h = pp->cmdBuf[b];

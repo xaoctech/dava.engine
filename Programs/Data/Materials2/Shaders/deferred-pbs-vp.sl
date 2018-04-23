@@ -4,6 +4,8 @@
 #include "include/structures.h"
 #include "include/math.h"
 
+#ensuredefined BAKE_IMPOSTER 0
+
 vertex_in
 {
     float3 position : POSITION;
@@ -40,6 +42,7 @@ vertex_out
     float3 tbnToWorld1 : TEXCOORD2;
     float4 tbnToWorld2 : TEXCOORD3;
     float4 projectedPosition : TEXCOORD4;
+    float3 toCamera : TEXCOORD5;
 #if (VERTEX_BAKED_AO)
     float vertexBakedAO : COLOR0;
 #endif
@@ -126,19 +129,20 @@ vertex_out vp_main(vertex_in input)
     float3 worldTangent = normalize(mul(float4(inputTangent, 0.0), worldInvTransposeMatrix).xyz);
     float3 worldBinormal = normalize(mul(float4(inputBinormal, 0.0), worldInvTransposeMatrix).xyz);
     float4 worldPosition = mul(float4(inputPosition, 1.0), worldMatrix);
-
+    
     vertex_out output;
     output.position = mul(worldPosition, viewProjMatrix);
+    output.projectedPosition = output.position;
+    output.toCamera = cameraPosition - worldPosition.xyz;
     output.tbnToWorld0 = float3(worldTangent.x, worldBinormal.x, worldNormal.x);
     output.tbnToWorld1 = float3(worldTangent.y, worldBinormal.y, worldNormal.y);
     output.tbnToWorld2.xyz = float3(worldTangent.z, worldBinormal.z, worldNormal.z);
-    output.tbnToWorld2.w = dot(worldNormal, cameraPosition - worldPosition.xyz);
-    output.projectedPosition = output.position;
+    output.tbnToWorld2.w = dot(worldNormal, output.toCamera);
 
 #if (USE_BAKED_LIGHTING)
-    output.uv = float4(texCoordScale * input.texCoord0, shadowaoUV.xy + shadowaoUV.zw * input.texCoord1);
+    output.uv = float4(input.texCoord0, shadowaoUV.xy + shadowaoUV.zw * input.texCoord1);
 #elif (ALBEDO_TINT_BLEND_MODE)
-	output.uv = float4(texCoordScale * input.texCoord0, input.texCoord1 * uvScale + uvOffset);
+    output.uv = float4(input.texCoord0, input.texCoord1 * uvScale + uvOffset);
 #else
     output.uv = float4(input.texCoord0, 0.0, 0.0);
 #endif

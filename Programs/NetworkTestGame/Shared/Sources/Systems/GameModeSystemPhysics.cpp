@@ -1,5 +1,6 @@
 #include "Systems/GameModeSystemPhysics.h"
 
+#include <Asset/AssetManager.h>
 #include <Engine/EngineContext.h>
 #include <DeviceManager/DeviceManager.h>
 #include <Logger/Logger.h>
@@ -136,9 +137,11 @@ GameModeSystemPhysics::GameModeSystemPhysics(Scene* scene)
     lightEntity->AddComponent(lightComponent);
     scene->AddNode(lightEntity);
 
-    uint8 whiteTextureData[16 * 16 * 4];
-    memset(whiteTextureData, 0xFFFFFF, 16 * 16 * 4);
-    cubesTexture = Texture::CreateFromData(FORMAT_RGBA8888, whiteTextureData, 16, 16, true);
+    auto whiteTextureData = std::make_shared<Vector<uint8>>(16 * 16 * 4, uint8());
+    memset(whiteTextureData->data(), 0xFFFFFF, 16 * 16 * 4);
+
+    Texture::UniqueTextureKey key(FORMAT_RGBA8888, 16, 16, true, whiteTextureData);
+    cubesTexture = GetEngineContext()->assetManager->GetAsset<Texture>(key, DAVA::AssetManager::SYNC);
     cubesTexture->SetWrapMode(rhi::TEXADDR_WRAP, rhi::TEXADDR_WRAP);
 
     // Setup input actions

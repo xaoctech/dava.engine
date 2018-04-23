@@ -178,7 +178,6 @@ using namespace metal;
 constexpr sampler shared_compare_sampler(filter::nearest, compare_func::less_equal);
 constexpr constant float4 DefaultSample = float4(0.0, 0.0, 1.0, 1.0);
 constexpr constant float4 ndcToUvMapping = float4(0.5, -0.5, 0.5, 0.5);
-constexpr constant float2 ndcToZMapping = float2(1.0, 0.0);
 constexpr constant float2 centerPixelMapping = float2(0.0, 0.0);
 
 #define lerp(a, b, t)           mix((a), (b), (t))

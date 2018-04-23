@@ -137,7 +137,7 @@ vertex_out vp_main(vertex_in input)
     output.projectedPosition = output.position;
 
 #if (USE_BAKED_LIGHTING)
-    output.uv = float4(texCoordScale * input.texCoord0, shadowaoUV.xy + shadowaoUV.zw * input.texCoord1);
+    output.uv = float4(input.texCoord0, shadowaoUV.xy + shadowaoUV.zw * input.texCoord1);
 #else
     output.uv = float4(input.texCoord0, 0.0, 0.0);
 #endif

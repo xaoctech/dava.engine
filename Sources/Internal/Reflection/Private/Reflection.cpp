@@ -7,6 +7,9 @@
 #include "Reflection/Private/Wrappers/ValueWrapperAny.h"
 #include "Reflection/Private/Wrappers/ValueWrapperObject.h"
 #include "Reflection/Private/Wrappers/StructureWrapperDefault.h"
+#include "FileSystem/FilePath.h"
+#include "Math/Vector.h"
+#include "Math/Matrix4.h"
 
 namespace DAVA
 {
@@ -261,13 +264,18 @@ const Dumper::PrintersTable Dumper::valuePrinters = {
     { Type::Instance<float64>(), [](std::ostringstream& out, const Any& any) { out << any.Get<float64>(); } },
     { Type::Instance<String>(), [](std::ostringstream& out, const Any& any) { out << any.Get<String>().c_str(); } },
     { Type::Instance<FastName>(), [](std::ostringstream& out, const Any& any) { out << any.Get<FastName>().c_str(); } },
+    { Type::Instance<FilePath>(), [](std::ostringstream& out, const Any& any) { out << any.Get<FilePath>().GetAbsolutePathname().c_str(); } },
+    { Type::Instance<Vector2>(), [](std::ostringstream& out, const Any& any) { out << any; } },
+    { Type::Instance<Vector3>(), [](std::ostringstream& out, const Any& any) { out << any; } },
+    { Type::Instance<Vector4>(), [](std::ostringstream& out, const Any& any) { out << any; } },
+    { Type::Instance<Matrix4>(), [](std::ostringstream& out, const Any& any) { out << any; } },
     { Type::Instance<size_t>(), [](std::ostringstream& out, const Any& any) { out << any.Get<size_t>(); } },
     { Type::Instance<void>(), [](std::ostringstream& out, const Any& any) { out << "???"; } }
 };
 
 const Dumper::PrintersTable Dumper::pointerPrinters = {
     { Type::Instance<char>(), [](std::ostringstream& out, const Any& any) { out << any.Get<const char*>(); } },
-    { Type::Instance<void>(), [](std::ostringstream& out, const Any& any) { out << "0x" << std::setw(8) << std::setfill('0') << std::hex << any.Get<void*>(); } }
+    { Type::Instance<void>(), [](std::ostringstream& out, const Any& any) { out << std::setw(8) << std::setfill('0') << std::hex << any.Get<void*>(); } }
 };
 
 } // ReflectionDetail
@@ -300,8 +308,7 @@ Reflection::Reflection(const ReflectedObject& object_, const ValueWrapper* vw, c
     // if still no structureWrapper use empty one
     if (nullptr == structureWrapper)
     {
-        static StructureWrapperDefault emptyStructureWrapper;
-        structureWrapper = &emptyStructureWrapper;
+        structureWrapper = GetDefaultStructureWrapper();
     }
 }
 
@@ -375,6 +382,12 @@ Vector<Reflection::Method> Reflection::GetMethods(MetaPredicate pred) const
     return structureWrapper->GetMethods(object, valueWrapper, pred);
 }
 
+StructureWrapperDefault* Reflection::GetDefaultStructureWrapper()
+{
+    static StructureWrapperDefault w;
+    return &w;
+}
+
 void Reflection::Dump(std::ostream& out, size_t maxlevel) const
 {
     ReflectedTypeDBDetail::Dumper::Dump(out, Reflection::Field(Any("this"), Reflection(*this), nullptr), 0, maxlevel);
@@ -407,25 +420,23 @@ Reflection Reflection::Create(const Any& any, const ReflectedMeta* objectMeta)
 {
     static ValueWrapperAny valueWrapperAny;
 
-    if (!any.IsEmpty())
-    {
-        if (any.GetType()->IsPointer())
-        {
-            const ReflectedType* objectType = ReflectedTypeDB::GetByType(any.GetType()->Deref());
+    if (any.IsEmpty() == true)
+        return Reflection();
 
-            if (nullptr != objectType)
-            {
-                ReflectedObject object(any.Get<void*>(), objectType);
-                return Reflection::Create(object, objectMeta);
-            }
-        }
-        else
+    if (any.GetType()->IsPointer())
+    {
+        const ReflectedType* objectType = ReflectedTypeDB::GetByType(any.GetType()->Deref());
+
+        if (nullptr != objectType)
         {
-            return Reflection(ReflectedObject(&any), &valueWrapperAny, nullptr, objectMeta);
+            ReflectedObject object(any.Get<void*>(), objectType);
+            return Reflection::Create(object, objectMeta);
         }
     }
-
-    return Reflection();
+    else
+    {
+        return Reflection(ReflectedObject(&any), &valueWrapperAny, nullptr, objectMeta);
+    }
 }
 
 Reflection Reflection::Create(const Reflection& etalon, const Reflection& metaProvider)

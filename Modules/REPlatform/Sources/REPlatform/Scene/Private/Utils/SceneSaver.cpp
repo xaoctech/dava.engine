@@ -130,10 +130,13 @@ void SceneSaver::SaveScene(Scene* scene, const FilePath& fileName)
     if (landscape)
     {
         sceneUtils.AddFile(landscape->GetHeightmapPathname());
-        DAVA::DecorationData* data = landscape->GetDecorationData();
-        if (data != nullptr)
+        for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
         {
-            sceneUtils.AddFile(data->GetDecorationPath());
+            const Landscape::LandscapeSettings* settings = landscape->GetSettings(LandscapeQuality(q));
+            if (!settings->decorationData.GetDecorationPath().IsEmpty())
+            {
+                sceneUtils.AddFile(settings->decorationData.GetDecorationPath());
+            }
         }
     }
 

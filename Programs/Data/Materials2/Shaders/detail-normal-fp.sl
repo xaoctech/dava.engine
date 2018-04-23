@@ -5,6 +5,7 @@
 #include "include/math.h"
 #include "include/brdf.h"
 #include "include/shadowmapping-v2.h"
+#include "include/atmosphere-helpers.h"
 #include "include/atmosphere.h"
 #include "include/resolve.h"
 #include "include/normal-blend.h"

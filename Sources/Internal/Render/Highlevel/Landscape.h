@@ -32,17 +32,40 @@ class Landscape : public RenderObject
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_LANDSCAPE)
 
 public:
+    struct LandscapeSettings : public ReflectionBase
+    {
+        void Save(KeyedArchive* archive, SerializationContext* serializationContext);
+        void Load(KeyedArchive* archive, SerializationContext* serializationContext);
+
+        void CopySettings(const LandscapeSettings* from);
+
+        LandscapeSubdivision::SubdivisionMetrics subdivisonMetrics;
+
+        uint32 terrainVTWidth = 4096u;
+        uint32 terrainVTHeight = 2048u;
+        uint32 terrainVTPageSize = 128u;
+
+        uint32 decorationVTWidth = 2048u;
+        uint32 decorationVTHeight = 1024u;
+        uint32 decorationVTPageSize = 64u;
+
+        uint32 maxTexturingLevel = 10u;
+        uint32 middleLODLevel = 8u;
+        uint32 macroLODLevel = 4u;
+
+        DecorationData decorationData;
+
+        bool enableTBN = true;
+        bool enableDecoration = true;
+
+        DAVA_VIRTUAL_REFLECTION(LandscapeSettings, ReflectionBase);
+    };
+
     enum eLandscapeTexture : uint32
     {
         HEIGHTMAP_TEXTURE,
         TANGENT_TEXTURE,
         TILEMASK_TEXTURE
-    };
-
-    enum LandscapeQuality : uint32
-    {
-        Low,
-        Full,
     };
 
     Landscape();
@@ -61,7 +84,7 @@ public:
 
     static const FastName PARAM_TEXTURE_TILING;
     static const FastName PARAM_DECORATION_LEVEL_COLOR;
-    static const FastName PARAM_DECORATION_DECORATION_MASK;
+    static const FastName PARAM_DECORATION_DECORATION_INDEX;
     static const FastName PARAM_DECORATION_ORIENT_VALUE;
 
     static const FastName TEXTURE_COLOR;
@@ -77,9 +100,6 @@ public:
     static const FastName TEXTURE_TERRAIN;
     static const FastName TEXTURE_DECORATION;
     static const FastName TEXTURE_DECORATION_COLOR;
-
-    const static FastName LANDSCAPE_QUALITY_NAME;
-    const static FastName LANDSCAPE_QUALITY_VALUE_HIGH;
 
     enum RenderMode
     {
@@ -152,7 +172,7 @@ public:
     NMaterial* GetLandscapeMaterial();
     void SetLandscapeMaterial(NMaterial* material);
 
-    void PrepareMaterial(NMaterial* material);
+    void UpdateRuntimeMaterials();
 
     RenderObject* Clone(RenderObject* newObject) override;
     void RecalcBoundingBox() override;
@@ -173,11 +193,12 @@ public:
     void SetUseInstancing(bool useInstancing);
     bool IsUseInstancing() const;
 
+    const LandscapeSettings* GetSettings(LandscapeQuality quality);
+
     LandscapeSubdivision* GetSubdivision();
 
     RenderMode GetRenderMode() const;
     void SetRenderMode(RenderMode mode);
-    void UpdateMaterialFlags();
     void SelectHeightmapTextureFormat();
 
     void RecursiveRayTrace(uint32 level, uint32 x, uint32 y, const Ray3& rayInObjectSpace, float32& resultT);
@@ -190,7 +211,7 @@ public:
     void SetTerrainLayerRenderers(Vector<LandscapeLayerRenderer*>* layerRenderers);
 
     //#decoration
-    DecorationData* GetDecorationData();
+    DecorationData* GetCurrentDecorationData();
     void ReloadDecorationData();
 
     void SetRenderSystem(RenderSystem* renderSystem) override;
@@ -205,6 +226,9 @@ public:
     void SetDrawLandscapeGeometryEnabled(bool enabled);
 
 protected:
+    void CheckQualitySettings();
+    void ApplyQualitySettings();
+
     void AddPatchToRender(const LandscapeSubdivision::SubdivisionPatch* subdivPatch);
     void RequestPages(const LandscapeSubdivision::SubdivisionPatch* subdivPatch);
     const LandscapeSubdivision::SubdivisionPatch* GetLastTerminatedPatch(uint32 level, uint32 x, uint32 y);
@@ -215,14 +239,11 @@ protected:
 
     void RestoreGeometry();
 
-    void SetLandscapeSize(const Vector3& newSize);
+    void SetLandscapeSize3(const Vector3& newSize);
     bool BuildHeightmap();
     void RebuildLandscape();
 
     int32 GetHeightmapSize() const;
-
-    void SetMaxTexturingLevel(uint32 level);
-    uint32 GetMaxTexturingLevel() const;
 
     void SetTessellationLevels(uint32 levels);
     uint32 GetTessellationLevels() const;
@@ -256,11 +277,11 @@ protected:
     void SetUseMorphing(bool useMorph);
     bool IsUseMorphing() const;
 
-    void SetMiddleLODLevel(uint32 level);
-    uint32 GetMiddleLODLevel() const;
+    bool AppliedSettingsRefl() const;
+    void ApplySettingsRefl(bool);
 
-    void SetMacroLODLevel(uint32 level);
-    uint32 GetMacroLODLevel() const;
+    LandscapeSettings* GetCurrentSettingsRefl() const;
+    void SetCurrentSettingsRefl(LandscapeSettings*);
 
     void SetPageMaterial(uint32 layerIndex, uint32 materialIndex, NMaterial* material) const;
 
@@ -299,11 +320,15 @@ protected:
     uint32 tessellationLevelCount = 3;
     float32 tessellationHeight = 0.4f;
 
-    LandscapeQuality quality = LandscapeQuality::Full;
     LansdcapeRenderStats renderStats;
+
+    LandscapeQuality quality = LandscapeQuality::Full;
+    LandscapeSettings settings[uint32(LandscapeQuality::Count)];
+    LandscapeSettings* currentSettings = nullptr;
 
     RenderMode renderMode = RENDERMODE_NO_INSTANCING;
     bool updatable = false;
+    bool tbnEnabled = false;
     bool microtessellation = false;
     bool debugDrawMetrics = false;
     bool debugDrawMorphing = false;
@@ -311,7 +336,6 @@ protected:
     bool debugDrawVTPages = false;
     bool debugDrawPatches = false;
     bool debugDrawVTexture = false;
-    bool debugDrawDecorationLevels = false;
     bool debugDisableDecoration = false;
     bool lockPagesUpdate = false;
     bool drawLandscapeGeometry = true;
@@ -405,6 +429,7 @@ protected:
     void CreateTextureData();
     void UpdateTextureData(const Rect2i& rect);
     void UpdateTextures();
+    void ReleaseTextures();
 
     void DrawLandscapeInstancing();
     void DrawPatchInstancing(const LandscapeSubdivision::SubdivisionPatch* patch);
@@ -432,8 +457,6 @@ protected:
     uint32 currentTerminatedPatches = 0;
     LandscapePageManager* pageManager = nullptr;
     LandscapePageManager* decorationPageManager = nullptr;
-    VirtualTexture* terrainVTexture = nullptr;
-    VirtualTexture* decorationVTexture = nullptr;
     VTDecalPageRenderer* vtDecalRenderer = nullptr;
 
     uint32 maxPagesUpdatePerFrame = 0;
@@ -516,7 +539,7 @@ protected:
     Vector<DecorationLevelItems> GenerateRandomItems(uint32 layerIndex);
 
     uint32 vLayoutDecor = 0;
-    DecorationData* decoration = nullptr;
+    DecorationData* currentDecorationData = nullptr;
     Vector<DecorationInstanceBuffer> decorationInstanceBuffers;
     Vector<Vector<DecorationBatch>> decorationBatches; //[layer][level]
 

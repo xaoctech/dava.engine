@@ -24,7 +24,7 @@ SpeedTreeObject::SpeedTreeObject()
 void SpeedTreeObject::PrepareToRender(Camera* camera)
 {
     Mesh::PrepareToRender(camera);
-
+    /*
     Vector3 direction = GetWorldBoundingBox().GetCenter() - camera->GetPosition();
     direction = MultiplyVectorMat3x3(direction, *invWorldTransform);
     direction.z = 0.f;
@@ -46,6 +46,7 @@ void SpeedTreeObject::PrepareToRender(Camera* camera)
             }
         }
     }
+    // */
 }
 
 void SpeedTreeObject::RecalcBoundingBox()

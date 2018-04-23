@@ -36,7 +36,6 @@
 
 namespace DAVA
 {
-
 Array<String, Texture::CUBE_FACE_COUNT> Texture::FACE_NAME_SUFFIX =
 { {
 String("_px"),

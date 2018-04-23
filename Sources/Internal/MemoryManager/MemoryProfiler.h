@@ -1,5 +1,4 @@
-#ifndef __DAVAENGINE_MEMORYPROFILER_H__
-#define __DAVAENGINE_MEMORYPROFILER_H__
+#pragma once
 
 #include "Base/BaseTypes.h"
 
@@ -53,5 +52,3 @@ public:                                                                         
 #define DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(allocPool)
 
 #endif // defined(DAVA_MEMORY_PROFILING_ENABLE)
-
-#endif // __DAVAENGINE_MEMORYPROFILER_H__

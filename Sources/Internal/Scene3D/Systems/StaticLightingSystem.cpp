@@ -287,5 +287,4 @@ void StaticLightingSystem::SetDefaultLighmap(LightmapComponent* component)
         }
     }
 }
-
 };

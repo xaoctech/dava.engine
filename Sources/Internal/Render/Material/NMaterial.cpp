@@ -7,6 +7,7 @@
 #include "Reflection/ReflectionRegistrator.h"
 
 #include "Render/Material/NMaterialNames.h"
+#include "Render/Material/NMaterialReflection.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Texture.h"
 
@@ -30,7 +31,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NMaterial)
 {
-    ReflectionRegistrator<NMaterial>::Begin()
+    ReflectionRegistrator<NMaterial>::Begin(std::make_unique<NMaterialStructureWrapper>())
     .End();
 }
 
@@ -440,6 +441,22 @@ bool NMaterial::HasLocalProperty(const FastName& propName)
     return NMaterialDetail::GetValuePtr(GetCurrentConfig().localProperties, propName) != nullptr;
 }
 
+bool NMaterial::HasEffectiveProperty(const FastName& propName)
+{
+    if (NMaterialDetail::GetValuePtr(GetCurrentConfig().localProperties, propName) != nullptr)
+    {
+        return true;
+    }
+    else if (parent != nullptr)
+    {
+        return parent->HasEffectiveProperty(propName);
+    }
+    else
+    {
+        return false;
+    }
+}
+
 rhi::ShaderProp::Type NMaterial::GetLocalPropType(const FastName& propName)
 {
     NMaterialProperty* prop = NMaterialDetail::GetValuePtr(GetCurrentConfig().localProperties, propName);
@@ -447,6 +464,19 @@ rhi::ShaderProp::Type NMaterial::GetLocalPropType(const FastName& propName)
     DVASSERT(prop != nullptr);
 
     return prop->type;
+}
+
+rhi::ShaderProp::Type NMaterial::GetEffectivePropType(const FastName& propName)
+{
+    NMaterialProperty* prop = NMaterialDetail::GetValuePtr(GetCurrentConfig().localProperties, propName);
+
+    if (prop != nullptr)
+        return prop->type;
+
+    if (parent != nullptr)
+        return parent->GetEffectivePropType(propName);
+
+    DVASSERT(false);
 }
 
 const float32* NMaterial::GetLocalPropValue(const FastName& propName)
@@ -555,6 +585,23 @@ Asset<Texture> NMaterial::GetLocalTexture(const FastName& slotName)
     }
 
     return texInfo->texture;
+}
+
+MaterialTextureInfo* NMaterial::GetLocalTextureInfo(const FastName& slotName)
+{
+    return NMaterialDetail::GetValuePtr(GetCurrentConfig().localTextures, slotName);
+}
+
+MaterialTextureInfo* NMaterial::GetEffectiveTextureInfo(const FastName& slotName)
+{
+    MaterialTextureInfo* texInfo = GetLocalTextureInfo(slotName);
+    if (texInfo != nullptr)
+        return texInfo;
+
+    if (parent != nullptr)
+        return parent->GetEffectiveTextureInfo(slotName);
+
+    return nullptr;
 }
 
 void NMaterial::AddFlag(const FastName& flagName, int32 value)
@@ -1007,6 +1054,11 @@ void NMaterial::CollectConfigTextures(const MaterialConfig& config, Set<Material
             collection.emplace(lc.second);
         }
     }
+}
+
+const FastName& NMaterial::GetActiveVariantName() const
+{
+    return activeVariantName;
 }
 
 void NMaterial::RebuildBindings()

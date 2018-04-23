@@ -59,28 +59,43 @@ DAVA_VIRTUAL_REFLECTION_IMPL(Landscape)
 {
     ReflectionRegistrator<Landscape>::Begin()
     .Field("heightmapPath", &Landscape::GetHeightmapPathname, &Landscape::SetHeightmapPathname)[M::DisplayName("Height Map Path")]
-    .Field("size", &Landscape::GetLandscapeSize, static_cast<void (Landscape::*)(float32)>(&Landscape::SetLandscapeSize))[M::DisplayName("Size")]
+    .Field("size", &Landscape::GetLandscapeSize, &Landscape::SetLandscapeSize)[M::DisplayName("Size")]
     .Field("height", &Landscape::GetLandscapeHeight, &Landscape::SetLandscapeHeight)[M::DisplayName("Height")]
-    .Field("userMorphing", &Landscape::IsUseMorphing, &Landscape::SetUseMorphing)[M::DisplayName("Use morphing")]
+    .Field("useMorphing", &Landscape::IsUseMorphing, &Landscape::SetUseMorphing)[M::DisplayName("Use morphing")]
     .Field("tessellation", &Landscape::GetMicroTessellation, &Landscape::SetMicroTessellation)[M::DisplayName("Tessellation")]
-    .Field("isDrawWired", &Landscape::IsDrawWired, &Landscape::SetDrawWired)[M::DisplayName("Is draw wired")]
+    .Field("applySettings", &Landscape::AppliedSettingsRefl, &Landscape::ApplySettingsRefl)[M::DisplayName("Apply Settings")]
+    .Field("settings", &Landscape::GetCurrentSettingsRefl, &Landscape::SetCurrentSettingsRefl)[M::DisplayName("Settings")]
+    .Field("debugDrawWired", &Landscape::IsDrawWired, &Landscape::SetDrawWired)[M::DisplayName("Debug draw wired")]
     .Field("debugDrawMorphing", &Landscape::IsDrawMorphing, &Landscape::SetDrawMorphing)[M::DisplayName("Debug draw morphing")]
     .Field("debugDrawMetrics", &Landscape::debugDrawMetrics)[M::DisplayName("Debug draw metrics")]
     .Field("debugDrawVTPages", &Landscape::IsDrawVTPage, &Landscape::SetDrawVTPage)[M::DisplayName("Debug draw VTPages")]
     .Field("debugDrawPatches", &Landscape::IsDrawPatches, &Landscape::SetDrawPatches)[M::DisplayName("Debug draw Patches")]
     .Field("debugDrawVTexture", &Landscape::debugDrawVTexture)[M::DisplayName("Debug draw VTexture")]
     .Field("debugDrawTessellation", &Landscape::IsDrawTessellationHeight, &Landscape::SetDrawTessellationHeight)[M::DisplayName("Debug draw Tessellation")]
-    .Field("debugDrawDecorationLevels", &Landscape::IsDrawDecorationLevels, &Landscape::SetDrawDecorationLevels)[M::DisplayName("Debug draw Deco-Levels")]
     .Field("debugDisableDecoration", &Landscape::debugDisableDecoration)[M::DisplayName("Debug disable decoration")]
-    .Field("subdivision", &Landscape::subdivision)[M::DisplayName("Subdivision")]
-    .Field("maxTexturingLevel", &Landscape::GetMaxTexturingLevel, &Landscape::SetMaxTexturingLevel)[M::DisplayName("Max Texturing Level"), M::Range(0, Any(), 1)]
     .Field("tessellationLevelCount", &Landscape::GetTessellationLevels, &Landscape::SetTessellationLevels)[M::DisplayName("Tessellation Levels"), M::Range(0, Any(), 1)]
     .Field("tessellationHeight", &Landscape::GetTessellationHeight, &Landscape::SetTessellationHeight)[M::DisplayName("Tessellation Height"), M::Range(0.f, 1.f, 0.01f)]
-    .Field("middleLodLevel", &Landscape::GetMiddleLODLevel, &Landscape::SetMiddleLODLevel)[M::DisplayName("Middle LOD Level"), M::Range(0, Any(), 1)]
-    .Field("macroLodLevel", &Landscape::GetMacroLODLevel, &Landscape::SetMacroLODLevel)[M::DisplayName("Macro LOD Level"), M::Range(0, Any(), 1)]
     .Field("layersCount", &Landscape::GetLayersCount, &Landscape::SetLayersCount)[M::DisplayName("Layers Count"), M::Range(1, 4, 1)]
     .Field("layerRenderers", &Landscape::GetTerrainLayerRenderers, &Landscape::SetTerrainLayerRenderers)[M::DisplayName("Layer Renderers"), M::ReadOnly()]
     .Field("landscapeMaterial", &Landscape::GetLandscapeMaterial, &Landscape::SetLandscapeMaterial)[M::DisplayName("Landscape Material"), M::ReadOnly()]
+    .End();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(Landscape::LandscapeSettings)
+{
+    ReflectionRegistrator<LandscapeSettings>::Begin()
+    .Field("terrainVTWidth", &LandscapeSettings::terrainVTWidth)[M::DisplayName("Terrain VT Width"), M::Range(0, Any(), 1)]
+    .Field("terrainVTHeight", &LandscapeSettings::terrainVTHeight)[M::DisplayName("Terrain VT Height"), M::Range(0, Any(), 1)]
+    .Field("terrainVTPageSize", &LandscapeSettings::terrainVTPageSize)[M::DisplayName("Terrain VTPage Size"), M::Range(0, Any(), 1)]
+    .Field("maxTexturingLevel", &LandscapeSettings::maxTexturingLevel)[M::DisplayName("Texturing Level"), M::Range(0, Any(), 1)]
+    .Field("middleLodLevel", &LandscapeSettings::middleLODLevel)[M::DisplayName("Middle LOD Level"), M::Range(0, Any(), 1)]
+    .Field("macroLodLevel", &LandscapeSettings::macroLODLevel)[M::DisplayName("Macro LOD Level"), M::Range(0, Any(), 1)]
+    .Field("enableDecoration", &LandscapeSettings::enableDecoration)[M::DisplayName("Use Decoration")]
+    .Field("decorationVTWidth", &LandscapeSettings::decorationVTWidth)[M::DisplayName("Decor VT Width"), M::Range(0, Any(), 1)]
+    .Field("decorationVTHeight", &LandscapeSettings::decorationVTHeight)[M::DisplayName("Decor VT Height"), M::Range(0, Any(), 1)]
+    .Field("decorationVTPageSize", &LandscapeSettings::decorationVTPageSize)[M::DisplayName("Decor VTPage Size"), M::Range(0, Any(), 1)]
+    .Field("metrics", &LandscapeSettings::subdivisonMetrics)[M::DisplayName("Subdivision Metrics")]
+    .Field("enableTBN", &LandscapeSettings::enableTBN)[M::DisplayName("TBN")]
     .End();
 }
 
@@ -89,7 +104,7 @@ const FastName Landscape::FLAG_DECORATION_GPU_RANDOMIZATION("DECORATION_GPU_RAND
 
 const FastName Landscape::PARAM_TEXTURE_TILING("textureTiling");
 const FastName Landscape::PARAM_DECORATION_LEVEL_COLOR("levelColor");
-const FastName Landscape::PARAM_DECORATION_DECORATION_MASK("decorationmask");
+const FastName Landscape::PARAM_DECORATION_DECORATION_INDEX("decorationindex");
 const FastName Landscape::PARAM_DECORATION_ORIENT_VALUE("orientvalue");
 
 const FastName Landscape::TEXTURE_COLOR("colortexture");
@@ -106,9 +121,6 @@ const FastName Landscape::TEXTURE_TERRAIN("terraintexture");
 const FastName Landscape::TEXTURE_DECORATION("decorationtexture");
 const FastName Landscape::TEXTURE_DECORATION_COLOR("decorationcolortexture");
 
-const FastName Landscape::LANDSCAPE_QUALITY_NAME("Landscape");
-const FastName Landscape::LANDSCAPE_QUALITY_VALUE_HIGH("HIGH");
-
 const uint32 LANDSCAPE_BATCHES_POOL_SIZE = 32;
 const uint32 LANDSCAPE_MATERIAL_SORTING_KEY = 10;
 
@@ -118,14 +130,6 @@ static const uint32 PATCH_SIZE_QUADS = (PATCH_SIZE_VERTICES - 1);
 static const uint32 INSTANCE_DATA_BUFFERS_POOL_SIZE = 9;
 
 static const uint32 TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT = 3;
-
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_WIDTH = 4096u;
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_HEIGHT = 2048u;
-static const uint32 TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE = 128u;
-
-static const uint32 DECORATION_VIRTUAL_TEXTURE_WIDTH = 2048u;
-static const uint32 DECORATION_VIRTUAL_TEXTURE_HEIGHT = 1024u;
-static const uint32 DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE = 64u;
 
 static const uint32 VT_PAGE_UPDATES_PER_FRAME_DEFAULT_COUNT = 16u;
 static const uint32 VT_PAGE_LOD_COUNT = 3; //macro-, middle- and micro-tiles
@@ -168,6 +172,72 @@ macroTilemaskMatNames
 } };
 }
 
+void Landscape::LandscapeSettings::Save(KeyedArchive* archive, SerializationContext* serializationContext)
+{
+    DVASSERT(archive != nullptr);
+
+    archive->SetUInt32("terrainVTWidth", terrainVTWidth);
+    archive->SetUInt32("terrainVTHeight", terrainVTHeight);
+    archive->SetUInt32("terrainVTPageSize", terrainVTPageSize);
+
+    archive->SetUInt32("decorationVTWidth", decorationVTWidth);
+    archive->SetUInt32("decorationVTHeight", decorationVTHeight);
+    archive->SetUInt32("decorationVTPageSize", decorationVTPageSize);
+
+    archive->SetUInt32("maxTexturingLevel", maxTexturingLevel);
+    archive->SetUInt32("middleLODLevel", middleLODLevel);
+    archive->SetUInt32("macroLODLevel", macroLODLevel);
+
+    archive->SetBool("enableTBN", enableTBN);
+    archive->SetBool("enableDecoration", enableDecoration);
+
+    decorationData.Save(archive, serializationContext);
+    subdivisonMetrics.Save(archive);
+}
+
+void Landscape::LandscapeSettings::Load(KeyedArchive* archive, SerializationContext* serializationContext)
+{
+    DVASSERT(archive != nullptr);
+
+    terrainVTWidth = archive->GetUInt32("terrainVTWidth", terrainVTWidth);
+    terrainVTHeight = archive->GetUInt32("terrainVTHeight", terrainVTHeight);
+    terrainVTPageSize = archive->GetUInt32("terrainVTPageSize", terrainVTPageSize);
+
+    decorationVTWidth = archive->GetUInt32("decorationVTWidth", decorationVTWidth);
+    decorationVTHeight = archive->GetUInt32("decorationVTHeight", decorationVTHeight);
+    decorationVTPageSize = archive->GetUInt32("decorationVTPageSize", decorationVTPageSize);
+
+    maxTexturingLevel = archive->GetUInt32("maxTexturingLevel", maxTexturingLevel);
+    middleLODLevel = archive->GetUInt32("middleLODLevel", middleLODLevel);
+    macroLODLevel = archive->GetUInt32("macroLODLevel", macroLODLevel);
+
+    enableTBN = archive->GetBool("enableTBN", enableTBN);
+    enableDecoration = archive->GetBool("enableDecoration", enableDecoration);
+
+    decorationData.Load(archive, serializationContext);
+    subdivisonMetrics.Load(archive);
+}
+
+void Landscape::LandscapeSettings::CopySettings(const Landscape::LandscapeSettings* from)
+{
+    subdivisonMetrics = from->subdivisonMetrics;
+
+    terrainVTWidth = from->terrainVTWidth;
+    terrainVTHeight = from->terrainVTHeight;
+    terrainVTPageSize = from->terrainVTPageSize;
+
+    decorationVTWidth = from->decorationVTWidth;
+    decorationVTHeight = from->decorationVTHeight;
+    decorationVTPageSize = from->decorationVTPageSize;
+
+    maxTexturingLevel = from->maxTexturingLevel;
+
+    enableTBN = from->enableTBN;
+    enableDecoration = from->enableDecoration;
+
+    decorationData.CopyParameters(&from->decorationData);
+}
+
 void Landscape::LansdcapeRenderStats::Reset()
 {
     landscapeTriangles = 0u;
@@ -187,73 +257,25 @@ Landscape::Landscape()
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
-    landscapeLayerRenderers.reserve(4);
-
     type = TYPE_LANDSCAPE;
 
-    quality = (Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward) ? LandscapeQuality::Low : LandscapeQuality::Full;
-    uint32 REDUCE_LANDSCAPE_QUALITY = (quality == LandscapeQuality::Low) ? 1 : 0;
-
     subdivision = new LandscapeSubdivision();
-
-    VirtualTexture::Descriptor vtDesc;
-    vtDesc.width = TERRAIN_VIRTUAL_TEXTURE_WIDTH >> REDUCE_LANDSCAPE_QUALITY;
-    vtDesc.height = TERRAIN_VIRTUAL_TEXTURE_HEIGHT >> REDUCE_LANDSCAPE_QUALITY;
-    vtDesc.pageSize = TERRAIN_VIRTUAL_TEXTURE_PAGE_SIZE >> REDUCE_LANDSCAPE_QUALITY;
-    if (quality == LandscapeQuality::Low)
-    {
-        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 }; /* baked image only */
-        vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
-    }
-    else
-    {
-        decoration = new DecorationData();
-        vtDesc.virtualTextureLayers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } }; /* [albedo + height], [normal + roughness + shadow] */
-        vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
-    }
-    vtDesc.mipLevelCount = TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT - REDUCE_LANDSCAPE_QUALITY;
-
-    pageManager = new LandscapePageManager(vtDesc);
-    terrainVTexture = pageManager->GetVirtualTexture();
-    for (uint32 l = 0; l < terrainVTexture->GetLayersCount(); ++l)
-    {
-        terrainVTexture->GetLayerTexture(l)->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_LINEAR);
-        terrainVTexture->GetLayerTexture(l)->samplerState.anisotropyLevel = 1;
-    }
-
-    vtDesc.width = DECORATION_VIRTUAL_TEXTURE_WIDTH >> REDUCE_LANDSCAPE_QUALITY;
-    vtDesc.height = DECORATION_VIRTUAL_TEXTURE_HEIGHT >> REDUCE_LANDSCAPE_QUALITY;
-    vtDesc.pageSize = DECORATION_VIRTUAL_TEXTURE_PAGE_SIZE >> REDUCE_LANDSCAPE_QUALITY;
-    if (quality == LandscapeQuality::Low)
-    {
-        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
-        vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
-    }
-    else
-    {
-        vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
-        vtDesc.intermediateBuffers = { { FORMAT_RGBA8888, FORMAT_RGBA8888 } };
-    }
-    vtDesc.mipLevelCount = 1;
-
     vtDecalRenderer = new VTDecalPageRenderer(false);
 
+    landscapeLayerRenderers.reserve(4);
     DVASSERT(layersCount <= 4);
     for (uint8 i = 0; i < layersCount; ++i)
         landscapeLayerRenderers.push_back(new LandscapeLayerRenderer(VT_PAGE_LOD_COUNT));
 
-    decorationPageManager = new LandscapePageManager(vtDesc);
-
-    for (LandscapeLayerRenderer* rend : landscapeLayerRenderers)
-        decorationPageManager->AddPageRenderer(rend);
-    decorationPageManager->AddPageRenderer(vtDecalRenderer);
-
-    decorationVTexture = decorationPageManager->GetVirtualTexture();
-    decorationVTexture->GetLayerTexture(0)->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
-
+    pageManager = new LandscapePageManager();
     for (LandscapeLayerRenderer* rend : landscapeLayerRenderers)
         pageManager->AddPageRenderer(rend);
     pageManager->AddPageRenderer(vtDecalRenderer);
+
+    decorationPageManager = new LandscapePageManager();
+    for (LandscapeLayerRenderer* rend : landscapeLayerRenderers)
+        decorationPageManager->AddPageRenderer(rend);
+    decorationPageManager->AddPageRenderer(vtDecalRenderer);
 
     maxPagesUpdatePerFrame = VT_PAGE_UPDATES_PER_FRAME_DEFAULT_COUNT;
 
@@ -276,8 +298,8 @@ Landscape::Landscape()
 
     SelectHeightmapTextureFormat();
 
-    EngineSettings* settings = GetEngineContext()->settings;
-    EngineSettings::eSettingValue landscapeSetting = settings->GetSetting<EngineSettings::SETTING_LANDSCAPE_RENDERMODE>().Get<EngineSettings::eSettingValue>();
+    EngineSettings* engineSettings = GetEngineContext()->settings;
+    EngineSettings::eSettingValue landscapeSetting = engineSettings->GetSetting<EngineSettings::SETTING_LANDSCAPE_RENDERMODE>().Get<EngineSettings::eSettingValue>();
     if (landscapeSetting == EngineSettings::LANDSCAPE_NO_INSTANCING)
         renderMode = RENDERMODE_NO_INSTANCING;
     else if (landscapeSetting == EngineSettings::LANDSCAPE_INSTANCING && renderMode == RENDERMODE_INSTANCING_MORPHING)
@@ -307,23 +329,16 @@ Landscape::Landscape()
 #endif
 
     landscapeRuntimeMaterial = new NMaterial();
+    landscapeRuntimeMaterial->SetRuntime(true);
     landscapeRuntimeMaterial->SetMaterialName(FastName("Landscape_Runtime_Material"));
     landscapeRuntimeMaterial->SetFXName(NMaterialName::LANDSCAPE);
-    landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, terrainVTexture->GetLayerTexture(0));
-    landscapeRuntimeMaterial->AddTexture(TEXTURE_TERRAIN, terrainVTexture->GetLayerTexture(0));
-    landscapeRuntimeMaterial->SetRuntime(true);
-    if (quality == LandscapeQuality::Full)
-    {
-        landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
-    }
-    PrepareMaterial(landscapeRuntimeMaterial);
 
     decorationRuntimeMaterial = new NMaterial();
-    decorationRuntimeMaterial->SetMaterialName(FastName("Decoration_Runtime_Material"));
-    decorationRuntimeMaterial->AddFlag(NMaterialFlagName::FLAG_DECORATION_DRAW_LEVELS, 0);
-    decorationRuntimeMaterial->AddTexture(TEXTURE_DECORATION, decorationVTexture->GetLayerTexture(0));
-    decorationRuntimeMaterial->SetParent(landscapeRuntimeMaterial);
     decorationRuntimeMaterial->SetRuntime(true);
+    decorationRuntimeMaterial->SetMaterialName(FastName("Decoration_Runtime_Material"));
+    decorationRuntimeMaterial->SetParent(landscapeRuntimeMaterial);
+
+    ApplyQualitySettings();
 
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 
@@ -350,7 +365,6 @@ Landscape::~Landscape()
     ReleaseGeometryData();
 
     SafeRelease(heightmap);
-    SafeDelete(decoration);
 
     SafeDelete(pageManager);
     SafeDelete(vtDecalRenderer);
@@ -471,12 +485,11 @@ void Landscape::ReleaseGeometryData()
     }
     usedInstanceDataBuffers.clear();
 
-    if (landscapeRuntimeMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP))
-        landscapeRuntimeMaterial->RemoveTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP);
+    ReleaseTextures();
+}
 
-    if (landscapeRuntimeMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_TANGENTMAP))
-        landscapeRuntimeMaterial->RemoveTexture(NMaterialTextureName::TEXTURE_TANGENTMAP);
-
+void Landscape::ReleaseTextures()
+{
     for (Image* img : heightTextureData)
         img->Release();
     heightTextureData.clear();
@@ -484,6 +497,9 @@ void Landscape::ReleaseGeometryData()
     for (Image* img : normalTextureData)
         img->Release();
     normalTextureData.clear();
+
+    heightTexture.reset();
+    normalTexture.reset();
 }
 
 void Landscape::BuildLandscapeFromHeightmapImage(const FilePath& heightmapPathname, const AABBox3& _box)
@@ -549,6 +565,138 @@ int32 Landscape::GetHeightmapSize() const
     return 0;
 }
 
+bool Landscape::AppliedSettingsRefl() const
+{
+    return false;
+}
+
+void Landscape::ApplySettingsRefl(bool)
+{
+    ApplyQualitySettings();
+}
+
+void Landscape::CheckQualitySettings()
+{
+    LandscapeQuality currentQuality = QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Terrain>();
+    if (quality != currentQuality)
+    {
+        quality = currentQuality;
+        ApplyQualitySettings();
+    }
+}
+
+void Landscape::ApplyQualitySettings()
+{
+    currentSettings = &settings[uint32(quality)];
+
+#define VALIDATE_VT_SIZE(size, minSize) { size = Max(minSize, NextPowerOf2(size)); }
+
+    VALIDATE_VT_SIZE(currentSettings->terrainVTPageSize, 16u);
+    VALIDATE_VT_SIZE(currentSettings->terrainVTWidth, currentSettings->terrainVTPageSize);
+    VALIDATE_VT_SIZE(currentSettings->terrainVTHeight, currentSettings->terrainVTPageSize);
+
+    VALIDATE_VT_SIZE(currentSettings->decorationVTPageSize, 16u);
+    VALIDATE_VT_SIZE(currentSettings->decorationVTWidth, currentSettings->decorationVTPageSize);
+    VALIDATE_VT_SIZE(currentSettings->decorationVTHeight, currentSettings->decorationVTPageSize);
+
+#undef VALIDATE_VT_SIZE
+
+    bool vtTerrainValid = (pageManager->GetVirtualTexture() != nullptr);
+    if (vtTerrainValid)
+    {
+        vtTerrainValid = currentSettings->terrainVTWidth == pageManager->GetVirtualTexture()->GetWidth();
+        vtTerrainValid &= currentSettings->terrainVTHeight == pageManager->GetVirtualTexture()->GetHeight();
+        vtTerrainValid &= currentSettings->terrainVTPageSize == pageManager->GetVirtualTexture()->GetPageSize();
+    }
+    vtTerrainValid &= currentSettings->enableTBN == tbnEnabled;
+
+    bool vtDecorValid = (decorationPageManager->GetVirtualTexture() != nullptr);
+    if (vtDecorValid)
+    {
+        vtDecorValid = currentSettings->decorationVTWidth == decorationPageManager->GetVirtualTexture()->GetWidth();
+        vtDecorValid &= currentSettings->decorationVTHeight == decorationPageManager->GetVirtualTexture()->GetHeight();
+        vtDecorValid &= currentSettings->decorationVTPageSize == decorationPageManager->GetVirtualTexture()->GetPageSize();
+    }
+    vtDecorValid &= (currentSettings->enableDecoration == (currentDecorationData != nullptr));
+
+    bool tbnValid = (tbnEnabled == currentSettings->enableTBN);
+
+    bool runtimeMaterialValid = vtTerrainValid && vtDecorValid && tbnValid;
+
+    if (!vtTerrainValid)
+    {
+        VirtualTexture::Descriptor vtDesc;
+        vtDesc.width = currentSettings->terrainVTWidth;
+        vtDesc.height = currentSettings->terrainVTHeight;
+        vtDesc.pageSize = currentSettings->terrainVTPageSize;
+
+        vtDesc.virtualTextureLayers.emplace_back(FORMAT_RGBA8888);
+        if (currentSettings->enableTBN)
+            vtDesc.virtualTextureLayers.emplace_back(FORMAT_RGBA8888);
+        vtDesc.intermediateBuffers = vtDesc.virtualTextureLayers;
+        vtDesc.mipLevelCount = TERRAIN_VIRTUAL_TEXTURE_MIP_COUNT;
+
+        pageManager->ResetVirtualTexture(vtDesc);
+        VirtualTexture* terrainVTexture = pageManager->GetVirtualTexture();
+        for (uint32 l = 0; l < terrainVTexture->GetLayersCount(); ++l)
+        {
+            terrainVTexture->GetLayerTexture(l)->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_LINEAR);
+            terrainVTexture->GetLayerTexture(l)->samplerState.anisotropyLevel = 1;
+        }
+    }
+
+    if (!vtDecorValid)
+    {
+        if (currentSettings->enableDecoration)
+        {
+            VirtualTexture::Descriptor vtDesc;
+            vtDesc.width = currentSettings->decorationVTWidth;
+            vtDesc.height = currentSettings->decorationVTHeight;
+            vtDesc.pageSize = currentSettings->decorationVTPageSize;
+            vtDesc.virtualTextureLayers = { FORMAT_RGBA8888 };
+            vtDesc.intermediateBuffers = { FORMAT_RGBA8888 };
+            vtDesc.mipLevelCount = 1;
+
+            decorationPageManager->ResetVirtualTexture(vtDesc);
+            decorationPageManager->GetVirtualTexture()->GetLayerTexture(0)->SetMinMagFilter(rhi::TEXFILTER_NEAREST, rhi::TEXFILTER_NEAREST, rhi::TEXMIPFILTER_NONE);
+        }
+        else
+        {
+            decorationPageManager->ResetVirtualTexture();
+        }
+    }
+
+    if (maxTexturingLevel != currentSettings->maxTexturingLevel)
+    {
+        maxTexturingLevel = currentSettings->maxTexturingLevel;
+        UpdateMaxSubdivisionLevel();
+    }
+
+    if (!tbnValid)
+    {
+        tbnEnabled = currentSettings->enableTBN;
+
+        ReleaseTextures();
+        CreateTextures();
+    }
+
+    if (!runtimeMaterialValid)
+    {
+        UpdateRuntimeMaterials();
+    }
+
+    currentDecorationData = (currentSettings->enableDecoration) ? &currentSettings->decorationData : nullptr;
+    ReloadDecorationData();
+
+    pageManager->SetMiddleLODLevel(currentSettings->middleLODLevel);
+    pageManager->SetMacroLODLevel(currentSettings->macroLODLevel);
+
+    decorationPageManager->SetMiddleLODLevel(currentSettings->middleLODLevel);
+    decorationPageManager->SetMacroLODLevel(currentSettings->macroLODLevel);
+
+    subdivision->SetMetrics(currentSettings->subdivisonMetrics);
+}
+
 void Landscape::AllocateGeometryData()
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
@@ -605,35 +753,26 @@ void Landscape::RebuildLandscape()
         }
     }
 
-    if (landscapeMaterial == nullptr)
+    if (GetLandscapeMaterial() == nullptr)
     {
-        landscapeMaterial = new NMaterial();
-        landscapeMaterial->SetMaterialName(FastName("Landscape_Material"));
-
-        PrepareMaterial(landscapeMaterial);
+        ScopedPtr<NMaterial> material(new NMaterial());
+        material->SetMaterialName(FastName("Landscape_Material"));
+        SetLandscapeMaterial(material);
     }
 
     ReleaseGeometryData();
     AllocateGeometryData();
+    UpdateRuntimeMaterials();
 
     RebuildDecoration();
-}
-
-void Landscape::PrepareMaterial(NMaterial* material)
-{
-    material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING, (renderMode == RENDERMODE_NO_INSTANCING) ? 0 : 1);
-    material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING, (renderMode == RENDERMODE_INSTANCING_MORPHING) ? 1 : 0);
-    material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR, debugDrawMorphing ? 1 : 0);
-    material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_TESSELLATION_COLOR, debugDrawTessellationHeight ? 1 : 0);
-    material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_PATCHES, debugDrawPatches ? 1 : 0);
-    material->AddFlag(NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION, manualHeightInterpolation ? 1 : 0);
-    material->AddFlag(NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT, int32(heightTextureFormat));
-    material->AddFlag(NMaterialFlagName::FLAG_LANDSCAPE_MICRO_TESSELLATION, microtessellation ? LANDSCAPE_TESSELLATION_MODE_FLAG : 0);
 }
 
 void Landscape::CreateTextures()
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
+
+    if (heightmap == nullptr || heightmap->Size() == 0)
+        return;
 
     DVASSERT(renderMode != RENDERMODE_NO_INSTANCING);
     DVASSERT(heightTexture == nullptr);
@@ -654,28 +793,33 @@ void Landscape::CreateTextures()
     heightTexture->texDescriptor->pathname = "memoryfile_landscape_height";
     heightTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
 
-    Vector<RefPtr<Image>> normalImages;
-    heightImages.reserve(normalTextureData.size());
-    for (Image* img : normalTextureData)
+    if (!normalTextureData.empty())
     {
-        normalImages.push_back(RefPtr<Image>::ConstructWithRetain(img));
-    }
+        Vector<RefPtr<Image>> normalImages;
+        heightImages.reserve(normalTextureData.size());
+        for (Image* img : normalTextureData)
+        {
+            normalImages.push_back(RefPtr<Image>::ConstructWithRetain(img));
+        }
 
-    Texture::UniqueTextureKey normalKey(std::move(normalImages));
-    normalTexture = GetEngineContext()->assetManager->GetAsset<Texture>(normalKey, AssetManager::SYNC);
-    normalTexture->texDescriptor->pathname = "memoryfile_landscape_normal";
-    normalTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+        Texture::UniqueTextureKey normalKey(std::move(normalImages));
+        normalTexture = GetEngineContext()->assetManager->GetAsset<Texture>(normalKey, AssetManager::SYNC);
+        normalTexture->texDescriptor->pathname = "memoryfile_landscape_normal";
+        normalTexture->SetWrapMode(rhi::TEXADDR_CLAMP, rhi::TEXADDR_CLAMP);
+    }
 
     rhi::TextureFilter textureFilter = manualHeightInterpolation ? rhi::TEXFILTER_NEAREST : rhi::TEXFILTER_LINEAR;
     if (renderMode == RENDERMODE_INSTANCING_MORPHING)
     {
         heightTexture->SetMinMagFilter(textureFilter, textureFilter, rhi::TEXMIPFILTER_NEAREST);
-        normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
+        if (normalTexture != nullptr)
+            normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NEAREST);
     }
     else
     {
         heightTexture->SetMinMagFilter(textureFilter, textureFilter, rhi::TEXMIPFILTER_NONE);
-        normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
+        if (normalTexture != nullptr)
+            normalTexture->SetMinMagFilter(rhi::TEXFILTER_LINEAR, rhi::TEXFILTER_LINEAR, rhi::TEXMIPFILTER_NONE);
     }
 
     LockGuard<Mutex> lock(restoreDataMutex);
@@ -726,10 +870,13 @@ void Landscape::CreateTextureData()
         while (mipSize)
         {
             heightTextureData.push_back(Image::Create(mipSize, mipSize, (heightTextureFormat == rhi::TEXTURE_FORMAT_R8G8B8A8) ? FORMAT_RGBA8888 : FORMAT_RG1616));
-            normalTextureData.push_back(Image::Create(mipSize, mipSize, FORMAT_RGBA8888));
-
             heightTextureData.back()->mipmapLevel = mipLevel;
-            normalTextureData.back()->mipmapLevel = mipLevel;
+
+            if (tbnEnabled)
+            {
+                normalTextureData.push_back(Image::Create(mipSize, mipSize, FORMAT_RGBA8888));
+                normalTextureData.back()->mipmapLevel = mipLevel;
+            }
 
             mipSize >>= 1;
             ++mipLevel;
@@ -740,7 +887,10 @@ void Landscape::CreateTextureData()
         DVASSERT(heightTextureFormat == rhi::TEXTURE_FORMAT_R4G4B4A4);
 
         heightTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
-        normalTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
+        if (tbnEnabled)
+        {
+            normalTextureData.push_back(Image::Create(hmSize, hmSize, FORMAT_RGBA4444));
+        }
     }
 }
 
@@ -752,7 +902,7 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
         for (uint32 mip = 0; mip < mipCount; ++mip)
         {
             Image* hMipImage = heightTextureData[mip];
-            Image* nMipImage = normalTextureData[mip];
+            Image* nMipImage = (mip < normalTextureData.size()) ? normalTextureData[mip] : nullptr;
 
             int32 step = 1 << mip;
             int32 mipSize = heightmap->Size() >> mip;
@@ -802,20 +952,23 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
                     *heightPixel = (hAvg << 16) | hAcc; //RGBA8888 or RG1616
 
                     //Normal
-                    Vector3 normal = CalculateNormal(xx, yy);
-                    Vector3 normal1 = CalculateNormal(x1, y1);
-                    Vector3 normal2 = CalculateNormal(x2, y2);
+                    if (nMipImage != nullptr)
+                    {
+                        Vector3 normal = CalculateNormal(xx, yy);
+                        Vector3 normal1 = CalculateNormal(x1, y1);
+                        Vector3 normal2 = CalculateNormal(x2, y2);
 
-                    normal = normal * 0.5f + 0.5f;
-                    uint8 nxAcc = uint8(normal.x * 255.f);
-                    uint8 nyAcc = uint8(normal.y * 255.f);
+                        normal = normal * 0.5f + 0.5f;
+                        uint8 nxAcc = uint8(normal.x * 255.f);
+                        uint8 nyAcc = uint8(normal.y * 255.f);
 
-                    normal = Normalize(normal1 + normal2) * 0.5f + 0.5f;
-                    uint8 nxAvg = uint8(normal.x * 255.f);
-                    uint8 nyAvg = uint8(normal.y * 255.f);
+                        normal = Normalize(normal1 + normal2) * 0.5f + 0.5f;
+                        uint8 nxAvg = uint8(normal.x * 255.f);
+                        uint8 nyAvg = uint8(normal.y * 255.f);
 
-                    uint32* normalPixel = reinterpret_cast<uint32*>(nMipImage->data) + pixelIndex;
-                    *normalPixel = (nyAvg << 24) | (nxAvg << 16) | (nyAcc << 8) | (nxAcc);
+                        uint32* normalPixel = reinterpret_cast<uint32*>(nMipImage->data) + pixelIndex;
+                        *normalPixel = (nyAvg << 24) | (nxAvg << 16) | (nyAcc << 8) | (nxAcc);
+                    }
                 }
             }
         }
@@ -823,10 +976,9 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
     else
     {
         DVASSERT(heightTextureData.size() == 1);
-        DVASSERT(normalTextureData.size() == 1);
 
         Image* heightImage = heightTextureData[0];
-        Image* normalImage = normalTextureData[0];
+        Image* normalImage = (!normalTextureData.empty()) ? normalTextureData[0] : nullptr;
 
         for (int32 y = rect.y; y < (rect.y + rect.dy); ++y)
         {
@@ -839,9 +991,12 @@ void Landscape::UpdateTextureData(const Rect2i& rect)
                 *heightPixel = heightmap->GetHeight(x, y);
 
                 //Normal
-                uint16* normalPixel = reinterpret_cast<uint16*>(normalImage->data) + pixelIndex;
-                Vector3 normal = CalculateNormal(x, y) * 0.5f + 0.5f;
-                *normalPixel = (uint8(normal.y * 255.f) << 8) | uint8(normal.x * 255.f);
+                if (normalImage != nullptr)
+                {
+                    uint16* normalPixel = reinterpret_cast<uint16*>(normalImage->data) + pixelIndex;
+                    Vector3 normal = CalculateNormal(x, y) * 0.5f + 0.5f;
+                    *normalPixel = (uint8(normal.y * 255.f) << 8) | uint8(normal.x * 255.f);
+                }
             }
         }
     }
@@ -979,7 +1134,7 @@ void Landscape::AddPatchToRender(const LandscapeSubdivision::SubdivisionPatch* s
 
     //////////////////////////////////////////////////////////////////////////
     //#decoration
-    if (!debugDisableDecoration)
+    if (currentDecorationData != nullptr && !debugDisableDecoration)
         DrawDecorationPatch(subdivPatch);
     //////////////////////////////////////////////////////////////////////////
 }
@@ -992,7 +1147,7 @@ void Landscape::RequestPages(const LandscapeSubdivision::SubdivisionPatch* subdi
     pageManager->RequestPage(subdivPatch->level, subdivPatch->x, subdivPatch->y, subdivPatch->radiusError);
     renderStats.landscapePages++;
 
-    if (decoration != nullptr && subdivPatch->level <= decoration->GetBaseLevel())
+    if (currentDecorationData != nullptr && subdivPatch->level <= currentDecorationData->GetBaseLevel())
     {
         decorationPageManager->RequestPage(subdivPatch->level, subdivPatch->x, subdivPatch->y, subdivPatch->radiusError);
         renderStats.decorationPages++;
@@ -1330,10 +1485,6 @@ void Landscape::AllocateGeometryDataInstancing()
 
     CreateTextures();
 
-    landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP, heightTexture);
-    if (normalTexture)
-        landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_TANGENTMAP, normalTexture);
-
 /////////////////////////////////////////////////////////////////
 
 #if LANDSCAPE_PATCH_FENCES
@@ -1580,6 +1731,7 @@ void Landscape::DrawLandscapeInstancing()
     if (currentTerminatedPatches)
     {
         RequestPages(currentSubdivisionRoot);
+
         if (!lockPagesUpdate)
         {
             Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_TESSELLATION_HEIGHT, &tessellationHeight, pointer_size(&tessellationHeight));
@@ -1632,7 +1784,9 @@ void Landscape::DrawLandscapeInstancing()
             if (batches.empty())
                 continue;
 
-            for (uint32 j = 0; j < decoration->GetLevelCount(); ++j)
+            DVASSERT(currentDecorationData != nullptr);
+
+            for (uint32 j = 0; j < currentDecorationData->GetLevelCount(); ++j)
             {
                 RenderBatch* batch = batches[j].renderBatch;
                 if (batch)
@@ -1763,10 +1917,12 @@ void Landscape::PrepareToRender(Camera* camera)
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::RENDER_PREPARE_LANDSCAPE);
 
-    if (decoration->paramsChanged)
+    CheckQualitySettings();
+
+    if (currentDecorationData != nullptr && currentDecorationData->paramsChanged)
     {
         RebuildDecoration();
-        decoration->paramsChanged = false;
+        currentDecorationData->paramsChanged = false;
     }
 
     RenderObject::PrepareToRender(camera);
@@ -1864,7 +2020,7 @@ void Landscape::SetLandscapeSize(float32 newSize)
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
     Vector3 newLandscapeSize(newSize, newSize, bbox.GetSize().z);
-    SetLandscapeSize(newLandscapeSize);
+    SetLandscapeSize3(newLandscapeSize);
 }
 
 float32 Landscape::GetLandscapeHeight() const
@@ -1877,10 +2033,10 @@ void Landscape::SetLandscapeHeight(float32 newHeight)
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
     Vector3 newLandscapeSize(bbox.GetSize().x, bbox.GetSize().y, newHeight);
-    SetLandscapeSize(newLandscapeSize);
+    SetLandscapeSize3(newLandscapeSize);
 }
 
-void Landscape::SetLandscapeSize(const Vector3& newLandscapeSize)
+void Landscape::SetLandscapeSize3(const Vector3& newLandscapeSize)
 {
     DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
 
@@ -2032,6 +2188,7 @@ void Landscape::Load(KeyedArchive* archive, SerializationContext* serializationC
     {
         SetLandscapeMaterial(static_cast<NMaterial*>(serializationContext->GetDataBlock(matKey)));
 
+        //back-compatibility
         landscapeMaterial->SetFXName(FastName());
 
         if (landscapeMaterial->HasLocalTexture(NMaterialTextureName::TEXTURE_ALBEDO))
@@ -2047,20 +2204,20 @@ void Landscape::Load(KeyedArchive* archive, SerializationContext* serializationC
     FilePath heightmapPath = serializationContext->GetScenePath() + archive->GetString("hmap");
     AABBox3 loadedBbox = archive->GetByteArrayAsType("bbox", AABBox3());
 
-    SetMiddleLODLevel(archive->GetUInt32("middleLODLevel", 8));
-    SetMacroLODLevel(archive->GetUInt32("macroLODLevel", 4));
-
-    maxTexturingLevel = archive->GetUInt32("maxTexturingLevel", maxTexturingLevel);
     tessellationLevelCount = archive->GetUInt32("tessellationLevelCount", tessellationLevelCount);
     tessellationHeight = archive->GetFloat("tessellationHeight", tessellationHeight);
 
-    decoration->Load(archive, serializationContext);
-
-    LandscapeSubdivision::SubdivisionMetrics metrics;
-    metrics.Load(archive);
-    subdivision->SetMetrics(metrics);
+    settings[uint32(LandscapeQuality::Full)].Load(archive, serializationContext); //back-compatibility
+    for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
+    {
+        KeyedArchive* qualityArchive = archive->GetArchive(Format("landscape.settings.%d", q));
+        if (qualityArchive != nullptr)
+            settings[q].Load(qualityArchive, serializationContext);
+    }
 
     BuildLandscapeFromHeightmapImage(heightmapPath, loadedBbox);
+
+    ApplyQualitySettings();
 }
 
 Heightmap* Landscape::GetHeightmap()
@@ -2146,7 +2303,7 @@ RenderObject* Landscape::Clone(RenderObject* newObject)
 
     Landscape* newLandscape = static_cast<Landscape*>(newObject);
 
-    RefPtr<NMaterial> material(landscapeMaterial->Clone());
+    RefPtr<NMaterial> material(GetLandscapeMaterial()->Clone());
     newLandscape->SetLandscapeMaterial(material.Get());
     newLandscape->layersCount = layersCount;
 
@@ -2158,9 +2315,13 @@ RenderObject* Landscape::Clone(RenderObject* newObject)
         newLandscape->landscapeLayerRenderers.push_back(landscapeLayerRenderers[layer]->Clone());
 
     newLandscape->flags = flags;
-    newLandscape->decoration->CopyParameters(decoration);
 
-    newLandscape->subdivision->SetMetrics(subdivision->GetMetrics());
+    newLandscape->quality = quality;
+    for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
+    {
+        newLandscape->settings[q].CopySettings(&settings[q]);
+    }
+    newLandscape->ApplyQualitySettings();
 
     newLandscape->BuildLandscapeFromHeightmapImage(heightmapPath, bbox);
 
@@ -2195,17 +2356,6 @@ void Landscape::SetUpdatable(bool isUpdatable)
 bool Landscape::IsUpdatable() const
 {
     return updatable;
-}
-
-void Landscape::SetMaxTexturingLevel(uint32 level)
-{
-    maxTexturingLevel = level;
-    UpdateMaxSubdivisionLevel();
-}
-
-uint32 Landscape::GetMaxTexturingLevel() const
-{
-    return maxTexturingLevel;
 }
 
 void Landscape::SetTessellationLevels(uint32 levels)
@@ -2279,30 +2429,18 @@ bool Landscape::IsUseMorphing() const
     return (renderMode == RENDERMODE_INSTANCING_MORPHING);
 }
 
-void Landscape::SetMiddleLODLevel(uint32 level)
+Landscape::LandscapeSettings* Landscape::GetCurrentSettingsRefl() const
 {
-    if (pageManager)
-        pageManager->SetMiddleLODLevel(level);
-    if (decorationPageManager)
-        decorationPageManager->SetMiddleLODLevel(level);
+    return currentSettings;
 }
 
-uint32 Landscape::GetMiddleLODLevel() const
+void Landscape::SetCurrentSettingsRefl(Landscape::LandscapeSettings*)
 {
-    return pageManager ? pageManager->GetMiddleLODLevel() : 0u;
 }
 
-void Landscape::SetMacroLODLevel(uint32 level)
+const Landscape::LandscapeSettings* Landscape::GetSettings(LandscapeQuality quality)
 {
-    if (pageManager)
-        pageManager->SetMacroLODLevel(level);
-    if (decorationPageManager)
-        decorationPageManager->SetMacroLODLevel(level);
-}
-
-uint32 Landscape::GetMacroLODLevel() const
-{
-    return pageManager ? pageManager->GetMacroLODLevel() : 0u;
+    return &settings[uint32(quality)];
 }
 
 void Landscape::SelectHeightmapTextureFormat()
@@ -2338,19 +2476,61 @@ void Landscape::SetRenderMode(RenderMode newRenderMode)
 
     SelectHeightmapTextureFormat();
     RebuildLandscape();
-    UpdateMaterialFlags();
 }
 
-void Landscape::UpdateMaterialFlags()
+void Landscape::UpdateRuntimeMaterials()
 {
-    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING, (renderMode == RENDERMODE_NO_INSTANCING) ? 0 : 1);
-    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING, (renderMode == RENDERMODE_INSTANCING_MORPHING) ? 1 : 0);
-    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_MICRO_TESSELLATION, microtessellation ? LANDSCAPE_TESSELLATION_MODE_FLAG : 0);
-    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR, debugDrawMorphing ? 1 : 0);
-    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION, manualHeightInterpolation ? 1 : 0);
-    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT, int32(heightTextureFormat));
-    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_TESSELLATION_COLOR, debugDrawTessellationHeight ? 1 : 0);
-    landscapeMaterial->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_PATCHES, debugDrawPatches ? 1 : 0);
+#define ADD_OR_SET_MATERIAL_FLAG(material, flag, value) \
+    if (material->HasLocalFlag((flag))) \
+        material->SetFlag((flag), (value)); \
+    else \
+        material->AddFlag((flag), (value));
+
+    ADD_OR_SET_MATERIAL_FLAG(landscapeRuntimeMaterial, NMaterialFlagName::FLAG_LANDSCAPE_USE_INSTANCING, (renderMode == RENDERMODE_NO_INSTANCING) ? 0 : 1);
+    ADD_OR_SET_MATERIAL_FLAG(landscapeRuntimeMaterial, NMaterialFlagName::FLAG_LANDSCAPE_LOD_MORPHING, (renderMode == RENDERMODE_INSTANCING_MORPHING) ? 1 : 0);
+    ADD_OR_SET_MATERIAL_FLAG(landscapeRuntimeMaterial, NMaterialFlagName::FLAG_LANDSCAPE_MICRO_TESSELLATION, microtessellation ? LANDSCAPE_TESSELLATION_MODE_FLAG : 0);
+    ADD_OR_SET_MATERIAL_FLAG(landscapeRuntimeMaterial, NMaterialFlagName::FLAG_LANDSCAPE_MORPHING_COLOR, debugDrawMorphing ? 1 : 0);
+    ADD_OR_SET_MATERIAL_FLAG(landscapeRuntimeMaterial, NMaterialFlagName::FLAG_HEIGHTMAP_INTERPOLATION, manualHeightInterpolation ? 1 : 0);
+    ADD_OR_SET_MATERIAL_FLAG(landscapeRuntimeMaterial, NMaterialFlagName::FLAG_HEIGHTMAP_FORMAT, int32(heightTextureFormat));
+    ADD_OR_SET_MATERIAL_FLAG(landscapeRuntimeMaterial, NMaterialFlagName::FLAG_LANDSCAPE_TESSELLATION_COLOR, debugDrawTessellationHeight ? 1 : 0);
+    ADD_OR_SET_MATERIAL_FLAG(landscapeRuntimeMaterial, NMaterialFlagName::FLAG_LANDSCAPE_PATCHES, debugDrawPatches ? 1 : 0);
+
+#undef ADD_OR_SET_MATERIAL_FLAG
+
+    static const Vector<FastName> landscapeTexturesToRemove = {
+        NMaterialTextureName::TEXTURE_ALBEDO,
+        NMaterialTextureName::TEXTURE_NORMAL,
+        NMaterialTextureName::TEXTURE_HEIGHTMAP,
+        NMaterialTextureName::TEXTURE_TANGENTMAP,
+        TEXTURE_TERRAIN,
+    };
+
+    for (const FastName& texture : landscapeTexturesToRemove)
+    {
+        if (landscapeRuntimeMaterial->HasLocalTexture(texture))
+            landscapeRuntimeMaterial->RemoveTexture(texture);
+    }
+
+    if (pageManager->GetVirtualTexture() != nullptr)
+    {
+        VirtualTexture* terrainVTexture = pageManager->GetVirtualTexture();
+
+        landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_ALBEDO, terrainVTexture->GetLayerTexture(0));
+        landscapeRuntimeMaterial->AddTexture(TEXTURE_TERRAIN, terrainVTexture->GetLayerTexture(0));
+        if (terrainVTexture->GetLayersCount() > 1)
+            landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_NORMAL, terrainVTexture->GetLayerTexture(1));
+    }
+
+    if (heightTexture != nullptr)
+        landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_HEIGHTMAP, heightTexture);
+    if (normalTexture != nullptr)
+        landscapeRuntimeMaterial->AddTexture(NMaterialTextureName::TEXTURE_TANGENTMAP, normalTexture);
+
+    if (decorationRuntimeMaterial->HasLocalTexture(TEXTURE_DECORATION))
+        decorationRuntimeMaterial->RemoveTexture(TEXTURE_DECORATION);
+
+    if (decorationPageManager->GetVirtualTexture() != nullptr)
+        decorationRuntimeMaterial->AddTexture(TEXTURE_DECORATION, decorationPageManager->GetVirtualTexture()->GetLayerTexture(0));
 }
 
 void Landscape::SetDrawMorphing(bool drawMorph)
@@ -2391,6 +2571,7 @@ void Landscape::SetDrawVTPage(bool draw)
                 landscapeLayerRenderers[layer]->GetTerrainLODMaterial(i)->SetFlag(NMaterialFlagName::FLAG_LANDSCAPE_VT_PAGE, debugDrawVTPages ? 1 : 0);
             }
         }
+
         pageManager->Invalidate();
     }
 }
@@ -2412,20 +2593,6 @@ void Landscape::SetDrawPatches(bool draw)
 bool Landscape::IsDrawPatches() const
 {
     return debugDrawPatches;
-}
-
-void Landscape::SetDrawDecorationLevels(bool draw)
-{
-    if (debugDrawDecorationLevels != draw)
-    {
-        debugDrawDecorationLevels = draw;
-        decorationRuntimeMaterial->SetFlag(NMaterialFlagName::FLAG_DECORATION_DRAW_LEVELS, debugDrawDecorationLevels ? 1 : 0);
-    }
-}
-
-bool Landscape::IsDrawDecorationLevels() const
-{
-    return debugDrawDecorationLevels;
 }
 
 void Landscape::InvalidateAllPages()
@@ -2483,31 +2650,33 @@ void Landscape::DebugDraw2D(Window*)
 {
     if (debugDrawVTexture)
     {
-        DVASSERT(terrainVTexture->GetLayersCount() > 0);
-        RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 5.0f, 512.f, 256.f));
+        VirtualTexture* terrainVT = pageManager->GetVirtualTexture();
+        VirtualTexture* decorVT = decorationPageManager->GetVirtualTexture();
 
-        if (quality == LandscapeQuality::Full)
-        {
-            DVASSERT(terrainVTexture->GetLayersCount() > 1);
-            RenderSystem2D::Instance()->DrawTexture(terrainVTexture->GetLayerTexture(1), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(522.f, 5.0f, 512.f, 256.f));
-        }
+        if (terrainVT != nullptr && terrainVT->GetLayersCount() > 0)
+            RenderSystem2D::Instance()->DrawTexture(terrainVT->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 5.0f, 512.f, 256.f));
 
-        DVASSERT(decorationVTexture->GetLayersCount() > 0);
-        RenderSystem2D::Instance()->DrawTexture(decorationVTexture->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 266.f, 512.f, 256.f));
+        if (terrainVT != nullptr && terrainVT->GetLayersCount() > 1)
+            RenderSystem2D::Instance()->DrawTexture(terrainVT->GetLayerTexture(1), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(522.f, 5.0f, 512.f, 256.f));
+
+        if (decorVT != nullptr && decorVT->GetLayersCount() > 0)
+            RenderSystem2D::Instance()->DrawTexture(decorVT->GetLayerTexture(0), RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(5.0f, 266.f, 512.f, 256.f));
     }
 }
 
 //////////////////////////////////////////////////////////////////////////
 //#decoration
 
-DecorationData* Landscape::GetDecorationData()
+DecorationData* Landscape::GetCurrentDecorationData()
 {
-    return decoration;
+    return currentDecorationData;
 }
 
 void Landscape::ReloadDecorationData()
 {
-    decoration->ReloadDecoration();
+    if (currentDecorationData != nullptr)
+        currentDecorationData->ReloadDecoration();
+
     RebuildDecoration();
 }
 
@@ -2578,7 +2747,7 @@ void Landscape::SetTexture(eLandscapeTexture textureSemantic, int32 index, Asset
 
 float32 Landscape::GetRandomFloat(uint32 layer)
 {
-    DVASSERT(layer < decoration->GetLayersCount());
+    DVASSERT(layer < currentDecorationData->GetLayersCount());
 
     Vector<float32>& buffer = randomBuffer[layer].first;
     uint32& head = randomBuffer[layer].second;
@@ -2591,8 +2760,10 @@ float32 Landscape::GetRandomFloat(uint32 layer)
 
 void Landscape::DrawDecorationPatch(const LandscapeSubdivision::SubdivisionPatch* patch)
 {
-    uint32 decorationLevel = decoration->GetBaseLevel() - patch->level;
-    if (decorationLevel >= decoration->GetLevelCount()) //remember that 'decorationLevel' is unsigned
+    DVASSERT(currentDecorationData != nullptr);
+
+    uint32 decorationLevel = currentDecorationData->GetBaseLevel() - patch->level;
+    if (decorationLevel >= currentDecorationData->GetLevelCount()) //remember that 'decorationLevel' is unsigned
         return;
 
     if (uint32(decorationInstanceBuffers.size()) <= decorationLevel)
@@ -2618,7 +2789,7 @@ void Landscape::DrawDecorationPatch(const LandscapeSubdivision::SubdivisionPatch
     //////////////////////////////////////////////////////////////////////////
     //Patch flip-rotate
 
-    uint32 minLevelDelta = decoration->GetLevelCount() - decorationLevel - 1;
+    uint32 minLevelDelta = currentDecorationData->GetLevelCount() - decorationLevel - 1;
     uint32 minLevelX = x >> minLevelDelta;
     uint32 minLevelY = y >> minLevelDelta;
 
@@ -2677,6 +2848,9 @@ void Landscape::RebuildDecoration()
 {
     ReleaseDecorationRenderData();
 
+    if (currentDecorationData == nullptr)
+        return;
+
     rhi::VertexLayout vLayout;
     vLayout.AddStream(rhi::VDF_PER_VERTEX);
     vLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
@@ -2692,8 +2866,8 @@ void Landscape::RebuildDecoration()
     vLayout.AddElement(rhi::VS_TEXCOORD, 6, rhi::VDT_FLOAT, 2); //random rotate
     vLayoutDecor = rhi::VertexLayout::UniqueId(vLayout);
 
-    uint32 layersCount = decoration->GetLayersCount();
-    uint32 levelCount = decoration->GetLevelCount();
+    uint32 layersCount = currentDecorationData->GetLayersCount();
+    uint32 levelCount = currentDecorationData->GetLevelCount();
 
     decorationInstanceBuffers.resize(levelCount);
     decorationBatches.resize(layersCount);
@@ -2714,23 +2888,23 @@ void Landscape::RebuildDecoration()
 
     for (uint32 layerIndex = 0; layerIndex < layersCount; ++layerIndex)
     {
-        uint32 variationCount = decoration->GetVariationCount(layerIndex);
-        NMaterial* layerMaterial = decoration->GetLayerMaterial(layerIndex);
+        uint32 variationCount = currentDecorationData->GetVariationCount(layerIndex);
+        NMaterial* layerMaterial = currentDecorationData->GetLayerMaterial(layerIndex);
 
         if (variationCount == 0 || layerMaterial == nullptr)
             continue;
 
-        bool collisionDetection = decoration->GetLayerCollisionDetection(layerIndex);
+        bool collisionDetection = currentDecorationData->GetLayerCollisionDetection(layerIndex);
 
         Vector<Landscape::DecorationLevelItems> decorationLevelItems = collisionDetection ? GenerateCollisionFreeItems(layerIndex) : GenerateRandomItems(layerIndex);
 
-        bool tintFlag = decoration->GetLayerTint(layerIndex);
-        float32 tintHeight = decoration->GetLayerTintHeight(layerIndex);
+        bool tintFlag = currentDecorationData->GetLayerTint(layerIndex);
+        float32 tintHeight = currentDecorationData->GetLayerTintHeight(layerIndex);
         decorationBatches[layerIndex].resize(levelCount);
 
         for (uint32 levelIndex = 0; levelIndex < levelCount; ++levelIndex)
         {
-            float32 patchSize = GetLandscapeSize() / (1 << (decoration->GetBaseLevel() - levelIndex));
+            float32 patchSize = GetLandscapeSize() / (1 << (currentDecorationData->GetBaseLevel() - levelIndex));
 
             geometryData.clear();
             indexData.clear();
@@ -2742,12 +2916,12 @@ void Landscape::RebuildDecoration()
                 const DecorationVariationItems& variationItems = decorationLevelItems[levelIndex][v];
                 uint32 variationItemCount = uint32(variationItems.size());
 
-                float32 scaleMin = decoration->GetVariationScaleMin(layerIndex, v);
-                float32 scaleMax = decoration->GetVariationScaleMax(layerIndex, v);
-                float32 pitchMax = decoration->GetVariationPitchMax(layerIndex, v);
-                float32 collisionRadius = decoration->GetVariationCollisionRadius(layerIndex, v);
+                float32 scaleMin = currentDecorationData->GetVariationScaleMin(layerIndex, v);
+                float32 scaleMax = currentDecorationData->GetVariationScaleMax(layerIndex, v);
+                float32 pitchMax = currentDecorationData->GetVariationPitchMax(layerIndex, v);
+                float32 collisionRadius = currentDecorationData->GetVariationCollisionRadius(layerIndex, v);
 
-                PolygonGroup* geometry = decoration->GetVariationGeometry(layerIndex, v);
+                PolygonGroup* geometry = currentDecorationData->GetVariationGeometry(layerIndex, v);
                 geometryData.reserve(geometryData.size() + geometry->vertexCount * variationItemCount);
                 indexData.reserve(indexData.size() + geometry->indexCount * variationItemCount);
                 for (const DecorationItem& item : variationItems)
@@ -2776,7 +2950,7 @@ void Landscape::RebuildDecoration()
                     float32 pitch = DegToRad(pitchMax * GetRandomFloat(layerIndex));
                     float32 rotation = GetRandomFloat(layerIndex) * PI_2;
 
-                    if (!decoration->GetVariationEnabled(layerIndex, v))
+                    if (!currentDecorationData->GetVariationEnabled(layerIndex, v))
                         continue;
 
                     Matrix4 rotationMx = Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), rotation) * Matrix4::MakeRotation(pitchAxis, pitch);
@@ -2821,12 +2995,12 @@ void Landscape::RebuildDecoration()
                     indexOffset += geometry->vertexCount;
                 }
 
-                if (decoration->GetVariationEnabled(layerIndex, v))
+                if (currentDecorationData->GetVariationEnabled(layerIndex, v))
                     decorationBatches[layerIndex][levelIndex].itemsCount += variationItemCount;
             }
 
-            uint8 layerMask = decoration->GetLayerMask(layerIndex);
-            if (!geometryData.empty() && !indexData.empty() && layerMask != 0u)
+            uint8 layerMaskIndex = currentDecorationData->GetLayerMaskIndex(layerIndex);
+            if (!geometryData.empty() && !indexData.empty() && layerMaskIndex != 0u)
             {
                 rhi::VertexBuffer::Descriptor vbufferDesc;
                 vbufferDesc.initialData = geometryData.data();
@@ -2852,23 +3026,18 @@ void Landscape::RebuildDecoration()
                     Vector4(1.f, 1.f, 0.f, 1.f)
                 };
 
-                Vector4 layerMaskProperty = Vector4(
-                ((layerMask & DecorationData::LAYER_MASK_CHANNEL_R) ? 1.f : 0.f),
-                ((layerMask & DecorationData::LAYER_MASK_CHANNEL_G) ? 1.f : 0.f),
-                ((layerMask & DecorationData::LAYER_MASK_CHANNEL_B) ? 1.f : 0.f),
-                ((layerMask & DecorationData::LAYER_MASK_CHANNEL_A) ? 1.f : 0.f)
-                );
-
-                float32 layerOrientValue = decoration->GetLayerOrientValue(layerIndex);
+                bool orientOnLandscape = currentDecorationData->GetLayerOrientOnLandscape(layerIndex) && tbnEnabled;
+                float32 layerOrientValue = currentDecorationData->GetLayerOrientValue(layerIndex);
+                float32 layerIndexValue = float32(layerMaskIndex);
 
                 NMaterial* material = layerMaterial->Clone();
-                material->SetFXName(decoration->GetLayerCullface(layerIndex) ? NMaterialName::DECORATION_CULLFACE : NMaterialName::DECORATION);
+                material->SetFXName(currentDecorationData->GetLayerCullface(layerIndex) ? NMaterialName::DECORATION_CULLFACE : NMaterialName::DECORATION);
                 //material->AddProperty(FastName("baseColorScale"), levelColor[Min(levelIndex, 5u)].data, rhi::ShaderProp::TYPE_FLOAT4);
-                material->AddProperty(PARAM_DECORATION_DECORATION_MASK, layerMaskProperty.data, rhi::ShaderProp::TYPE_FLOAT4);
+                material->AddProperty(PARAM_DECORATION_DECORATION_INDEX, &layerIndexValue, rhi::ShaderProp::TYPE_FLOAT1);
                 material->AddProperty(PARAM_DECORATION_ORIENT_VALUE, &layerOrientValue, rhi::ShaderProp::TYPE_FLOAT1);
                 material->AddFlag(NMaterialFlagName::FLAG_VERTEX_COLOR, tintFlag ? 2 : 0);
-                material->AddFlag(FLAG_DECORATION_ORIENT_ON_LANDSCAPE, decoration->GetLayerOrientOnLandscape(layerIndex) ? 1 : 0);
-                material->AddFlag(FLAG_DECORATION_GPU_RANDOMIZATION, decoration->GetLayerCollisionDetection(layerIndex) ? 2 : 1);
+                material->AddFlag(FLAG_DECORATION_ORIENT_ON_LANDSCAPE, orientOnLandscape ? 1 : 0);
+                material->AddFlag(FLAG_DECORATION_GPU_RANDOMIZATION, currentDecorationData->GetLayerCollisionDetection(layerIndex) ? 2 : 1);
                 material->SetParent(decorationRuntimeMaterial);
                 material->SetRuntime(true);
 
@@ -2892,15 +3061,15 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateCollisionFreeItems(ui
 {
     UnorderedMap<uint32, DecorationCollisionGroupData> collisionGroupInfo;
 
-    float32 baseLevelPatchSize = GetLandscapeSize() / (1 << decoration->GetBaseLevel());
+    float32 baseLevelPatchSize = GetLandscapeSize() / (1 << currentDecorationData->GetBaseLevel());
 
-    uint32 variationCount = decoration->GetVariationCount(layerIndex);
+    uint32 variationCount = currentDecorationData->GetVariationCount(layerIndex);
     for (uint32 v = 0; v < variationCount; ++v)
     {
-        DecorationCollisionGroupData& collisionGroup = collisionGroupInfo[decoration->GetVariationCollisionGroup(layerIndex, v)];
+        DecorationCollisionGroupData& collisionGroup = collisionGroupInfo[currentDecorationData->GetVariationCollisionGroup(layerIndex, v)];
 
         collisionGroup.variations.emplace_back(v);
-        collisionGroup.maxDensity += decoration->GetVariationDensity(layerIndex, v);
+        collisionGroup.maxDensity += currentDecorationData->GetVariationDensity(layerIndex, v);
     }
 
     for (auto& it : collisionGroupInfo)
@@ -2940,7 +3109,7 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateCollisionFreeItems(ui
         }
     }
 
-    uint32 levelCount = decoration->GetLevelCount();
+    uint32 levelCount = currentDecorationData->GetLevelCount();
     Vector<Landscape::DecorationLevelItems> levelsItems(levelCount);
     for (uint32 levelIndex = 0; levelIndex < levelCount; ++levelIndex)
     {
@@ -2958,12 +3127,12 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateCollisionFreeItems(ui
 
             for (uint32 variation : groupData.variations)
             {
-                float32 varDensity = decoration->GetVariationDensity(layerIndex, variation);
-                float32 levelDensity0 = decoration->GetLevelDensity(layerIndex, variation, levelIndex);
-                float32 levelDensity1 = ((levelIndex + 1) == levelCount) ? 0.f : decoration->GetLevelDensity(layerIndex, variation, levelIndex + 1);
+                float32 varDensity = currentDecorationData->GetVariationDensity(layerIndex, variation);
+                float32 levelDensity0 = currentDecorationData->GetLevelDensity(layerIndex, variation, levelIndex);
+                float32 levelDensity1 = ((levelIndex + 1) == levelCount) ? 0.f : currentDecorationData->GetLevelDensity(layerIndex, variation, levelIndex + 1);
                 float32 relativeDensity = levelDensity0 - levelDensity1;
 
-                float32 patchSize = GetLandscapeSize() / (1 << (decoration->GetBaseLevel() - levelIndex));
+                float32 patchSize = GetLandscapeSize() / (1 << (currentDecorationData->GetBaseLevel() - levelIndex));
                 uint32 variationItemsCount = Min(uint32(std::roundf(varDensity * Clamp(relativeDensity, 0.f, 1.f) * patchSize * patchSize)), uint32(groupItemCoords.size()));
 
                 DecorationVariationItems& variationItems = levelItems[variation];
@@ -2980,7 +3149,7 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateCollisionFreeItems(ui
                 uint32 itemsLeft = uint32(groupItemCoords.size());
                 for (uint32 variation : groupData.variations)
                 {
-                    float32 varDensity = decoration->GetVariationDensity(layerIndex, variation);
+                    float32 varDensity = currentDecorationData->GetVariationDensity(layerIndex, variation);
                     uint32 variationItemsCount = Min(uint32(std::roundf(itemsLeft * varDensity / groupData.maxDensity)), uint32(groupItemCoords.size()));
 
                     DecorationVariationItems& variationItems = levelItems[variation];
@@ -3013,8 +3182,8 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateCollisionFreeItems(ui
 
 Vector<Landscape::DecorationLevelItems> Landscape::GenerateRandomItems(uint32 layerIndex)
 {
-    uint32 levelCount = decoration->GetLevelCount();
-    uint32 variationCount = decoration->GetVariationCount(layerIndex);
+    uint32 levelCount = currentDecorationData->GetLevelCount();
+    uint32 variationCount = currentDecorationData->GetVariationCount(layerIndex);
 
     Vector<DecorationLevelItems> levelsItems(levelCount);
     for (uint32 levelIndex = 0; levelIndex < levelCount; ++levelIndex)
@@ -3024,12 +3193,12 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateRandomItems(uint32 la
 
         for (uint32 variation = 0; variation < variationCount; ++variation)
         {
-            float32 varDensity = decoration->GetVariationDensity(layerIndex, variation);
-            float32 levelDensity0 = decoration->GetLevelDensity(layerIndex, variation, levelIndex);
-            float32 levelDensity1 = ((levelIndex + 1) == levelCount) ? 0.f : decoration->GetLevelDensity(layerIndex, variation, levelIndex + 1);
+            float32 varDensity = currentDecorationData->GetVariationDensity(layerIndex, variation);
+            float32 levelDensity0 = currentDecorationData->GetLevelDensity(layerIndex, variation, levelIndex);
+            float32 levelDensity1 = ((levelIndex + 1) == levelCount) ? 0.f : currentDecorationData->GetLevelDensity(layerIndex, variation, levelIndex + 1);
             float32 relativeDensity = levelDensity0 - levelDensity1;
 
-            float32 patchSize = GetLandscapeSize() / (1 << (decoration->GetBaseLevel() - levelIndex));
+            float32 patchSize = GetLandscapeSize() / (1 << (currentDecorationData->GetBaseLevel() - levelIndex));
             uint32 variationItemsCount = uint32(std::roundf(varDensity * Clamp(relativeDensity, 0.f, 1.f) * patchSize * patchSize));
 
             DecorationVariationItems& items = levelsItems[levelIndex][variation];
@@ -3282,8 +3451,10 @@ void Landscape::SetLayersCount(uint32 count)
         }
         landscapeLayerRenderers.erase(landscapeLayerRenderers.begin() + count, landscapeLayerRenderers.end());
     }
+
     pageManager->ClearPageRenderers();
     decorationPageManager->ClearPageRenderers();
+
     for (auto& rend : landscapeLayerRenderers)
     {
         pageManager->AddPageRenderer(rend);
@@ -3292,6 +3463,7 @@ void Landscape::SetLayersCount(uint32 count)
 
     pageManager->AddPageRenderer(vtDecalRenderer);
     decorationPageManager->AddPageRenderer(vtDecalRenderer);
+
     RebuildLandscape();
 
     layersCount = count;

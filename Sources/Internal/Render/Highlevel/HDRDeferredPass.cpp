@@ -161,6 +161,7 @@ void HDRDeferredPass::DeferredDecalPass::DrawVisibilityArray(RenderSystem* rende
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEWPORT_SIZE, &viewportSize, reinterpret_cast<pointer_size>(&viewportSize));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_RCP_VIEWPORT_SIZE, &rcpViewportSize, reinterpret_cast<pointer_size>(&rcpViewportSize));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEWPORT_OFFSET, &viewportOffset, reinterpret_cast<pointer_size>(&viewportOffset));
+    SetNdcToZMapping();
 
     //GFX_COMPLETE consider using framebuffer fetch?
     //GFX_COMPLETE looks like some custom decal shaders cant be done via framebuffer fetch, as they access neighbor pixels (eg: DTE:ripples) ...
@@ -315,6 +316,7 @@ void HDRDeferredPass::GBufferResolvePass::Draw(RenderSystem* renderSystem, uint3
     }
     ShaderAssetListener::Instance()->ClearDynamicBindigs();
     SetupCameraParams(mainCamera, drawCamera);
+    SetNdcToZMapping();
 
     if (BeginRenderPass(passConfig))
     {
@@ -376,7 +378,7 @@ HDRDeferredPass::HDRDeferredPass()
     gBufferPass->GetPassConfig().colorBuffer[3].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
     gBufferPass->GetPassConfig().colorBuffer[3].loadAction = rhi::LOADACTION_CLEAR;
     gBufferPass->GetPassConfig().colorBuffer[3].storeAction = rhi::STOREACTION_STORE;
-    gBufferPass->GetPassConfig().colorBuffer[3].clearColor[0] = 1.0f;
+    gBufferPass->GetPassConfig().colorBuffer[3].clearColor[0] = 0.0f;
     gBufferPass->GetPassConfig().colorBuffer[3].clearColor[1] = 1.0f;
     gBufferPass->GetPassConfig().colorBuffer[3].clearColor[2] = 1.0f;
     gBufferPass->GetPassConfig().colorBuffer[3].clearColor[3] = 1.0f;

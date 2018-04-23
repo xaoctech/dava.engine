@@ -63,7 +63,7 @@ private:
     void DrawDecals(Entity* entity);
     void DrawPostEffects(Entity* entity);
 
-    void DrawDecal(const Matrix4& transform, const AABBox3& box, GeoDecalManager::Mapping mapping);
+    void DrawDecal(const Matrix4& transform, const AABBox3& box, GeoDecalManager::Mapping mapping, const Color& baseColor);
 
     //hanging objects
     using RenderBatchWithTransform = std::pair<RenderBatch*, Matrix4>;

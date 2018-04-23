@@ -3,8 +3,9 @@
 #include "Asset/Asset.h"
 #include "Asset/AbstractAssetLoader.h"
 #include "FileSystem/FilePath.h"
-#include "Base/Type.h"
 #include "Base/BaseTypes.h"
+#include "Base/Type.h"
+#include "Base/RefPtr.h"
 
 namespace DAVA
 {

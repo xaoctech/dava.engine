@@ -1,0 +1,31 @@
+keyedArchive:
+    flags:
+        keyedArchive:
+            flag1:
+                int32: 12
+            flag2:
+                int32: 34
+    textures:
+        keyedArchive:
+            normalmap:
+                string: "../images/normalmap.tex"
+            albedo:
+                string: "../images/albedo.tex"
+    materialType:
+        uint32: 2
+    properties:
+        keyedArchive:
+            baseColorScale:
+                byteArray: [3, 1, 0, 0, 0, a, d7, 23, 3f, a, d7, 23, 3f, a, d7, 23, 3f, 0, 0, 80, 3f]
+            aoScale:
+                byteArray: [0, 1, 0, 0, 0, cd, cc, cc, 3e]
+            albedoMinAOValue:
+                byteArray: [0, 1, 0, 0, 0, 0, 0, 0, 0]
+    fxName:
+        string: "~res:/Materials2/PBS.material"
+    materialName:
+        string: "material"
+    '##name':
+        string: "NMaterial"
+    parentPath:
+        string: "./parent-material.mat"

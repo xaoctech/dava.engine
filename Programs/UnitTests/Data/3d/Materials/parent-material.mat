@@ -1,0 +1,23 @@
+keyedArchive:
+    flags:
+        keyedArchive:
+            parentFlag1:
+                int32: 56
+            parentFlag2:
+                int32: 78
+    textures:
+        keyedArchive:
+            parentDiffuse:
+                string: "../images/parent-diffuse.tex"
+    materialType:
+        uint32: 2
+    properties:
+        keyedArchive:
+            diffuseColor:
+                byteArray: [0, 1, 0, 0, 0, cd, cc, cc, 3e]
+    fxName:
+        string: "~res:/Materials2/PBS.material"
+    materialName:
+        string: "parent-material"
+    '##name':
+        string: "NMaterial"

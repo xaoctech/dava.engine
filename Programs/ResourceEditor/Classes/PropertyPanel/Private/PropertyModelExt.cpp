@@ -494,7 +494,6 @@ std::unique_ptr<DAVA::BaseComponentValue> EntityEditorCreator::GetEditor(const s
     }
 
     const DAVA::Type* valueType = node->cachedValue.GetType();
-    static const DAVA::Type* componentType = DAVA::Type::Instance<DAVA::Component*>();
     static const DAVA::Type* entityType = DAVA::Type::Instance<DAVA::Entity*>();
 
     if ((node->propertyType == DAVA::PropertyNode::GroupProperty && valueType == entityType)

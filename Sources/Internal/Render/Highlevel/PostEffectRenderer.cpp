@@ -19,6 +19,8 @@
 
 namespace DAVA
 {
+bool txaaDepthDilation = false;
+
 class HelperRenderer
 {
 public:
@@ -413,11 +415,11 @@ void PostEffectRenderer::GetAverageLuminance()
 
     // init luminance
     QuadRenderer::Options options;
-    options.loadAction = rhi::LoadAction::LOADACTION_NONE;
+    options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_NONE;
     options.material = materials[MaterialType::INIT_LUMINANCE];
     options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
     options.srcTexSize = Vector2(float32(hdrTargetSize.dx), float32(hdrTargetSize.dy));
-    options.dstTexture = allRenderer.averageColorArray[0];
+    options.dstTextures[0] = allRenderer.averageColorArray[0];
     options.dstRect = Rect2f(0.f, 0.f, allRenderer.averageColorSize[0], allRenderer.averageColorSize[0]);
     options.dstTexSize = Vector2(allRenderer.averageColorSize[0], allRenderer.averageColorSize[0]);
     options.renderPassName = "lum_init";
@@ -439,7 +441,7 @@ void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, co
         options.material = material;
         options.srcRect = Rect2f(0, 0, 1.f, 1.f);
         options.srcTexSize = Vector2(1.f, 1.f);
-        options.dstTexture = allRenderer.luminanceTexture;
+        options.dstTextures[0] = allRenderer.luminanceTexture;
         options.dstRect = Rect2f(0.f, 0.f, 1.0, 1.f);
         options.dstTexSize = Vector2(1.0f, 1.0f);
         options.textureSet = RhiUtils::FragmentTextureSet{ allRenderer.averageColorArray.back() };
@@ -483,8 +485,8 @@ void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, co
             options.material->SetPropertyValue(FastName("adaptationSpeed"), settings.adaptationSpeed.data);
             options.material->SetPropertyValue(FastName("frameTime"), &frameDelta);
 
-            options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
-            options.dstTexture = allRenderer.luminanceTexture;
+            options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
+            options.dstTextures[0] = allRenderer.luminanceTexture;
             options.dstRect = Rect2f(0.f, 0.f, 1.0f, 1.0f);
             options.dstTexSize = Vector2(1.0f, 1.0f);
 
@@ -494,8 +496,8 @@ void PostEffectRenderer::DownsampleLuminanceInplace(rhi::HTexture srcTexture, co
         else
         {
             options.material = materials[MaterialType::LUMINANCE];
-            options.loadAction = rhi::LoadAction::LOADACTION_NONE;
-            options.dstTexture = allRenderer.averageColorArray[i];
+            options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_NONE;
+            options.dstTextures[0] = allRenderer.averageColorArray[i];
             options.dstRect = Rect2f(0.f, 0.f, allRenderer.averageColorSize[i], allRenderer.averageColorSize[i]);
             options.dstTexSize = Vector2(allRenderer.averageColorSize[i], allRenderer.averageColorSize[i]);
         }
@@ -515,7 +517,7 @@ void PostEffectRenderer::DownsampleLuminance(rhi::HTexture srcTexture, const Siz
         options.material = material;
         options.srcRect = Rect2f(0, 0, 1.f, 1.f);
         options.srcTexSize = Vector2(1.f, 1.f);
-        options.dstTexture = allRenderer.luminanceHistory;
+        options.dstTextures[0] = allRenderer.luminanceHistory;
         options.dstRect = Rect2f(0.f, 0.f, 1.0f, 1.f);
         options.dstTexSize = Vector2(1.0f, 1.f);
         options.textureSet = RhiUtils::FragmentTextureSet{ allRenderer.averageColorArray.back() };
@@ -536,7 +538,7 @@ void PostEffectRenderer::DownsampleLuminance(rhi::HTexture srcTexture, const Siz
 
         QuadRenderer::Options options;
         options.renderPassName = passNamesBuffer + printPosition;
-        options.loadAction = rhi::LoadAction::LOADACTION_NONE;
+        options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_NONE;
         options.material = materials[MaterialType::LUMINANCE];
 
         if (i + 1 == allRenderer.averageColorArray.size())
@@ -558,7 +560,7 @@ void PostEffectRenderer::DownsampleLuminance(rhi::HTexture srcTexture, const Siz
             options.srcTexSize = Vector2(allRenderer.averageColorSize[i - 1], allRenderer.averageColorSize[i - 1]);
         }
 
-        options.dstTexture = allRenderer.averageColorArray[i];
+        options.dstTextures[0] = allRenderer.averageColorArray[i];
         options.dstRect = Rect2f(0.f, 0.f, allRenderer.averageColorSize[i], allRenderer.averageColorSize[i]);
         options.dstTexSize = Vector2(allRenderer.averageColorSize[i], allRenderer.averageColorSize[i]);
         options.renderPassPriority += deltaPriority;
@@ -576,7 +578,7 @@ void PostEffectRenderer::DownsampleLuminance(rhi::HTexture srcTexture, const Siz
         options.material = material;
         options.srcRect = Rect2f(0, 0, 1.f, 1.f);
         options.srcTexSize = Vector2(1.f, 1.f);
-        options.dstTexture = allRenderer.luminanceHistory;
+        options.dstTextures[0] = allRenderer.luminanceHistory;
         options.dstRect = Rect2f(0.f, 0.f, 1.0f, 1.f);
         options.dstTexSize = Vector2(1.0f, 1.f);
         options.textureSet = RhiUtils::FragmentTextureSet{ allRenderer.averageColorArray.back() };
@@ -589,12 +591,12 @@ void PostEffectRenderer::DownsampleLuminance(rhi::HTexture srcTexture, const Siz
     // copy current luminance
     {
         QuadRenderer::Options options;
-        options.loadAction = rhi::LoadAction::LOADACTION_NONE;
+        options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_NONE;
         options.material = materials[MaterialType::COPY];
         options.srcTexture = allRenderer.luminanceHistory;
         options.srcRect = Rect2f(0.0f, 0.0f, 1.0f, 1.0f);
         options.srcTexSize = Vector2(1.0f, 1.f);
-        options.dstTexture = allRenderer.luminancePrevious;
+        options.dstTextures[0] = allRenderer.luminancePrevious;
         options.dstRect = Rect2f(0.f, 0.f, 1.f, 1.f);
         options.dstTexSize = Vector2(1.f, 1.f);
         options.renderPassName = "lum_copy";
@@ -613,11 +615,11 @@ void PostEffectRenderer::DownsampleLuminance(rhi::HTexture srcTexture, const Siz
 
         QuadRenderer::Options options;
         options.renderPassName = "lum_adopt";
-        options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+        options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
         options.material = material;
         options.srcRect = Rect2f(0, 0, 1.f, 1.f);
         options.srcTexSize = Vector2(1.f, 1.f);
-        options.dstTexture = allRenderer.luminanceHistory;
+        options.dstTextures[0] = allRenderer.luminanceHistory;
         options.dstRect = Rect2f(0.0f, 0.0f, 1.f, 1.f);
         options.dstTexSize = Vector2(1.0f, 1.f);
         options.textureSet = RhiUtils::FragmentTextureSet{ allRenderer.averageColorArray.back(), allRenderer.luminancePrevious };
@@ -668,14 +670,14 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
         options.dstRect = Rect2f(0.0f, 0.0f, dstSize.x, dstSize.y);
         options.dstRect = Rect2f(float32(frameContext.viewport.x), float32(frameContext.viewport.y), float32(frameContext.viewport.width), float32(frameContext.viewport.height));
 
-        options.dstTexture = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT));
+        options.dstTextures[0] = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_CURRENT));
     }
     else
     {
         options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
         options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
         options.dstRect = Rect2f(float32(frameContext.viewport.x), float32(frameContext.viewport.y), float32(frameContext.viewport.width), float32(frameContext.viewport.height));
-        options.dstTexture = frameContext.destination;
+        options.dstTextures[0] = rhi::HTexture(frameContext.destination);
     }
     options.srcTexSize = Vector2(float32(hdrTargetSize.dx), float32(hdrTargetSize.dy));
     options.samplerState = linearSamplerState;
@@ -721,6 +723,8 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
             {
                 fragmentTextures[textureIndex++] = Renderer::GetDynamicBindings().GetDynamicTexture(static_cast<DynamicBindings::eTextureSemantic>(DynamicBindings::DYNAMIC_TEXTURE_LDR_HISTORY));
                 fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
+                if (txaaDepthDilation)
+                    fragmentTextures[textureIndex++] = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
             }
 
             if (settings.enableColorGrading)
@@ -732,12 +736,12 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
             fragmentTextures[textureIndex++] = settings.lightMeterTable->handle;
         }
         options.renderPassName = "Combine";
-        options.loadAction = rhi::LoadAction::LOADACTION_CLEAR;
+        options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_CLEAR;
         options.material = material;
         options.textureSet = RhiUtils::TextureSet({ lumTexture }, fragmentTextures);
         options.renderPassPriority = 4;
 
-        bool invertProjection = (options.dstTexture != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin);
+        bool invertProjection = (options.dstTextures[0] != rhi::InvalidHandle) && (!rhi::DeviceCaps().isUpperLeftRTOrigin);
         float32 cv = invertProjection ? 1.0f : -1.0f;
 
         //GFX_COMPLETE fix projection flip for all back-ends
@@ -762,13 +766,13 @@ void PostEffectRenderer::Combine(CombineMode mode, rhi::HPacketList pl)
 
         QuadRenderer::Options pickerOptions;
         pickerOptions.renderPassName = "HDRPicker";
-        pickerOptions.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+        pickerOptions.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
         pickerOptions.material = materials[MaterialType::COPY];
         pickerOptions.srcTexture = hdrRenderer.hdrTarget;
         pickerOptions.srcRect = Rect2f(poi.x - 0.5f * pickerSize, poi.y - 0.5f * pickerSize, pickerSize, pickerSize);
         pickerOptions.srcTexSize = Vector2(float32(hdrTargetSize.dx), float32(hdrTargetSize.dy));
 
-        pickerOptions.dstTexture = hdrRenderer.hdrPicker[hdrRenderer.debugPickerIndex % DebugPickerPoolSize];
+        pickerOptions.dstTextures[0] = hdrRenderer.hdrPicker[hdrRenderer.debugPickerIndex % DebugPickerPoolSize];
         pickerOptions.dstRect = Rect2f(0.0f, 0.0f, pickerSize, pickerSize);
         pickerOptions.dstTexSize = Vector2(pickerSize, pickerSize);
 
@@ -816,8 +820,8 @@ void PostEffectRenderer::Debug()
     {
         QuadRenderer::Options options;
         options.renderPassName = passName;
-        options.dstTexture = frameContext.destination;
-        options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+        options.dstTextures[0] = rhi::HTexture(frameContext.destination);
+        options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
         options.material = materials[MaterialType::DEBUG];
         options.srcTexture = hdrRenderer.hdrTarget;
         options.srcRect = Rect2f(0.f, 0.f, float32(frameContext.viewport.width), float32(frameContext.viewport.height));
@@ -849,10 +853,10 @@ void PostEffectRenderer::Debug()
         for (size_t i = 0; i < allRenderer.averageColorArray.size(); ++i)
         {
             QuadRenderer::Options options;
-            options.dstTexture = frameContext.destination;
+            options.dstTextures[0] = rhi::HTexture(frameContext.destination);
             options.dstRect = Rect2f(float32(drawOffset.dx), float32(drawOffset.dy), float32(debugRenderer.debugRectSize), float32(debugRenderer.debugRectSize));
             options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
-            options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+            options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
             options.material = materials[MaterialType::DEBUG_R16F];
             options.srcRect = Rect2f(0.f, 0.f, allRenderer.averageColorSize[i], allRenderer.averageColorSize[i]);
             options.srcTexSize = Vector2(allRenderer.averageColorSize[i], allRenderer.averageColorSize[i]);
@@ -897,8 +901,8 @@ void PostEffectRenderer::Debug()
 
         QuadRenderer::Options options;
         options.renderPassName = passName;
-        options.dstTexture = frameContext.destination;
-        options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+        options.dstTextures[0] = rhi::HTexture(frameContext.destination);
+        options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
         options.material = materials[MaterialType::DEBUG_R16F];
         options.srcTexture = allRenderer.luminanceHistory;
         options.srcRect = Rect2f(0.f, 0.f, 1.0f, 1.f);
@@ -914,8 +918,8 @@ void PostEffectRenderer::Debug()
     //if (histogramRenderer && debugRenderer.drawHistogram)
     //{
     //    QuadRenderer::Options options;
-    //    options.dstTexture = frameContext.destination;
-    //    options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+    //    options.dstTextures[0] = frameContext.destination;
+    //    options.dstLoadActions[0] =rhi::LoadAction::LOADACTION_LOAD;
     //    options.material = posteffectMaterials[MaterialType::DEBUG];
     //    options.srcTexture = histogramRenderer->bucketTexture;
     //    options.srcRect = Rect2f(0.f, 0.f, float32(histogramRenderer->bucketsCount), 1);
@@ -935,10 +939,10 @@ void PostEffectRenderer::Debug()
         {
             QuadRenderer::Options options;
             options.renderPassName = passName;
-            options.dstTexture = frameContext.destination;
+            options.dstTextures[0] = rhi::HTexture(frameContext.destination);
             options.dstRect = Rect2f(float32(drawOffset.dx), float32(drawOffset.dy), float32(debugRenderer.debugRectSize), float32(debugRenderer.debugRectSize));
             options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
-            options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+            options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
             options.material = materials[MaterialType::DEBUG_R16F];
             options.srcRect = Rect2f(0.f, 0.f, float32(b->blurChain[i].blur.size.dx), float32(b->blurChain[i].blur.size.dy));
             options.srcTexSize = Vector2(float32(b->blurChain[i].blur.size.dx), float32(b->blurChain[i].blur.size.dy));
@@ -974,7 +978,7 @@ void PostEffectRenderer::Bloom()
         o.renderPassName = "bloom_threshold";
         o.dstRect = { 0.f, 0.f, float32(chain[0].orig.size.dx), float32(chain[0].orig.size.dy) };
         o.dstTexSize = { float32(chain[0].orig.size.dx), float32(chain[0].orig.size.dy) };
-        o.dstTexture = chain[0].orig.handle;
+        o.dstTextures[0] = chain[0].orig.handle;
         o.material = material;
         o.srcRect = { 0.f, 0.f, float32(hdrTargetSize.dx), float32(hdrTargetSize.dy) };
         o.srcTexSize = { float32(hdrTargetSize.dx), float32(hdrTargetSize.dy) };
@@ -990,7 +994,7 @@ void PostEffectRenderer::Bloom()
             o.srcTexture = chain[i].orig.handle;
             o.srcRect = Rect2f(0.f, 0.f, float32(chain[i].orig.size.dx), float32(chain[i].orig.size.dy));
             o.srcTexSize = Vector2(float32(chain[i].orig.size.dx), float32(chain[i].orig.size.dy));
-            o.dstTexture = chain[i + 1].orig.handle;
+            o.dstTextures[0] = chain[i + 1].orig.handle;
             o.dstRect = Rect2f(0.f, 0.f, float32(chain[i + 1].orig.size.dx), float32(chain[i + 1].orig.size.dy));
             o.dstTexSize = Vector2(float32(chain[i + 1].orig.size.dx), float32(chain[i + 1].orig.size.dy));
             quadRenderer.Render(o);
@@ -1033,7 +1037,7 @@ void PostEffectRenderer::Blur(RhiTexture* src, RhiTexture* dst, RhiTexture* tmp)
     o.material = material;
     o.dstRect = Rect2f(0, 0, float32(tmp->size.dx), float32(tmp->size.dy));
     o.dstTexSize = Vector2(float32(tmp->size.dx), float32(tmp->size.dy));
-    o.dstTexture = tmp->handle;
+    o.dstTextures[0] = tmp->handle;
     o.srcTexture = src->handle;
     o.srcTexSize = Vector2(float32(src->size.dx), float32(src->size.dy));
     o.srcRect = Rect2f(0, 0, float32(src->size.dx), float32(src->size.dy));
@@ -1044,7 +1048,7 @@ void PostEffectRenderer::Blur(RhiTexture* src, RhiTexture* dst, RhiTexture* tmp)
     texelOffset = { 1.f / tmp->size.dy, 0 };
     material->SetPropertyValue(FastName("texelOffset"), texelOffset.data);
     o.renderPassName = "bloom_blur_vert";
-    o.dstTexture = dst->handle;
+    o.dstTextures[0] = dst->handle;
     o.dstTexSize = Vector2(float32(dst->size.dx), float32(dst->size.dy));
     o.dstRect = Rect2f(0, 0, float32(dst->size.dx), float32(dst->size.dy));
     o.srcRect = Rect2f(0, 0, float32(tmp->size.dx), float32(tmp->size.dy));
@@ -1064,7 +1068,7 @@ void PostEffectRenderer::MulAddBlur(RhiTexture* src1, RhiTexture* src2, float32 
     QuadRenderer::Options o;
     o.renderPassName = "bloom_mul_add";
     o.material = material;
-    o.dstTexture = dst->handle;
+    o.dstTextures[0] = dst->handle;
     o.dstTexSize = { float32(dst->size.dx), float32(dst->size.dy) };
     o.dstRect = { 0, 0, float32(dst->size.dx), float32(dst->size.dy) };
     o.srcTexSize = { 512.f, 512.f };

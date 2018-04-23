@@ -147,6 +147,14 @@ std::ostream& operator<<(std::ostream& os, const DAVA::Any& any)
             const Vector4& v = any.Get<Vector4>();
             os << "Vec4 [" << std::fixed << v.x << "," << std::fixed << v.y << "," << std::fixed << v.z << "," << std::fixed << v.w << "]";
         }
+        else if (type->Is<Matrix4>())
+        {
+            const Matrix4& m = any.Get<Matrix4>();
+            os << "Mat4 [" << std::fixed << m._00 << "," << std::fixed << m._01 << "," << std::fixed << m._02 << "," << std::fixed << m._03
+               << '\n' << std::fixed << m._10 << "," << std::fixed << m._11 << "," << std::fixed << m._12 << "," << std::fixed << m._13
+               << '\n' << std::fixed << m._20 << "," << std::fixed << m._21 << "," << std::fixed << m._22 << "," << std::fixed << m._23
+               << '\n' << std::fixed << m._30 << "," << std::fixed << m._31 << "," << std::fixed << m._32 << "," << std::fixed << m._33 << "]";
+        }
         else if (type->Is<Quaternion>())
         {
             const Quaternion& v = any.Get<Quaternion>();

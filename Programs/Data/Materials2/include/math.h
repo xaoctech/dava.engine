@@ -242,9 +242,9 @@ float PhaseFunctionHenyeyGreenstein(float cosTheta, float g)
     return (a1 / a2) * (b1 / b2);
 }
 
-float2 ScatteringPhaseFunctions(float3 view, float3 light, float anisotropy)
+float2 ScatteringPhaseFunctions(float3 viewVector, float3 lightVector, float anisotropy)
 {
-    float angleCosine = dot(view, light);
+    float angleCosine = dot(viewVector, lightVector);
 
     float2 result;
     result.x = PhaseFunctionRayleigh(angleCosine);
@@ -416,7 +416,7 @@ float QueryLodLevel(float2 texCoords, float2 texSize)
 /// RDB <--> YCoCg color space transitions.
 float3 RGBToYCoCg(float3 c)
 {
-    return float3(c.x / 4.0 + c.y / 2.0 + c.z / 4.0, c.x / 2.0 - c.z / 2.0, -c.x / 4.0 + c.y / 2.0 - c.z / 4.0);
+    return float3(c.x * 0.25f + c.y * 0.5f + c.z * 0.25f, c.x * 0.5f - c.z * 0.5f, -c.x * 0.25f + c.y * 0.5f - c.z * 0.25f);
 }
 
 float3 YCoCgToRGB(float3 c)
@@ -502,4 +502,59 @@ float4 EncodeRGBD(float3 inColor)
 float3 DecodeRGBD(float4 inColor)
 {
     return inColor.xyz * ((RGBM_ENCODING_RANGE / 255.0) / inColor.w);
+}
+
+// https://github.com/playdeadgames/temporal/blob/master/Assets/Shaders/TemporalReprojection.shader
+// note: only clips towards aabb center (but faster!)
+float3 IntersectionAabbCenter(float3 smp, float3 aabbMin, float3 aabbMax)
+{
+    float3 pClip = 0.5f * (aabbMax + aabbMin);
+    float3 eClip = 0.5f * (aabbMax - aabbMin) + 0.000001f;
+
+    float3 vClip = smp - pClip;
+    float3 vUnit = vClip.xyz / eClip;
+    float3 aUnit = abs(vUnit);
+    float maUnit = max(aUnit.x, max(aUnit.y, aUnit.z));
+
+    float3 res = smp;
+    if (maUnit > 1.0f)
+        res = pClip + vClip / maUnit;
+    return res;
+}
+
+// returns t of intersection, such as o + dir * t
+float IntersectionAabbNear(float3 o, float3 dir, float3 aabbMin, float3 aabbMax)
+{
+    float3 invD = 1.0 / dir;
+    float3 minD = invD * (aabbMin - o);
+    float3 maxD = invD * (aabbMax - o);
+    float3 minT = min(minD, maxD);
+    return max(max(minT.x, minT.y), minT.z);
+}
+
+float GetDitherPatternValue4x4(float opacity, float2 uv)
+{
+    const float pattern4x4[16] = { 0.0, 8.0, 2.0, 10.0, 12.0, 4.0, 14.0, 6.0, 3.0, 11.0, 1.0, 9.0, 15.0, 7.0, 13.0, 5.0 };
+
+    uv = fmod(uv, 4.0);
+    float ditherPattern = pattern4x4[int(uv.x) + int(uv.y) * 4];
+    return step(opacity * 16.0, ditherPattern);
+}
+
+float GetDitherPatternValue8x8(float opacity, float2 uv)
+{
+    const float pattern8x8[64] = {
+        0.0, 48.0, 12.0, 60.0, 3.0, 51.0, 15.0, 63.0,
+        32.0, 16.0, 44.0, 28.0, 35.0, 19.0, 47.0, 31.0,
+        8.0, 56.0, 4.0, 52.0, 11.0, 59.0, 7.0, 55.0,
+        40.0, 24.0, 36.0, 20.0, 43.0, 27.0, 39.0, 23.0,
+        2.0, 50.0, 14.0, 62.0, 1.0, 49.0, 13.0, 61.0,
+        34.0, 18.0, 46.0, 30.0, 33.0, 17.0, 45.0, 29.0,
+        10.0, 58.0, 6.0, 54.0, 9.0, 57.0, 5.0, 53.0,
+        42.0, 26.0, 38.0, 22.0, 41.0, 25.0, 37.0, 21.0
+    };
+
+    uv = fmod(uv, 8.0);
+    float ditherPattern = pattern8x8[int(uv.x) + int(uv.y) * 8];
+    return step(opacity * 64.0, ditherPattern);
 }

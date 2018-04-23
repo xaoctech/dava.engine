@@ -296,7 +296,7 @@ inline void PolygonGroup::SetJointWeight(int32 i, int32 j, float32 _v)
 
 inline void PolygonGroup::SetIndex(int32 i, int32 index)
 {
-    if(indexFormat == EIF_16)
+    if (indexFormat == EIF_16)
         reinterpret_cast<uint16*>(indexArray)[i] = uint16(index);
     else
         reinterpret_cast<uint32*>(indexArray)[i] = uint32(index);
@@ -316,7 +316,7 @@ inline eIndexFormat PolygonGroup::GetIndexFormat() const
 {
     return indexFormat;
 }
-    
+
 inline void PolygonGroup::GetCoord(int32 i, Vector3& _v)
 {
     _v = GetVertexData(i, vertexArray);

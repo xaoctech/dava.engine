@@ -1,9 +1,14 @@
 #include "UnitTests/UnitTests.h"
+
+#include "Asset/Asset.h"
+#include "Asset/AssetManager.h"
 #include "Base/BaseTypes.h"
+#include "Engine/Engine.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/Image/Image.h"
 #include "Render/Image/LibPVRHelper.h"
 #include "Render/Texture.h"
+#include "Render/TextureAssetLoader.h"
 #include "Render/TextureDescriptor.h"
 #include "Logger/Logger.h"
 
@@ -71,7 +76,6 @@ bool Prepare(const Map<const eGPUFamily, TextureData>& textureData, const Vector
         }
 
         const TextureData& data = textureData.at(gpu);
-
         ScopedPtr<Image> image(Image::Create(data.width, data.height, data.pixelFormat));
         FilePath savePathname = descriptor->CreateMultiMipPathnameForGPU(gpu);
 
@@ -96,14 +100,15 @@ DAVA_TESTCLASS (TextureLoadingTest)
 {
     DAVA_TEST (Loading)
     {
-        const Vector<eGPUFamily> originalGPULoadingOrder = Texture::GetGPULoadingOrder();
+        TextureAssetLoader* loader = GetEngineContext()->assetManager->GetAssetLoader<TextureAssetLoader>();
+        const Vector<eGPUFamily> originalGPULoadingOrder = loader->GetGPULoadingOrder();
 
         TLTestDetails::ErrorsCounter counter;
         Logger::AddCustomOutput(&counter);
         SCOPE_EXIT
         {
             Logger::RemoveCustomOutput(&counter);
-            Texture::SetGPULoadingOrder(originalGPULoadingOrder);
+            loader->SetGPULoadingOrder(originalGPULoadingOrder);
         };
 
         const Map<const eGPUFamily, TLTestDetails::TextureData> testData =
@@ -114,25 +119,28 @@ DAVA_TESTCLASS (TextureLoadingTest)
         TEST_VERIFY(TLTestDetails::Prepare(testData, { eGPUFamily::GPU_POWERVR_IOS }));
 
         { // create and release texture for single GPU
-            Texture::SetGPULoadingOrder({ eGPUFamily::GPU_POWERVR_IOS });
+            loader->SetGPULoadingOrder({ eGPUFamily::GPU_POWERVR_IOS });
 
             const TLTestDetails::TextureData& textureData = testData.at(eGPUFamily::GPU_POWERVR_IOS);
-            ScopedPtr<Texture> texture(Texture::CreateFromFile(TLTestDetails::texturePathname));
+
+            Texture::PathKey key(TLTestDetails::texturePathname);
+            Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
             TEST_VERIFY(texture->IsPinkPlaceholder() == false);
-            TEST_VERIFY(texture->GetWidth() == textureData.width);
-            TEST_VERIFY(texture->GetHeight() == textureData.height);
+            TEST_VERIFY(texture->width == textureData.width);
+            TEST_VERIFY(texture->height == textureData.height);
 
             TEST_VERIFY(counter.errorsCount == 0);
         }
 
         { // create and release texture for single GPU
-            Texture::SetGPULoadingOrder({ eGPUFamily::GPU_POWERVR_ANDROID, eGPUFamily::GPU_POWERVR_IOS });
+            loader->SetGPULoadingOrder({ eGPUFamily::GPU_POWERVR_ANDROID, eGPUFamily::GPU_POWERVR_IOS });
 
             const TLTestDetails::TextureData& textureData = testData.at(eGPUFamily::GPU_POWERVR_IOS);
-            ScopedPtr<Texture> texture(Texture::CreateFromFile(TLTestDetails::texturePathname));
+            Texture::PathKey key(TLTestDetails::texturePathname);
+            Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
             TEST_VERIFY(texture->IsPinkPlaceholder() == false);
-            TEST_VERIFY(texture->GetWidth() == textureData.width);
-            TEST_VERIFY(texture->GetHeight() == textureData.height);
+            TEST_VERIFY(texture->width == textureData.width);
+            TEST_VERIFY(texture->height == textureData.height);
 
             TEST_VERIFY(counter.errorsCount == 0);
         }

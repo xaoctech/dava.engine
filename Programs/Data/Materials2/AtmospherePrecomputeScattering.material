@@ -1,0 +1,6 @@
+RenderTechnique:
+    Shader: "~res:/Materials2/ShadersShared/atmosphere-precompute"
+    SupportedRenderFlows: ["all"]
+    Passes:
+        PrecomputeScattering:
+            UniqueDefines: ["PRECOMPUTE_SCATTERING"]

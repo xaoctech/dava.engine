@@ -7,6 +7,7 @@
 #include "Concurrency/Mutex.h"
 #include "FileSystem/FilePath.h"
 #include "Functional/Function.h"
+#include "MemoryManager/MemoryProfiler.h"
 #include "Render/Texture.h"
 #include "Render/RenderBase.h"
 #include "Render/RHI/rhi_Type.h"
@@ -15,6 +16,7 @@ namespace DAVA
 {
 class TextureAssetLoader final : public AbstractAssetLoader
 {
+    DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_TEXTURE)
 public:
     TextureAssetLoader();
 
@@ -35,6 +37,7 @@ public:
     static uint32 GetBaseMipMap();
 
 private:
+    static bool LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Vector<RefPtr<Image>>& images);
     AssetFileInfo GetPathKeyFileInfo(const Any& assetKey) const;
     void LoadPathKeyAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMsg) const;
     Vector<String> GetPathKeyDependsOn(const AssetBase* asset) const;

@@ -54,5 +54,4 @@ void SkinnedMesh::Load(KeyedArchive* archive, SerializationContext* serializatio
         }
     }
 }
-
 }

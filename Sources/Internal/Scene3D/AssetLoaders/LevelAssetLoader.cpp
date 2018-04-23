@@ -46,7 +46,7 @@ size_t LevelEntityKeyHash(const Any& v)
 {
     const LevelEntity::Key& key = v.Get<LevelEntity::Key>();
 
-    size_t seed;
+    size_t seed = 0;
     HashCombine(seed, key.level);
     HashCombine(seed, key.entityIndex);
 

@@ -61,11 +61,14 @@ void QuadRenderer::RenderClear(const QuadRenderer::Options& options)
     DVASSERT(options.dstRect.dx != 0 && options.dstRect.dy != 0);
     DVASSERT(options.srcTexSize.x != 0 && options.srcTexSize.y != 0);
     DVASSERT(options.dstTexSize.x != 0 && options.dstTexSize.y != 0);
+    for (uint32 dstTextureIndex = 0; dstTextureIndex < rhi::MAX_RENDER_TARGET_COUNT; ++dstTextureIndex)
+    {
+        passConfig.colorBuffer[dstTextureIndex].texture = options.dstTextures[dstTextureIndex];
+        passConfig.colorBuffer[dstTextureIndex].loadAction = options.dstLoadActions[dstTextureIndex];
+        passConfig.colorBuffer[dstTextureIndex].textureFace = options.dstTextureFaces[dstTextureIndex];
+        passConfig.colorBuffer[dstTextureIndex].textureLevel = options.dstTextureLevels[dstTextureIndex];
+    }
     passConfig.viewport = rhi::Viewport(uint32(options.dstRect.x), uint32(options.dstRect.y), uint32(options.dstRect.dx), uint32(options.dstRect.dy));
-    passConfig.colorBuffer[0].loadAction = options.loadAction;
-    passConfig.colorBuffer[0].texture = options.dstTexture;
-    passConfig.colorBuffer[0].textureFace = options.textureFace;
-    passConfig.colorBuffer[0].textureLevel = options.textureLevel;
     passConfig.priority = PRIORITY_MAIN_3D + options.renderPassPriority;
 
     DAVA_PROFILER_GPU_RENDER_PASS(passConfig, options.renderPassName);
@@ -75,7 +78,7 @@ void QuadRenderer::RenderClear(const QuadRenderer::Options& options)
     {
         rhi::BeginRenderPass(renderPass);
         rhi::BeginPacketList(packetList);
-        rhi::EndPacketList(packetList);
+        rhi::EndPacketList(packetList, options.syncObject);
         rhi::EndRenderPass(renderPass);
     }
 }
@@ -87,10 +90,14 @@ void QuadRenderer::Render(const QuadRenderer::Options& options)
     DVASSERT(options.srcTexSize.x != 0 && options.srcTexSize.y != 0);
     DVASSERT(options.dstTexSize.x != 0 && options.dstTexSize.y != 0);
     passConfig.viewport = rhi::Viewport(uint32(options.dstRect.x), uint32(options.dstRect.y), uint32(options.dstRect.dx), uint32(options.dstRect.dy));
-    passConfig.colorBuffer[0].loadAction = options.loadAction;
-    passConfig.colorBuffer[0].texture = options.dstTexture;
-    passConfig.colorBuffer[0].textureFace = options.textureFace;
-    passConfig.colorBuffer[0].textureLevel = options.textureLevel;
+
+    for (uint32 dstTextureIndex = 0; dstTextureIndex < rhi::MAX_RENDER_TARGET_COUNT; ++dstTextureIndex)
+    {
+        passConfig.colorBuffer[dstTextureIndex].texture = options.dstTextures[dstTextureIndex];
+        passConfig.colorBuffer[dstTextureIndex].loadAction = options.dstLoadActions[dstTextureIndex];
+        passConfig.colorBuffer[dstTextureIndex].textureFace = options.dstTextureFaces[dstTextureIndex];
+        passConfig.colorBuffer[dstTextureIndex].textureLevel = options.dstTextureLevels[dstTextureIndex];
+    }
     passConfig.priority = PRIORITY_MAIN_3D + options.renderPassPriority;
     passConfig.name = options.renderPassName;
 
@@ -143,7 +150,7 @@ void QuadRenderer::Render(const QuadRenderer::Options& options)
             rhi::AddPacket(packetList, rectPacket);
         }
 
-        rhi::EndPacketList(packetList);
+        rhi::EndPacketList(packetList, options.syncObject);
         rhi::EndRenderPass(renderPass);
     }
 }

@@ -25,6 +25,7 @@
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/DecalComponent.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
+#include <Scene3D/Components/VTDecalComponent.h>
 #include <Scene3D/Components/PostEffectDebugComponent.h>
 #include <Scene3D/Scene.h>
 
@@ -41,6 +42,7 @@ DebugDrawSystem::DebugDrawSystem(Scene* scene)
     drawComponentFunctionsMap[Type::Instance<WindComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawWindNode);
     drawComponentFunctionsMap[Type::Instance<GeoDecalComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
     drawComponentFunctionsMap[Type::Instance<DecalComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
+    drawComponentFunctionsMap[Type::Instance<VTDecalComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawDecals);
     drawComponentFunctionsMap[Type::Instance<LightComponent>()] = Bind(&DebugDrawSystem::DrawLightNode, this, DAVA::_1, false);
     drawComponentFunctionsMap[Type::Instance<PostEffectDebugComponent>()] = MakeFunction(this, &DebugDrawSystem::DrawPostEffects);
 }
@@ -547,10 +549,9 @@ void DebugDrawSystem::DrawSwitchesWithDifferentLods(Entity* entity)
     }
 }
 
-void DebugDrawSystem::DrawDecal(const Matrix4& transform, const AABBox3& box, GeoDecalManager::Mapping mapping)
+void DebugDrawSystem::DrawDecal(const Matrix4& transform, const AABBox3& box, GeoDecalManager::Mapping mapping, const Color& baseColor)
 {
     RenderHelper::eDrawType dt = RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
-    Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);
     Color accentColor(1.0f, 1.0f, 0.5f, 1.0f);
 
     Vector3 boxCenter = box.GetCenter();
@@ -593,7 +594,7 @@ void DebugDrawSystem::DrawDecals(Entity* entity)
 
         DVASSERT(decal != nullptr);
 
-        DrawDecal(entity->GetWorldTransform(), decal->GetBoundingBox(), decal->GetConfig().mapping);
+        DrawDecal(entity->GetWorldTransform(), decal->GetBoundingBox(), decal->GetConfig().mapping, Color(0.5f, 0.25f, 0.5f, 1.0f));
     }
 
     componentsCount = entity->GetComponentCount<DecalComponent>();
@@ -602,7 +603,16 @@ void DebugDrawSystem::DrawDecals(Entity* entity)
         DecalComponent* decal = entity->GetComponent<DecalComponent>(i);
         DVASSERT(decal != nullptr);
         const Vector3& size = decal->GetLocalSize();
-        DrawDecal(entity->GetWorldTransform(), AABBox3(-size, size), GeoDecalManager::Mapping::PLANAR);
+        DrawDecal(entity->GetWorldTransform(), AABBox3(-size, size), GeoDecalManager::Mapping::PLANAR, Color(1.0f, 0.5f, 0.25f, 1.0f));
+    }
+
+    componentsCount = entity->GetComponentCount<VTDecalComponent>();
+    for (uint32 i = 0; i < componentsCount; ++i)
+    {
+        VTDecalComponent* decal = entity->GetComponent<VTDecalComponent>(i);
+        DVASSERT(decal != nullptr);
+        const Vector3& size = decal->GetLocalSize();
+        DrawDecal(entity->GetWorldTransform(), AABBox3(-size, size), GeoDecalManager::Mapping::PLANAR, Color(0.25f, 1.0f, 0.5f, 1.0f));
     }
 }
 

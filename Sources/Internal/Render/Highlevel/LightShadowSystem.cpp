@@ -514,11 +514,11 @@ void LightShadowSystem::DrawDebug(RenderSystem* renderSystem)
 
         QuadRenderer::Options options;
         options.material = debugMaterial;
-        options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+        options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
         options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER);
         options.srcTexSize = Vector2(static_cast<float>(shadowmapSize.dx), static_cast<float>(shadowmapSize.dy));
         options.srcRect = Rect2f(0.0f, 0.0f, static_cast<float>(shadowmapSize.dx), static_cast<float>(shadowmapSize.dy));
-        options.dstTexture = rhi::HTexture();
+        options.dstTextures[0] = rhi::HTexture();
         options.dstTexSize = Vector2(dstWidth, dstHeight);
 
         float scaleX = std::min(1.0f, options.srcTexSize.dx / options.srcTexSize.dy);
@@ -566,11 +566,11 @@ void LightShadowSystem::DrawDebug(RenderSystem* renderSystem)
 
         QuadRenderer::Options options;
         options.material = debugMaterial;
-        options.loadAction = rhi::LoadAction::LOADACTION_LOAD;
+        options.dstLoadActions[0] =rhi::LoadAction::LOADACTION_LOAD;
         options.srcTexture = Renderer::GetRuntimeTextures().GetDynamicTexture(RuntimeTextures::TEXTURE_POINT_SHADOW_MAP);
         options.srcTexSize = Vector2(static_cast<float>(shadowmapSize.dx), static_cast<float>(shadowmapSize.dy));
         options.srcRect = Rect2f(0.0f, 0.0f, static_cast<float>(shadowmapSize.dx), static_cast<float>(shadowmapSize.dy));
-        options.dstTexture = rhi::HTexture();
+        options.dstTextures[0] = rhi::HTexture();
         options.dstTexSize = Vector2(dstWidth, dstHeight);
         options.dstRect = Rect2f(gap, gap, dstSize, dstSize);
         options.renderPassPriority = -150;

@@ -2,11 +2,11 @@
 #include "TArc/Controls/PropertyPanel/PropertyModelExtensions.h"
 #include "TArc/Controls/PropertyPanel/TimerUpdater.h"
 #include "TArc/Controls/PropertyPanel/BaseComponentValue.h"
+#include "TArc/Controls/PropertyPanel/SimpleModifyExtension.h"
 #include "TArc/Controls/ReflectedButton.h"
 #include "TArc/Controls/QtBoxLayouts.h"
-#include "Tarc/WindowSubSystem/UI.h"
+#include "TArc/WindowSubSystem/UI.h"
 #include "TArc/Utils/ReflectionHelpers.h"
-#include "TArc/Utils/QtDelayedExecutor.h"
 #include "TArc/DataProcessing/SettingsNode.h"
 
 #include <Reflection/ReflectionRegistrator.h>
@@ -83,54 +83,6 @@ public:
         return std::unique_ptr<BaseComponentValue>(std::move(componentValue));
     }
 };
-
-class SettingsModifyExt : public ModifyExtension
-{
-public:
-    SettingsModifyExt(std::weak_ptr<PropertiesView::Updater> updater_)
-        : updater(updater_)
-    {
-    }
-
-    void BeginBatch(const String& text, uint32 commandCount) override
-    {
-    }
-    void ProduceCommand(const std::shared_ptr<PropertyNode>& node, const Any& newValue) override
-    {
-        ProduceCommand(node->field, newValue);
-    }
-
-    void ProduceCommand(const Reflection::Field& object, const Any& newValue) override
-    {
-        object.ref.SetValueWithCast(newValue);
-        UpdateView();
-    }
-
-    void Exec(std::unique_ptr<Command>&& command) override
-    {
-        command->Redo();
-        UpdateView();
-    }
-
-    void EndBatch() override
-    {
-    }
-
-private:
-    void UpdateView()
-    {
-        executor.DelayedExecute([this]() {
-            std::shared_ptr<PropertiesView::Updater> u = updater.lock();
-            if (u != nullptr)
-            {
-                u->update.Emit(PropertiesView::FullUpdate);
-            }
-        });
-    }
-
-    std::weak_ptr<PropertiesView::Updater> updater;
-    QtDelayedExecutor executor;
-};
 } // namespace SettingsDialogDetails
 
 SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
@@ -156,7 +108,7 @@ SettingsDialog::SettingsDialog(const Params& params_, QWidget* parent)
     view = new PropertiesView(propertiesViewParams);
     view->RegisterExtension(std::make_shared<SettingsDialogDetails::ExposeSettingsNodeExt>());
     view->RegisterExtension(std::make_shared<SettingsDialogDetails::SettingsEditorCreatorExt>());
-    view->RegisterExtension(std::make_shared<SettingsDialogDetails::SettingsModifyExt>(std::weak_ptr<PropertiesView::Updater>(updater)));
+    view->RegisterExtension(std::make_shared<SimpleModifyExtension>(std::weak_ptr<PropertiesView::Updater>(updater)));
     view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dlgLayout->addWidget(view);
 

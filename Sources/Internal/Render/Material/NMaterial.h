@@ -98,12 +98,6 @@ class RenderVariantInstance
 
 class NMaterial : public DataNode, public AssetListener
 {
-    // this classed need access to be able to generate
-    // dynamic introspection for NMaterial class
-    friend class NMaterialStateDynamicFlagsInsp;
-    friend class NMaterialStateDynamicPropertiesInsp;
-    friend class NMaterialStateDynamicTexturesInsp;
-
     static Set<NMaterial*> allMaterialSet;
 
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_NMATERIAL)
@@ -117,7 +111,7 @@ public:
     };
 
     NMaterial(FXDescriptor::eType type = FXDescriptor::TYPE_LEGACY);
-    ~NMaterial();
+    ~NMaterial() override;
 
     void Load(KeyedArchive* archive, SerializationContext* serializationContext) override;
     void Save(KeyedArchive* archive, SerializationContext* serializationContext) override;
@@ -148,7 +142,9 @@ public:
     void RemoveProperty(const FastName& propName);
     void SetPropertyValue(const FastName& propName, const float32* propData);
     bool HasLocalProperty(const FastName& propName);
+    bool HasEffectiveProperty(const FastName& propName);
     rhi::ShaderProp::Type GetLocalPropType(const FastName& propName);
+    rhi::ShaderProp::Type GetEffectivePropType(const FastName& propName);
     uint32 GetLocalPropArraySize(const FastName& propName);
     const float32* GetLocalPropValue(const FastName& propName);
     const float32* GetEffectivePropValue(const FastName& propName);
@@ -161,6 +157,8 @@ public:
     bool HasLocalTexture(const FastName& slotName);
     Asset<Texture> GetLocalTexture(const FastName& slotName);
     Asset<Texture> GetEffectiveTexture(const FastName& slotName);
+    MaterialTextureInfo* GetLocalTextureInfo(const FastName& slotName);
+    MaterialTextureInfo* GetEffectiveTextureInfo(const FastName& slotName);
 
     void CollectLocalTextures(Set<MaterialTextureInfo*>& collection) const;
     void CollectActiveLocalTextures(Set<MaterialTextureInfo*>& collection) const;
@@ -254,15 +252,9 @@ private:
     MaterialConfig& GetMutableCurrentConfig();
     MaterialConfig& GetMutableConfig(uint32 index);
 
-private:
-    uint32 GetMaterialTypeInsp() const
-    {
-        return static_cast<uint32>(materialType);
-    }
-    void SetMaterialTypeInsp(uint32)
-    {
-    }
+    const FastName& GetActiveVariantName() const;
 
+private:
     // config time
     FastName materialName;
     FastName qualityGroup;
@@ -291,17 +283,11 @@ private:
     bool needRebuildTextures = true;
     bool needRebuildVariants = true;
 
-public:
-    INTROSPECTION(NMaterial,
-                  PROPERTY("materialName", "Material name", GetMaterialName, SetMaterialName, I_VIEW | I_EDIT)
-                  PROPERTY("materialType", InspDesc("Material Type", GlobalEnumMap<FXDescriptor::eType>::Instance()), GetMaterialTypeInsp, SetMaterialTypeInsp, I_VIEW)
-                  PROPERTY("configName", "Config name", GetCurrentConfigName, SetCurrentConfigName, I_VIEW | I_EDIT)
-                  PROPERTY("configId", "Current config", GetCurrentConfigIndex, SetCurrentConfigIndex, I_VIEW | I_EDIT)
-                  PROPERTY("fxName", "FX Name", GetLocalFXName, SetFXName, I_VIEW | I_EDIT)
-                  PROPERTY("qualityGroup", "Quality group", GetQualityGroup, SetQualityGroup, I_VIEW | I_EDIT)
-                  DYNAMIC(localFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_EDIT | I_VIEW)
-                  DYNAMIC(localProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_EDIT | I_VIEW)
-                  DYNAMIC(localTextures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_EDIT | I_VIEW))
+    friend class NMaterialStateDynamicFlagsInsp;
+    friend class NMaterialStateDynamicPropertiesInsp;
+    friend class NMaterialStateDynamicTexturesInsp;
+
+    friend class NMaterialBaseStructureWrapper;
 
     DAVA_VIRTUAL_REFLECTION(NMaterial, DataNode);
 };
@@ -335,10 +321,12 @@ void NMaterial::SetMaterialName(const FastName& name)
 {
     materialName = name;
 }
+
 const FastName& NMaterial::GetMaterialName() const
 {
     return materialName;
 }
+
 uint32 NMaterial::GetRenderLayerID() const
 {
     if (activeVariantInstance)
@@ -346,6 +334,7 @@ uint32 NMaterial::GetRenderLayerID() const
     else
         return static_cast<uint32>(-1);
 }
+
 uint32 NMaterial::GetSortingKey() const
 {
     return sortingKey;

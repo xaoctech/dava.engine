@@ -145,6 +145,7 @@ void LibraryWidget::SetupFileTypes()
     allFiles.filter << "*.sc2";
     allFiles.filter << "*.level";
     allFiles.filter << "*.prefab";
+    allFiles.filter << "*.mat";
     allFiles.filter << sourceImagesList;
 
     LibraryWidgetDetail::fileTypeValues.reserve(10);
@@ -157,7 +158,8 @@ void LibraryWidget::SetupFileTypes()
            << "*.obj"
            << "*.sc2"
            << "*.level"
-           << "*.prefab";
+           << "*.prefab"
+           << "*.mat";
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Models", models));
 
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Source Textures", sourceImagesList));
@@ -169,6 +171,7 @@ void LibraryWidget::SetupFileTypes()
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("DAE", "*.dae"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("SC2", "*.sc2"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Prefab", "*.prefab"));
+    LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("Material", "*.mat"));
     LibraryWidgetDetail::fileTypeValues.push_back(LibraryWidgetDetail::FileType("TEX", QString("*") + DAVA::TextureDescriptor::GetDescriptorExtension().c_str()));
 
     for (auto formatType : DAVA::TextureDescriptor::sourceTextureTypes)

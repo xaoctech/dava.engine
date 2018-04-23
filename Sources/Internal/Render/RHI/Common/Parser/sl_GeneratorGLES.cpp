@@ -283,7 +283,6 @@ bool GLESGenerator::Generate(const HLSLTree* tree_, GLSLVersion _version, Target
     writer.WriteLine(0, "");
     writer.WriteLine(0, "// per api bindings");
     writer.WriteLine(0, "#define ndcToUvMapping vec4(0.5, 0.5, 0.5, 0.5)"); // vec4(0.5, -0.5, 0.5, 0.5) - for non GL
-    writer.WriteLine(0, "#define ndcToZMapping vec2(0.5, 0.5)"); // vec2(1.0, 0.0) for non GL
     writer.WriteLine(0, "#define centerPixelMapping vec2(0.0, 0.0)"); // vec2(0.5, 0.5) for dx9
     writer.WriteLine(0, "");
 

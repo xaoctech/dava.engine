@@ -122,6 +122,7 @@ void Mesh::SetJointTargets(RenderBatch* batch, const JointTargets& targets)
     {
         uint32 dataIndex = uint32(jointTargetsData.size());
         jointTargetsData.emplace_back();
+        prevJointTargetsData.emplace_back();
 
         uint32 targetsCount = uint32(targets.size());
         jointTargetsData.back().first = targets;

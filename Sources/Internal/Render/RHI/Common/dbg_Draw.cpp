@@ -455,6 +455,7 @@ DbgDraw::Buffer<Vertex, Prim>::flush_batched_2d(rhi::HPacketList batch_buf)
             case Vertex_PC::Format:
                 batch.renderPipelineState = dd->_pc_pipeline_state;
                 batch.vertexConst[0] = dd->_pc_const;
+                batch.depthStencilState = dd->_ptc_depth_state;
                 rhi::UpdateConstBuffer4fv(dd->_pc_const, 0, ortho.data, 4);
                 break;
 

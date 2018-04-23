@@ -353,6 +353,9 @@ void ReflectedPropertyModel::SetObjects(Vector<Reflection> objects)
         ReflectedPropertyItem* regularTreeItem = nullptr;
         for (Reflection& obj : objects)
         {
+            if (obj.IsValid() == false)
+                continue;
+
             Reflection::Field field(String("Regular Tree"), std::move(obj), nullptr);
             std::shared_ptr<PropertyNode> regularTreeRootNode = childCreator.CreateRoot(std::move(field));
             if (regularTreeItem == nullptr)

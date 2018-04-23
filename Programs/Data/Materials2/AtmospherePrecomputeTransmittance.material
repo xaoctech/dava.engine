@@ -1,0 +1,6 @@
+RenderTechnique:
+    Shader: "~res:/Materials2/ShadersShared/atmosphere-precompute"
+    SupportedRenderFlows: ["all"]
+    Passes:
+        PrecomputeTransmittance:
+            UniqueDefines: ["PRECOMPUTE_TRANSMITTANCE"]

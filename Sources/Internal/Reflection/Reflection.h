@@ -17,7 +17,7 @@
 // #include "Reflection/ReflectedStructure.h"
 
 /** \defgroup reflection Reflection
-    TODO: detailed description 
+    TODO: detailed description
 */
 
 /**
@@ -79,6 +79,7 @@ namespace DAVA
 class ReflectedMeta;
 class ValueWrapper;
 class StructureWrapper;
+class StructureWrapperDefault;
 
 /**
     \ingroup reflection
@@ -98,7 +99,7 @@ struct ReflectionBase : Type::Seed
     virtual const ReflectedType* Dava__GetReflectedType() const = 0;
 };
 
-/** 
+/**
     \ingroup reflection
     Holds reflected type information linked to appropriate runtime object.
 
@@ -106,7 +107,7 @@ struct ReflectionBase : Type::Seed
     Obtained Reflection allows to perform a number of operation over linked object:
     - get or set value from/to the object at runtime
     - introspect the object - its fields, methods, enumerations at runtime.
- 
+
         +---------------+
         | ReflectedType |
         +---------------+
@@ -149,6 +150,8 @@ public:
     bool HasMethods() const;
     AnyFn GetMethod(const String& key) const;
     Vector<Method> GetMethods(MetaPredicate pred = nullptr) const;
+
+    static StructureWrapperDefault* GetDefaultStructureWrapper();
 
     void Dump(std::ostream& out, size_t deep = 0) const;
 

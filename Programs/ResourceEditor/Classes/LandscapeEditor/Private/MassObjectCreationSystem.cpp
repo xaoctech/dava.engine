@@ -26,7 +26,8 @@ void MassObjectCreationSystem::RegisterEntity(DAVA::Entity* entity)
     if (createdObjectComponent != nullptr)
     {
         DAVA::Entity* layer = entity->GetParent();
-        DVASSERT(layer == GetScene() || layer->GetComponent<MassObjectCreationLayer>());
+        //STREAMING_COMPLETE
+        //DVASSERT(layer == GetScene() || layer->GetComponent<MassObjectCreationLayer>());
         layersToCreatedObjects[layer].insert(entity);
     }
 }

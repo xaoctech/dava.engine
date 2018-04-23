@@ -27,6 +27,13 @@ enum eLandscapeHeightBlendMode
     LandscapeBlendLinear
 };
 
+enum eDecorationDecalMaskMode
+{
+    DecorationDecalGeneric = 0,
+    DecorationDecalMaskOnly,
+    DecorationDecalCustomIndex,
+};
+
 ENUM_DECLARE(eNormalBlendMode)
 {
     ENUM_ADD(NormalBlendUDN);
@@ -51,15 +58,23 @@ ENUM_DECLARE(eLandscapeHeightBlendMode)
     ENUM_ADD(LandscapeBlendLinear);
 }
 
+ENUM_DECLARE(eDecorationDecalMaskMode)
+{
+    ENUM_ADD(DecorationDecalGeneric);
+    ENUM_ADD(DecorationDecalMaskOnly);
+    ENUM_ADD(DecorationDecalCustomIndex);
+}
+
 namespace DAVA
 {
 namespace NMaterialStateDynamicFlagsInspDetails
 {
-Array<FastName, 3> enumProps =
+Array<FastName, 4> enumProps =
 { {
 NMaterialFlagName::FLAG_NORMAL_BLEND_MODE,
 NMaterialFlagName::FLAG_ALBEDO_TINT_BLEND_MODE,
-NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT
+NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT,
+NMaterialFlagName::FLAG_DECORATION_DECAL_MASK,
 } };
 }
 ///////////////////////////////////////////////////////////////////////////
@@ -126,6 +141,7 @@ Vector<FastName> NMaterialStateDynamicFlagsInsp::MembersList(const DynamicData& 
         ret.emplace_back(NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT);
         ret.emplace_back(NMaterialFlagName::FLAG_RGBM_INPUT);
         ret.emplace_back(NMaterialFlagName::FLAG_FULL_NORMAL);
+        ret.emplace_back(NMaterialFlagName::FLAG_DECORATION_DECAL_MASK);
     }
 
     return ret;
@@ -145,6 +161,10 @@ InspDesc NMaterialStateDynamicFlagsInsp::MemberDesc(const DynamicData& ddata, co
     else if (member == NMaterialFlagName::FLAG_BLEND_LANDSCAPE_HEIGHT)
     {
         descr.enumMap = GlobalEnumMap<eLandscapeHeightBlendMode>::Instance();
+    }
+    else if (member == NMaterialFlagName::FLAG_DECORATION_DECAL_MASK)
+    {
+        descr.enumMap = GlobalEnumMap<eDecorationDecalMaskMode>::Instance();
     }
     return descr;
 }

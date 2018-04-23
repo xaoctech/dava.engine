@@ -26,6 +26,7 @@ RenderTechnique:
             UniqueDefines: ["IB_REFLECTIONS_PREPARE"]
         ForwardPassWithCombine:
             SupportedRenderFlows: ["TileBasedHDRForward"]
+            UniqueDefines: ["FOWARD_WITH_COMBINE"]        
             Shader: "~res:/Materials2/Shaders/landscape/landscape"
         ShadowCascadePass:
             SupportedRenderFlows: ["all"]

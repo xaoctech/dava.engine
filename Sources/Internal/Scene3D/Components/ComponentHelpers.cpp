@@ -1,20 +1,24 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 
 #include "Particles/ParticleEmitter.h"
+#include "Render/Highlevel/BillboardRenderObject.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Landscape.h"
+#include "Render/Highlevel/Mesh.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
-#include "Render/Highlevel/Mesh.h"
 #include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 #include "Scene3D/Components/AnimationComponent.h"
+#include "Scene3D/Components/BillboardComponent.h"
 #include "Scene3D/Components/CameraComponent.h"
 #include "Scene3D/Components/Controller/SnapToLandscapeControllerComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Components/DecalComponent.h"
 #include "Scene3D/Components/GeoDecalComponent.h"
 #include "Scene3D/Components/GeoDecalComponent.h"
+#include "Scene3D/Components/LandscapeComponent.h"
 #include "Scene3D/Components/LightComponent.h"
+#include "Scene3D/Components/MeshComponent.h"
 #include "Scene3D/Components/MotionComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"
@@ -27,8 +31,6 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/VTDecalComponent.h"
-#include "Scene3D/Components/MeshComponent.h"
-#include "Scene3D/Components/LandscapeComponent.h"
 #include "Scene3D/Components/WaveComponent.h"
 #include "Scene3D/Components/Waypoint/EdgeComponent.h"
 #include "Scene3D/Components/Waypoint/PathComponent.h"
@@ -105,6 +107,12 @@ RenderObject* GetRenderObject(const Entity* fromEntity)
             object = speedTreeComponent->GetSpeedTreeObject();
         }
 
+        BillboardComponent* billboardComponent = fromEntity->GetComponent<BillboardComponent>();
+        if (billboardComponent)
+        {
+            object = billboardComponent->GetBillboard();
+        }
+
         LandscapeComponent* landscapeComponent = fromEntity->GetComponent<LandscapeComponent>();
         if (landscapeComponent)
         {
@@ -134,6 +142,10 @@ Vector<RenderObject*> GetRenderObjects(const Entity* fromEntity)
         componentCount = fromEntity->GetComponentCount(Type::Instance<SpeedTreeComponent>());
         for (uint32 i = 0; i < componentCount; ++i)
             result.emplace_back(fromEntity->GetComponent<SpeedTreeComponent>(i)->GetSpeedTreeObject());
+
+        componentCount = fromEntity->GetComponentCount(Type::Instance<BillboardComponent>());
+        for (uint32 i = 0; i < componentCount; ++i)
+            result.emplace_back(fromEntity->GetComponent<BillboardComponent>(i)->GetBillboard());
 
         componentCount = fromEntity->GetComponentCount(Type::Instance<LandscapeComponent>());
         for (uint32 i = 0; i < componentCount; ++i)
@@ -182,6 +194,16 @@ Vector<std::pair<Entity*, RenderObject*>> GetRenderObjects(const SortedEntityCon
             }
         }
 
+        componentCount = entityFamily->GetComponentsCount(Type::Instance<BillboardComponent>());
+        if (componentCount > 0u)
+        {
+            for (Entity* entity : pair.second)
+            {
+                for (uint32 i = 0; i < componentCount; ++i)
+                    result.emplace_back(entity, entity->GetComponent<BillboardComponent>(i)->GetBillboard());
+            }
+        }
+
         componentCount = entityFamily->GetComponentsCount(Type::Instance<LandscapeComponent>());
         if (componentCount > 0u)
         {
@@ -206,6 +228,8 @@ RenderObject* GetRenderObject(const Component* fromComponent)
             return static_cast<const MeshComponent*>(fromComponent)->GetMesh();
         else if (fromComponent->GetType()->Is<SpeedTreeComponent>())
             return static_cast<const SpeedTreeComponent*>(fromComponent)->GetSpeedTreeObject();
+        else if (fromComponent->GetType()->Is<BillboardComponent>())
+            return static_cast<const BillboardComponent*>(fromComponent)->GetBillboard();
         else if (fromComponent->GetType()->Is<LandscapeComponent>())
             return static_cast<const LandscapeComponent*>(fromComponent)->GetLandscape();
     }

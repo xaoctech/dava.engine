@@ -3,6 +3,8 @@
 
 #include "Classes/Qt/TextureBrowser/TextureConvertor.h"
 
+#include <Render/Image/ImageConvert.h>
+
 #include <REPlatform/Global/StringConstants.h>
 #include <REPlatform/Scene/Utils/ImageTools.h>
 
@@ -55,7 +57,7 @@ void TileTexturePreviewWidget::Clear()
 
 void TileTexturePreviewWidget::AddTexture(DAVA::Image* previewTexture)
 {
-    DVASSERT(previewTexture->GetPixelFormat() == DAVA::FORMAT_RGBA8888);
+    DVASSERT(previewTexture->GetPixelFormat() == DAVA::FORMAT_RGBA8888 || DAVA::ImageConvert::CanConvertFromTo(previewTexture->GetPixelFormat(), DAVA::FORMAT_RGBA8888));
 
     bool blocked = signalsBlocked();
     blockSignals(true);

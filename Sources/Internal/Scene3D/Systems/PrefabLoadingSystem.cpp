@@ -103,13 +103,12 @@ void PrefabLoadingSystem::Process(float32 delta)
 
     PrefabSingleComponent* prefabSingleComponent = GetScene()->GetSingletonComponent<PrefabSingleComponent>();
 
-    for (PrefabComponent* prefabComponent : prefabSingleComponent->changedPrefabComponent)
+    UnorderedSet<PrefabComponent*> changedPrefabs = std::move(prefabSingleComponent->changedPrefabComponent);
+    for (PrefabComponent* prefabComponent : changedPrefabs)
     {
         RemoveComponent(prefabComponent->GetEntity(), prefabComponent);
         AddComponent(prefabComponent->GetEntity(), prefabComponent);
     }
-
-    prefabSingleComponent->changedPrefabComponent.clear();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PrefabLoadingSystem)

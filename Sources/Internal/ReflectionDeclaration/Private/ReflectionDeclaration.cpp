@@ -41,6 +41,7 @@
 #include "Scene3D/Components/LightmapDataComponent.h"
 #include "Scene3D/Components/LightRenderComponent.h"
 #include "Scene3D/Components/MeshComponent.h"
+#include "Scene3D/Components/BillboardComponent.h"
 #include "Scene3D/Components/MotionComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/PostEffectComponent.h"
@@ -419,6 +420,7 @@ void RegisterPermanentNames()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PostEffectDebugComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PrefabComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MeshComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BillboardComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LandscapeComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LightmapDataComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LightmapComponent);

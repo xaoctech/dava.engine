@@ -206,144 +206,6 @@ bool IsLoadAvailable(const TextureDescriptor* descriptor, eGPUFamily requestedGP
     return true;
 }
 
-bool LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Vector<RefPtr<Image>>& images)
-{
-    DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
-
-    DVASSERT(requestedGPU != GPU_INVALID);
-
-    if (!IsLoadAvailable(descriptor, requestedGPU))
-    {
-        Logger::Error("[TextureAssetLoader::LoadImages] Load not available: invalid requested GPU family (%s)", GlobalEnumMap<eGPUFamily>::Instance()->ToString(requestedGPU));
-
-        //GFX_COMPLETE -- hack to load hdr textures on devices
-        //return false;
-        requestedGPU = GPU_ORIGIN;
-    }
-
-    uint32 baseMipMap = TextureAssetLoader::GetBaseMipMap();
-    ImageSystem::LoadingParams params;
-    params.baseMipmap = baseMipMap;
-    params.firstMipmapIndex = 0;
-    params.minimalWidth = Texture::MINIMAL_WIDTH;
-    params.minimalHeight = Texture::MINIMAL_HEIGHT;
-
-    Vector<Image*> loadedImages;
-
-    if (descriptor->IsCubeMap() && (!GPUFamilyDescriptor::IsGPUForDevice(requestedGPU)))
-    {
-        Vector<FilePath> facePathes;
-        descriptor->GetFacePathnames(facePathes);
-
-        PixelFormat imagesFormat = FORMAT_INVALID;
-        for (uint32 faceIndex = 0; faceIndex < Texture::CUBE_FACE_COUNT; ++faceIndex)
-        {
-            const FilePath& currentfacePath = facePathes[faceIndex];
-            if (currentfacePath.IsEmpty())
-            {
-                continue;
-            }
-
-            Vector<Image*> faceImages;
-            ImageSystem::Load(currentfacePath, faceImages, params);
-
-            if (faceImages.empty())
-            {
-                Logger::Error("[TextureAssetLoader::LoadImages] Cannot open file %s", currentfacePath.GetAbsolutePathname().c_str());
-                return false;
-            }
-
-            if (FORMAT_INVALID == imagesFormat)
-            {
-                imagesFormat = faceImages.front()->format;
-            }
-            else if (imagesFormat != faceImages.front()->format)
-            {
-                Logger::Error("[TextureAssetLoader::LoadImages] Face(%s) has different pixel format(%s)", currentfacePath.GetAbsolutePathname().c_str(),
-                              PixelFormatDescriptor::GetPixelFormatString(faceImages.front()->format));
-                return false;
-            }
-
-            for (Image* img : faceImages)
-            {
-                img->cubeFaceID = faceIndex;
-            }
-
-            if (descriptor->GetGenerateMipMaps())
-            {
-                Vector<Image*> mipmapsImages = faceImages.front()->CreateMipMapsImages();
-                loadedImages.insert(loadedImages.begin(), mipmapsImages.begin(), mipmapsImages.end());
-
-                for (Image* img : faceImages)
-                {
-                    SafeRelease(img);
-                }
-            }
-            else
-            {
-                loadedImages.insert(loadedImages.begin(), faceImages.begin(), faceImages.end());
-            }
-        }
-    }
-    else
-    {
-        Vector<FilePath> singleMipFiles;
-        bool hasSingleMipFiles = descriptor->CreateSingleMipPathnamesForGPU(requestedGPU, singleMipFiles);
-        if (hasSingleMipFiles)
-        {
-            uint32 singleMipFilesCount = static_cast<uint32>(singleMipFiles.size());
-            for (uint32 index = baseMipMap; index < singleMipFilesCount; ++index)
-            {
-                params.baseMipmap = 0;
-                eErrorCode loadingCode = ImageSystem::Load(singleMipFiles[index], loadedImages, params);
-                if (loadingCode == eErrorCode::SUCCESS)
-                {
-                    ++params.firstMipmapIndex;
-                }
-            }
-
-            params.baseMipmap = Max(static_cast<int32>(baseMipMap) - static_cast<int32>(singleMipFilesCount), 0);
-        }
-
-        FilePath multipleMipPathname = descriptor->CreateMultiMipPathnameForGPU(requestedGPU);
-        ImageSystem::Load(multipleMipPathname, loadedImages, params);
-        ImageSystem::EnsurePowerOf2Images(loadedImages);
-    }
-
-    if (!AreImagesCorrectForTexture(loadedImages))
-    {
-        return false;
-    }
-
-    if (!CheckAndFixImageFormat(loadedImages))
-    {
-        Logger::Error("[TextureAssetLoader::LoadImages] cannot create texture from images because of wrong image format");
-        return false;
-    }
-
-    if (loadedImages.size() == 1 && descriptor->GetGenerateMipMaps())
-    {
-        Image* img = loadedImages.front();
-        loadedImages = img->CreateMipMapsImages(descriptor->dataSettings.GetIsNormalMap());
-        SafeRelease(img);
-
-        if (loadedImages.empty())
-        {
-            Logger::Error("[TextureAssetLoader::LoadImages] Can't create mipmaps for GPU (%s) for %s", GlobalEnumMap<eGPUFamily>::Instance()->ToString(requestedGPU), descriptor->pathname.GetStringValue().c_str());
-            return false;
-        }
-    }
-
-    images.reserve(loadedImages.size());
-    for (Image* img : loadedImages)
-    {
-        images.push_back(RefPtr<Image>::ConstructWithRetain(img));
-        SafeRelease(img);
-    }
-
-    return true;
-}
-
 struct TextureRawData
 {
     PixelFormat format;
@@ -522,7 +384,7 @@ bool TextureAssetLoader::ExistsOnDisk(const Any& assetKey) const
 
 AssetBase* TextureAssetLoader::CreateAsset(const Any& assetKey) const
 {
-    DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
+    DAVA_MEMORY_PROFILER_ALLOC_SCOPE(ALLOC_POOL_TEXTURE);
     Texture* result = new Texture(assetKey);
     Function<void(void)> callback = Bind(&TextureAssetLoader::RestoreRenderResource, this, result);
     Renderer::GetSignals().needRestoreResources.Connect(result, callback);
@@ -603,6 +465,145 @@ uint32 TextureAssetLoader::GetBaseMipMap()
     return QualitySettingsSystem::Instance()->GetCurrentQualityValue<QualityGroup::Textures>().baseLevel;
 }
 
+bool TextureAssetLoader::LoadImages(const TextureDescriptor* descriptor, eGPUFamily requestedGPU, Vector<RefPtr<Image>>& images)
+{
+    using namespace TextureAssetLoaderDetails;
+    DAVA_MEMORY_PROFILER_ALLOC_SCOPE(ALLOC_POOL_TEXTURE);
+    DVASSERT(requestedGPU != GPU_INVALID);
+
+    if (!IsLoadAvailable(descriptor, requestedGPU))
+    {
+        Logger::Error("[Texture::LoadImages] Load not available: invalid requested GPU family (%s)", GlobalEnumMap<eGPUFamily>::Instance()->ToString(requestedGPU));
+
+        //GFX_COMPLETE -- hack to load hdr textures on devices
+        //return false;
+        requestedGPU = GPU_ORIGIN;
+    }
+
+    uint32 baseMipMap = TextureAssetLoader::GetBaseMipMap();
+    ImageSystem::LoadingParams params;
+    params.baseMipmap = baseMipMap;
+    params.firstMipmapIndex = 0;
+    params.minimalWidth = Texture::MINIMAL_WIDTH;
+    params.minimalHeight = Texture::MINIMAL_HEIGHT;
+
+    Vector<Image*> loadedImages;
+
+    if (descriptor->IsCubeMap() && (!GPUFamilyDescriptor::IsGPUForDevice(requestedGPU)))
+    {
+        Vector<FilePath> facePathes;
+        descriptor->GetFacePathnames(facePathes);
+
+        PixelFormat imagesFormat = FORMAT_INVALID;
+        for (uint32 faceIndex = 0; faceIndex < Texture::CUBE_FACE_COUNT; ++faceIndex)
+        {
+            const FilePath& currentfacePath = facePathes[faceIndex];
+            if (currentfacePath.IsEmpty())
+            {
+                continue;
+            }
+
+            Vector<Image*> faceImages;
+            ImageSystem::Load(currentfacePath, faceImages, params);
+
+            if (faceImages.empty())
+            {
+                Logger::Error("[Texture::LoadImages] Cannot open file %s", currentfacePath.GetAbsolutePathname().c_str());
+                return false;
+            }
+
+            if (FORMAT_INVALID == imagesFormat)
+            {
+                imagesFormat = faceImages.front()->format;
+            }
+            else if (imagesFormat != faceImages.front()->format)
+            {
+                Logger::Error("[Texture::LoadImages] Face(%s) has different pixel format(%s)", currentfacePath.GetAbsolutePathname().c_str(),
+                              PixelFormatDescriptor::GetPixelFormatString(faceImages.front()->format));
+                return false;
+            }
+
+            for (Image* img : faceImages)
+            {
+                img->cubeFaceID = faceIndex;
+            }
+
+            if (descriptor->GetGenerateMipMaps())
+            {
+                Vector<Image*> mipmapsImages = faceImages.front()->CreateMipMapsImages();
+                loadedImages.insert(loadedImages.begin(), mipmapsImages.begin(), mipmapsImages.end());
+
+                for (Image* img : faceImages)
+                {
+                    SafeRelease(img);
+                }
+            }
+            else
+            {
+                loadedImages.insert(loadedImages.begin(), faceImages.begin(), faceImages.end());
+            }
+        }
+    }
+    else
+    {
+        Vector<FilePath> singleMipFiles;
+        bool hasSingleMipFiles = descriptor->CreateSingleMipPathnamesForGPU(requestedGPU, singleMipFiles);
+        if (hasSingleMipFiles)
+        {
+            uint32 singleMipFilesCount = static_cast<uint32>(singleMipFiles.size());
+            for (uint32 index = baseMipMap; index < singleMipFilesCount; ++index)
+            {
+                params.baseMipmap = 0;
+                eErrorCode loadingCode = ImageSystem::Load(singleMipFiles[index], loadedImages, params);
+                if (loadingCode == eErrorCode::SUCCESS)
+                {
+                    ++params.firstMipmapIndex;
+                }
+            }
+
+            params.baseMipmap = Max(static_cast<int32>(baseMipMap) - static_cast<int32>(singleMipFilesCount), 0);
+        }
+
+        FilePath multipleMipPathname = descriptor->CreateMultiMipPathnameForGPU(requestedGPU);
+        ImageSystem::Load(multipleMipPathname, loadedImages, params);
+
+        ImageSystem::EnsurePowerOf2Images(loadedImages);
+    }
+
+    if (!AreImagesCorrectForTexture(loadedImages))
+    {
+        return false;
+    }
+
+    if (!CheckAndFixImageFormat(loadedImages))
+    {
+        Logger::Error("[Texture::LoadImages] cannot create texture from images because of wrong image format");
+        return false;
+    }
+
+    if (loadedImages.size() == 1 && descriptor->GetGenerateMipMaps())
+    {
+        Image* img = loadedImages.front();
+        loadedImages = img->CreateMipMapsImages(descriptor->dataSettings.GetIsNormalMap());
+        SafeRelease(img);
+
+        if (loadedImages.empty())
+        {
+            Logger::Error("[Texture::LoadImages] Can't create mipmaps for GPU (%s) for %s", GlobalEnumMap<eGPUFamily>::Instance()->ToString(requestedGPU), descriptor->pathname.GetStringValue().c_str());
+            return false;
+        }
+    }
+
+    images.reserve(loadedImages.size());
+    for (Image* img : loadedImages)
+    {
+        images.push_back(RefPtr<Image>::ConstructWithRetain(img));
+        SafeRelease(img);
+    }
+
+    return true;
+}
+
 AssetFileInfo TextureAssetLoader::GetPathKeyFileInfo(const Any& assetKey) const
 {
     DVASSERT(assetKey.CanGet<Texture::PathKey>());
@@ -628,7 +629,7 @@ void TextureAssetLoader::LoadPathKeyAsset(Asset<AssetBase> asset, File* file, bo
     return;
 #else
 
-    DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
+    DAVA_MEMORY_PROFILER_ALLOC_SCOPE(ALLOC_POOL_TEXTURE);
 
     if (key.path.IsEmpty() || (key.path.GetType() == FilePath::PATH_IN_MEMORY))
     {
@@ -733,7 +734,7 @@ void TextureAssetLoader::LoadUniqueTextureKeyAsset(Asset<AssetBase> asset, File*
 
     using namespace TextureAssetLoaderDetails;
 
-    DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
+    DAVA_MEMORY_PROFILER_ALLOC_SCOPE(ALLOC_POOL_TEXTURE);
 
     const Any& assetKey = asset->GetKey();
 
@@ -805,7 +806,7 @@ AssetFileInfo TextureAssetLoader::GetRenderTargetTextureKeyFileInfo(const Any& a
 
 void TextureAssetLoader::LoadRenderTargetTextureKeyAsset(Asset<AssetBase> asset, File* file, bool reloading, String& errorMsg) const
 {
-    DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
+    DAVA_MEMORY_PROFILER_ALLOC_SCOPE(ALLOC_POOL_TEXTURE);
 
     const Texture::RenderTargetTextureKey& key = asset->GetKey().Get<Texture::RenderTargetTextureKey>();
 
@@ -1002,10 +1003,10 @@ void TextureAssetLoader::MakePink(const Asset<Texture>& asset, rhi::TextureType 
 
 bool TextureAssetLoader::LoadFromImage(const Asset<Texture>& asset, eGPUFamily gpu) const
 {
-    DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
+    DAVA_MEMORY_PROFILER_ALLOC_SCOPE(ALLOC_POOL_TEXTURE);
 
     Vector<RefPtr<Image>> images;
-    if (TextureAssetLoaderDetails::LoadImages(asset->texDescriptor, gpu, images) == false)
+    if (LoadImages(asset->texDescriptor, gpu, images) == false)
     {
         Logger::Warning("[TextureAssetLoader::LoadFromImage] failed for GPU %s", GlobalEnumMap<eGPUFamily>::Instance()->ToString(gpu));
         return false;
@@ -1030,7 +1031,7 @@ bool TextureAssetLoader::LoadFromImage(const Asset<Texture>& asset, eGPUFamily g
 
 void TextureAssetLoader::RestoreRenderResource(Texture* texture) const
 {
-    DAVA_MEMORY_PROFILER_CLASS_ALLOC_SCOPE();
+    DAVA_MEMORY_PROFILER_ALLOC_SCOPE(ALLOC_POOL_TEXTURE);
     using namespace TextureAssetLoaderDetails;
 
     if ((!texture->handle.IsValid()) || (!NeedRestoreTexture(texture->handle)))

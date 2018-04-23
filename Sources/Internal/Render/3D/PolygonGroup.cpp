@@ -551,14 +551,14 @@ void PolygonGroup::LoadPolygonData(KeyedArchive* keyedArchive, SerializationCont
     }
 
     indexFormat = eIndexFormat(keyedArchive->GetInt32("indexFormat"));
-    
+
     int32 indexDataSize = keyedArchive->GetByteArraySize("indices");
     if (indexDataSize != indexCount * INDEX_FORMAT_SIZE[indexFormat])
     {
         Logger::Error("PolygonGroup::Load - Something is going wrong, size of index array is incorrect");
         return;
     }
-    
+
     SafeDeleteArray(indexArray);
     indexArray = new uint8[indexDataSize];
     const uint8* archiveData = keyedArchive->GetByteArray("indices");

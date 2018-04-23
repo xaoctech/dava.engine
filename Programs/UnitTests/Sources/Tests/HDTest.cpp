@@ -1,5 +1,8 @@
 #include "UnitTests/UnitTests.h"
+
+#include "Asset/AssetManager.h"
 #include "Base/BaseTypes.h"
+#include "Engine/Engine.h"
 #include "Render/Image/Image.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/Texture.h"
@@ -28,14 +31,15 @@ public:
 
 void TestTexture(const FilePath& pathname, uint32 expectedSize)
 {
-    ScopedPtr<Texture> texture(Texture::CreateFromFile(pathname));
+    Texture::PathKey key(pathname);
+    Asset<Texture> texture = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     TEST_VERIFY(texture);
     if (!texture)
     {
         return;
     }
-    TEST_VERIFY(texture->GetWidth() == texture->GetHeight());
-    TEST_VERIFY(texture->GetWidth() == expectedSize);
+    TEST_VERIFY(texture->width == texture->height);
+    TEST_VERIFY(texture->height == expectedSize);
 }
 
 bool LoadImagesAsInTexture(const FilePath& pathname, eGPUFamily gpu, uint32 expectedSize, uint32 baseMipMap, bool expectSingleMipmapFile)

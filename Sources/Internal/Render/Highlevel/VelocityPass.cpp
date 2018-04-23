@@ -22,12 +22,6 @@ VelocityPass::VelocityPass()
 
     Size2i textureSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_VELOCITY);
 
-    Texture::RenderTargetTextureKey key;
-    key.width = textureSize.dx;
-    key.height = textureSize.dy;
-    key.format = PixelFormat::FORMAT_RG16F;
-
-    rt = GetEngineContext()->assetManager->GetAsset<Texture>(key, AssetManager::SYNC);
     passConfig.colorBuffer[0].texture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_VELOCITY);
     passConfig.colorBuffer[0].loadAction = rhi::LOADACTION_CLEAR;
     passConfig.colorBuffer[0].storeAction = rhi::STOREACTION_STORE;
@@ -82,8 +76,6 @@ VelocityPass::VelocityPass()
     ds.depthWriteEnabled = false;
     ds.depthFunc = rhi::CMP_ALWAYS;
     depthStencilState = rhi::AcquireDepthStencilState(ds);
-
-    GetPrimaryWindow()->draw.Connect(this, &VelocityPass::DebugDraw2D);
 }
 
 VelocityPass::~VelocityPass()
@@ -148,12 +140,6 @@ void VelocityPass::DrawVisibilityArray(RenderSystem* renderSystem, RenderHierarc
     previousVP = renderSystem->GetMainCamera()->GetViewProjMatrix(invertProjection, passConfig.usesReverseDepth);
 }
 
-void VelocityPass::DebugDraw2D(Window*)
-{
-    //if (debugDraw && rt != nullptr)
-    //    RenderSystem2D::Instance()->DrawTexture(rt, RenderSystem2D::DEFAULT_2D_TEXTURE_NOBLEND_MATERIAL, Color::White, Rect(50.0f, 270.0f, 256.f, 256.f));
-}
-
 void VelocityPass::InvalidateMaterials()
 {
     velocityMaterial->InvalidateRenderVariants();
@@ -177,6 +163,7 @@ void VelocityPass::SetDynamicParams(const RenderSystem* renderSystem)
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_VIEWPORT_OFFSET, &viewportOffset, reinterpret_cast<pointer_size>(&viewportOffset));
 
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_PREV_VIEW_PROJ, &previousVP, reinterpret_cast<pointer_size>(&previousVP));
+    SetNdcToZMapping();
 
     Size2i texSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_VELOCITY);
     Vector2 vSize(float32(texSize.dx), float32(texSize.dy));

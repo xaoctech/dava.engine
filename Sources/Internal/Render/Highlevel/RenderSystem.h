@@ -46,8 +46,7 @@ struct RenderSystemConfiguration
     bool allowAntialiasing = false;
     bool loadContent = false;
     bool storeDepth = false;
-    bool rescale = false; //upscale or DRR
-    bool forceRescale = false; //used to apply rescale even in 1 to 1 case - RE for debug draw
+    bool intermediateLDRBuffer = false;
     bool shouldRenderPickingPass = false; // is renderSystem should render a PickingPass
 };
 
@@ -163,7 +162,7 @@ private:
     void ConfigureActivePass();
 
     Texture::RenderTargetTextureKey GetFBOConfig() const;
-    void ConfigureFBOs(bool rescale, bool txaa);
+    void ConfigureFBOs();
 
 private:
     friend class RenderPass;
