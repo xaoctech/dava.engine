@@ -62,6 +62,8 @@ private:
     void NotifyListener(bool sendNotify, const Vector<Any>& fields = Vector<Any>());
     Reflection GetData() const;
 
+    void ClearCache();
+
 private:
     struct Impl;
     std::shared_ptr<Impl> impl;

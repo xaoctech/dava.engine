@@ -10,7 +10,10 @@
 
 namespace DAVA
 {
+namespace UILoadingScreenDetails
+{
 static const uint32 LOADING_THREAD_STACK_SIZE = 1024 * 1024; // 1 mb
+}
 
 UILoadingScreen::UILoadingScreen()
 {
@@ -48,7 +51,7 @@ void UILoadingScreen::OnActive()
         GetEngineContext()->uiControlSystem->LockInput();
 
         thread = Thread::Create(Message(this, &UILoadingScreen::ThreadMessage));
-        thread->SetStackSize(LOADING_THREAD_STACK_SIZE);
+        thread->SetStackSize(UILoadingScreenDetails::LOADING_THREAD_STACK_SIZE);
         thread->Start();
     }
 

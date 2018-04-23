@@ -1,10 +1,13 @@
 #include "LoadingTest.h"
 
+namespace LoadingTestDetails
+{
 static const uint32 LOADING_DELAY_FRAMES = 20;
 static const uint32 LOADING_THREAD_STACK_SIZE = 1024 * 1024; // 1 mb
 
 static const int32 FPS_LOADING = 10;
 static const int32 FPS_REGULAR = 60;
+}
 
 const String LoadingTest::TEST_NAME = "LoadingTest";
 
@@ -74,7 +77,7 @@ void LoadingTest::LoadThreadJob::Excecute()
                                    {
                                        LoadJob::Excecute();
                                    });
-    loadingThread->SetStackSize(LOADING_THREAD_STACK_SIZE);
+    loadingThread->SetStackSize(LoadingTestDetails::LOADING_THREAD_STACK_SIZE);
     loadingThread->Start();
 }
 
@@ -123,7 +126,7 @@ void LoadingTest::LoadResources()
 
     loadingText->SetText(UTF8Utils::EncodeToWideString(loadJobs.front()->GetJobText()));
 
-    loadingDelayFrames = LOADING_DELAY_FRAMES;
+    loadingDelayFrames = LoadingTestDetails::LOADING_DELAY_FRAMES;
 }
 
 void LoadingTest::UnloadResources()
@@ -136,12 +139,12 @@ void LoadingTest::UnloadResources()
 
 void LoadingTest::OnActive()
 {
-    Renderer::SetDesiredFPS(FPS_LOADING);
+    Renderer::SetDesiredFPS(LoadingTestDetails::FPS_LOADING);
 }
 
 void LoadingTest::OnInactive()
 {
-    Renderer::SetDesiredFPS(FPS_REGULAR);
+    Renderer::SetDesiredFPS(LoadingTestDetails::FPS_REGULAR);
 }
 
 void LoadingTest::Update(float32 timeElapsed)
@@ -152,13 +155,13 @@ void LoadingTest::Update(float32 timeElapsed)
         if (loadingDelayFrames == 0)
         {
             loadJobs.front()->Excecute();
-            loadingDelayFrames = LOADING_DELAY_FRAMES;
+            loadingDelayFrames = LoadingTestDetails::LOADING_DELAY_FRAMES;
         }
 
         if (!loadJobs.front()->IsExcecuted())
         {
             --loadingDelayFrames;
-            DVASSERT(loadingDelayFrames < LOADING_DELAY_FRAMES);
+            DVASSERT(loadingDelayFrames < LoadingTestDetails::LOADING_DELAY_FRAMES);
         }
 
         if (loadJobs.front()->IsFinished())

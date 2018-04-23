@@ -1,12 +1,15 @@
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 
-#include "Utils/Utils.h"
+#include <Functional/Function.h>
+#include <Utils/Utils.h>
 
 namespace DAVA
 {
 void DataWrappersProcessor::Shoutdown()
 {
+    std::for_each(wrappers.begin(), wrappers.end(), Bind(&DataWrapper::ClearCache, _1));
     wrappers.clear();
+    std::for_each(justCreatedWrappers.begin(), justCreatedWrappers.end(), Bind(&DataWrapper::ClearCache, _1));
     justCreatedWrappers.clear();
 }
 

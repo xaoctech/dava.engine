@@ -4,6 +4,7 @@
 #include "Classes/SceneManager/SceneManagerModule.h"
 #include "Classes/Selection/SelectionModule.h"
 
+#include <REPlatform/Commands/EntityAddCommand.h>
 #include <REPlatform/Commands/TransformCommand.h>
 #include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/DataNodes/SelectableGroup.h>
@@ -301,6 +302,45 @@ DAVA_TARC_TESTCLASS(SelectionModuleTest)
 
         .WillOnce(::testing::Invoke(stepClick))
         .WillOnce(::testing::Invoke(stepCheckSelectionWithSolidTrue))
+
+        .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::TearDownTest, this)))
+        .WillOnce(::testing::Return());
+    }
+
+    DAVA_TEST (SelectionByHotkey)
+    {
+        SetUpTest(true);
+        SceneEditor2* scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene().Get();
+        ScopedPtr<Entity> node1(new Entity());
+        scene->Exec(std::make_unique<EntityAddCommand>(node1, scene));
+        scene->Update(0.01f);
+
+        auto stepCheckUndo = [scene, node1]()
+        {
+            SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.IsEmpty());
+            TEST_VERIFY(selectionGroup.ContainsObject(node1.get()) == false);
+        };
+
+        auto stepCheckRedo = [scene, node1]()
+        {
+            SelectableGroup selectionGroup = scene->GetSystem<SelectionSystem>()->GetSelection();
+            TEST_VERIFY(selectionGroup.GetSize() == 1);
+            TEST_VERIFY(selectionGroup.ContainsObject(node1.get()));
+        };
+
+        ::testing::InSequence sequence;
+        SkipUIFrames();
+        EXPECT_CALL(*this, AfterWrappersSync())
+        .WillOnce(::testing::Invoke(stepCheckRedo))
+        .WillOnce(::testing::Invoke([scene]() { scene->Undo(); }))
+        .WillOnce(::testing::Invoke(stepCheckUndo))
+        .WillOnce(::testing::Invoke([scene]() { scene->Redo(); }))
+        .WillOnce(::testing::Invoke(stepCheckRedo))
+        .WillOnce(::testing::Invoke([this]() { QTest::keyClick(GetRenderWidgetTestTarget(), Qt::Key_Z, Qt::ControlModifier); }))
+        .WillOnce(::testing::Invoke(stepCheckUndo))
+        .WillOnce(::testing::Invoke([this]() { QTest::keyClick(GetRenderWidgetTestTarget(), Qt::Key_Z, Qt::ShiftModifier | Qt::ControlModifier); }))
+        .WillOnce(::testing::Invoke(stepCheckRedo))
 
         .WillOnce(::testing::Invoke(DAVA::Bind(&SelectionModuleTest::TearDownTest, this)))
         .WillOnce(::testing::Return());
