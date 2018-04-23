@@ -249,8 +249,8 @@ protected:
     void SetTessellationLevels(uint32 levels);
     uint32 GetTessellationLevels() const;
 
-    void SetTessellationHeight(float32 height);
-    float32 GetTessellationHeight() const;
+    void SetTessellationHalfRangeHeight(float32 height);
+    float32 GetTessellationHalfRangeHeight() const;
 
     void UpdateMaxSubdivisionLevel();
 
@@ -326,7 +326,7 @@ protected:
     uint32 heightmapMaxBaseLod = 0;
     uint32 maxTexturingLevel = 10;
     uint32 tessellationLevelCount = 3;
-    float32 tessellationHeight = 0.4f;
+    float32 tessellationHalfRangeHeight = 0.2f;
 
     LansdcapeRenderStats renderStats;
 
@@ -482,6 +482,11 @@ protected:
 
         Vector2 pivot;
         Vector2 circle;
+
+        float32 scale0 = 0.f;
+        float32 scale1 = 1.f;
+        float32 scaleDistance0 = 0.f;
+        float32 scaleDistance1 = 1.f;
 
         Vector3 normal;
         Vector3 tangent;

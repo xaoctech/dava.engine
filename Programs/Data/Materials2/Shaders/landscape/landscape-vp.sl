@@ -65,7 +65,7 @@ uniform sampler2D terraintexture;
 
 #if LANDSCAPE_USE_INSTANCING
 [auto][a] property float3 boundingBoxSize;
-[auto][a] property float tessellationHeight;
+[auto][a] property float tessellationHalfRangeHeight;
 #endif
 
 vertex_out vp_main(vertex_in input)
@@ -147,11 +147,11 @@ vertex_out vp_main(vertex_in input)
 #endif
 
 #if LANDSCAPE_MICRO_TESSELLATION
-    height += (microHeight - 0.5) * tessellationHeight / boundingBoxSize.z;
+    height += (microHeight - 0.5) * tessellationHalfRangeHeight * 2.0 / boundingBoxSize.z;
 
     #if LANDSCAPE_TESSELLATION_COLOR
     float heightDelta = 2.0 * (microHeight - 0.5);
-    output.vertexColor = float4(saturate(heightDelta), 0.0, saturate(-heightDelta), 1.0);
+    output.vertexColor = float4(saturate(heightDelta), 1.0 - abs(heightDelta), saturate(-heightDelta), 1.0);
     #endif
 #endif
 

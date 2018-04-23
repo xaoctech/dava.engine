@@ -75,7 +75,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(Landscape)
     .Field("debugDrawTessellation", &Landscape::IsDrawTessellationHeight, &Landscape::SetDrawTessellationHeight)[M::DisplayName("Debug draw Tessellation")]
     .Field("debugDisableDecoration", &Landscape::debugDisableDecoration)[M::DisplayName("Debug disable decoration")]
     .Field("tessellationLevelCount", &Landscape::GetTessellationLevels, &Landscape::SetTessellationLevels)[M::DisplayName("Tessellation Levels"), M::Range(0, Any(), 1)]
-    .Field("tessellationHeight", &Landscape::GetTessellationHeight, &Landscape::SetTessellationHeight)[M::DisplayName("Tessellation Height"), M::Range(0.f, 1.f, 0.01f)]
+    .Field("tessellationHalfRangeHeight", &Landscape::GetTessellationHalfRangeHeight, &Landscape::SetTessellationHalfRangeHeight)[M::DisplayName("Tessellation Half Range"), M::Range(0.f, 1.f, 0.01f)]
     .Field("layersCount", &Landscape::GetLayersCount, &Landscape::SetLayersCount)[M::DisplayName("Layers Count"), M::Range(1, 4, 1)]
     .Field("layerRenderers", &Landscape::GetTerrainLayerRenderers, &Landscape::SetTerrainLayerRenderers)[M::DisplayName("Layer Renderers"), M::ReadOnly()]
     .Field("landscapeMaterial", &Landscape::GetLandscapeMaterial, &Landscape::SetLandscapeMaterial)[M::DisplayName("Landscape Material"), M::ReadOnly()]
@@ -282,7 +282,7 @@ Landscape::Landscape()
 
     //GFX_COMPLETE
     //gap hard-coded now for tessellation. Later should be calculated accordion height of tessellation and decoration
-    subdivision->SetPatchBBoxGap(tessellationHeight, tessellationHeight);
+    subdivision->SetPatchBBoxGap(tessellationHalfRangeHeight, tessellationHalfRangeHeight);
 
     renderMode = RENDERMODE_NO_INSTANCING;
     if (rhi::DeviceCaps().isInstancingSupported && rhi::DeviceCaps().isVertexTextureUnitsSupported)
@@ -1716,7 +1716,7 @@ void Landscape::DrawLandscapeInstancing()
 
         if (!lockPagesUpdate)
         {
-            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_TESSELLATION_HEIGHT, &tessellationHeight, pointer_size(&tessellationHeight));
+            Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_TESSELLATION_HALF_RANGE, &tessellationHalfRangeHeight, pointer_size(&tessellationHalfRangeHeight));
             pageManager->ProcessRequests(subdivision, maxPagesUpdatePerFrame, LandscapePageRenderer::eLandscapeComponent::COMPONENT_TERRAIN);
             decorationPageManager->ProcessRequests(subdivision, maxPagesUpdatePerFrame, LandscapePageRenderer::eLandscapeComponent::COMPONENT_DECORATION);
         }
@@ -1901,7 +1901,7 @@ void Landscape::BindDynamicParameters(Camera* camera, RenderBatch* batch)
     if (heightmap)
     {
         Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_HEIGHTMAP_SIZE, heightmapSizeProperty.data, pointer_size(heightmapSizeProperty.data));
-        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_TESSELLATION_HEIGHT, &tessellationHeight, pointer_size(&tessellationHeight));
+        Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_TESSELLATION_HALF_RANGE, &tessellationHalfRangeHeight, pointer_size(&tessellationHalfRangeHeight));
     }
 }
 
@@ -1912,10 +1912,10 @@ void Landscape::PrepareToRender(Camera* camera)
 
     CheckQualitySettings();
 
-    if (currentDecorationData != nullptr && currentDecorationData->paramsChanged)
+    if (currentDecorationData != nullptr && currentDecorationData->IsParamsChanged())
     {
         RebuildDecoration();
-        currentDecorationData->paramsChanged = false;
+        currentDecorationData->MarkParamsUnchanged();
     }
 
     RenderObject::PrepareToRender(camera);
@@ -2122,7 +2122,7 @@ void Landscape::Save(KeyedArchive* archive, SerializationContext* serializationC
     archive->SetByteArrayAsType("bbox", bbox);
     archive->SetUInt32("layersCount", layersCount);
     archive->SetUInt32("tessellationLevelCount", tessellationLevelCount);
-    archive->SetFloat("tessellationHeight", tessellationHeight);
+    archive->SetFloat("tessellationHalfRangeHeight", tessellationHalfRangeHeight);
 
     for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
     {
@@ -2246,7 +2246,7 @@ void Landscape::Load(KeyedArchive* archive, SerializationContext* serializationC
     AABBox3 loadedBbox = archive->GetByteArrayAsType("bbox", AABBox3());
 
     tessellationLevelCount = archive->GetUInt32("tessellationLevelCount", tessellationLevelCount);
-    tessellationHeight = archive->GetFloat("tessellationHeight", tessellationHeight);
+    tessellationHalfRangeHeight = archive->GetFloat("tessellationHalfRangeHeight", tessellationHalfRangeHeight);
 
     settings[uint32(LandscapeQuality::Full)].Load(archive, serializationContext); //back-compatibility
     for (uint32 q = 0; q < uint32(LandscapeQuality::Count); ++q)
@@ -2403,14 +2403,14 @@ uint32 Landscape::GetTessellationLevels() const
     return tessellationLevelCount;
 }
 
-void Landscape::SetTessellationHeight(float32 height)
+void Landscape::SetTessellationHalfRangeHeight(float32 height)
 {
-    tessellationHeight = height;
+    tessellationHalfRangeHeight = height;
 }
 
-float32 Landscape::GetTessellationHeight() const
+float32 Landscape::GetTessellationHalfRangeHeight() const
 {
-    return tessellationHeight;
+    return tessellationHalfRangeHeight;
 }
 
 void Landscape::UpdateMaxSubdivisionLevel()
@@ -2891,7 +2891,8 @@ void Landscape::RebuildDecoration()
     vLayout.AddStream(rhi::VDF_PER_VERTEX);
     vLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
     vLayout.AddElement(rhi::VS_TEXCOORD, 0, rhi::VDT_FLOAT, 4); //uv, tint, radius
-    vLayout.AddElement(rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 4);
+    vLayout.AddElement(rhi::VS_TEXCOORD, 1, rhi::VDT_FLOAT, 4); //pivot
+    vLayout.AddElement(rhi::VS_TEXCOORD, 2, rhi::VDT_FLOAT, 4); //distance scale
     vLayout.AddElement(rhi::VS_NORMAL, 0, rhi::VDT_FLOAT, 3);
     vLayout.AddElement(rhi::VS_TANGENT, 0, rhi::VDT_FLOAT, 3);
     vLayout.AddElement(rhi::VS_BINORMAL, 0, rhi::VDT_FLOAT, 3);
@@ -2930,12 +2931,12 @@ void Landscape::RebuildDecoration()
         if (variationCount == 0 || layerMaterial == nullptr)
             continue;
 
-        bool collisionDetection = currentDecorationData->GetLayerCollisionDetection(layerIndex);
+        bool collisionDetection = currentDecorationData->layersParams[layerIndex].collisionDetection;
 
         Vector<Landscape::DecorationLevelItems> decorationLevelItems = collisionDetection ? GenerateCollisionFreeItems(layerIndex) : GenerateRandomItems(layerIndex);
 
-        bool tintFlag = currentDecorationData->GetLayerTint(layerIndex);
-        float32 tintHeight = currentDecorationData->GetLayerTintHeight(layerIndex);
+        bool tintFlag = currentDecorationData->layersParams[layerIndex].tint;
+        float32 tintHeight = currentDecorationData->layersParams[layerIndex].tintHeight;
         decorationBatches[layerIndex].resize(levelCount);
 
         for (uint32 levelIndex = 0; levelIndex < levelCount; ++levelIndex)
@@ -2952,17 +2953,23 @@ void Landscape::RebuildDecoration()
                 const DecorationVariationItems& variationItems = decorationLevelItems[levelIndex][v];
                 uint32 variationItemCount = uint32(variationItems.size());
 
-                float32 scaleMin = currentDecorationData->GetVariationScaleMin(layerIndex, v);
-                float32 scaleMax = currentDecorationData->GetVariationScaleMax(layerIndex, v);
-                float32 pitchMax = currentDecorationData->GetVariationPitchMax(layerIndex, v);
-                float32 collisionRadius = currentDecorationData->GetVariationCollisionRadius(layerIndex, v);
+                float32 scaleMin = currentDecorationData->layersParams[layerIndex].variations[v].scaleMin;
+                float32 scaleMax = currentDecorationData->layersParams[layerIndex].variations[v].scaleMax;
+                float32 pitchMax = currentDecorationData->layersParams[layerIndex].variations[v].pitchMax;
+                float32 collisionRadius = currentDecorationData->layersParams[layerIndex].variations[v].collisionRadius;
+
+                bool distanceScaleEnabled = currentDecorationData->layersParams[layerIndex].variations[v].distanceScale;
+                float32 nearScale = currentDecorationData->layersParams[layerIndex].variations[v].nearScale;
+                float32 farScale = currentDecorationData->layersParams[layerIndex].variations[v].farScale;
+                float32 nearDistance = currentDecorationData->layersParams[layerIndex].variations[v].nearDistance;
+                float32 farDistance = currentDecorationData->layersParams[layerIndex].variations[v].farDistance;
 
                 PolygonGroup* geometry = currentDecorationData->GetVariationGeometry(layerIndex, v);
                 geometryData.reserve(geometryData.size() + geometry->vertexCount * variationItemCount);
                 indexData.reserve(indexData.size() + geometry->indexCount * variationItemCount);
                 for (const DecorationItem& item : variationItems)
                 {
-                    float32 scale = scaleMin + (scaleMax - scaleMin) * GetRandomFloat(layerIndex);
+                    float32 scale = Min(scaleMin, scaleMax) + Abs(scaleMax - scaleMin) * GetRandomFloat(layerIndex);
 
                     Vector2 pivot;
                     float32 itemCircleRadius = 0.f;
@@ -2986,7 +2993,7 @@ void Landscape::RebuildDecoration()
                     float32 pitch = DegToRad(pitchMax * GetRandomFloat(layerIndex));
                     float32 rotation = GetRandomFloat(layerIndex) * PI_2;
 
-                    if (!currentDecorationData->GetVariationEnabled(layerIndex, v))
+                    if (!currentDecorationData->layersParams[layerIndex].variations[v].enabled)
                         continue;
 
                     Matrix4 rotationMx = Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), rotation) * Matrix4::MakeRotation(pitchAxis, pitch);
@@ -3012,6 +3019,11 @@ void Landscape::RebuildDecoration()
                         vx.circle = item.randomCircleCenter;
                         vx.radius = itemCircleRadius;
 
+                        vx.scale0 = distanceScaleEnabled ? nearScale : 1.f;
+                        vx.scale1 = distanceScaleEnabled ? farScale : 1.f;
+                        vx.scaleDistance0 = distanceScaleEnabled ? nearDistance : 0.f;
+                        vx.scaleDistance1 = distanceScaleEnabled ? farDistance : 1.f;
+
                         float32 tintValue = 0.f;
                         if (tintHeight > EPSILON)
                             tintValue = 1.f - Clamp(vx.position.z / tintHeight, 0.f, 1.f);
@@ -3031,11 +3043,11 @@ void Landscape::RebuildDecoration()
                     indexOffset += geometry->vertexCount;
                 }
 
-                if (currentDecorationData->GetVariationEnabled(layerIndex, v))
+                if (currentDecorationData->layersParams[layerIndex].variations[v].enabled)
                     decorationBatches[layerIndex][levelIndex].itemsCount += variationItemCount;
             }
 
-            uint8 layerMaskIndex = currentDecorationData->GetLayerMaskIndex(layerIndex);
+            uint8 layerMaskIndex = currentDecorationData->layersParams[layerIndex].index;
             if (!geometryData.empty() && !indexData.empty() && layerMaskIndex != 0u)
             {
                 rhi::VertexBuffer::Descriptor vbufferDesc;
@@ -3062,18 +3074,18 @@ void Landscape::RebuildDecoration()
                     Vector4(1.f, 1.f, 0.f, 1.f)
                 };
 
-                bool orientOnLandscape = currentDecorationData->GetLayerOrientOnLandscape(layerIndex) && tbnEnabled;
-                float32 layerOrientValue = currentDecorationData->GetLayerOrientValue(layerIndex);
+                bool orientOnLandscape = currentDecorationData->layersParams[layerIndex].orient && tbnEnabled;
+                float32 layerOrientValue = currentDecorationData->layersParams[layerIndex].orientValue;
                 float32 layerIndexValue = float32(layerMaskIndex);
 
                 NMaterial* material = layerMaterial->Clone();
-                material->SetFXName(currentDecorationData->GetLayerCullface(layerIndex) ? NMaterialName::DECORATION_CULLFACE : NMaterialName::DECORATION);
+                material->SetFXName(currentDecorationData->layersParams[layerIndex].cullface ? NMaterialName::DECORATION_CULLFACE : NMaterialName::DECORATION);
                 //material->AddProperty(FastName("baseColorScale"), levelColor[Min(levelIndex, 5u)].data, rhi::ShaderProp::TYPE_FLOAT4);
                 material->AddProperty(PARAM_DECORATION_DECORATION_INDEX, &layerIndexValue, rhi::ShaderProp::TYPE_FLOAT1);
                 material->AddProperty(PARAM_DECORATION_ORIENT_VALUE, &layerOrientValue, rhi::ShaderProp::TYPE_FLOAT1);
                 material->AddFlag(NMaterialFlagName::FLAG_VERTEX_COLOR, tintFlag ? 2 : 0);
                 material->AddFlag(FLAG_DECORATION_ORIENT_ON_LANDSCAPE, orientOnLandscape ? 1 : 0);
-                material->AddFlag(FLAG_DECORATION_GPU_RANDOMIZATION, currentDecorationData->GetLayerCollisionDetection(layerIndex) ? 2 : 1);
+                material->AddFlag(FLAG_DECORATION_GPU_RANDOMIZATION, currentDecorationData->layersParams[layerIndex].collisionDetection ? 2 : 1);
                 material->SetParent(decorationRuntimeMaterial);
                 material->SetRuntime(true);
 
@@ -3102,10 +3114,10 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateCollisionFreeItems(ui
     uint32 variationCount = currentDecorationData->GetVariationCount(layerIndex);
     for (uint32 v = 0; v < variationCount; ++v)
     {
-        DecorationCollisionGroupData& collisionGroup = collisionGroupInfo[currentDecorationData->GetVariationCollisionGroup(layerIndex, v)];
+        DecorationCollisionGroupData& collisionGroup = collisionGroupInfo[currentDecorationData->layersParams[layerIndex].variations[v].collisionGroup];
 
         collisionGroup.variations.emplace_back(v);
-        collisionGroup.maxDensity += currentDecorationData->GetVariationDensity(layerIndex, v);
+        collisionGroup.maxDensity += currentDecorationData->layersParams[layerIndex].variations[v].density;
     }
 
     for (auto& it : collisionGroupInfo)
@@ -3163,9 +3175,10 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateCollisionFreeItems(ui
 
             for (uint32 variation : groupData.variations)
             {
-                float32 varDensity = currentDecorationData->GetVariationDensity(layerIndex, variation);
-                float32 levelDensity0 = currentDecorationData->GetLevelDensity(layerIndex, variation, levelIndex);
-                float32 levelDensity1 = ((levelIndex + 1) == levelCount) ? 0.f : currentDecorationData->GetLevelDensity(layerIndex, variation, levelIndex + 1);
+                float32 varDensity = currentDecorationData->layersParams[layerIndex].variations[variation].density;
+                float32 levelDensity0 = currentDecorationData->layersParams[layerIndex].variations[variation].levelDensity[levelIndex];
+                float32 levelDensity1 = ((levelIndex + 1) == levelCount) ? 0.f : currentDecorationData->layersParams[layerIndex].variations[variation].levelDensity[levelIndex + 1];
+                DVASSERT(levelDensity0 >= levelDensity1);
                 float32 relativeDensity = levelDensity0 - levelDensity1;
 
                 float32 patchSize = GetLandscapeSize() / (1 << (currentDecorationData->GetBaseLevel() - levelIndex));
@@ -3185,7 +3198,7 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateCollisionFreeItems(ui
                 uint32 itemsLeft = uint32(groupItemCoords.size());
                 for (uint32 variation : groupData.variations)
                 {
-                    float32 varDensity = currentDecorationData->GetVariationDensity(layerIndex, variation);
+                    float32 varDensity = currentDecorationData->layersParams[layerIndex].variations[variation].density;
                     uint32 variationItemsCount = Min(uint32(std::roundf(itemsLeft * varDensity / groupData.maxDensity)), uint32(groupItemCoords.size()));
 
                     DecorationVariationItems& variationItems = levelItems[variation];
@@ -3229,9 +3242,11 @@ Vector<Landscape::DecorationLevelItems> Landscape::GenerateRandomItems(uint32 la
 
         for (uint32 variation = 0; variation < variationCount; ++variation)
         {
-            float32 varDensity = currentDecorationData->GetVariationDensity(layerIndex, variation);
-            float32 levelDensity0 = currentDecorationData->GetLevelDensity(layerIndex, variation, levelIndex);
-            float32 levelDensity1 = ((levelIndex + 1) == levelCount) ? 0.f : currentDecorationData->GetLevelDensity(layerIndex, variation, levelIndex + 1);
+            float32 varDensity = currentDecorationData->layersParams[layerIndex].variations[variation].density;
+            float32 levelDensity0 = currentDecorationData->layersParams[layerIndex].variations[variation].levelDensity[levelIndex];
+            ;
+            float32 levelDensity1 = ((levelIndex + 1) == levelCount) ? 0.f : currentDecorationData->layersParams[layerIndex].variations[variation].levelDensity[levelIndex + 1];
+            DVASSERT(levelDensity0 >= levelDensity1);
             float32 relativeDensity = levelDensity0 - levelDensity1;
 
             float32 patchSize = GetLandscapeSize() / (1 << (currentDecorationData->GetBaseLevel() - levelIndex));

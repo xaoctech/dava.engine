@@ -101,7 +101,7 @@ void InitDynamicParamNames()
 
         DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_DISTANT_DEPTH_VALUE] = FastName("distantDepthValue");
 
-        DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_TESSELLATION_HEIGHT] = FastName("tessellationHeight");
+        DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_TESSELLATION_HALF_RANGE] = FastName("tessellationHalfRangeHeight");
 
         DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_CAMERA_DYNAMIC_RANGE] = FastName("cameraDynamicRange");
         DYNAMIC_PARAM_NAMES[DynamicBindings::PARAM_CAMERA_TARGET_LUMINANCE] = FastName("cameraTargetLuminance");

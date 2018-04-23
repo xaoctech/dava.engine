@@ -45,10 +45,10 @@ uniform sampler2D albedoTile2;
 uniform sampler2D albedoTile3;
 
 [material][instance] property float4 tileDecorationIDs = float4(1.0, 2.0, 3.0, 4.0);
-[material][instance] property float4 materialsHeight = float4(0.2, 0.2, 0.2, 0.2);
-[material][instance] property float tilemaskHeight = 0.2;
+[material][instance] property float4 materialsHalfRangeHeight = float4(0.1, 0.1, 0.1, 0.1);
+[material][instance] property float tilemaskHalfRangeHeight = 0.1;
 
-[auto][a] property float tessellationHeight;
+[auto][a] property float tessellationHalfRangeHeight;
 
 #if BLEND_LANDSCAPE_HEIGHT
 struct BlendHeightRes
@@ -94,8 +94,8 @@ fragment_out fp_main(fragment_in input)
     float4 baseColorSample3 = tex2D(albedoTile3, input.texCoordTiled3);
 
     float4 tilemaskSample = tex2D(tilemask, input.texCoord);
-    float4 maskHeight = (tilemaskSample - 0.5) * tilemaskHeight;
-    maskHeight += materialsHeight * (float4(baseColorSample0.w, baseColorSample1.w, baseColorSample2.w, baseColorSample3.w) - 0.5);
+    float4 maskHeight = (tilemaskSample - 0.5) * tilemaskHalfRangeHeight * 2.0;
+    maskHeight += materialsHalfRangeHeight * 2.0 * (float4(baseColorSample0.w, baseColorSample1.w, baseColorSample2.w, baseColorSample3.w) - 0.5);
 
     float maxHeight = max(max(maskHeight.x, maskHeight.y), max(maskHeight.z, maskHeight.w));
     float4 indexMask = step(maxHeight, maskHeight);
@@ -138,17 +138,17 @@ fragment_out fp_main(fragment_in input)
         
     #if USE_PREVIOUS_LANDSCAPE_LAYER
         float4 prevLayerSample = tex2D(dynamicTextureSrc0, input.pageTexCoord);
-        float outputHeight = maxHeight / tessellationHeight + 0.5;
+        float outputHeight = maxHeight * 0.5 / tessellationHalfRangeHeight + 0.5;
         #if BLEND_LANDSCAPE_HEIGHT == 0
         float stepVal = step(outputHeight, prevLayerSample.w);
         output.albedo = lerp(float4(resultBaseColor, outputHeight), prevLayerSample, stepVal);
         #else // BLEND_LANDSCAPE_HEIGHT == 0
-        float prevLayerRestoredHeight = tessellationHeight * (prevLayerSample.w - 0.5f); // To make in one space with blending delta.
+        float prevLayerRestoredHeight = tessellationHalfRangeHeight * 2.0 * (prevLayerSample.w - 0.5f); // To make in one space with blending delta.
         BlendHeightRes layersBlend = BlendLandscape(prevLayerSample.xyz, prevLayerRestoredHeight, resultBaseColor, maxHeight, heightDelta);
         output.albedo = float4(layersBlend.blendColor.xyz, max(outputHeight, prevLayerSample.w));
         #endif //BLEND_LANDSCAPE_HEIGHT == 0
     #else //USE_PREVIOUS_LANDSCAPE_LAYER
-        output.albedo = float4(resultBaseColor, maxHeight / tessellationHeight + 0.5);
+        output.albedo = float4(resultBaseColor, maxHeight * 0.5 / tessellationHalfRangeHeight + 0.5);
     #endif // USE_PREVIOUS_LANDSCAPE_LAYER
     }
 #endif // DECORATION

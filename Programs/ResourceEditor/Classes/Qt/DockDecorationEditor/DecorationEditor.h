@@ -59,7 +59,7 @@ private slots:
 private:
     void SetupUI();
 
-    void MarkSceneChanged();
+    void MarkParamsChanged();
 
     void UpdateDecorationSettings();
     void UpdateLayerSettings();
@@ -99,6 +99,7 @@ private:
     QCheckBox* tintCheckBox = nullptr;
     QCheckBox* collisionCheckBox = nullptr;
     QCheckBox* enabledCheckBox = nullptr;
+    QCheckBox* distanceScaleCheckBox = nullptr;
     QDoubleSpinBox* orientEdit = nullptr;
     QDoubleSpinBox* tintHeightEdit = nullptr;
     QDoubleSpinBox* scaleMinEdit = nullptr;
@@ -106,6 +107,10 @@ private:
     QDoubleSpinBox* pitchMaxEdit = nullptr;
     QSpinBox* collisionGroupEdit = nullptr;
     QDoubleSpinBox* collisionRadiusEdit = nullptr;
+    QDoubleSpinBox* nearDistanceEdit = nullptr;
+    QDoubleSpinBox* farDistanceEdit = nullptr;
+    QDoubleSpinBox* nearScaleEdit = nullptr;
+    QDoubleSpinBox* farScaleEdit = nullptr;
     QDoubleSpinBox* densityEdit = nullptr;
 
     QModelIndexList selectedLayer;

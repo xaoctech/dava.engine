@@ -73,7 +73,7 @@ uniform sampler2D dynamicTextureSrc1;
 [material][instance] property float decalDecoIndex = 0.0;
 #endif
 
-[auto][a] property float tessellationHeight;
+[auto][a] property float tessellationHalfRangeHeight;
 
 fragment_out fp_main(fragment_in input)
 {
@@ -88,7 +88,7 @@ fragment_out fp_main(fragment_in input)
         
     #if DECAL_TYPE == DECAL_VT_GENERIC
         float alphaValue = decalNormalSample.w * input.value;
-        float heghtValue = (decalHeightRange.x + (decalHeightRange.y - decalHeightRange.x) * decalAlbedoSample.w) / tessellationHeight + 0.5;
+        float heghtValue = (decalHeightRange.x + (decalHeightRange.y - decalHeightRange.x) * decalAlbedoSample.w) * 0.5 / tessellationHalfRangeHeight + 0.5;
         float2 decalSpaceNormal = decalNormalSample.xy * 2.0 - 1.0;
         float2 decalRotatedNormal = (input.basis.xy * decalSpaceNormal.x + input.basis.zw * decalSpaceNormal.y) * 0.5 + 0.5;
         float roughnessValue = decalNormalSample.z;        

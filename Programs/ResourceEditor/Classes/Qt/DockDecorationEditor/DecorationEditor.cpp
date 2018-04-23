@@ -53,6 +53,7 @@ DecorationEditor::DecorationEditor(DAVA::ContextAccessor* contextAccessor_, DAVA
     connect(tintCheckBox, &QCheckBox::stateChanged, this, &DecorationEditor::OnCheckBoxChanged);
     connect(collisionCheckBox, &QCheckBox::stateChanged, this, &DecorationEditor::OnCheckBoxChanged);
     connect(enabledCheckBox, &QCheckBox::stateChanged, this, &DecorationEditor::OnCheckBoxChanged);
+    connect(distanceScaleCheckBox, &QCheckBox::stateChanged, this, &DecorationEditor::OnCheckBoxChanged);
 
     connect(layerIndexEdit, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &DecorationEditor::OnSpinBoxChanged);
     connect(orientEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
@@ -62,6 +63,10 @@ DecorationEditor::DecorationEditor(DAVA::ContextAccessor* contextAccessor_, DAVA
     connect(pitchMaxEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
     connect(collisionGroupEdit, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &DecorationEditor::OnSpinBoxChanged);
     connect(collisionRadiusEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
+    connect(nearDistanceEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
+    connect(nearScaleEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
+    connect(farDistanceEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
+    connect(farScaleEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
     connect(densityEdit, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &DecorationEditor::OnDoubleSpinBoxChanged);
 
     connect(densityTableModel, &QStandardItemModel::dataChanged, this, &DecorationEditor::OnDensityTableChanged);
@@ -109,7 +114,7 @@ void DecorationEditor::SetDecorationPath(const DAVA::FilePath& decorationPath)
     layerListWidget->selectionModel()->clearSelection();
 
     UpdateDecorationSettings();
-    MarkSceneChanged();
+    MarkParamsChanged();
 }
 
 bool DecorationEditor::HasDecorationData() const
@@ -117,8 +122,13 @@ bool DecorationEditor::HasDecorationData() const
     return decorationData != nullptr;
 }
 
-void DecorationEditor::MarkSceneChanged()
+void DecorationEditor::MarkParamsChanged()
 {
+    if (decorationData != nullptr)
+    {
+        decorationData->MarkParamsChanged();
+    }
+
     DAVA::DataContext* activeContext = contextAccessor->GetActiveContext();
     if (activeContext != nullptr)
     {
@@ -165,10 +175,9 @@ void DecorationEditor::OnSpinBoxChanged(int value)
     else if (obj == layerIndexEdit)
     {
         DAVA::uint32 layerIndex = selectedLayer.last().row();
-        decorationData->SetLayerMaskIndex(layerIndex, DAVA::uint8(value));
+        decorationData->layersParams[layerIndex].index = DAVA::uint8(value);
 
         UpdateLayerSettings();
-        MarkSceneChanged();
     }
     else if (obj == collisionGroupEdit)
     {
@@ -176,12 +185,12 @@ void DecorationEditor::OnSpinBoxChanged(int value)
         for (QModelIndex& index : selectedVariations)
         {
             DAVA::uint32 varIndex = DAVA::uint32(index.row());
-            decorationData->SetVariationCollisionGroup(layerIndex, varIndex, value);
+            decorationData->layersParams[layerIndex].variations[varIndex].collisionGroup = value;
         }
         UpdateVariationSettings();
     }
 
-    MarkSceneChanged();
+    MarkParamsChanged();
 }
 
 void DecorationEditor::OnCheckBoxChanged(int state)
@@ -201,28 +210,33 @@ void DecorationEditor::OnCheckBoxChanged(int state)
     QObject* obj = sender();
     if (obj == tintCheckBox)
     {
-        decorationData->SetLayerTint(layerIndex, value);
+        decorationData->layersParams[layerIndex].tint = value;
     }
     else if (obj == collisionCheckBox)
     {
-        decorationData->SetLayerCollisionDetection(layerIndex, value);
+        decorationData->layersParams[layerIndex].collisionDetection = value;
     }
     else if (obj == cullfaceCheckBox)
     {
-        decorationData->SetLayerCullface(layerIndex, value);
+        decorationData->layersParams[layerIndex].cullface = value;
     }
     else if (obj == orientCheckbox)
     {
-        decorationData->SetLayerOrientOnLandscape(layerIndex, value);
+        decorationData->layersParams[layerIndex].orient = value;
     }
     else if (obj == enabledCheckBox)
     {
         for (QModelIndex& index : selectedVariations)
-            decorationData->SetVariationEnabled(layerIndex, DAVA::uint32(index.row()), value);
+            decorationData->layersParams[layerIndex].variations[DAVA::uint32(index.row())].enabled = value;
+    }
+    else if (obj == distanceScaleCheckBox)
+    {
+        for (QModelIndex& index : selectedVariations)
+            decorationData->layersParams[layerIndex].variations[DAVA::uint32(index.row())].distanceScale = value;
     }
 
     UpdateLayerSettings();
-    MarkSceneChanged();
+    MarkParamsChanged();
 }
 
 void DecorationEditor::OnDoubleSpinBoxChanged(double valueDouble)
@@ -242,12 +256,12 @@ void DecorationEditor::OnDoubleSpinBoxChanged(double valueDouble)
     DAVA::uint32 layerIndex = selectedLayer.last().row();
     if (obj == orientEdit)
     {
-        decorationData->SetLayerOrientValue(layerIndex, value);
+        decorationData->layersParams[layerIndex].orientValue = value;
         UpdateLayerSettings();
     }
     else if (obj == tintHeightEdit)
     {
-        decorationData->SetLayerTintHeight(layerIndex, value);
+        decorationData->layersParams[layerIndex].tintHeight = value;
         UpdateLayerSettings();
     }
     else
@@ -257,20 +271,28 @@ void DecorationEditor::OnDoubleSpinBoxChanged(double valueDouble)
             DAVA::uint32 varIndex = DAVA::uint32(index.row());
 
             if (obj == densityEdit)
-                decorationData->SetVariationDensity(layerIndex, varIndex, value);
+                decorationData->layersParams[layerIndex].variations[varIndex].density = value;
             else if (obj == collisionRadiusEdit)
-                decorationData->SetVariationCollisionRadius(layerIndex, varIndex, value);
+                decorationData->layersParams[layerIndex].variations[varIndex].collisionRadius = value;
             else if (obj == scaleMinEdit)
-                decorationData->SetVariationScaleMin(layerIndex, varIndex, value);
+                decorationData->layersParams[layerIndex].variations[varIndex].scaleMin = value;
             else if (obj == scaleMaxEdit)
-                decorationData->SetVariationScaleMax(layerIndex, varIndex, value);
+                decorationData->layersParams[layerIndex].variations[varIndex].scaleMax = value;
             else if (obj == pitchMaxEdit)
-                decorationData->SetVariationPitchMax(layerIndex, varIndex, value);
+                decorationData->layersParams[layerIndex].variations[varIndex].pitchMax = value;
+            else if (obj == nearDistanceEdit)
+                decorationData->layersParams[layerIndex].variations[varIndex].nearDistance = value;
+            else if (obj == nearScaleEdit)
+                decorationData->layersParams[layerIndex].variations[varIndex].nearScale = value;
+            else if (obj == farDistanceEdit)
+                decorationData->layersParams[layerIndex].variations[varIndex].farDistance = value;
+            else if (obj == farScaleEdit)
+                decorationData->layersParams[layerIndex].variations[varIndex].farScale = value;
         }
         UpdateVariationSettings();
     }
 
-    MarkSceneChanged();
+    MarkParamsChanged();
 }
 
 void DecorationEditor::OnDensityTableChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles)
@@ -295,11 +317,26 @@ void DecorationEditor::OnDensityTableChanged(const QModelIndex& topLeft, const Q
         DAVA::uint32 level = DAVA::uint32(bottomRight.row());
         DAVA::float32 value = densityTableModel->data(bottomRight, Qt::UserRole).toFloat();
 
-        decorationData->SetLevelDensity(layerIndex, varIndex, level, value);
+        if (level == 0)
+            value = 1.f;
+
+        for (DAVA::uint32 l = 0; l < level; ++l)
+        {
+            DAVA::float32& d = decorationData->layersParams[layerIndex].variations[varIndex].levelDensity[l];
+            d = DAVA::Max(d, value);
+        }
+
+        decorationData->layersParams[layerIndex].variations[varIndex].levelDensity[level] = value;
+
+        for (DAVA::uint32 l = level + 1; l < decorationData->GetLevelCount(); ++l)
+        {
+            DAVA::float32& d = decorationData->layersParams[layerIndex].variations[varIndex].levelDensity[l];
+            d = DAVA::Min(d, value);
+        }
     }
 
     UpdateVariationSettings();
-    MarkSceneChanged();
+    MarkParamsChanged();
 }
 
 void DecorationEditor::UpdateDecorationSettings()
@@ -345,14 +382,16 @@ void DecorationEditor::UpdateLayerSettings()
 
         DAVA::uint32 layerIndex = selectedLayer.last().row();
 
-        cullfaceCheckBox->setChecked(decorationData->GetLayerCullface(layerIndex));
-        orientCheckbox->setChecked(decorationData->GetLayerOrientOnLandscape(layerIndex));
-        collisionCheckBox->setChecked(decorationData->GetLayerCollisionDetection(layerIndex));
-        orientEdit->setValue(decorationData->GetLayerOrientValue(layerIndex));
+        const DAVA::DecorationData::LayerParams& layerParams = decorationData->layersParams[layerIndex];
 
-        tintCheckBox->setChecked(decorationData->GetLayerTint(layerIndex));
-        tintHeightEdit->setValue(decorationData->GetLayerTintHeight(layerIndex));
-        layerIndexEdit->setValue(decorationData->GetLayerMaskIndex(layerIndex));
+        cullfaceCheckBox->setChecked(layerParams.cullface);
+        orientCheckbox->setChecked(layerParams.orient);
+        collisionCheckBox->setChecked(layerParams.collisionDetection);
+        orientEdit->setValue(layerParams.orientValue);
+
+        tintCheckBox->setChecked(layerParams.tint);
+        tintHeightEdit->setValue(layerParams.tintHeight);
+        layerIndexEdit->setValue(layerParams.index);
 
         DAVA::uint32 variationCount = decorationData->GetVariationCount(layerIndex);
         variationListModel->setRowCount(variationCount);
@@ -382,13 +421,19 @@ void DecorationEditor::UpdateVariationSettings()
         DAVA::uint32 layerIndex = selectedLayer.last().row();
         DAVA::uint32 varIndex = selectedVariations.last().row();
 
-        enabledCheckBox->setChecked(decorationData->GetVariationEnabled(layerIndex, varIndex));
-        scaleMinEdit->setValue(decorationData->GetVariationScaleMin(layerIndex, varIndex));
-        scaleMaxEdit->setValue(decorationData->GetVariationScaleMax(layerIndex, varIndex));
-        pitchMaxEdit->setValue(decorationData->GetVariationPitchMax(layerIndex, varIndex));
-        collisionGroupEdit->setValue(int(decorationData->GetVariationCollisionGroup(layerIndex, varIndex)));
-        collisionRadiusEdit->setValue(decorationData->GetVariationCollisionRadius(layerIndex, varIndex));
-        densityEdit->setValue(decorationData->GetVariationDensity(layerIndex, varIndex));
+        const DAVA::DecorationData::VariationParams& varParams = decorationData->layersParams[layerIndex].variations[varIndex];
+        enabledCheckBox->setChecked(varParams.enabled);
+        scaleMinEdit->setValue(varParams.scaleMin);
+        scaleMaxEdit->setValue(varParams.scaleMax);
+        pitchMaxEdit->setValue(varParams.pitchMax);
+        collisionGroupEdit->setValue(int(varParams.collisionGroup));
+        collisionRadiusEdit->setValue(varParams.collisionRadius);
+        distanceScaleCheckBox->setChecked(varParams.distanceScale);
+        nearDistanceEdit->setValue(varParams.nearDistance);
+        nearScaleEdit->setValue(varParams.nearScale);
+        farDistanceEdit->setValue(varParams.farDistance);
+        farScaleEdit->setValue(varParams.farScale);
+        densityEdit->setValue(varParams.density);
 
         DAVA::uint32 levelCount = decorationData->GetLevelCount();
         densityTableModel->setRowCount(levelCount);
@@ -396,7 +441,7 @@ void DecorationEditor::UpdateVariationSettings()
         {
             densityTableModel->setData(densityTableModel->index(l, 0), QString("Level #%1 (~%2m)").arg(l).arg(int(levelDistances[l])), Qt::DisplayRole);
 
-            DAVA::float32 levelDensity = decorationData->GetLevelDensity(layerIndex, varIndex, l);
+            DAVA::float32 levelDensity = decorationData->layersParams[layerIndex].variations[varIndex].levelDensity[l];
             densityTableModel->setData(densityTableModel->index(l, 1), levelDensity, Qt::UserRole);
             densityTableModel->setData(densityTableModel->index(l, 1), QString("%1%").arg(int(levelDensity * 100)), Qt::DisplayRole);
         }
@@ -639,6 +684,53 @@ void DecorationEditor::SetupUI()
             collisionRadiusLayout->addWidget(collisionRadiusEdit);
         }
         variationSettingsLayout->addLayout(collisionRadiusLayout);
+
+        QHBoxLayout* nearDistanceScaleLayout = new QHBoxLayout();
+        {
+            distanceScaleCheckBox = new QCheckBox(QStringLiteral("Distance Scale"), variationSettingsWidget);
+            nearDistanceScaleLayout->addWidget(distanceScaleCheckBox);
+
+            nearDistanceScaleLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+
+            nearDistanceScaleLayout->addWidget(new QLabel(QStringLiteral("near:"), variationSettingsWidget));
+            nearDistanceEdit = new QDoubleSpinBox(variationSettingsWidget);
+            nearDistanceEdit->setMinimumSize(QSize(60, 0));
+            nearDistanceEdit->setDecimals(1);
+            nearDistanceEdit->setSingleStep(0.1);
+            nearDistanceEdit->setRange(0.0, 1000.0);
+            nearDistanceScaleLayout->addWidget(nearDistanceEdit);
+
+            nearDistanceScaleLayout->addWidget(new QLabel(QStringLiteral("scale:"), variationSettingsWidget));
+            nearScaleEdit = new QDoubleSpinBox(variationSettingsWidget);
+            nearScaleEdit->setMinimumSize(QSize(60, 0));
+            nearScaleEdit->setDecimals(2);
+            nearScaleEdit->setSingleStep(0.01);
+            nearScaleEdit->setRange(0.0, 10.0);
+            nearDistanceScaleLayout->addWidget(nearScaleEdit);
+        }
+        variationSettingsLayout->addLayout(nearDistanceScaleLayout);
+
+        QHBoxLayout* farDistanceScaleLayout = new QHBoxLayout();
+        {
+            farDistanceScaleLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+
+            farDistanceScaleLayout->addWidget(new QLabel(QStringLiteral("far:"), variationSettingsWidget));
+            farDistanceEdit = new QDoubleSpinBox(variationSettingsWidget);
+            farDistanceEdit->setMinimumSize(QSize(60, 0));
+            farDistanceEdit->setDecimals(1);
+            farDistanceEdit->setSingleStep(0.1);
+            farDistanceEdit->setRange(0.0, 1000.0);
+            farDistanceScaleLayout->addWidget(farDistanceEdit);
+
+            farDistanceScaleLayout->addWidget(new QLabel(QStringLiteral("scale:"), variationSettingsWidget));
+            farScaleEdit = new QDoubleSpinBox(variationSettingsWidget);
+            farScaleEdit->setMinimumSize(QSize(60, 0));
+            farScaleEdit->setDecimals(2);
+            farScaleEdit->setSingleStep(0.01);
+            farScaleEdit->setRange(0.0, 10.0);
+            farDistanceScaleLayout->addWidget(farScaleEdit);
+        }
+        variationSettingsLayout->addLayout(farDistanceScaleLayout);
 
         QHBoxLayout* densityLayout = new QHBoxLayout();
         {

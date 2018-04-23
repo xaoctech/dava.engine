@@ -53,7 +53,7 @@ vertex_out
 
 #if LANDSCAPE_USE_INSTANCING
 [auto][a] property float3 boundingBoxSize;
-[auto][a] property float tessellationHeight;
+[auto][a] property float tessellationHalfRangeHeight;
 #endif
 
 vertex_out vp_main(vertex_in input)

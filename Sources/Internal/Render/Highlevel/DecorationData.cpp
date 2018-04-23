@@ -128,6 +128,12 @@ void DecorationData::Save(KeyedArchive* archive, SerializationContext* serializa
             archive->SetUInt32(Format("decoration.layer%d.var%d.collisionGroup", l, v), var.collisionGroup);
             archive->SetFloat(Format("decoration.layer%d.var%d.collisionRadius", l, v), var.collisionRadius);
 
+            archive->SetBool(Format("decoration.layer%d.var%d.distanceScale", l, v), var.distanceScale);
+            archive->SetFloat(Format("decoration.layer%d.var%d.nearDistance", l, v), var.nearDistance);
+            archive->SetFloat(Format("decoration.layer%d.var%d.nearScale", l, v), var.nearScale);
+            archive->SetFloat(Format("decoration.layer%d.var%d.farDistance", l, v), var.farDistance);
+            archive->SetFloat(Format("decoration.layer%d.var%d.farScale", l, v), var.farScale);
+
             for (uint32 level = 1; level < levelCount; ++level) // level#0 always 1.0
                 archive->SetFloat(Format("decoration.layer%d.var%d.levelDensity%d", l, v, level), var.levelDensity[level]);
         }
@@ -182,6 +188,12 @@ void DecorationData::Load(KeyedArchive* archive, SerializationContext* serializa
             var.pitchMax = archive->GetFloat(Format("decoration.layer%d.var%d.pitchMax", l, v));
             var.collisionGroup = archive->GetUInt32(Format("decoration.layer%d.var%d.collisionGroup", l, v));
             var.collisionRadius = archive->GetFloat(Format("decoration.layer%d.var%d.collisionRadius", l, v));
+
+            var.distanceScale = archive->GetBool(Format("decoration.layer%d.var%d.distanceScale", l, v));
+            var.nearDistance = archive->GetFloat(Format("decoration.layer%d.var%d.nearDistance", l, v));
+            var.nearScale = archive->GetFloat(Format("decoration.layer%d.var%d.nearScale", l, v));
+            var.farDistance = archive->GetFloat(Format("decoration.layer%d.var%d.farDistance", l, v));
+            var.farScale = archive->GetFloat(Format("decoration.layer%d.var%d.farScale", l, v));
 
             for (uint32 level = 1; level < levelCount; ++level) // level#0 always 1.0
                 var.levelDensity[level] = archive->GetFloat(Format("decoration.layer%d.var%d.levelDensity%d", l, v, level));
@@ -281,281 +293,19 @@ void DecorationData::SetDecorationPath(const FilePath& path)
     paramsChanged = true;
 }
 
-uint8 DecorationData::GetLayerMaskIndex(uint32 layer) const
+void DecorationData::MarkParamsChanged()
 {
-    DVASSERT(layer < layersCount);
-
-    return layersParams[layer].index;
-}
-
-void DecorationData::SetLayerMaskIndex(uint32 layer, uint8 index)
-{
-    DVASSERT(layer < layersCount);
-
-    layersParams[layer].index = index;
-
     paramsChanged = true;
 }
 
-bool DecorationData::GetLayerCullface(uint32 layer) const
+void DecorationData::MarkParamsUnchanged()
 {
-    DVASSERT(layer < layersCount);
-
-    return layersParams[layer].cullface;
+    paramsChanged = false;
 }
 
-void DecorationData::SetLayerCullface(uint32 layer, bool cullface)
+bool DecorationData::IsParamsChanged()
 {
-    DVASSERT(layer < layersCount);
-
-    layersParams[layer].cullface = cullface;
-
-    paramsChanged = true;
-}
-
-bool DecorationData::GetLayerCollisionDetection(uint32 layer) const
-{
-    DVASSERT(layer < layersCount);
-
-    return layersParams[layer].collisionDetection;
-}
-
-void DecorationData::SetLayerCollisionDetection(uint32 layer, bool enable)
-{
-    DVASSERT(layer < layersCount);
-
-    layersParams[layer].collisionDetection = enable;
-
-    paramsChanged = true;
-}
-
-bool DecorationData::GetLayerOrientOnLandscape(uint32 layer) const
-{
-    DVASSERT(layer < layersCount);
-
-    return layersParams[layer].orient;
-}
-
-void DecorationData::SetLayerOrientOnLandscape(uint32 layer, bool orient)
-{
-    DVASSERT(layer < layersCount);
-
-    layersParams[layer].orient = orient;
-
-    paramsChanged = true;
-}
-
-float32 DecorationData::GetLayerOrientValue(uint32 layer) const
-{
-    DVASSERT(layer < layersCount);
-
-    return layersParams[layer].orientValue;
-}
-
-void DecorationData::SetLayerOrientValue(uint32 layer, float32 value)
-{
-    DVASSERT(layer < layersCount);
-
-    layersParams[layer].orientValue = value;
-
-    paramsChanged = true;
-}
-
-bool DecorationData::GetLayerTint(uint32 layer) const
-{
-    DVASSERT(layer < layersCount);
-
-    return layersParams[layer].tint;
-}
-
-void DecorationData::SetLayerTint(uint32 layer, bool tint)
-{
-    DVASSERT(layer < layersCount);
-
-    layersParams[layer].tint = tint;
-
-    paramsChanged = true;
-}
-
-float32 DecorationData::GetLayerTintHeight(uint32 layer) const
-{
-    DVASSERT(layer < layersCount);
-
-    return layersParams[layer].tintHeight;
-}
-
-void DecorationData::SetLayerTintHeight(uint32 layer, float32 tintHeigth)
-{
-    DVASSERT(layer < layersCount);
-
-    layersParams[layer].tintHeight = tintHeigth;
-
-    paramsChanged = true;
-}
-
-bool DecorationData::GetVariationEnabled(uint32 layer, uint32 var) const
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    return layersParams[layer].variations[var].enabled;
-}
-
-void DecorationData::SetVariationEnabled(uint32 layer, uint32 var, bool value)
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    layersParams[layer].variations[var].enabled = value;
-
-    paramsChanged = true;
-}
-
-float32 DecorationData::GetVariationDensity(uint32 layer, uint32 var) const
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    return layersParams[layer].variations[var].density;
-}
-
-void DecorationData::SetVariationDensity(uint32 layer, uint32 var, float32 density)
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    layersParams[layer].variations[var].density = density;
-
-    paramsChanged = true;
-}
-
-float32 DecorationData::GetVariationScaleMin(uint32 layer, uint32 var) const
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    return layersParams[layer].variations[var].scaleMin;
-}
-
-void DecorationData::SetVariationScaleMin(uint32 layer, uint32 var, float32 min)
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    VariationParams& vp = layersParams[layer].variations[var];
-    vp.scaleMin = min;
-    vp.scaleMax = Max(min, vp.scaleMax);
-
-    paramsChanged = true;
-}
-
-float32 DecorationData::GetVariationScaleMax(uint32 layer, uint32 var) const
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    return layersParams[layer].variations[var].scaleMax;
-}
-
-void DecorationData::SetVariationScaleMax(uint32 layer, uint32 var, float32 max)
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    VariationParams& vp = layersParams[layer].variations[var];
-    vp.scaleMin = Min(vp.scaleMin, max);
-    vp.scaleMax = max;
-
-    paramsChanged = true;
-}
-
-float32 DecorationData::GetVariationPitchMax(uint32 layer, uint32 var) const
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    return layersParams[layer].variations[var].pitchMax;
-}
-
-void DecorationData::SetVariationPitchMax(uint32 layer, uint32 var, float32 max)
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    layersParams[layer].variations[var].pitchMax = max;
-
-    paramsChanged = true;
-}
-
-uint32 DecorationData::GetVariationCollisionGroup(uint32 layer, uint32 var) const
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    return layersParams[layer].variations[var].collisionGroup;
-}
-
-void DecorationData::SetVariationCollisionGroup(uint32 layer, uint32 var, uint32 group)
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    layersParams[layer].variations[var].collisionGroup = group;
-
-    paramsChanged = true;
-}
-
-float32 DecorationData::GetVariationCollisionRadius(uint32 layer, uint32 var) const
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    return layersParams[layer].variations[var].collisionRadius;
-}
-
-void DecorationData::SetVariationCollisionRadius(uint32 layer, uint32 var, float32 radius)
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-
-    layersParams[layer].variations[var].collisionRadius = radius;
-
-    paramsChanged = true;
-}
-
-float32 DecorationData::GetLevelDensity(uint32 layer, uint32 var, uint32 level) const
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-    DVASSERT(level < levelCount);
-
-    return layersParams[layer].variations[var].levelDensity[level];
-}
-
-void DecorationData::SetLevelDensity(uint32 layer, uint32 var, uint32 level, float32 density)
-{
-    DVASSERT(layer < layersCount);
-    DVASSERT(var < uint32(layersParams[layer].variations.size()));
-    DVASSERT(level < levelCount);
-
-    if (level == 0)
-        density = 1.f;
-
-    for (uint32 l = 0; l < level; ++l)
-    {
-        float32& d = layersParams[layer].variations[var].levelDensity[l];
-        d = Max(d, density);
-    }
-
-    layersParams[layer].variations[var].levelDensity[level] = density;
-
-    for (uint32 l = level + 1; l < levelCount; ++l)
-    {
-        float32& d = layersParams[layer].variations[var].levelDensity[l];
-        d = Min(d, density);
-    }
-
-    paramsChanged = true;
+    return paramsChanged;
 }
 
 } //ns
