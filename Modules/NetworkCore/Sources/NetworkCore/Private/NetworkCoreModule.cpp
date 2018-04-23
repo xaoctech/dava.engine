@@ -37,6 +37,7 @@
 #include "NetworkCore/Scene3D/Systems/SnapshotSystemBase.h"
 #include "NetworkCore/Scene3D/Systems/SnapshotSystemClient.h"
 #include "NetworkCore/Scene3D/Systems/SnapshotSystemServer.h"
+#include "NetworkCore/Scene3D/Systems/SnapshotSystem2.h"
 #include "NetworkCore/Scene3D/Systems/NetworkHealthCheckSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkTransformInterpolationSystem.h"
 #include "NetworkCore/Scene3D/Systems/NetworkConnectionsSystem.h"
@@ -105,6 +106,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTimelineSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkTimeSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSingleComponent);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotComponent2);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkServerConnectionsSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkClientConnectionSingleComponent);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkFactoryComponent);
@@ -133,6 +135,7 @@ NetworkCoreModule::NetworkCoreModule(Engine* engine)
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemBase);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemClient);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystemServer);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SnapshotSystem2);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkConnectionsSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkMotionSystem);
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(NetworkFactorySystem);

@@ -202,7 +202,7 @@ DAVA_TESTCLASS (CompressionTest)
         }
     }
 
-    void FloatQuantizer(int tag, const CompressTestItem<float32>* items, uint32 n, const M::FloatQuantizeParam* qparam)
+    void FloatQuantizer(int tag, const CompressTestItem<float32>* items, size_t n, const M::FloatQuantizeParam* qparam)
     {
         uint8 buf[1000];
         CompressionScheme scheme = CompressionUtils::MakeCompressionScheme(qparam);
@@ -304,14 +304,14 @@ DAVA_TESTCLASS (CompressionTest)
     }
 
     template <typename T, typename P>
-    void IntCompressor(int tag, const CompressTestItem<T>* items, uint32 n, const P* cparam)
+    void IntCompressor(int tag, const CompressTestItem<T>* items, size_t n, const P* cparam)
     {
         uint8 buf[1000];
         CompressionScheme scheme = CompressionUtils::MakeCompressionScheme(cparam);
         const CompressorInterface* compressor = CompressionUtils::GetTypeCompressor(Type::Instance<T>());
 
         BitWriter w(buf, 1000);
-        for (uint32 i = 0; i < n; ++i)
+        for (size_t i = 0; i < n; ++i)
         {
             Any a1{ items[i].v1 };
             Any a2{ items[i].v2 };
@@ -325,7 +325,7 @@ DAVA_TESTCLASS (CompressionTest)
 
         StringStream ss;
         BitReader r(buf, w.GetBytesWritten());
-        for (uint32 i = 0; i < n && !r.IsOverflowed(); ++i)
+        for (size_t i = 0; i < n && !r.IsOverflowed(); ++i)
         {
             Any a1{ items[i].v1 };
             Any a2{ items[i].v2 };
@@ -487,7 +487,7 @@ DAVA_TESTCLASS (CompressionTest)
         }
     }
 
-    void QuaternionQuantizer(int tag, const CompressTestItem<Quaternion>* items, uint32 n, const M::QuaternionQuantizeParam* qparam)
+    void QuaternionQuantizer(int tag, const CompressTestItem<Quaternion>* items, size_t n, const M::QuaternionQuantizeParam* qparam)
     {
         uint8 buf[1000];
         CompressionScheme scheme = CompressionUtils::MakeCompressionScheme(qparam);
@@ -495,7 +495,7 @@ DAVA_TESTCLASS (CompressionTest)
         const CompressorInterface* compressor = CompressionUtils::GetTypeCompressor(Type::Instance<Quaternion>());
 
         BitWriter w(buf, 1000);
-        for (uint32 i = 0; i < n; ++i)
+        for (size_t i = 0; i < n; ++i)
         {
             Any a1{ items[i].v1 };
             Any a2{ items[i].v2 };
@@ -522,7 +522,7 @@ DAVA_TESTCLASS (CompressionTest)
         };
 
         BitReader r(buf, w.GetBytesWritten());
-        for (uint32 i = 0; i < n && !r.IsOverflowed(); ++i)
+        for (size_t i = 0; i < n && !r.IsOverflowed(); ++i)
         {
             Any a1{ items[i].v1 };
             Any a2{ items[i].v2 };

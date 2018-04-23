@@ -14,7 +14,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkServerConnectionsSingleComponent)
 }
 
 NetworkServerConnectionsSingleComponent::NetworkServerConnectionsSingleComponent()
-    : ClearableSingleComponent(ClearableSingleComponent::Usage::FixedProcesses)
+    : ClearableSingleComponent(Usage::FixedProcesses)
     , recvPacketsByChannels(PacketParams::CHANNELS_COUNT)
 {
     for (int32 i = 0; i < PacketParams::CHANNELS_COUNT; ++i)
@@ -25,7 +25,7 @@ NetworkServerConnectionsSingleComponent::NetworkServerConnectionsSingleComponent
 
 void NetworkServerConnectionsSingleComponent::AddConnectedToken(const FastName& token)
 {
-    auto ret = connectedTokens.insert(token);
+    const auto ret = connectedTokens.insert(token);
     if (ret.second)
     {
         justConnectedTokens.push_back(token);
@@ -38,6 +38,16 @@ void NetworkServerConnectionsSingleComponent::RemoveConnectedToken(const FastNam
     {
         justDisconnectedTokens.push_back(token);
     }
+}
+
+void NetworkServerConnectionsSingleComponent::ConfirmToken(const FastName& token)
+{
+    confirmedTokens.push_back(token);
+}
+
+const Vector<FastName>& NetworkServerConnectionsSingleComponent::GetConfirmedTokens() const
+{
+    return confirmedTokens;
 }
 
 const UnorderedSet<FastName>& NetworkServerConnectionsSingleComponent::GetConnectedTokens() const
@@ -55,15 +65,18 @@ const Vector<FastName>& NetworkServerConnectionsSingleComponent::GetJustDisconne
     return justDisconnectedTokens;
 }
 
-void NetworkServerConnectionsSingleComponent::StoreRecvPacket(uint8 channel, const FastName& token, const uint8* data, size_t size)
+void NetworkServerConnectionsSingleComponent::StoreRecvPacket(const PacketParams::Channels channel,
+                                                              const FastName& token, const void* data, size_t size)
 {
     DVASSERT(channel < PacketParams::CHANNELS_COUNT);
-    ServerRecvPacket packet{ token, Vector<uint8>(size) };
-    Memcpy(packet.data.data(), data, size);
+
+    const auto begin = static_cast<const uint8*>(data);
+    ServerRecvPacket packet{ token, Vector<uint8>(begin, begin + size) };
     recvPacketsByChannels[channel].push_back(std::move(packet));
 }
 
-const Vector<NetworkServerConnectionsSingleComponent::ServerRecvPacket>& NetworkServerConnectionsSingleComponent::GetRecvPackets(uint8 channel) const
+const Vector<NetworkServerConnectionsSingleComponent::ServerRecvPacket>&
+NetworkServerConnectionsSingleComponent::GetRecvPackets(const PacketParams::Channels channel) const
 {
     DVASSERT(channel < PacketParams::CHANNELS_COUNT);
     return recvPacketsByChannels[channel];
@@ -71,6 +84,8 @@ const Vector<NetworkServerConnectionsSingleComponent::ServerRecvPacket>& Network
 
 void NetworkServerConnectionsSingleComponent::Clear()
 {
+    confirmedTokens.clear();
+
     justConnectedTokens.clear();
     justDisconnectedTokens.clear();
 
@@ -78,5 +93,8 @@ void NetworkServerConnectionsSingleComponent::Clear()
     {
         recvPackets.clear();
     }
+
+    // DO NOT recvPacketsByChannels.clear(); - channel index will fail
 }
-}
+
+} // end DAVA namespace

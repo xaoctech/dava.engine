@@ -6,6 +6,7 @@
 
 #include <Debug/ProfilerCPU.h>
 #include "Concurrency/Thread.h"
+#include "NetworkCore/Scene3D/Systems/NetworkTimeSystem.h"
 
 namespace DAVA
 {
@@ -17,18 +18,6 @@ UDPResponder::UDPResponder(ENetPeer* peer, TrafficLogger* trafficLogger)
 #ifdef __DAVAENGINE_DEBUG__
     enet_peer_timeout(peer, 0, 1000, 1500);
 #endif
-}
-
-UDPResponder::UDPResponder(const UDPResponder& responder)
-    : peer(responder.peer)
-    , trafficLogger(responder.trafficLogger)
-    , token(responder.token)
-    , teamID(responder.teamID)
-    , packetLosses(responder.packetLosses)
-    , isValid(responder.isValid)
-    , prevRtt(responder.prevRtt)
-    , buffer(new uint8[GetMaxCompressedSizeWithLz4(PacketParams::MAX_PACKET_SIZE)])
-{
 }
 
 void UDPResponder::Send(const uint8* data, size_t size, const PacketParams& param, const AckCallback& callback) const
@@ -143,14 +132,6 @@ UDPServer::UDPServer(uint32 host, uint16 port, size_t peerCount)
 
     server = enet_host_create(&address, peerCount, 0, 0, 0);
     ThrowIfENetError(server, "SERVER_ENET_HOST_CREATE");
-
-    /*
-     SERVER_COMPLETE
-     Think about ability about unsubscribing from signals from UDPServer, UDPClient.
-     Here I thought to unsubscribe after token recv, but it's not possible with current API
-     */
-    SubscribeOnReceive(PacketParams::TOKEN_CHANNEL_ID,
-                       OnServerReceiveCb(this, &UDPServer::OnReceiveToken));
 }
 
 UDPServer::~UDPServer()
@@ -184,7 +165,10 @@ bool UDPServer::Update(uint32 timeout)
     case ENET_EVENT_TYPE_CONNECT:
     {
         Logger::FrameworkDebug("CLIENT_CONNECTED: host:%d port:%d", peer->address.host, peer->address.port);
-        bool ret = peerStorage.emplace(peer, UDPResponder(peer, trafficLogger.get())).second;
+        const bool ret = peerStorage.emplace(std::piecewise_construct,
+                                             std::forward_as_tuple(peer),
+                                             std::forward_as_tuple(peer, trafficLogger.get()))
+                         .second;
         DVASSERT(ret);
         break;
     }
@@ -192,10 +176,13 @@ bool UDPServer::Update(uint32 timeout)
     case ENET_EVENT_TYPE_DISCONNECT:
     {
         Logger::FrameworkDebug("CLIENT_DISCONNECTED: host:%d port:%d", peer->address.host, peer->address.port);
-        auto peerIt = peerStorage.find(peer);
+        const auto peerIt = peerStorage.find(peer);
         DVASSERT(peerIt != peerStorage.end());
         const FastName token = peerIt->second.GetToken();
         disconnectSignal.Emit(token);
+        DVASSERT(networkEventStorage);
+        networkEventStorage->RemoveConnectedToken(peerIt->second.GetToken());
+        tokenIndex.erase(peerIt->second.GetToken());
         peerStorage.erase(peerIt);
         tokenIndex.erase(token);
         auto pendingTokenIt = pendingTokens.find(token);
@@ -217,22 +204,31 @@ bool UDPServer::Update(uint32 timeout)
             enet_packet_destroy(event.packet);
             break;
         }
-        auto subscrsIt = receiveSubscrs.find(event.channelID);
-        if (subscrsIt != receiveSubscrs.end())
+
+        const auto channel = static_cast<PacketParams::Channels>(event.channelID);
+        size_t maxCompressedSize = GetMaxCompressedSizeWithLz4(PacketParams::MAX_PACKET_SIZE);
+        if (DecompressWithLz4(event.packet->data, event.packet->dataLength, buffer, maxCompressedSize))
         {
-            size_t csize = GetMaxCompressedSizeWithLz4(PacketParams::MAX_PACKET_SIZE);
-            if (DecompressWithLz4(event.packet->data, event.packet->dataLength, buffer, csize))
+            // Hack to mimic old code (first callback was UDPServer itself)
+            if (channel == PacketParams::TOKEN_CHANNEL_ID)
             {
-                for (const auto& cb : subscrsIt->second)
-                {
-                    cb(responder, buffer, csize);
-                }
+                OnReceiveToken(responder, buffer, maxCompressedSize);
             }
-            else
+            // Hack NetworkTimeSystem should respond as fast as possible. That's why it is here for now.
+            if (channel == PacketParams::TIME_CHANNEL_ID)
             {
-                Logger::Error("Decompression was failed (%d). Data size: %d", csize, event.packet->dataLength);
+                syncCallback->OnReceiveServer(responder, buffer, maxCompressedSize);
             }
+
+            const FastName& token = responder.GetToken();
+            networkEventStorage->StoreRecvPacket(channel, token, buffer, maxCompressedSize);
         }
+        else
+        {
+            Logger::Error("Decompression failed: channel: (%d) (%d). Data size: %d", static_cast<uint32>(channel),
+                          maxCompressedSize, event.packet->dataLength);
+        }
+
         responder.SaveRtt();
         trafficLogger->LogReceiving(event.packet->dataLength, event.channelID);
         enet_packet_destroy(event.packet);
@@ -246,18 +242,6 @@ bool UDPServer::Update(uint32 timeout)
     }
 
     return true;
-}
-
-void UDPServer::Foreach(const DoForEach& callback) const
-{
-    for (const auto& peer : peerStorage)
-    {
-        const Responder& responder = peer.second;
-        if (responder.IsValid())
-        {
-            callback(responder);
-        }
-    }
 }
 
 void UDPServer::Broadcast(const uint8* data, size_t size, const PacketParams& param) const
@@ -279,9 +263,9 @@ uint32 UDPServer::GetMaxRtt() const
 
 const Responder& UDPServer::GetResponder(const FastName& token) const
 {
-    auto peerIt = tokenIndex.find(token);
+    const auto peerIt = tokenIndex.find(token);
     DVASSERT(peerIt != tokenIndex.end());
-    auto responderIt = peerStorage.find(peerIt->second);
+    const auto responderIt = peerStorage.find(peerIt->second);
     DVASSERT(responderIt != peerStorage.end());
     return responderIt->second;
 }
@@ -297,43 +281,25 @@ bool UDPServer::HasResponder(const FastName& token) const
     return (responderIt != peerStorage.end());
 }
 
-void UDPServer::SubscribeOnConnect(const OnServerConnectCb& callback)
+void UDPServer::SetNetworkEventStorage(INetworkEventStorage& netEventStore_)
 {
-    connectSignal.Connect(callback);
+    DVASSERT(networkEventStorage == nullptr); // only one initialization
+    networkEventStorage = &netEventStore_;
 }
 
-void UDPServer::SubscribeOnTokenConfirmation(const OnServerTokenConfirmationCb& callback)
+void UDPServer::SetServerSyncCallback(IServerSyncCallback& syncCallback_)
 {
-    tokenConfirmationSignal.Connect(callback);
-}
-
-void UDPServer::SubscribeOnError(const OnServerErrorCb& callback)
-{
-    errorSignal.Connect(callback);
-}
-
-void UDPServer::SubscribeOnReceive(uint8 channel, const OnServerReceiveCb& callback)
-{
-    auto findIt = receiveSubscrs.find(channel);
-    if (findIt == receiveSubscrs.end())
-    {
-        findIt = receiveSubscrs.emplace(channel, Vector<OnServerReceiveCb>()).first;
-    }
-    findIt->second.push_back(callback);
-}
-
-void UDPServer::SubscribeOnDisconnect(const OnServerDisconnectCb& callback)
-{
-    disconnectSignal.Connect(callback);
+    DVASSERT(syncCallback == nullptr);
+    syncCallback = &syncCallback_;
 }
 
 void UDPServer::OnReceiveToken(const Responder& responder, const uint8* data, size_t size)
 {
     DAVA_PROFILER_CPU_SCOPE("UDPServer::OnReceiveToken");
-    const TokenPacketHeader* header = reinterpret_cast<const TokenPacketHeader*>(data);
-    String tokenString(header->token, TokenPacketHeader::TOKEN_LENGTH);
-    FastName token(tokenString);
-    ENetPeer* peer = responder.GetPeer();
+    const auto header = reinterpret_cast<const TokenPacketHeader*>(data);
+    const String tokenString(header->token, TokenPacketHeader::TOKEN_LENGTH);
+    const FastName token(tokenString);
+    ENetPeer* peer = dynamic_cast<const UDPResponder&>(responder).GetPeer();
     if (tokenIndex.find(token) != tokenIndex.end())
     {
         pendingTokens[token] = peer;
@@ -348,21 +314,31 @@ void UDPServer::AddTokenToIndex(const FastName& token, ENetPeer* peer)
 {
     auto findIt = peerStorage.find(peer);
     DVASSERT(findIt != peerStorage.end());
+
     findIt->second.SetToken(token);
-    auto emplaceRet = tokenIndex.emplace(token, peer);
+
+    const auto emplaceRet = tokenIndex.emplace(token, peer);
     DVASSERT(emplaceRet.second);
-    tokenConfirmationSignal.Emit(findIt->second);
+
+    networkEventStorage->ConfirmToken(token);
 }
 
 void UDPServer::SetValidToken(const FastName& token)
 {
-    auto peerIt = tokenIndex.find(token);
+    const auto peerIt = tokenIndex.find(token);
     DVASSERT(peerIt != tokenIndex.end());
     auto responderIt = peerStorage.find(peerIt->second);
     DVASSERT(responderIt != peerStorage.end());
     Responder& responder = responderIt->second;
     responder.SetIsValid(true);
-    connectSignal.Emit(responder);
+
+    // Hack NetworkTimeSystem should respond as fast as possible
+    if (syncCallback)
+    {
+        syncCallback->OnConnectServer(responder);
+    }
+
+    networkEventStorage->AddConnectedToken(token);
 }
 
 void UDPServer::Disconnect(const FastName& token)

@@ -3,16 +3,19 @@
 #include <Entity/SceneSystem.h>
 
 #include <fstream>
-#include <unordered_set>
 
 namespace DAVA
 {
+struct INetworkEventStorage;
 class NetworkServerConnectionsSingleComponent;
 
 class ReplayServerSystem : public SceneSystem
 {
 public:
     DAVA_VIRTUAL_REFLECTION(ReplayServerSystem, SceneSystem);
+
+    ReplayServerSystem(Scene* scene);
+    ~ReplayServerSystem() override;
 
     enum class Mode
     {
@@ -21,8 +24,7 @@ public:
         Replay
     };
 
-    ReplayServerSystem(Scene* scene);
-    ~ReplayServerSystem() override;
+    void SetMode(const Mode mode);
 
     void ProcessFixed(float32 timeElapsed) override;
 
@@ -42,7 +44,7 @@ private:
     friend std::istream& operator>>(std::istream& stream, ReplayServerSystem::Type& type);
 
     void SerializeNetComponent(const NetworkServerConnectionsSingleComponent& component);
-    void DeserializeNetComponent(NetworkServerConnectionsSingleComponent& component);
+    void DeserializeNetComponent(INetworkEventStorage& eventStorage);
 
     void SeializeFastNameOrFastIndex(const FastName&);
     void DeserializeFastName(FastName&);

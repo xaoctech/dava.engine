@@ -3,6 +3,7 @@
 #include "Entity/Component.h"
 #include <Reflection/Reflection.h>
 #include <Scene3D/Entity.h>
+#include <Scene3D/Var.h>
 
 class GameStunnableComponent : public DAVA::Component
 {

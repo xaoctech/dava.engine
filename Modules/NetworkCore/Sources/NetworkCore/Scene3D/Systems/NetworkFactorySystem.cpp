@@ -182,5 +182,5 @@ uint8 NetworkFactorySystem::GetCurrentDomain(NetworkPlayerID playerId)
     }
 
     return D::ClientNotOwner;
-};
+}
 }

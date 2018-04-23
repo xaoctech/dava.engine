@@ -26,4 +26,12 @@ void Component::GetDataNodes(Container<T>& container)
     }
 }
 
+template <typename T>
+T* Component::GetSibling(uint32 index)
+{
+    if (nullptr == entity)
+        return nullptr;
+
+    return entity->GetComponent<T>(index);
+}
 } // namespace DAVA

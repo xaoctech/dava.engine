@@ -228,19 +228,9 @@ bool SnapshotSystemBase::NeedToBeTracked(Entity* entity)
 bool SnapshotSystemBase::NeedToBeTracked(Component* component, const NetworkReplicationComponent* nrc)
 {
     DVASSERT(nullptr != component);
-#if 0
-    const ReflectedType* compRefType = ReflectedTypeDB::GetByPointer(component);
-
-    DVASSERT(nullptr != compRefType);
-    if (nullptr == compRefType)
-        return false;
-
-    const M::Replicable* compReplicableMeta = compRefType->GetMeta<M::Replicable>();
-    return (nullptr != compReplicableMeta) && (compReplicableMeta->privacy >= Metas::Privacy::PRIVATE);
-#else
     DVASSERT(nrc != nullptr);
+
     return nrc->GetReplicationMask().IsSet(component->GetType());
-#endif
 }
 
 SnapshotEntity* SnapshotSystemBase::GetSnapshotEntity(Entity* entity, GetBranchPolicy policy)

@@ -27,18 +27,8 @@ NetworkConnectionsSystem::NetworkConnectionsSystem(Scene* scene)
         DVASSERT(server);
         NetworkServerConnectionsSingleComponent* networkConnections = scene->GetSingleComponent<NetworkServerConnectionsSingleComponent>();
         DVASSERT(networkConnections);
-        server->SubscribeOnConnect([networkConnections](const Responder& responder) {
-            networkConnections->AddConnectedToken(responder.GetToken());
-        });
-        server->SubscribeOnDisconnect([networkConnections](const FastName& token) {
-            networkConnections->RemoveConnectedToken(token);
-        });
-        for (uint8 i = 0; i < PacketParams::CHANNELS_COUNT; ++i)
-        {
-            server->SubscribeOnReceive(i, [networkConnections, i](const Responder& responder, const uint8* data, size_t size) {
-                networkConnections->StoreRecvPacket(i, responder.GetToken(), data, size);
-            });
-        }
+
+        server->SetNetworkEventStorage(*networkConnections);
     }
     else if (IsClient(scene))
     {

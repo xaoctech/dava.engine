@@ -6,6 +6,7 @@
 
 namespace DAVA
 {
+class NetworkServerConnectionsSingleComponent;
 class Scene;
 class IServer;
 class IClient;
@@ -21,14 +22,15 @@ public:
     void ProcessFixed(float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
+private:
     void OnConnectServer(const Responder& responder);
     void OnReceiveServer(const Responder& responder, const uint8* data, size_t);
     void OnReceiveClient(const uint8* data, size_t, uint8, uint32);
 
-private:
     IServer* server = nullptr;
     IClient* client = nullptr;
     NetworkTimelineSingleComponent* netTimelineComp = nullptr;
+    const NetworkServerConnectionsSingleComponent* netConnectionsComp = nullptr;
     ServicePacketHeader packetHeader;
 
     void ProcessClient(NetworkTimelineSingleComponent* netTimelineComp);

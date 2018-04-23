@@ -466,7 +466,7 @@ void ShooterCarSystem::ToggleCharacterStateIfRequired(DAVA::Entity* player) cons
 
             NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionMask);
             player->AddComponent(networkPredictComponent);
-        }
+    }
     }
     else
     {
@@ -474,37 +474,37 @@ void ShooterCarSystem::ToggleCharacterStateIfRequired(DAVA::Entity* player) cons
         {
             const BattleOptionsSingleComponent* optionsComponent = GetScene()->GetSingleComponentForRead<BattleOptionsSingleComponent>(this);
 
-            // Recreate CCT once we got out
-            CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
-            controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
-            controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
-            controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-            uint32 collisionMask = SHOOTER_CCT_COLLIDE_WITH_MASK;
-            if (!optionsComponent->collideCharacters)
-            {
-                collisionMask &= ~SHOOTER_CHARACTER_COLLISION_TYPE;
-            }
-            controllerComponent->SetTypeMaskToCollideWith(collisionMask);
-            player->AddComponent(controllerComponent);
-        }
-
-        NetworkPredictComponent* networkPredictComponent = player->GetComponent<NetworkPredictComponent>();
-        if (networkPredictComponent != nullptr &&
-            !networkPredictComponent->GetPredictionMask().IsSet<NetworkTransformComponent>())
+        // Recreate CCT once we got out
+        CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
+        controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
+        controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
+        controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
+        uint32 collisionMask = SHOOTER_CCT_COLLIDE_WITH_MASK;
+        if (!optionsComponent->collideCharacters)
         {
-            // restore proper prediction mask once we got out
-            player->RemoveComponent<NetworkPredictComponent>();
-
-            EntitiesManager* entitiesManager = GetScene()->GetEntitiesManager();
-            entitiesManager->UpdateCaches();
-
-            ComponentMask predictionMask;
-            predictionMask.Set<NetworkTransformComponent>();
-            predictionMask.Set<ShooterAimComponent>();
-            predictionMask.Set<RocketSpawnComponent>();
-
-            NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionMask);
-            player->AddComponent(networkPredictComponent);
+            collisionMask &= ~SHOOTER_CHARACTER_COLLISION_TYPE;
         }
+        controllerComponent->SetTypeMaskToCollideWith(collisionMask);
+        player->AddComponent(controllerComponent);
+    }
+
+    NetworkPredictComponent* networkPredictComponent = player->GetComponent<NetworkPredictComponent>();
+    if (networkPredictComponent != nullptr &&
+        !networkPredictComponent->GetPredictionMask().IsSet<NetworkTransformComponent>())
+    {
+        // restore proper prediction mask once we got out
+        player->RemoveComponent<NetworkPredictComponent>();
+
+        EntitiesManager* entitiesManager = GetScene()->GetEntitiesManager();
+        entitiesManager->UpdateCaches();
+
+        ComponentMask predictionMask;
+        predictionMask.Set<NetworkTransformComponent>();
+        predictionMask.Set<ShooterAimComponent>();
+        predictionMask.Set<RocketSpawnComponent>();
+
+        NetworkPredictComponent* networkPredictComponent = new NetworkPredictComponent(predictionMask);
+        player->AddComponent(networkPredictComponent);
+    }
     }
 }

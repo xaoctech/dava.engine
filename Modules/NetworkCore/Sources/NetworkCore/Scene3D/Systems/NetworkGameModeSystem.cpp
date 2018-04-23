@@ -24,7 +24,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(NetworkGameModeSystem)
 {
     ReflectionRegistrator<NetworkGameModeSystem>::Begin()[M::Tags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &NetworkGameModeSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 1.0f)]
+    .Method("ProcessFixed", &NetworkGameModeSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 0.7f)]
     .End();
 }
 
@@ -36,9 +36,6 @@ NetworkGameModeSystem::NetworkGameModeSystem(Scene* scene)
         netConnectionsComp = scene->GetSingleComponent<NetworkServerConnectionsSingleComponent>();
         DVASSERT(netConnectionsComp);
         server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
-        server->SubscribeOnTokenConfirmation(OnServerTokenConfirmationCb(this, &NetworkGameModeSystem::OnTokenConfirmationServer));
-        server->SubscribeOnDisconnect(OnServerDisconnectCb(this, &NetworkGameModeSystem::OnDisconnectServer));
-        server->SubscribeOnReceive(PacketParams::GAMEMODE_CHANNEL_ID, OnServerReceiveCb(this, &NetworkGameModeSystem::OnReceiveServer));
     }
     else if (IsClient(this))
     {
@@ -66,7 +63,7 @@ void NetworkGameModeSystem::RemoveEntity(Entity* entity)
     netGameModeComp->RemovePlayerEntity(netReplComp->GetNetworkPlayerID());
 }
 
-void NetworkGameModeSystem::Process(float32 timeElapsed)
+void NetworkGameModeSystem::ProcessFixed(float32 /*timeElapsed*/)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkGameModeSystem::Process");
 
@@ -79,6 +76,30 @@ void NetworkGameModeSystem::Process(float32 timeElapsed)
             PacketParams params = PacketParams::Reliable(PacketParams::GAMEMODE_CHANNEL_ID);
             client->Send(reinterpret_cast<const uint8*>(&header), GAMEMODE_PACKET_HEADER_SIZE, params);
             netGameModeComp->SetIsLoaded(false);
+        }
+    }
+    if (server)
+    {
+        const Vector<FastName>& confirmedTokens = netConnectionsComp->GetConfirmedTokens();
+        for (auto& token : confirmedTokens)
+        {
+            const Responder& responder = server->GetResponder(token);
+            OnTokenConfirmationServer(responder);
+        }
+
+        const Vector<NetworkServerConnectionsSingleComponent::ServerRecvPacket>& packets =
+        netConnectionsComp->GetRecvPackets(PacketParams::GAMEMODE_CHANNEL_ID);
+
+        for (auto& packet : packets)
+        {
+            const Responder& responder = server->GetResponder(packet.token);
+            OnReceiveServer(responder, packet.data.data(), packet.data.size());
+        }
+
+        const auto& disconnected = netConnectionsComp->GetJustDisconnectedTokens();
+        for (auto& token : disconnected)
+        {
+            OnDisconnectServer(token);
         }
     }
 }
@@ -100,10 +121,9 @@ void NetworkGameModeSystem::OnTokenConfirmationServer(const Responder& responder
     if (isValidToken)
     {
         server->SetValidToken(token);
-        NetworkPlayerID playerID = netGameModeComp->GetNetworkPlayerID(token);
-        GameModePacketHeader header;
-        header.networkPlayerID = playerID;
-        PacketParams params = PacketParams::Reliable(PacketParams::GAMEMODE_CHANNEL_ID);
+        const NetworkPlayerID playerID_ = netGameModeComp->GetNetworkPlayerID(token);
+        GameModePacketHeader header{ playerID_ };
+        const PacketParams params = PacketParams::Reliable(PacketParams::GAMEMODE_CHANNEL_ID);
         responder.Send(reinterpret_cast<const uint8*>(&header), GAMEMODE_PACKET_HEADER_SIZE, params);
     }
     else

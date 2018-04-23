@@ -110,4 +110,55 @@ struct Snapshot final
     void Init(uint32 frameId);
     void Clear();
 };
+
+struct SnapField
+{
+    Any value;
+
+    uint32 compression;
+    float32 precision;
+    float32 deltaPrecision; // Precision to make decision whether value has changed and should be sent over network
+};
+
+struct SnapComponent
+{
+    uint32 frameIdBegin = 0;
+    uint32 frameIdEnd = 0;
+
+    SnapshotComponentKey key;
+
+    M::Privacy privacy;
+    Vector<SnapField> fields;
+};
+
+struct SnapEntityEvent
+{
+    int32 type;
+    NetworkID entityId;
+};
+
+struct SnapComponentEvent
+{
+    int32 type;
+    SnapshotComponentKey key;
+};
+
+struct SnapEntity
+{
+    uint32 frameId = 0;
+    uint32 componentsLayoutVersion = 0;
+    uint32 childrenLayoutVersion = 0;
+    uint32 childrenDataVersion = 0;
+
+    NetworkID entityId;
+
+    Vector<SnapEntityEvent> entityEvents;
+    Vector<SnapComponentEvent> componentEvents;
+    Vector<std::shared_ptr<SnapComponent>> components;
+
+    void Reset(uint32 frameId = 0);
+    void ClearEvents();
+    void ClearComponents();
+};
+
 } // namespace DAVA

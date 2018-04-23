@@ -56,10 +56,6 @@ public:
         return 0;
     };
     void SetTeamID(uint8 teamID_) override{};
-    ENetPeer* GetPeer() const override
-    {
-        return nullptr;
-    };
     void SaveRtt() override{};
     bool RttIsBetter() const override
     {
@@ -82,10 +78,7 @@ public:
         return true;
     };
     void Broadcast(const uint8* data, size_t size, const PacketParams& param) const override{};
-    void Foreach(const DoForEach& callback) const override
-    {
-        callback(responder);
-    };
+
     uint32 GetMaxRtt() const override
     {
         return 0;
@@ -103,12 +96,13 @@ public:
     void SetValidToken(const FastName& token) override{};
     void Disconnect(const FastName& token) override{};
 
-    void SubscribeOnConnect(const OnServerConnectCb& callback) override{};
-    void SubscribeOnError(const OnServerErrorCb& callback) override{};
-    void SubscribeOnReceive(uint8 channel, const OnServerReceiveCb& callback) override{};
-    void SubscribeOnTokenConfirmation(const OnServerTokenConfirmationCb& callback) override{};
-    void SubscribeOnDisconnect(const OnServerDisconnectCb& callback) override{};
     void EmitFakeReconnect(const Responder& responder) override
+    {
+    }
+    void SetNetworkEventStorage(INetworkEventStorage& netGameStore) override
+    {
+    }
+    void SetServerSyncCallback(IServerSyncCallback& syncCallback) override
     {
     }
 

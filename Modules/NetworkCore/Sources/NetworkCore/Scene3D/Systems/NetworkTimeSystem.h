@@ -8,11 +8,12 @@
 
 namespace DAVA
 {
+class NetworkServerConnectionsSingleComponent;
 class IClient;
 class NetworkTimeSingleComponent;
 class NetworkResimulationSingleComponent;
 
-class NetworkTimeSystem : public BaseSimulationSystem
+class NetworkTimeSystem : public BaseSimulationSystem, IServerSyncCallback
 {
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkTimeSystem, BaseSimulationSystem);
@@ -23,9 +24,8 @@ public:
     void ReSimulationEnd() override;
 
     void OnConnectClient();
-    void OnConnectServer(const Responder& responder);
     void OnReceiveClient(const uint8* data, size_t, uint8 channelId, uint32);
-    void OnReceiveServer(const Responder& responder, const uint8* data, size_t);
+
     void ProcessFixedUpdateStats(float32 timeElapsed);
     void ProcessFixedSendStats(float32 timeElapsed);
     void Process(float32 timeElapsed) override;
@@ -33,11 +33,16 @@ public:
     void ProcessFrameDiff(int32 diff);
 
 private:
+    /// IServerSyncCallback
+    void OnConnectServer(const Responder& responder) final;
+    void OnReceiveServer(const Responder& responder, const void* data, size_t) final;
+    /// end IServerSyncCallback
+
     NetworkTimeSingleComponent* netTimeComp = nullptr;
     NetworkResimulationSingleComponent* networkResimulationSingleComponent = nullptr;
 
-    IClient* client = nullptr;
     IServer* server = nullptr;
+    IClient* client = nullptr;
     FpsMeter fpsMeter;
     FpsMeter ffpsMeter;
     uint32 realCurrFrameId = 0;

@@ -54,10 +54,6 @@ public:
     void SetTeamID(DAVA::uint8 teamID_) override
     {
     }
-    ENetPeer* GetPeer() const override
-    {
-        return nullptr;
-    }
     void SaveRtt() override
     {
     }

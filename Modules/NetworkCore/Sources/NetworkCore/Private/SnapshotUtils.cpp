@@ -244,4 +244,145 @@ std::ostream& SnapshotUtils::Log()
     return log;
 }
 
+bool SnapshotUtils2::ApplySnapshot(SnapEntity* snapshot, Entity* dstEntity, SnapshotApplyPredicate pred)
+{
+    DVASSERT(nullptr != snapshot);
+    DVASSERT(nullptr != dstEntity);
+
+    // Add and update components from snapshot.
+    for (auto& sptr : snapshot->components)
+    {
+        SnapshotComponentKey componentKey = sptr->key;
+        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "| Component " << componentKey << ":\n");
+
+        Component* dstComponent = nullptr;
+        const Type* dstComponentType = ComponentUtils::GetType(componentKey.id);
+
+        // single component
+        if (snapshot->entityId == NetworkID::SCENE_ID)
+        {
+            DVASSERT(componentKey.index == 0);
+            DVASSERT(dstEntity->GetScene() == dstEntity);
+
+            dstComponent = dstEntity->GetScene()->GetSingleComponent(dstComponentType);
+        }
+        // regular component
+        else
+        {
+            dstComponent = dstEntity->GetOrCreateComponent(dstComponentType, componentKey.index);
+        }
+
+        // check if there is predicate and ask it about dstComponent
+        bool allowApply = true;
+        if (nullptr != pred)
+        {
+            allowApply = pred(componentKey, dstComponent);
+        }
+
+        // now apply component snapshot
+        if (allowApply)
+        {
+            ApplySnapshot(sptr.get(), dstComponent);
+        }
+    }
+
+    return true;
+}
+
+bool SnapshotUtils2::ApplySnapshot(SnapEntity* snapshot, SnapshotComponentKey componentKey, Component* dstComponent)
+{
+    DVASSERT(nullptr != snapshot);
+    DVASSERT(nullptr != dstComponent);
+
+    SnapComponent* sc = nullptr;
+
+    size_t sz = snapshot->components.size();
+    for (size_t i = 0; i < sz; ++i)
+    {
+        if (snapshot->components[i]->key == componentKey)
+        {
+            sc = snapshot->components[i].get();
+            break;
+        }
+    }
+
+    if (nullptr != sc)
+    {
+        ApplySnapshot(sc, dstComponent);
+        return true;
+    }
+
+    return false;
+}
+
+void SnapshotUtils2::ApplySnapshot(SnapComponent* snapshot, Component* dstComponent)
+{
+    DVASSERT(nullptr != snapshot);
+    DVASSERT(nullptr != dstComponent);
+
+    size_t fieldsCount = snapshot->fields.size();
+
+    ReflectedObject compObj(dstComponent);
+    Reflection compRef = Reflection::Create(compObj);
+
+    const Vector<ReflectedComponentField>& fields = SnapshotUtils::GetComponentFields(compRef);
+    DVASSERT(fieldsCount == fields.size());
+
+    for (size_t i = 0; i < fieldsCount; ++i)
+    {
+        const ReflectedComponentField& reflCompField = fields[i];
+        SnapField& snapField = snapshot->fields[i];
+        reflCompField.valueWrapper->SetValue(compObj, snapField.value);
+        LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- " << reflCompField.key << " = " << snapField.value << "\n");
+    }
+}
+
+bool SnapshotUtils2::TestSnapshotComponentsEqual(const SnapComponent* snapshotComponent1, const SnapComponent* snapshotComponent2)
+{
+    if (snapshotComponent1 != snapshotComponent2)
+    {
+        DVASSERT(nullptr != snapshotComponent1);
+        DVASSERT(nullptr != snapshotComponent2);
+        DVASSERT(snapshotComponent1->key.id == snapshotComponent2->key.id);
+        DVASSERT(snapshotComponent1->fields.size() == snapshotComponent2->fields.size());
+
+        const size_t nfields = snapshotComponent1->fields.size();
+        for (size_t i = 0; i < nfields; ++i)
+        {
+            const Any& any1 = snapshotComponent1->fields[i].value;
+            const Any& any2 = snapshotComponent2->fields[i].value;
+            DVASSERT(any1.GetType() == any2.GetType());
+
+            float32 precision = snapshotComponent1->fields[i].precision;
+            DVASSERT(precision == snapshotComponent2->fields[i].precision);
+
+            const CompressorInterface* compressor = CompressionUtils::GetTypeCompressor(any1);
+            DVASSERT(compressor != nullptr);
+
+            if (!compressor->IsEqual(any1, any2, precision))
+            {
+                LOG_SNAPSHOT_SYSTEM_VERBOSE(SnapshotUtils::Log() << "|- Field " << i << " isn't equal " << any1 << " != " << any2 << "\n");
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+size_t SnapshotUtils2::CreateSnapshotDiff(const Snapshot* base, Snapshot* current, NetworkID entityId, M::OwnershipRelation ownership, uint8* dstBuff, size_t dstSize)
+{
+    return size_t();
+}
+
+size_t SnapshotUtils2::ApplySnapshotDiff(const Snapshot* base, Snapshot* target, NetworkID entityId, const uint8* srcBuff, size_t srcSize, SnapshotApplyCallback callback)
+{
+    return size_t();
+}
+
+size_t SnapshotUtils2::GetSnapshotDiffSize(const uint8* srcBuff, size_t srcSize)
+{
+    return size_t();
+}
+
 } // namespace DAVA

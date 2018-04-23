@@ -88,7 +88,7 @@ DAVA_TESTCLASS (DLCManagerMultiTest)
 {
     std::vector<std::unique_ptr<DLCWrapper>> dlcWrappers;
 
-    DAVA::float32 timeLeftToInitAndDownloadPack = 40.f; // seconds
+    DAVA::float32 timeLeftToInitAndDownloadPack = 50.f; // seconds
 
     DAVA::DLCManager* dlcManagerCustom = nullptr;
 

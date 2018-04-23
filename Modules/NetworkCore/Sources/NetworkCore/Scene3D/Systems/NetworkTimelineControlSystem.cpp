@@ -5,6 +5,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkTimelineSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h"
 
 #include <Debug/ProfilerCPU.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -30,9 +31,8 @@ NetworkTimelineControlSystem::NetworkTimelineControlSystem(Scene* scene)
     if (IsServer(this))
     {
         server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
-        server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkTimelineControlSystem::OnConnectServer));
-        server->SubscribeOnReceive(PacketParams::SERVICE_CHANNEL_ID,
-                                   OnServerReceiveCb(this, &NetworkTimelineControlSystem::OnReceiveServer));
+        // FIXME split into two systems and use scene->GetSingleComponentForRead<NetworkServerConnectionsSingleComponent>(this);
+        netConnectionsComp = scene->GetSingleComponent<NetworkServerConnectionsSingleComponent>();
     }
     else if (IsClient(this))
     {
@@ -62,6 +62,24 @@ void NetworkTimelineControlSystem::Process(float32 timeElapsed)
 
 void NetworkTimelineControlSystem::ProcessFixed(float32 timeElapsed)
 {
+    if (server)
+    {
+        const Vector<FastName>& justConnected = netConnectionsComp->GetJustConnectedTokens();
+        for (auto& token : justConnected)
+        {
+            const Responder& responder = server->GetResponder(token);
+            OnConnectServer(responder);
+        }
+
+        const Vector<NetworkServerConnectionsSingleComponent::ServerRecvPacket>& receivedPackets =
+        netConnectionsComp->GetRecvPackets(PacketParams::SERVICE_CHANNEL_ID);
+        for (auto packet : receivedPackets)
+        {
+            const Responder& responder = server->GetResponder(packet.token);
+            OnReceiveServer(responder, packet.data.data(), packet.data.size());
+        }
+    }
+
     int32 stepsCount = netTimelineComp->GetStepsCount();
     if (stepsCount > 0)
     {

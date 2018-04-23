@@ -63,6 +63,7 @@
 #include <NetworkCore/Scene3D/Systems/NetworkTransformFromLocalToNetSystem.h>
 #include "Components/SingleComponents/GameModeSingleComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
+#include "NetworkCore/Scene3D/Systems/ReplayServerSystem.h"
 
 #if defined(__DAVAENGINE_LINUX__) || defined(__DAVAENGINE_MACOS__)
 #include <signal.h>
@@ -479,7 +480,7 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
 
     if (std::any_of(begin(args), end(args), [](const String& arg) { return arg == "--replay" || arg == "--record"; }))
     {
-        tags.insert({ FastName("tools") }); // add ReplayServerSystem for now
+        tags.insert({ FastName("replay") }); // add ReplayServerSystem for now
     }
 
     scene = new Scene(tags);
@@ -523,6 +524,26 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
 
     scene->GetSingleComponent<NetworkServerSingleComponent>()->SetServer(&gameServer.GetUDPServer());
     scene->CreateSystemsByTags();
+
+    const bool isRecording = CommandLineParser::CommandIsFound("--record");
+    const bool isReplaying = CommandLineParser::CommandIsFound("--replay");
+    DVASSERT(!(isRecording && isReplaying));
+
+    ReplayServerSystem* replaySystem = scene->GetSystem<ReplayServerSystem>();
+    if (replaySystem)
+    {
+        ReplayServerSystem::Mode recordMode = ReplayServerSystem::Mode::None;
+        if (isRecording)
+        {
+            recordMode = ReplayServerSystem::Mode::Record;
+        }
+        else if (isReplaying)
+        {
+            recordMode = ReplayServerSystem::Mode::Replay;
+        }
+
+        replaySystem->SetMode(recordMode);
+    }
 
     if (scene->GetSystem<PhysicsSystem>() != nullptr)
     {

@@ -46,6 +46,9 @@ public:
     template <template <typename> class Container, class T>
     void GetDataNodes(Container<T>& container);
 
+    template <typename T>
+    T* GetSibling(uint32 index = 0);
+
 protected:
     Entity* entity = 0;
     mutable const Type* typeCache = nullptr;

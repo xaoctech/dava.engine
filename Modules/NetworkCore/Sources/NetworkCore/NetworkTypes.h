@@ -148,8 +148,8 @@ struct GameModePacketHeader
 {
     union
     {
-        bool isLoaded;
         NetworkPlayerID networkPlayerID;
+        bool isLoaded;
     };
 };
 const uint32 GAMEMODE_PACKET_HEADER_SIZE = sizeof(GameModePacketHeader);

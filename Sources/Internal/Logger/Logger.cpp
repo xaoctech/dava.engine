@@ -478,9 +478,6 @@ void Logger::Output(const FilePath& customLogFilename, eLogLevel ll, const char8
         if (consoleModeEnabled)
         {
             ConsoleLog(ll, formatedMsg);
-#ifdef __DAVAENGINE_WINDOWS__
-            PlatformLog(ll, formatedMsg);
-#endif
         }
 
         if (!customLogFilename.IsEmpty())

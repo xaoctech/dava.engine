@@ -213,4 +213,26 @@ std::ostream& operator<<(std::ostream& stream, const SnapshotComponentKey& key)
     return stream;
 }
 
+void SnapEntity::Reset(uint32 fId)
+{
+    frameId = fId;
+    componentsLayoutVersion = 0;
+    childrenLayoutVersion = 0;
+    childrenDataVersion = 0;
+
+    ClearEvents();
+    ClearComponents();
+}
+
+void SnapEntity::ClearEvents()
+{
+    entityEvents.clear();
+    componentEvents.clear();
+}
+
+void SnapEntity::ClearComponents()
+{
+    components.clear();
+}
+
 } // namespace DAVA

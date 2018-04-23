@@ -406,6 +406,7 @@ private:
 #endif
 
     friend class SnapshotSystemBase;
+    friend class SnapshotSystem2;
     friend class NetworkDeltaReplicationSystemServer;
 };
 }

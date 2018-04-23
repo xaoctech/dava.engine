@@ -6,6 +6,7 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkResimulationSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerSingleComponent.h"
+#include "NetworkCore/Scene3D/Components/SingleComponents/NetworkServerConnectionsSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include "NetworkCore/UDPTransport/UDPClient.h"
 #include "NetworkCore/UDPTransport/UDPServer.h"
@@ -81,9 +82,7 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
     else if (IsServer(this))
     {
         server = scene->GetSingleComponentForRead<NetworkServerSingleComponent>(this)->GetServer();
-        server->SubscribeOnConnect(OnServerConnectCb(this, &NetworkTimeSystem::OnConnectServer));
-        server->SubscribeOnReceive(PacketParams::TIME_CHANNEL_ID,
-                                   OnServerReceiveCb(this, &NetworkTimeSystem::OnReceiveServer));
+        server->SetServerSyncCallback(*this);
         netTimeComp->SetIsInitialized(true);
     }
     else
@@ -152,10 +151,10 @@ void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channel
     }
 }
 
-void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const uint8* data, size_t)
+void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const void* data, size_t)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkTimeSystem::OnReceiveServer");
-    const TimeSyncHeader* inHeader = reinterpret_cast<const TimeSyncHeader*>(data);
+    const auto* inHeader = reinterpret_cast<const TimeSyncHeader*>(data);
 
     NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     uint32 lastClientFrameId = netTimeComp->GetLastClientFrameId(responder.GetToken());

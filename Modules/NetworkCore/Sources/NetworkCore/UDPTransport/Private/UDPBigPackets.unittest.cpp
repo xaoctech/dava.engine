@@ -17,7 +17,7 @@ DAVA_TESTCLASS (UDPBigPacketsTest)
     static const size_t MAX_PACKET_SIZE = 4096;
     bool isDone = false;
 
-    void OnConnectServer(const Responder& responder)
+    static void OnConnectServer(const Responder& responder)
     {
         PacketParams params = PacketParams::Reliable(PacketParams::DEFAULT_CHANNEL_ID);
         std::unique_ptr<uint8[]> data(new uint8[MAX_PACKET_SIZE]);
@@ -43,7 +43,35 @@ DAVA_TESTCLASS (UDPBigPacketsTest)
     DAVA_TEST (SendPacket4k)
     {
         UDPServer server(0, 10101, 1);
-        server.SubscribeOnConnect(OnServerConnectCb(this, &UDPBigPacketsTest::OnConnectServer));
+
+        struct Storage : INetworkEventStorage
+        {
+            Storage(UDPServer& server_)
+                : server(server_)
+            {
+            }
+            void AddConnectedToken(const FastName& token) final
+            {
+            }
+            void StoreRecvPacket(const PacketParams::Channels channel, const FastName& token, const void* dataPtr, size_t dataSize) final
+            {
+            }
+            void RemoveConnectedToken(const FastName& token) final
+            {
+            }
+            void ConfirmToken(const FastName& token) final
+            {
+                const Responder& responder = server.GetResponder(token);
+                OnConnectServer(responder);
+            }
+
+        private:
+            UDPServer& server;
+        } storage(server);
+
+        server.SetNetworkEventStorage(storage);
+
+        //server.SubscribeOnConnect(OnServerConnectCb(this, &UDPBigPacketsTest::OnConnectServer));
         FastName token(Format("%064d", 1));
         UDPClient client("localhost", 10101, token, 1);
         client.SubscribeOnReceive(PacketParams::DEFAULT_CHANNEL_ID,
@@ -57,7 +85,7 @@ DAVA_TESTCLASS (UDPBigPacketsTest)
             server.Update();
         }
         TokenPacketHeader header;
-        uint32 tokenLength = static_cast<uint32>(strlen(token.c_str()));
+        uint32 tokenLength = static_cast<uint32>(token.size());
         DVASSERT(tokenLength == TokenPacketHeader::TOKEN_LENGTH);
         memcpy(header.token, token.c_str(), tokenLength);
         client.Send((uint8*)&header, sizeof(TokenPacketHeader),

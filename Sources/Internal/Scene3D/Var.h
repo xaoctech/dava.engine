@@ -49,13 +49,13 @@ public:
     }
 
     Var(const Var<T>& var)
-        : component(var.comp)
+        : component(var.component)
         , value(var.value)
     {
     }
 
     Var(Var<T>&& var)
-        : component(var.comp)
+        : component(var.component)
         , value(std::move(var.value))
     {
     }

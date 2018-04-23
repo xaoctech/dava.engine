@@ -167,9 +167,6 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         void Broadcast(const DAVA::uint8* data, size_t size, const DAVA::PacketParams& param) const override
         {
         }
-        void Foreach(const DAVA::DoForEach& callback) const override
-        {
-        }
         DAVA::uint32 GetMaxRtt() const override
         {
             return {};
@@ -189,23 +186,13 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         void Disconnect(const DAVA::FastName& token) override
         {
         }
-
-        void SubscribeOnConnect(const DAVA::OnServerConnectCb& callback) override
-        {
-        }
-        void SubscribeOnError(const DAVA::OnServerErrorCb& callback) override
-        {
-        }
-        void SubscribeOnReceive(DAVA::uint8 channel, const DAVA::OnServerReceiveCb& callback) override
-        {
-        }
-        void SubscribeOnTokenConfirmation(const DAVA::OnServerTokenConfirmationCb& callback) override
-        {
-        }
-        void SubscribeOnDisconnect(const DAVA::OnServerDisconnectCb& callback) override
-        {
-        }
         void EmitFakeReconnect(const DAVA::Responder& responder) override
+        {
+        }
+        void SetNetworkEventStorage(DAVA::INetworkEventStorage& netGameStore) override
+        {
+        }
+        void SetServerSyncCallback(DAVA::IServerSyncCallback& syncCallback) override
         {
         }
     };

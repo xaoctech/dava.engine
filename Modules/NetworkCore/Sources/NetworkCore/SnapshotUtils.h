@@ -90,4 +90,17 @@ struct SnapshotUtils
     static std::ostream& Log();
 };
 
+struct SnapshotUtils2
+{
+    static bool ApplySnapshot(SnapEntity* snapshot, Entity* dstEntity, SnapshotApplyPredicate pred = SnapshotApplyPredicate());
+    static bool ApplySnapshot(SnapEntity* snapshot, SnapshotComponentKey componentKey, Component* dstComponent);
+    static void ApplySnapshot(SnapComponent* snapshot, Component* dstComponent);
+
+    static bool TestSnapshotComponentsEqual(const SnapComponent* snapshotComponent1, const SnapComponent* snapshotComponent2);
+
+    static size_t CreateSnapshotDiff(const Snapshot* base, Snapshot* current, NetworkID entityId, M::OwnershipRelation ownership, uint8* dstBuff, size_t dstSize);
+    static size_t ApplySnapshotDiff(const Snapshot* base, Snapshot* target, NetworkID entityId, const uint8* srcBuff, size_t srcSize, SnapshotApplyCallback callback);
+    static size_t GetSnapshotDiffSize(const uint8* srcBuff, size_t srcSize);
+};
+
 } // namespace DAVA

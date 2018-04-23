@@ -2,13 +2,12 @@
 
 #include "Base/Vector.h"
 #include "Base/UnordererSet.h"
-#include "Base/UnordererMap.h"
 #include "Entity/SingleComponent.h"
 #include "NetworkCore/UDPTransport/UDPServer.h"
 
 namespace DAVA
 {
-class NetworkServerConnectionsSingleComponent : public ClearableSingleComponent
+class NetworkServerConnectionsSingleComponent : public ClearableSingleComponent, public INetworkEventStorage
 {
 public:
     DAVA_VIRTUAL_REFLECTION(NetworkServerConnectionsSingleComponent, ClearableSingleComponent);
@@ -21,17 +20,20 @@ public:
 
     NetworkServerConnectionsSingleComponent();
 
-    void AddConnectedToken(const FastName& token);
-    void RemoveConnectedToken(const FastName& token);
-
+    const Vector<FastName>& GetConfirmedTokens() const;
     const UnorderedSet<FastName>& GetConnectedTokens() const;
     const Vector<FastName>& GetJustConnectedTokens() const;
     const Vector<FastName>& GetJustDisconnectedTokens() const;
-
-    void StoreRecvPacket(uint8 channel, const FastName& token, const uint8* data, size_t size);
-    const Vector<ServerRecvPacket>& GetRecvPackets(uint8 channel) const;
+    const Vector<ServerRecvPacket>& GetRecvPackets(const PacketParams::Channels channel) const;
 
 private:
+    void AddConnectedToken(const FastName& token) final;
+    void StoreRecvPacket(const PacketParams::Channels channel, const FastName& token, const void* data, size_t size) final;
+    void RemoveConnectedToken(const FastName& token) final;
+    void ConfirmToken(const FastName& token) final;
+
+    Vector<FastName> confirmedTokens;
+
     Vector<FastName> justConnectedTokens;
     Vector<FastName> justDisconnectedTokens;
     UnorderedSet<FastName> connectedTokens;

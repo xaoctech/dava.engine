@@ -22,16 +22,16 @@ public:
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
-    void Process(float32 timeElapsed) override;
     void PrepareForRemove() override{};
 
+    void ProcessFixed(float32 timeElapsed) override;
+
+private:
     void OnTokenConfirmationServer(const Responder& responder);
     void OnDisconnectServer(const FastName& token);
     void OnReceiveServer(const Responder& responder, const uint8* data, size_t size);
-
     void OnReceiveClient(const uint8* data, size_t, uint8, uint32);
 
-private:
     IServer* server = nullptr;
     IClient* client = nullptr;
 

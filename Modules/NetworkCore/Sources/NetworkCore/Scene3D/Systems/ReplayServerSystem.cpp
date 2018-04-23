@@ -4,6 +4,7 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "Logger/Logger.h"
 #include "Scene3D/Scene.h"
+#include "CommandLine/CommandLineParser.h"
 
 namespace DAVA
 {
@@ -12,49 +13,39 @@ using Channels = PacketParams::Channels;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ReplayServerSystem)
 {
-    ReflectionRegistrator<ReplayServerSystem>::Begin()[M::Tags("tools")]
+    ReflectionRegistrator<ReplayServerSystem>::Begin()[M::Tags("replay")]
     .ConstructorByPointer<Scene*>()
     .Method("ProcessFixed", &ReplayServerSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 0.9f)]
     .End();
 }
 
-ReplayServerSystem::ReplayServerSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkServerConnectionsSingleComponent>())
-    , mode(Mode::None)
-    , replayFilePath("replay_file.txt")
+void ReplayServerSystem::SetMode(Mode mode_)
 {
-    auto& params = Engine::Instance()->GetCommandLine();
-    if (any_of(begin(params), end(params), [this](const String& s) { return s == "--record"; }))
-    {
-        mode = Mode::Record;
-    }
-    else if (any_of(begin(params), end(params), [this](const String& s) { return s == "--replay"; }))
-    {
-        mode = Mode::Replay;
-    }
+    mode = mode_;
 
     switch (mode)
     {
     case Mode::None:
         break;
     case Mode::Record:
-        file.open(replayFilePath, std::ios::out | std::ios::binary);
         file.exceptions(std::ios::failbit);
-        DVASSERT_ALWAYS(file);
+        file.open(replayFilePath, std::ios::out | std::ios::binary);
         break;
     case Mode::Replay:
-        file.open(replayFilePath, std::ios::in | std::ios::binary);
         file.exceptions(std::ios::failbit | std::ios::eofbit);
-        DVASSERT_ALWAYS(file);
+        file.open(replayFilePath, std::ios::in | std::ios::binary);
         break;
     }
 }
 
-ReplayServerSystem::~ReplayServerSystem()
+ReplayServerSystem::ReplayServerSystem(Scene* scene)
+    : SceneSystem(scene, ComponentUtils::MakeMask<>())
+    , mode(Mode::None)
+    , replayFilePath("replay_file.txt")
 {
-    file.flush();
-    file.close();
 }
+
+ReplayServerSystem::~ReplayServerSystem() = default;
 
 void ReplayServerSystem::ProcessFixed(float32 /*timeElapsed*/)
 {
@@ -88,6 +79,7 @@ void ReplayServerSystem::ProcessFixed(float32 /*timeElapsed*/)
             else
             {
                 Logger::Error("error: deserialize failed: %s", ex.what());
+                mode = Mode::None;
             }
         }
         break;
@@ -96,13 +88,15 @@ void ReplayServerSystem::ProcessFixed(float32 /*timeElapsed*/)
 
 void ReplayServerSystem::SerializeNetComponent(const NetworkServerConnectionsSingleComponent& component)
 {
+    const Vector<FastName>& confirmedTokens = component.GetConfirmedTokens();
+    SerializeVecOfFastName(confirmedTokens);
+
     const Vector<FastName>& justConnectedTokens = component.GetJustConnectedTokens();
     SerializeVecOfFastName(justConnectedTokens);
 
     const Vector<FastName>& justDisconnectedTokens = component.GetJustDisconnectedTokens();
     SerializeVecOfFastName(justDisconnectedTokens);
 
-    // TODO serialize it
     size_t numOfChannels = 0;
 
     for (Channels channel = Channels::DEFAULT_CHANNEL_ID;
@@ -141,14 +135,22 @@ void ReplayServerSystem::SerializeNetComponent(const NetworkServerConnectionsSin
     file << Type::EndFrame; // just debug check
 }
 
-void ReplayServerSystem::DeserializeNetComponent(NetworkServerConnectionsSingleComponent& component)
+void ReplayServerSystem::DeserializeNetComponent(INetworkEventStorage& eventStorage)
 {
+    Vector<FastName> confirmedTokens;
+    DeserializeVecOfFastName(confirmedTokens);
+
+    for (auto& token : confirmedTokens)
+    {
+        eventStorage.ConfirmToken(token);
+    }
+
     Vector<FastName> justConnectedTokens;
     DeserializeVecOfFastName(justConnectedTokens);
 
     for (auto& token : justConnectedTokens)
     {
-        component.AddConnectedToken(token);
+        eventStorage.AddConnectedToken(token);
     }
 
     Vector<FastName> justDisconnectedTokens;
@@ -156,7 +158,7 @@ void ReplayServerSystem::DeserializeNetComponent(NetworkServerConnectionsSingleC
 
     for (auto& token : justDisconnectedTokens)
     {
-        component.RemoveConnectedToken(token);
+        eventStorage.RemoveConnectedToken(token);
     }
 
     ReplayServerSystem::Type typeChannels;
@@ -167,7 +169,9 @@ void ReplayServerSystem::DeserializeNetComponent(NetworkServerConnectionsSingleC
 
     for (; numOfChannels > 0; --numOfChannels)
     {
-        uint8 channel = 0;
+        PacketParams::Channels channel;
+        static_assert(sizeof(channel) == 1, "fix next read instruction");
+
         file.read(reinterpret_cast<char*>(&channel), 1);
         uint32 packetsCount = 0;
         file.read(reinterpret_cast<char*>(&packetsCount), 4);
@@ -179,7 +183,7 @@ void ReplayServerSystem::DeserializeNetComponent(NetworkServerConnectionsSingleC
             DeserializeFastName(packet.token);
             DeserializeVecU8(packet.data);
 
-            component.StoreRecvPacket(channel, packet.token, packet.data.data(), packet.data.size());
+            eventStorage.StoreRecvPacket(channel, packet.token, packet.data.data(), packet.data.size());
         }
     }
 
@@ -190,7 +194,7 @@ void ReplayServerSystem::DeserializeNetComponent(NetworkServerConnectionsSingleC
 
 std::ostream& operator<<(std::ostream& stream, const ReplayServerSystem::Type type)
 {
-    char value = static_cast<char>(type);
+    auto value = static_cast<char>(type);
     stream.write(&value, 1);
     return stream;
 }

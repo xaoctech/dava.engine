@@ -219,6 +219,7 @@ void FullscreenTest::UnloadResources()
 {
     GetEngineContext()->inputSystem->RemoveHandler(inputHandlerToken);
     GetPrimaryWindow()->sizeChanged.Disconnect(this);
+    GetPrimaryWindow()->update.Disconnect(this);
 
     if (ui3dview->GetScene())
     {
