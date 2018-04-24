@@ -11,6 +11,7 @@ vertex_in
     [vertex] float3 position : POSITION;
     [vertex] float4 texCoord0 : TEXCOORD0; //uv, tint-value, random-radius
     [vertex] float4 pivot : TEXCOORD1; //patch-space [0...1]
+    [vertex] float4 distanceScale : TEXCOORD2; //scale0, scale1, distance0, distance1
     [vertex] float3 normal : NORMAL;
     [vertex] float3 tangent : TANGENT;
     [vertex] float3 binormal : BINORMAL;
@@ -114,6 +115,20 @@ vertex_out vp_main(vertex_in input)
     float decoration = ((decorationIndex == decorationMaskIndex) ? 1.0 : 0.0) * decarationSample.g;
 
     float3 pivotObjectSpace = float3(relativePosition - 0.5, height) * boundingBoxSize;
+
+    //distance scale
+    float cameraDistance = length(cameraPosition - pivotObjectSpace);
+
+    float nearScale = input.distanceScale.x;
+    float farScale = input.distanceScale.y;
+    float nearDistance = input.distanceScale.z;
+    float farDistance = input.distanceScale.w;
+
+    float distanceScaleParam = saturate((cameraDistance - nearDistance) / (farDistance - nearDistance));
+    float distanceScaleValue = distanceScaleParam * distanceScaleParam * (3.0 - 2.0 * distanceScaleParam);
+    float distanceScale = distanceScaleValue * (farScale - nearScale) + nearScale;
+    position *= float3(distanceScale, distanceScale, 1.0);
+
     float3 vx_position = position * decoration * decorScale + pivotObjectSpace;
 
     output.position = mul(float4(vx_position.x, vx_position.y, vx_position.z, 1.0), worldViewProjMatrix);

@@ -36,6 +36,7 @@ const FastName RUNTIME_TEXTURE_NAMES[RuntimeTextures::RUNTIME_TEXTURES_COUNT] =
   FastName("velocityBuffer"),
   FastName("precomputedTransmittance"),
   FastName("precomputedScattering"),
+  FastName("screenSpaceShadows"),
 };
 
 const static PixelFormat REFLECTION_PIXEL_FORMAT = PixelFormat::FORMAT_RGB565;
@@ -101,6 +102,8 @@ void RuntimeTextures::Reset(Size2i screenDim)
     runtimeTextureSizes[TEXTURE_GBUFFER_1_COPY] = Size2i(GBUFFER_TEX_SIZE.dx, GBUFFER_TEX_SIZE.dy);
     runtimeTextureSizes[TEXTURE_GBUFFER_2_COPY] = Size2i(GBUFFER_TEX_SIZE.dx, GBUFFER_TEX_SIZE.dy);
     runtimeTextureSizes[TEXTURE_GBUFFER_3_COPY] = Size2i(GBUFFER_TEX_SIZE.dx, GBUFFER_TEX_SIZE.dy);
+    runtimeTextureSizes[TEXTURE_SCREEN_SPACE_SHADOWS] = Size2i(GBUFFER_TEX_SIZE.dx, GBUFFER_TEX_SIZE.dy);
+
     runtimeTextureSizes[TEXTURE_HAMMERSLEY_SET] = Size2i(1024, 1);
 
 #if (!LOAD_BRDF_LOOKUP_TEXTURE)
@@ -332,6 +335,21 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         break;
     }
 
+    case TEXTURE_SCREEN_SPACE_SHADOWS:
+    {
+        descriptor.cpuAccessRead = false;
+        descriptor.cpuAccessWrite = false;
+        descriptor.autoGenMipmaps = false;
+        descriptor.isRenderTarget = true;
+        descriptor.needRestore = false;
+        descriptor.memoryless = false;
+        descriptor.type = rhi::TEXTURE_TYPE_2D;
+        descriptor.format = rhi::TEXTURE_FORMAT_R8G8B8A8;
+        runtimeTextures[semantic] = rhi::CreateTexture(descriptor);
+        runtimeTexturesFormat[semantic] = PixelFormat::FORMAT_RGBA8888;
+        break;
+    }
+
     case TEXTURE_DIRECTIONAL_SHADOW_MAP_DEPTH_BUFFER:
     {
         rhi::TextureFormat textureFormat = (Renderer::GetCurrentRenderFlow() == RenderFlow::LDRForward) ? rhi::TEXTURE_FORMAT_D16 : rhi::TEXTURE_FORMAT_D32F;
@@ -404,6 +422,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
         samplerDescriptors[semantic].mipFilter = rhi::TEXMIPFILTER_NONE;
         break;
     }
+
     case TEXTURE_INDIRECT_SPECULAR_LOOKUP:
     {
 #if (LOAD_BRDF_LOOKUP_TEXTURE)

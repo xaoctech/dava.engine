@@ -67,6 +67,40 @@ private:
     DeferredLightsRenderer* deferredLightsRenderer = nullptr;
 };
 
+class HDRDeferredPass::PreprocessPass
+{
+public:
+    PreprocessPass()
+        : material(new NMaterial)
+    {
+        material->SetMaterialName(FastName("Screen-Space Effects Material"));
+        material->SetFXName(FastName("~res:/Materials2/ScreenSpaceShadows.material"));
+    }
+
+    void Process(const Rect& vp, int32 priorityOffset)
+    {
+        rhi::HTexture depthBuffer = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_GBUFFER_3);
+        rhi::HTexture targetBuffer = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_SCREEN_SPACE_SHADOWS);
+        Size2i bufferSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_GBUFFER_3);
+
+        QuadRenderer::Options options;
+        options.material = material;
+        options.dstTextures[0] = targetBuffer;
+        options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_CLEAR;
+        options.dstTexSize = Vector2(bufferSize.dx, bufferSize.dy);
+        options.dstRect = Rect2f(vp.x, vp.y, vp.dx, vp.dy);
+        options.srcTexture = depthBuffer;
+        options.srcTexSize = Vector2(bufferSize.dx, bufferSize.dy);
+        options.srcRect = Rect2f(vp.x, vp.y, vp.dx, vp.dy);
+        options.renderPassPriority = priorityOffset;
+        options.renderPassName = "Screen-space shadows";
+        QuadRenderer().Render(options);
+    }
+
+private:
+    ScopedPtr<NMaterial> material;
+};
+
 HDRDeferredPass::GBufferPass::GBufferPass()
     : RenderPass(PASS_GBUFFER)
     , defaultCubemap(Texture::CreatePink(rhi::TextureType::TEXTURE_TYPE_CUBE))
@@ -92,8 +126,8 @@ void HDRDeferredPass::GBufferPass::DrawVisibilityArray(RenderSystem* renderSyste
 HDRDeferredPass::DeferredDecalPass::DeferredDecalPass()
     : RenderPass(PASS_GBUFFER)
 {
-    //AddRenderLayer(new RenderLayer(RENDER_LAYER_OPAQUE_ID, RenderLayer::LAYER_SORTING_FLAGS_OPAQUE));
-    //AddRenderLayer(new RenderLayer(RENDER_LAYER_DEFERRED_DECALS_ID, 0));
+    // AddRenderLayer(new RenderLayer(RENDER_LAYER_OPAQUE_ID, RenderLayer::LAYER_SORTING_FLAGS_OPAQUE));
+    // AddRenderLayer(new RenderLayer(RENDER_LAYER_DEFERRED_DECALS_ID, 0));
 
     deferredDecalRenderer = new DeferredDecalRenderer();
 
@@ -417,6 +451,8 @@ HDRDeferredPass::HDRDeferredPass()
     gBufferResolvePass->GetPassConfig().depthStencilBuffer.storeAction = rhi::STOREACTION_NONE;
     gBufferResolvePass->GetPassConfig().usesReverseDepth = passConfig.usesReverseDepth;
 
+    preprocessPass = new PreprocessPass;
+
     velocityPass = new VelocityPass();
 }
 
@@ -463,6 +499,8 @@ void HDRDeferredPass::Draw(RenderSystem* renderSystem, uint32 drawLayersMask)
     deferredDecalPass->SetViewport(viewport);
     deferredDecalPass->SetEnableFrameJittering(enableFrameJittering);
     deferredDecalPass->DrawVisibilityArray(renderSystem, visibilityArray);
+
+    preprocessPass->Process(viewport, passConfig.priority - 1);
 
     //resolve g-buffer
     gBufferResolvePass->GetPassConfig().priority = passConfig.priority + PRIORITY_MAIN_3D + 1; //right before
@@ -520,6 +558,7 @@ HDRDeferredPass::~HDRDeferredPass()
     SafeDelete(gBufferPass);
     SafeDelete(gBufferResolvePass);
     SafeDelete(velocityPass);
+    SafeDelete(preprocessPass);
 }
 
 void HDRDeferredPass::DebugDumpGBuffers()

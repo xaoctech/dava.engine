@@ -9,6 +9,8 @@
 #include "include/atmosphere.h"
 #include "include/resolve.h"
 
+uniform sampler2D screenSpaceShadows;
+
 #ensuredefined USE_FRAMEBUFFER_FETCH 0
 
 fragment_in
@@ -39,8 +41,10 @@ fragment_out fp_main(fragment_in input)
     float4 g2 = tex2D(gBuffer2, input.uv);
     float4 g3 = tex2D(gBuffer3, input.uv);
 #endif
-
+    
     float isTransmittanceMaterial = step(0.5, g1.a);
+
+    float4 screenSpaceShadowSample = tex2D(screenSpaceShadows, input.uv);
 
     float3 ndcPos = float3(input.p_pos, (g3.x - ndcToZMapping.y) / ndcToZMapping.x);
     float4 worldPos = mul(float4(ndcPos, 1.0), invViewProjMatrix);
@@ -60,7 +64,7 @@ fragment_out fp_main(fragment_in input)
     resolve.directionalLightDirection = lightPosition0.xyz;
     resolve.directionalLightViewSpaceCoords = mul(worldPos, shadowView);
     resolve.directionalLightColor = lightColor0.xyz / GLOBAL_LUMINANCE_SCALE;
-    resolve.directionalLightStaticShadow = g2.w;
+    resolve.directionalLightStaticShadow = g2.w * screenSpaceShadowSample.x;
     resolve.transmittanceSample = resolve.metallness * isTransmittanceMaterial;
     resolve.metallness *= 1.0 - isTransmittanceMaterial;
     resolve.fogParameters = fogParameters.xyz;
@@ -104,6 +108,8 @@ fragment_out fp_main(fragment_in input)
     shadow.shadowMapSize = shadowMapParameters.zw;
 
     float3 result = ResolveFinalColor(resolve, surface, shadow);
+    
+    // result = screenSpaceShadowSample.xyz;
 
     fragment_out output;
     output.color = float4(result, 1.0);

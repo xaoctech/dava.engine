@@ -20,11 +20,13 @@ private:
     class GBufferResolvePass;
     class DeferredDecalPass;
     class GBufferPass;
+    class PreprocessPass;
 
     GBufferPass* gBufferPass = nullptr;
     DeferredDecalPass* deferredDecalPass = nullptr;
     GBufferResolvePass* gBufferResolvePass = nullptr;
     VelocityPass* velocityPass = nullptr;
+    PreprocessPass* preprocessPass = nullptr;
 
     void DebugDumpGBuffers();
 };

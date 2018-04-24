@@ -46,8 +46,9 @@ public:
     rhi::Packet rectPacket;
 
 private:
-    rhi::HVertexBuffer quadBuffer;
     rhi::RenderPassConfig passConfig;
-    rhi::HDepthStencilState depthStencilState;
+
+    static rhi::HVertexBuffer sharedQuadBuffer;
+    static rhi::HDepthStencilState sharedDepthStencilState;
 };
 }

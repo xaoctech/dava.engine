@@ -7,33 +7,45 @@
 
 namespace DAVA
 {
-const char* QuadRenderer::DEFAULT_DEBUG_RENDERPASS_NAME = "???????";
+const char* QuadRenderer::DEFAULT_DEBUG_RENDERPASS_NAME = "QuadRendererPass";
+rhi::HVertexBuffer QuadRenderer::sharedQuadBuffer;
+rhi::HDepthStencilState QuadRenderer::sharedDepthStencilState;
 
 QuadRenderer::QuadRenderer()
 {
-    const static uint32 VERTEX_COUNT = 3;
-
-    std::array<Vector3, VERTEX_COUNT> quad =
+    if (sharedQuadBuffer.IsValid() == false)
     {
-      Vector3(-1.0f, -1.0f, +1.0f),
-      Vector3(-1.0f, +3.0f, +1.0f),
-      Vector3(+3.0f, -1.0f, +1.0f),
-    };
+        const static uint32 VERTEX_COUNT = 3;
+        std::array<Vector3, VERTEX_COUNT> quad =
+        {
+          Vector3(-1.0f, -1.0f, +1.0f),
+          Vector3(-1.0f, +3.0f, +1.0f),
+          Vector3(+3.0f, -1.0f, +1.0f),
+        };
 
-    rhi::VertexBuffer::Descriptor vDesc;
-    vDesc.size = sizeof(Vector3) * VERTEX_COUNT;
-    vDesc.initialData = quad.data();
-    vDesc.usage = rhi::USAGE_STATICDRAW;
-    quadBuffer = rhi::CreateVertexBuffer(vDesc);
+        rhi::VertexBuffer::Descriptor vDesc;
+        vDesc.size = sizeof(Vector3) * VERTEX_COUNT;
+        vDesc.initialData = quad.data();
+        vDesc.usage = rhi::USAGE_STATICDRAW;
+        sharedQuadBuffer = rhi::CreateVertexBuffer(vDesc);
+    }
+
+    if (sharedDepthStencilState.IsValid() == false)
+    {
+        rhi::DepthStencilState::Descriptor ds;
+        ds.depthTestEnabled = false;
+        ds.depthWriteEnabled = false;
+        ds.depthFunc = rhi::CMP_ALWAYS;
+        sharedDepthStencilState = rhi::AcquireDepthStencilState(ds);
+    }
 
     rhi::VertexLayout vxLayout;
     vxLayout.AddElement(rhi::VS_POSITION, 0, rhi::VDT_FLOAT, 3);
     rectPacket.vertexLayoutUID = rhi::VertexLayout::UniqueId(vxLayout);
-
     rectPacket.vertexStreamCount = 1;
-    rectPacket.vertexStream[0] = quadBuffer;
+    rectPacket.vertexStream[0] = sharedQuadBuffer;
     rectPacket.primitiveType = rhi::PRIMITIVE_TRIANGLELIST;
-    rectPacket.primitiveCount = VERTEX_COUNT / 3;
+    rectPacket.primitiveCount = 1;
 
     passConfig.colorBuffer[0].storeAction = rhi::STOREACTION_STORE;
     passConfig.colorBuffer[0].clearColor[0] = 0.0f;
@@ -42,17 +54,11 @@ QuadRenderer::QuadRenderer()
     passConfig.colorBuffer[0].clearColor[3] = 1.0f;
     passConfig.depthStencilBuffer.loadAction = rhi::LOADACTION_NONE;
     passConfig.depthStencilBuffer.storeAction = rhi::STOREACTION_NONE;
-
-    rhi::DepthStencilState::Descriptor ds;
-    ds.depthTestEnabled = false;
-    ds.depthWriteEnabled = false;
-    ds.depthFunc = rhi::CMP_ALWAYS;
-    depthStencilState = rhi::AcquireDepthStencilState(ds);
 }
 
 QuadRenderer::~QuadRenderer()
 {
-    rhi::DeleteVertexBuffer(quadBuffer);
+    // rhi::DeleteVertexBuffer(quadBuffer);
 }
 
 void QuadRenderer::RenderClear(const QuadRenderer::Options& options)
@@ -145,7 +151,7 @@ void QuadRenderer::Render(const QuadRenderer::Options& options)
                 rectPacket.samplerState = options.samplerState;
             }
 
-            rectPacket.depthStencilState = depthStencilState;
+            rectPacket.depthStencilState = sharedDepthStencilState;
 
             rhi::AddPacket(packetList, rectPacket);
         }
@@ -183,7 +189,7 @@ void QuadRenderer::Render(const char* tag, NMaterial* withMaterial, rhi::Viewpor
 void QuadRenderer::RenderToPacketList(rhi::HPacketList pl, NMaterial* withMaterial)
 {
     withMaterial->BindParams(rectPacket);
-    rectPacket.depthStencilState = depthStencilState;
+    rectPacket.depthStencilState = sharedDepthStencilState;
     rhi::AddPacket(pl, rectPacket);
 }
 }
