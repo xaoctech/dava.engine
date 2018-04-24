@@ -2,6 +2,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/Type.h"
+#include "Entity/Component.h"
 #include "Entity/SceneSystem.h"
 #include "Scene3D/ComponentGroup.h"
 #include "Scene3D/Entity.h"

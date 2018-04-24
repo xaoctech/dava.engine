@@ -796,9 +796,8 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
         }
 
         // Update entity's transform and its shapes down the hierarchy recursively
-        Matrix4 scaleMatrix = Matrix4::MakeScale(physicsComponent->currentScale);
-        TransformComponent* entityTransform = entity->GetComponent<TransformComponent>();
-        entityTransform->SetLocalMatrix(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(rigidActor->getGlobalPose()));
+        TransformComponent* transform = entity->GetComponent<TransformComponent>();
+        transform->SetLocalTransform(Transform(PhysicsMath::PxVec3ToVector3(rigidActor->getGlobalPose().p), physicsComponent->currentScale, PhysicsMath::PxQuatToQuaternion(rigidActor->getGlobalPose().q)));
 
         Vector<CollisionShapeComponent*> shapes = PhysicsUtils::GetShapeComponents(entity);
         if (shapes.size() > 0)
@@ -830,9 +829,9 @@ bool PhysicsSystem::FetchResults(bool waitForFetchFinish)
                 CollisionShapeComponent* shape = shapes[0];
                 if (shape->GetPxShape() != nullptr)
                 {
-                    Matrix4 scaleMatrix = Matrix4::MakeScale(shape->scale);
+                    const physx::PxTransform shapeLocalPos = shape->GetPxShape()->getLocalPose();
                     TransformComponent* childTransform = child->GetComponent<TransformComponent>();
-                    childTransform->SetLocalMatrix(scaleMatrix * PhysicsMath::PxMat44ToMatrix4(shape->GetPxShape()->getLocalPose()));
+                    childTransform->SetLocalTransform(Transform(PhysicsMath::PxVec3ToVector3(shapeLocalPos.p), shape->scale, PhysicsMath::PxQuatToQuaternion(shapeLocalPos.q)));
                 }
             }
         }

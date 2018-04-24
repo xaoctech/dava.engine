@@ -1,4 +1,6 @@
 #include "Entity/SceneSystem.h"
+
+#include "Entity/Component.h"
 #include "Entity/ComponentUtils.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Scene3D/Entity.h"

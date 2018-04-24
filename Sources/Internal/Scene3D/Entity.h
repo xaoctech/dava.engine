@@ -6,7 +6,7 @@
 #include "Reflection/Reflection.h"
 #include "Render/RenderBase.h"
 #include "Scene3D/SceneNodeAnimationKey.h"
-#include "Entity/Component.h"
+//#include "Entity/Component.h"
 #include "Engine/Engine.h"
 #include "Entity/ComponentManager.h"
 #include "Entity/ComponentUtils.h"
@@ -18,6 +18,7 @@
 
 namespace DAVA
 {
+class Component;
 class Scene;
 class SceneNodeAnimationKey;
 class SceneFileV2;
@@ -514,12 +515,6 @@ inline void Entity::RemoveComponent(const Type* type, uint32 index)
     {
         RemoveComponent(c);
     }
-}
-
-inline void Entity::RemoveComponent(Component* component)
-{
-    DetachComponent(component);
-    SafeDelete(component);
 }
 
 template <typename T>

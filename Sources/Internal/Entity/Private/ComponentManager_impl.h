@@ -1,14 +1,12 @@
 #pragma once
 
-#include "Entity/Component.h"
+#include "Debug/DVAssert.h"
 
 namespace DAVA
 {
 template <typename T>
 void ComponentManager::RegisterComponent()
 {
-    static_assert(std::is_base_of<UIComponent, T>::value || std::is_base_of<Component, T>::value, "T should be derived from Component or UIComponent");
-
     const Type* type = Type::Instance<T>();
 
     RegisterComponent(type);

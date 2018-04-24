@@ -4,7 +4,7 @@
 #include "Base/Serializable.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-
+#include "Scene3D/Entity.h"
 #include "MemoryManager/MemoryProfiler.h"
 #include "Reflection/Reflection.h"
 
@@ -14,8 +14,6 @@
 
 namespace DAVA
 {
-class Entity;
-
 class Component : public Serializable, public InspBase
 {
     DAVA_ENABLE_CLASS_ALLOCATION_TRACKING(ALLOC_POOL_COMPONENT)
@@ -50,7 +48,7 @@ public:
     T* GetSibling(uint32 index = 0);
 
 protected:
-    Entity* entity = 0;
+    Entity* entity = nullptr;
     mutable const Type* typeCache = nullptr;
 
     DAVA_VIRTUAL_REFLECTION(Component, InspBase);

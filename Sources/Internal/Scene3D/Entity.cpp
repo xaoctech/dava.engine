@@ -3,6 +3,7 @@
 #include "Base/ObjectFactory.h"
 #include "Debug/ProfilerCPU.h"
 #include "Engine/Engine.h"
+#include "Entity/Component.h"
 #include "Entity/ComponentManager.h"
 #include "Entity/ComponentUtils.h"
 #include "FileSystem/KeyedArchive.h"
@@ -88,6 +89,12 @@ void Entity::AddComponent(Component* component)
 
     if (scene)
         scene->RegisterComponent(this, component);
+}
+
+void Entity::RemoveComponent(Component* component)
+{
+    DetachComponent(component);
+    SafeDelete(component);
 }
 
 void Entity::DetachComponent(Vector<Component*>::iterator& it)

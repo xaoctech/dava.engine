@@ -1,4 +1,6 @@
 #include "Scene3D/Systems/EventSystem.h"
+
+#include "Entity/Component.h"
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Entity.h"
 
