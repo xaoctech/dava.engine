@@ -65,7 +65,10 @@ public:
         RenderTargetTextureKey();
         RenderTargetTextureKey(const String& uniqueName);
 
+        RenderTargetTextureKey(const RenderTargetTextureKey& other);
+
         bool operator==(const RenderTargetTextureKey& other) const;
+        RenderTargetTextureKey& operator=(const RenderTargetTextureKey& other);
 
         uint32 width = 0;
         uint32 height = 0;
@@ -77,7 +80,8 @@ public:
         bool needPixelReadback = false;
         bool ensurePowerOf2 = true;
 
-        String uniqueKey;
+        String uniqueId;
+        uint32 uniqueKey = static_cast<uint32>(-1);
 
     private:
         static uint32 newUniqueKey;

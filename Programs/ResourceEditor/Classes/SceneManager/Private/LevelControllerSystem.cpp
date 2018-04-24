@@ -186,23 +186,23 @@ void LevelControllerSystem::LoadEntities(const TLoadingProgressCallback& callbac
 
     Asset<Level> level = GetLoadedLevel();
 
-    auto foreachChunk = [](Level* level, const Function<void(Level::Chunk * chunk)>& fn) {
-        fn(&level->loadedChunkGrid.specialStreamingSettingsChunk);
+    auto foreachChunk = [](Level* level, const Function<void(Level::Chunk * chunk, bool isGlobal)>& fn) {
+        fn(&level->loadedChunkGrid.specialStreamingSettingsChunk, true);
 
         for (Level::Chunk& chunk : level->loadedChunkGrid.chunkData)
         {
-            fn(&chunk);
+            fn(&chunk, false);
         }
     };
 
     uint32 entitiesCount = 0;
-    auto calcEntitiesCount = [&entitiesCount](Level::Chunk* chunk) {
+    auto calcEntitiesCount = [&entitiesCount](Level::Chunk* chunk, bool /*isGlobal*/) {
         entitiesCount += static_cast<uint32>(chunk->entitiesIndices.size());
     };
 
     uint32 loadedCount = 0;
     AssetManager* assetManager = GetEngineContext()->assetManager;
-    auto loadEntities = [&](Level::Chunk* chunk) {
+    auto loadEntities = [&](Level::Chunk* chunk, bool isGlobal) {
         uint32 index = 0;
         for (size_t i = 0; i < chunk->entitiesIndices.size(); ++i)
         {
@@ -215,7 +215,7 @@ void LevelControllerSystem::LoadEntities(const TLoadingProgressCallback& callbac
             mappingNode.asset = levelEntity;
             callback(++loadedCount, entitiesCount);
 
-            levelEntity->rootEntity->SetVisible(false);
+            levelEntity->rootEntity->SetVisible(isGlobal);
         }
     };
 

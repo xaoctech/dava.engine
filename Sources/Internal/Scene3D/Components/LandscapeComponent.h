@@ -51,6 +51,8 @@ public:
     void SetTessellationHeight(float32 height);
     float32 GetTessellationHeight() const;
 
+    void GetDataNodes(Set<DataNode*>& dataNodes) override;
+
 private:
     using PageMaterials = Array<Asset<Material>, 3>;
 

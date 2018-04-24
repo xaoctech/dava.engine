@@ -787,25 +787,23 @@ void NMaterialTextureInfoStructureWrapper::GetTextureInfoRecursive(const Reflect
         return;
 
     Asset<FXAsset> fxAsset = material->GetFXAsset();
-    if (fxAsset == nullptr)
+    for (const auto& kv : material->GetLocalTextures())
     {
-        for (const auto& kv : material->GetLocalTextures())
-        {
-            if (names.find(kv.first) != names.end())
-                continue;
+        if (names.find(kv.first) != names.end())
+            continue;
 
-            const NMaterialTextureInfoValueWrapper& valueWrapper = GetOrCreateValueWrapper(kv.first);
-            names.insert(kv.first);
-            fields.emplace_back();
-            Reflection::Field& f = fields.back();
-            f.key = kv.first;
-            f.ref = Reflection(object,
-                               &valueWrapper,
-                               Reflection::GetDefaultStructureWrapper(),
-                               nullptr);
-        }
+        const NMaterialTextureInfoValueWrapper& valueWrapper = GetOrCreateValueWrapper(kv.first);
+        names.insert(kv.first);
+        fields.emplace_back();
+        Reflection::Field& f = fields.back();
+        f.key = kv.first;
+        f.ref = Reflection(object,
+                           &valueWrapper,
+                           Reflection::GetDefaultStructureWrapper(),
+                           nullptr);
     }
-    else
+
+    if (fxAsset != nullptr)
     {
         const Vector<RenderPassDescriptor>& renderPassDescriptors = fxAsset->GetPassDescriptors();
         for (const RenderPassDescriptor& descriptor : renderPassDescriptors)

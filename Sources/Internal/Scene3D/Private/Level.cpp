@@ -18,6 +18,7 @@
 #include "Render/Material/NMaterial.h"
 #include "Time/SystemTimer.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Math/Rect.h"
 
 #define DISABLE_LEVEL_STREAMING 1
 
@@ -86,8 +87,11 @@ Level::Chunk& Level::Chunk::operator=(Level::Chunk&& other)
 
 void Level::ChunkGrid::SetWorldBounds(const AABBox3& newWorldBounds)
 {
-    if (worldBounds.IsInside(newWorldBounds) == true)
+    Rect currentRect(worldBounds.min.x, worldBounds.min.y, worldBounds.max.x - worldBounds.min.x, worldBounds.max.y - worldBounds.min.y);
+    Rect newRect(newWorldBounds.min.x, newWorldBounds.min.y, newWorldBounds.max.x - newWorldBounds.min.x, newWorldBounds.max.y - newWorldBounds.max.y);
+    if (currentRect.RectContains(newRect) == true)
     {
+        worldBounds.AddAABBox(newWorldBounds);
         return;
     }
 

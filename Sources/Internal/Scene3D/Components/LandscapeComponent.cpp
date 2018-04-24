@@ -227,4 +227,9 @@ float32 LandscapeComponent::GetTessellationHeight() const
 {
     return tessellationHeight;
 }
+
+void LandscapeComponent::GetDataNodes(Set<DataNode*>& dataNodes)
+{
+    landscape->GetDataNodes(dataNodes);
+}
 }

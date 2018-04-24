@@ -54,7 +54,8 @@ size_t RenderTargetTextureKeyHash(const Any& v)
     HashCombine(seed, key.isDepth);
     HashCombine(seed, key.needPixelReadback);
     HashCombine(seed, key.ensurePowerOf2);
-    uint32 hash = HashValue_N(key.uniqueKey.data(), static_cast<uint32>(key.uniqueKey.size()));
+    HashCombine(seed, key.uniqueKey);
+    uint32 hash = HashValue_N(key.uniqueId.data(), static_cast<uint32>(key.uniqueId.size()));
     HashCombine(seed, hash);
     return seed;
 }
@@ -309,16 +310,55 @@ bool Texture::RenderTargetTextureKey::operator==(const RenderTargetTextureKey& o
     isDepth == other.isDepth &&
     needPixelReadback == other.needPixelReadback &&
     ensurePowerOf2 == other.ensurePowerOf2 &&
-    uniqueKey == other.uniqueKey;
+    uniqueKey == other.uniqueKey &&
+    uniqueId == other.uniqueId;
+}
+
+Texture::RenderTargetTextureKey::RenderTargetTextureKey(const Texture::RenderTargetTextureKey& other)
+{
+    width = other.width;
+    height = other.height;
+    sampleCount = other.sampleCount;
+    mipLevelsCount = other.mipLevelsCount;
+    format = other.format;
+    textureType = other.textureType;
+    isDepth = other.isDepth;
+    needPixelReadback = other.needPixelReadback;
+    ensurePowerOf2 = other.ensurePowerOf2;
+    if (other.uniqueKey != static_cast<uint32>(-1))
+    {
+        uniqueKey = newUniqueKey++;
+    }
+    uniqueId = other.uniqueId;
+}
+
+Texture::RenderTargetTextureKey& Texture::RenderTargetTextureKey::operator=(const Texture::RenderTargetTextureKey& other)
+{
+    width = other.width;
+    height = other.height;
+    sampleCount = other.sampleCount;
+    mipLevelsCount = other.mipLevelsCount;
+    format = other.format;
+    textureType = other.textureType;
+    isDepth = other.isDepth;
+    needPixelReadback = other.needPixelReadback;
+    ensurePowerOf2 = other.ensurePowerOf2;
+    if (other.uniqueKey != static_cast<uint32>(-1))
+    {
+        uniqueKey = newUniqueKey++;
+    }
+    uniqueId = other.uniqueId;
+
+    return *this;
 }
 
 Texture::RenderTargetTextureKey::RenderTargetTextureKey()
-    : uniqueKey(Format("FBO %u", newUniqueKey++))
+    : uniqueKey(newUniqueKey++)
 {
 }
 
 Texture::RenderTargetTextureKey::RenderTargetTextureKey(const String& uniqueName)
-    : uniqueKey(uniqueName)
+    : uniqueId(uniqueName)
 {
 }
 
@@ -788,19 +828,8 @@ Vector<String> TextureAssetLoader::GetUniqueTextureKeyDependsOn(const AssetBase*
 
 AssetFileInfo TextureAssetLoader::GetRenderTargetTextureKeyFileInfo(const Any& assetKey) const
 {
-    const Texture::RenderTargetTextureKey& key = assetKey.Get<Texture::RenderTargetTextureKey>();
-
     AssetFileInfo info;
     info.inMemoryAsset = true;
-    if (key.uniqueKey.empty() == false)
-    {
-        info.fileName = key.uniqueKey;
-    }
-    else
-    {
-        info.fileName = "FBO";
-    }
-
     return info;
 }
 
@@ -854,16 +883,13 @@ void TextureAssetLoader::LoadRenderTargetTextureKeyAsset(Asset<AssetBase> asset,
     tx->levelsCount = descriptor.levelCount;
     tx->handle = rhi::CreateTexture(descriptor);
 
-    if (key.isDepth)
-    {
-        rhi::TextureSetDescriptor textureSetDesc;
-        textureSetDesc.fragmentTexture[0] = tx->handle;
-        textureSetDesc.fragmentTextureCount = 1;
-        tx->singleTextureSet = rhi::AcquireTextureSet(textureSetDesc);
-    }
+    rhi::TextureSetDescriptor textureSetDesc;
+    textureSetDesc.fragmentTexture[0] = tx->handle;
+    textureSetDesc.fragmentTextureCount = 1;
+    tx->singleTextureSet = rhi::AcquireTextureSet(textureSetDesc);
 
     tx->isRenderTarget = true;
-    tx->texDescriptor->pathname = key.uniqueKey;
+    tx->texDescriptor->pathname = key.uniqueId;
 }
 
 Vector<String> TextureAssetLoader::GetRenderTargetTextureKeyDependsOn(const AssetBase* asset) const

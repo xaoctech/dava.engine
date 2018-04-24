@@ -10,13 +10,20 @@
 #include "Scene3D/Components/BillboardComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "Scene3D/Components/EnvironmentComponent.h"
 #include "Scene3D/Components/LandscapeComponent.h"
+#include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/LightmapComponent.h"
 #include "Scene3D/Components/LightmapDataComponent.h"
 #include "Scene3D/Components/MeshComponent.h"
+#include "Scene3D/Components/PostEffectComponent.h"
 #include "Scene3D/Components/PrefabComponent.h"
+#include "Scene3D/Components/ReflectionComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/StaticOcclusionComponent.h"
+#include "Scene3D/Components/StreamingSettingsComponent.h"
+#include "Scene3D/Components/VisibilityCheckComponent.h"
 #include "Render/3D/Geometry.h"
 #include "Render/Material/Material.h"
 #include "Render/Highlevel/BillboardRenderObject.h"
@@ -53,6 +60,7 @@ void SceneFileConverter::ConvertSceneToLevelFormat(Scene* scene, const FilePath&
         for (int32 childIndex = 0; childIndex < childrenCount; ++childIndex)
         {
             Entity* child = entity->GetChild(childIndex);
+            bool removed = false;
 
             if (child->GetComponent<PrefabComponent>() == nullptr)
             {
@@ -88,10 +96,25 @@ void SceneFileConverter::ConvertSceneToLevelFormat(Scene* scene, const FilePath&
 
                     entity->InsertBeforeNode(prefabEntity, child);
                     entity->RemoveNode(child);
+                    removed = true;
                 }
                 else
                 {
                     fn(child);
+                }
+            }
+
+            if (removed == false)
+            {
+                if (child->GetComponent<LandscapeComponent>() != nullptr ||
+                    child->GetComponent<LightComponent>() != nullptr ||
+                    child->GetComponent<ReflectionComponent>() != nullptr ||
+                    child->GetComponent<PostEffectComponent>() != nullptr ||
+                    child->GetComponent<EnvironmentComponent>() != nullptr ||
+                    child->GetComponent<StaticOcclusionComponent>() != nullptr ||
+                    child->GetComponent<VisibilityCheckComponent>() != nullptr)
+                {
+                    child->AddComponent(new StreamingSettingsComponent());
                 }
             }
         }

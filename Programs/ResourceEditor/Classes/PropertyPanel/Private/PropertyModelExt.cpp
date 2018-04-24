@@ -24,6 +24,7 @@
 #include <Base/TypeInheritance.h>
 #include <Engine/PlatformApiQt.h>
 #include <Entity/ComponentManager.h>
+#include <Entity/SingletonComponent.h>
 #include <Entity/Component.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Functional/Function.h>
@@ -92,6 +93,11 @@ struct TypeInitializer : public StaticSingleton<ComponentCreator>
         {
             const ReflectedType* refType = ReflectedTypeDB::GetByType(derived.type);
             if (refType == nullptr)
+            {
+                continue;
+            }
+
+            if (refType == ReflectedTypeDB::Get<SingletonComponent>())
             {
                 continue;
             }
