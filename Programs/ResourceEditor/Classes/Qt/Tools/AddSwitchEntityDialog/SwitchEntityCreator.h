@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Base/BaseTypes.h>
+#include <Render/Highlevel/RenderObject.h>
 
 namespace DAVA
 {
@@ -8,25 +9,27 @@ class Entity;
 class RenderObject;
 }
 
-typedef std::pair<DAVA::Entity*, DAVA::RenderObject*> RENDER_PAIR;
+using RenderPair = std::pair<DAVA::Entity*, DAVA::RenderObject*>;
 
 class SwitchEntityCreator
 {
-    static const DAVA::uint32 MAX_SWITCH_COUNT = 3;
+    static const size_t MAX_SWITCH_COUNT = 3u;
 
 public:
-    DAVA::Entity* CreateSwitchEntity(const DAVA::Vector<DAVA::Entity*>& fromEntities);
+    DAVA::RefPtr<DAVA::Entity> CreateSwitchEntity(const DAVA::Vector<DAVA::Entity*>& fromEntities);
     bool HasSwitchComponentsRecursive(DAVA::Entity* fromEntity);
-    bool HasRenderObjectsRecursive(DAVA::Entity* fromEntity);
+    bool HasMeshRenderObjectsRecursive(DAVA::Entity* fromEntity);
+    size_t GetRenderObjectsCountRecursive(DAVA::Entity* entity, DAVA::RenderObject::eType objectType);
 
-protected:
+private:
     void CreateSingleObjectData(DAVA::Entity* switchEntity);
     void CreateMultipleObjectsData();
 
-    void FindRenderObjectsRecursive(DAVA::Entity* fromEntity, DAVA::Vector<RENDER_PAIR>& entityAndObjectPairs);
+    void FindRenderObjectsRecursive(DAVA::Entity* fromEntity, DAVA::Vector<RenderPair>& entityAndObjectPairs);
 
     DAVA::Vector<DAVA::Entity*> clonedEntities;
     DAVA::Vector<DAVA::Entity*> realChildren;
 
-    DAVA::Vector<RENDER_PAIR> renderPairs[MAX_SWITCH_COUNT];
+    DAVA::Array<DAVA::Vector<RenderPair>, MAX_SWITCH_COUNT> renderPairs;
+    bool hasSkinnedMesh = false;
 };
