@@ -1030,12 +1030,6 @@ Reflection NMaterialBaseStructureWrapper::CreateReflection(const ReflectedObject
         vw(&NMaterial::GetMaterialType);
         activeVw = &vw;
     }
-    else if (key == "activeVariantName")
-    {
-        static ValueWrapperClassFn<NMaterial, const FastName&, void*>
-        vw(&NMaterial::GetActiveVariantName);
-        activeVw = &vw;
-    }
     else
     {
         return Reflection();
@@ -1060,7 +1054,7 @@ Reflection NMaterialBaseStructureWrapper::GetField(const ReflectedObject& object
 Vector<Reflection::Field> NMaterialBaseStructureWrapper::GetFields(const ReflectedObject& object, const ValueWrapper* vw, Reflection::MetaPredicate pred) const
 {
     Vector<Reflection::Field> fields;
-    for (const String& key : { "fxName", "materialName", "qualityGroup", "materialType", "activeVariantName" })
+    for (const String& key : { "fxName", "materialName", "qualityGroup", "materialType" })
     {
         fields.emplace_back();
         Reflection::Field& f = fields.back();

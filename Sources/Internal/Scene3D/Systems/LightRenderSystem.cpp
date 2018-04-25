@@ -58,6 +58,7 @@ void LightRenderSystem::RemoveEntity(Entity* entity)
     LightRenderComponent* lightRender = entity->GetComponent<LightRenderComponent>();
     if (light && lightRender)
     {
+        light->SetLightObject(nullptr);
         lightRender->SetLight(nullptr);
         renderSystem->RemoveFromRender(lightRender->GetRenderObject());
 

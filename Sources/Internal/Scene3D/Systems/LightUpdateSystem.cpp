@@ -63,6 +63,11 @@ void LightUpdateSystem::RecalcLight(Entity* entity)
 {
     const Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
     Light* light = entity->GetComponent<LightComponent>()->GetLightObject();
+    if (light == nullptr)
+    {
+        return;
+    }
+
     light->SetPositionDirectionFromMatrix(*worldTransformPointer);
     light->SetWorldTransformPtr(worldTransformPointer);
     if (light->GetLightType() == Light::TYPE_DIRECTIONAL)

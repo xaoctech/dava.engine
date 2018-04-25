@@ -22,13 +22,15 @@ using namespace DAVA;
 class MaterialEditorData : public TArcDataNode
 {
 public:
-    Reflection material;
-    Asset<Material> materialAsset;
+    Reflection materialRefl;
+    Asset<Material> currentMaterial;
+
+    UnorderedSet<Asset<Material>> materials;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(MaterialEditorData, TArcDataNode)
     {
         ReflectionRegistrator<MaterialEditorData>::Begin()
-        .Field("material", &MaterialEditorData::material)
+        .Field("material", &MaterialEditorData::materialRefl)
         .End();
     }
 };
@@ -48,7 +50,7 @@ public:
 
         DataContext* ctx = accessor->GetGlobalContext();
         MaterialEditorModuleDetail::MaterialEditorData* data = ctx->GetData<MaterialEditorData>();
-        Asset<Material> asset = data->materialAsset;
+        Asset<Material> asset = data->currentMaterial;
         if (GetEngineContext()->assetManager->SaveAsset(asset) == false)
         {
             Logger::Error("Failed to save material asset");
@@ -59,6 +61,11 @@ private:
     ContextAccessor* accessor;
 };
 } // namespace MaterialEditorModuleDetail
+
+MaterialEditorModule::~MaterialEditorModule()
+{
+    GetAccessor()->GetEngineContext()->assetManager->UnregisterListener(&listener);
+}
 
 void MaterialEditorModule::PostInit()
 {
@@ -74,6 +81,8 @@ void MaterialEditorModule::PostInit()
 
     PropertiesView::Params params(DAVA::mainWindowKey);
     params.accessor = accessor;
+    params.invoker = GetInvoker();
+    params.wndKey = DAVA::mainWindowKey;
     params.isInDevMode = false;
     params.showToolBar = false;
     params.ui = ui;
@@ -97,29 +106,65 @@ void MaterialEditorModule::PostInit()
     PanelKey panelKey(QStringLiteral("MaterialEditorDock"), info);
 
     ui->AddView(DAVA::mainWindowKey, panelKey, view);
+
+    listener.onReloaded = MakeFunction(this, &MaterialEditorModule::OnAssetReloaded);
+    listener.onLoaded = MakeFunction(this, &MaterialEditorModule::OnAssetLoaded);
+    GetAccessor()->GetEngineContext()->assetManager->RegisterListener(&listener, DAVA::Type::Instance<DAVA::Material>());
 }
 
 void MaterialEditorModule::OnSelectionChanged(const DAVA::Any& selection)
 {
     using namespace DAVA;
-    if (selection.CanCast<FilePath>() == false)
-        return;
 
-    FilePath path = selection.Cast<FilePath>();
+    ContextAccessor* accessor = GetAccessor();
+    DataContext* ctx = accessor->GetGlobalContext();
+    MaterialEditorModuleDetail::MaterialEditorData* data = ctx->GetData<MaterialEditorModuleDetail::MaterialEditorData>();
+    data->currentMaterial.reset();
+    data->materialRefl = DAVA::Reflection();
+
+    FilePath path = selection.Cast<FilePath>(FilePath());
     if (path.IsEqualToExtension(".mat") == false)
+    {
         return;
+    }
 
     Material::PathKey key(path);
     Asset<Material> materialAsset = GetEngineContext()->assetManager->GetAsset<Material>(key, AssetManager::SYNC);
-    if (materialAsset.get() == nullptr)
-        return;
+    DVASSERT(materialAsset != nullptr);
+
+    data->currentMaterial = materialAsset;
+    data->materialRefl = CreateNMaterialReflection(data->currentMaterial->GetMaterial());
+}
+
+void MaterialEditorModule::OnAssetLoaded(const DAVA::Asset<DAVA::AssetBase>& asset)
+{
+    using namespace DAVA;
 
     ContextAccessor* accessor = GetAccessor();
     DataContext* ctx = accessor->GetGlobalContext();
     MaterialEditorModuleDetail::MaterialEditorData* data = ctx->GetData<MaterialEditorModuleDetail::MaterialEditorData>();
 
-    data->materialAsset = materialAsset;
-    data->material = CreateNMaterialReflection(materialAsset->GetMaterial());
+    Asset<Material> loadedMaterial = std::static_pointer_cast<Material>(asset);
+    data->materials.insert(loadedMaterial);
+}
+
+void MaterialEditorModule::OnAssetReloaded(const DAVA::Asset<DAVA::AssetBase>& original, const DAVA::Asset<DAVA::AssetBase>& reloaded)
+{
+    using namespace DAVA;
+
+    ContextAccessor* accessor = GetAccessor();
+    DataContext* ctx = accessor->GetGlobalContext();
+    MaterialEditorModuleDetail::MaterialEditorData* data = ctx->GetData<MaterialEditorModuleDetail::MaterialEditorData>();
+
+    Asset<Material> reloadedMaterial = std::static_pointer_cast<Material>(reloaded);
+    data->materials.erase(std::static_pointer_cast<Material>(original));
+    data->materials.insert(reloadedMaterial);
+
+    if (data->currentMaterial == original)
+    {
+        data->currentMaterial = reloadedMaterial;
+        data->materialRefl = CreateNMaterialReflection(data->currentMaterial->GetMaterial());
+    }
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(MaterialEditorModule)
