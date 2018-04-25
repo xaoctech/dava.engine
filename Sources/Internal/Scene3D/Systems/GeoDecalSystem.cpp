@@ -84,7 +84,7 @@ void GeoDecalSystem::Process(float32 timeElapsed)
     for (auto& decal : decals)
     {
         GeoDecalComponent* geoDecalComponent = static_cast<GeoDecalComponent*>(decal.first);
-        DAVA::Matrix4 transform = decal.first->GetEntity()->GetWorldMatrix();
+        DAVA::Matrix4 transform = decal.first->GetEntity()->GetComponent<TransformComponent>()->GetWorldMatrix();
 
         DAVA::RenderHelper::eDrawType dt = DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
         DAVA::Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);

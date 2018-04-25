@@ -19,6 +19,8 @@ public:
     static Vector3 TransformVector(const Transform& transform, const Vector3& vector);
     static Transform Inverse(const Transform& transform);
     static Matrix4 ToMatrix(const Transform& transform);
+
+    static Transform BuildOriented(const Vector3& direction, const Vector3& translation);
 };
 
 inline Transform TransformUtils::MakeTranslation(const Vector3& translationVector)

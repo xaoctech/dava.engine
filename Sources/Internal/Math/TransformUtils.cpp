@@ -22,4 +22,13 @@ Matrix4 TransformUtils::ToMatrix(const Transform& transform)
     m.SetTranslationVector(transform.GetTranslation());
     return m;
 }
+
+Transform TransformUtils::BuildOriented(const Vector3& direction, const Vector3& translation)
+{
+    Transform result;
+    result.SetScale(Vector3(1.0f, 1.0f, 1.0f));
+    result.SetRotation(Quaternion::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), direction));
+    result.SetTranslation(translation);
+    return result;
+}
 }

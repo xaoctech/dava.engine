@@ -104,7 +104,7 @@ FontPreset UIYamlLoader::CreateFontPresetFromYamlNode(const YamlNode* node)
         }
 
         const YamlNode* texNameNode = node->Get("texture");
-        if (!fontNameNode)
+        if (!texNameNode)
         {
             return FontPreset::EMPTY;
         }

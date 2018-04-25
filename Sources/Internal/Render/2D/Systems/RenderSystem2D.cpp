@@ -773,6 +773,8 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
         state = &defaultSpriteDrawState;
     }
 
+    DVASSERT(state != nullptr);
+
     float32 scaleX = 1.0f;
     float32 scaleY = 1.0f;
 
@@ -809,7 +811,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
             { //SCALE
                 x += (spriteSize.dx - rectsAndOffsets[frame][2] - rectsAndOffsets[frame][4] * 2) * scaleX;
                 y += (spriteSize.dy - rectsAndOffsets[frame][3] - rectsAndOffsets[frame][5] * 2) * scaleY;
-                if (!state || !state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
+                if (!state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
                 {
                     spriteTempVertices[2] = spriteTempVertices[6] = frameVertices[frame][0] * scaleX + x; //x2 do not change this sequence. This is because of the cache reason
                     spriteTempVertices[1] = spriteTempVertices[3] = frameVertices[frame][5] * scaleY + y; //y1
@@ -828,7 +830,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
             { //NOT SCALE
                 x += (spriteSize.dx - rectsAndOffsets[frame][2] - rectsAndOffsets[frame][4] * 2);
                 y += (spriteSize.dy - rectsAndOffsets[frame][3] - rectsAndOffsets[frame][5] * 2);
-                if (!state || !state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
+                if (!state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
                 {
                     spriteTempVertices[2] = spriteTempVertices[6] = frameVertices[frame][0] + x; //x2 do not change this sequence. This is because of the cache reason
                     spriteTempVertices[1] = spriteTempVertices[3] = frameVertices[frame][5] + y; //y1
@@ -851,7 +853,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
                 if (sprite->flags & Sprite::EST_SCALE)
                 { //SCALE
                     x += (spriteSize.dx - rectsAndOffsets[frame][2] - rectsAndOffsets[frame][4] * 2) * scaleX;
-                    if (!state || !state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
+                    if (!state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
                     {
                         spriteTempVertices[0] = spriteTempVertices[4] = frameVertices[frame][2] * scaleX + x; //x1
                         spriteTempVertices[5] = spriteTempVertices[7] = frameVertices[frame][5] * scaleY + y; //y2
@@ -869,7 +871,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
                 else
                 { //NOT SCALE
                     x += (spriteSize.dx - rectsAndOffsets[frame][2] - rectsAndOffsets[frame][4] * 2);
-                    if (!state || !state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
+                    if (!state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
                     {
                         spriteTempVertices[0] = spriteTempVertices[4] = frameVertices[frame][2] + x; //x1
                         spriteTempVertices[5] = spriteTempVertices[7] = frameVertices[frame][5] + y; //y2
@@ -890,7 +892,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
                 if (sprite->flags & Sprite::EST_SCALE)
                 { //SCALE
                     y += (spriteSize.dy - rectsAndOffsets[frame][3] - rectsAndOffsets[frame][5] * 2) * scaleY;
-                    if (!state || !state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
+                    if (!state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
                     {
                         spriteTempVertices[0] = spriteTempVertices[4] = frameVertices[frame][0] * scaleX + x; //x1
                         spriteTempVertices[5] = spriteTempVertices[7] = frameVertices[frame][1] * scaleY + y; //y2
@@ -908,7 +910,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
                 else
                 { //NOT SCALE
                     y += (spriteSize.dy - rectsAndOffsets[frame][3] - rectsAndOffsets[frame][5] * 2);
-                    if (!state || !state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
+                    if (!state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
                     {
                         spriteTempVertices[0] = spriteTempVertices[4] = frameVertices[frame][0] + x; //x1
                         spriteTempVertices[5] = spriteTempVertices[7] = frameVertices[frame][1] + y; //y2
@@ -930,7 +932,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
     { //NO MODIFERS
         if (sprite->flags & Sprite::EST_SCALE)
         { //SCALE
-            if (!state || !state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
+            if (!state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
             {
                 spriteTempVertices[0] = spriteTempVertices[4] = frameVertices[frame][0] * scaleX + x; //x1
                 spriteTempVertices[5] = spriteTempVertices[7] = frameVertices[frame][5] * scaleY + y; //y2
@@ -947,7 +949,7 @@ void RenderSystem2D::Draw(Sprite* sprite, SpriteDrawState* drawState, const Colo
         }
         else
         { //NOT SCALE
-            if (!state || !state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
+            if (!state->usePerPixelAccuracy || (sprite->flags & Sprite::EST_ROTATE))
             {
                 spriteTempVertices[0] = spriteTempVertices[4] = frameVertices[frame][0] + x; //x1
                 spriteTempVertices[5] = spriteTempVertices[7] = frameVertices[frame][5] + y; //y2

@@ -131,7 +131,7 @@ void RunActionEventWidget::sceneActivated(DAVA::SceneEditor2* scene_)
     scene = scene_;
 }
 
-void RunActionEventWidget::sceneDeactivated(DAVA::SceneEditor2* scene)
+void RunActionEventWidget::sceneDeactivated(DAVA::SceneEditor2* scene_)
 {
     scene = nullptr;
 }
