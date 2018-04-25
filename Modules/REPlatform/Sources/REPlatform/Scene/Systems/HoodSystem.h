@@ -25,6 +25,8 @@ struct HoodObject;
 
 class HoodSystem : public SceneSystem, public SelectionSystemDelegate, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(HoodSystem, SceneSystem);
+
 public:
     HoodSystem(Scene* scene);
     ~HoodSystem();

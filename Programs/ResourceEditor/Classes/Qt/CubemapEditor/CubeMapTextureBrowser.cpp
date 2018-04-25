@@ -12,12 +12,12 @@
 #include <TArc/DataProcessing/DataContext.h>
 #include <TArc/Core/Deprecated.h>
 #include <TArc/WindowSubSystem/UI.h>
-#include <TArc/Qt/QtSize.h>
 
 #include <FileSystem/FileSystem.h>
 
 #include <QScrollBar>
 #include <QDir>
+#include <QSize>
 
 const int FACE_IMAGE_SIZE = 64;
 

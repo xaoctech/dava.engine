@@ -27,6 +27,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(StructureSystem)
+{
+    ReflectionRegistrator<StructureSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &StructureSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 12.0f)]
+    .End();
+}
+
 namespace StructSystemDetails
 {
 void MapSelectableGroup(const SelectableGroup& srcGroup, SelectableGroup& dstGroup,

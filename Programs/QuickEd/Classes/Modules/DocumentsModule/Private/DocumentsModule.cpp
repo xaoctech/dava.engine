@@ -274,7 +274,7 @@ void DocumentsModule::CreateDocumentsActions()
         fieldDescr.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescr.fieldName = FastName(DocumentData::canSavePropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-            return fieldValue.Cast<bool>(false);
+            return fieldValue.CastSafely<bool>(false);
         });
 
         ActionPlacementInfo placementInfo;
@@ -366,7 +366,7 @@ void DocumentsModule::CreateEditActions()
         fieldDescrCanUndo.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrCanUndo.fieldName = FastName(DocumentData::canUndoPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescrCanUndo, [](const Any& fieldValue) -> Any {
-            return fieldValue.Cast<bool>(false);
+            return fieldValue.CastSafely<bool>(false);
         });
 
         FieldDescriptor fieldDescrUndoText;
@@ -395,7 +395,7 @@ void DocumentsModule::CreateEditActions()
         fieldDescrCanRedo.type = ReflectedTypeDB::Get<DocumentData>();
         fieldDescrCanRedo.fieldName = FastName(DocumentData::canRedoPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescrCanRedo, [](const Any& fieldValue) -> Any {
-            return fieldValue.Cast<bool>(false);
+            return fieldValue.CastSafely<bool>(false);
         });
 
         FieldDescriptor fieldDescrUndoText;

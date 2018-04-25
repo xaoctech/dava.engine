@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base/Any.h"
 #include "Base/BaseTypes.h"
 #include "Reflection/Reflection.h"
 #include "Entity/Component.h"
@@ -91,8 +90,4 @@ inline const Vector3& SoundComponent::GetLocalDirection(uint32 index) const
     DVASSERT(index < static_cast<uint32>(events.size()));
     return events[index].localDirection;
 }
-
-template <>
-bool AnyCompare<SoundComponentElement>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<SoundComponentElement>;
 }

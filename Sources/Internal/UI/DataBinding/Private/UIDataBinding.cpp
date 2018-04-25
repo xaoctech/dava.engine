@@ -17,6 +17,7 @@
 
 #include "UI/UIControl.h"
 #include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

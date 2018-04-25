@@ -15,9 +15,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(LandscapeSystem)
 {
-    ReflectionRegistrator<LandscapeSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<LandscapeSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &LandscapeSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 11.0f)]
+    .Method("Process", &LandscapeSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 11.0f)]
     .End();
 }
 

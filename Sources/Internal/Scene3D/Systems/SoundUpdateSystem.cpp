@@ -18,9 +18,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SoundUpdateSystem)
 {
-    ReflectionRegistrator<SoundUpdateSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<SoundUpdateSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &SoundUpdateSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 6.0f)]
+    .Method("Process", &SoundUpdateSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 6.0f)]
     .End();
 }
 

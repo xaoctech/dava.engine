@@ -9,6 +9,8 @@ namespace DAVA
 {
 class TilemaskEditorSystem : public LandscapeEditorSystem
 {
+    DAVA_VIRTUAL_REFLECTION(TilemaskEditorSystem, SceneSystem);
+
 public:
     enum eTilemaskDrawType
     {

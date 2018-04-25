@@ -1,17 +1,16 @@
 #include "UI/DataBinding/Private/UIDataChildFactory.h"
 
+#include "UI/Components/UIControlSourceComponent.h"
 #include "UI/DataBinding/UIDataChildFactoryComponent.h"
 #include "UI/DataBinding/Private/UIDataModel.h"
-
+#include "UI/DefaultUIPackageBuilder.h"
+#include "UI/Formula/Private/FormulaExecutor.h"
 #include "UI/Formula/Private/FormulaExpression.h"
 #include "UI/Formula/Private/FormulaParser.h"
-#include "UI/Formula/Private/FormulaExecutor.h"
-
-#include "UI/UIControl.h"
-#include "UI/Components/UIControlSourceComponent.h"
 #include "UI/Layouts/UILayoutSourceRectComponent.h"
+#include "UI/UIControl.h"
 #include "UI/UIPackageLoader.h"
-#include "UI/DefaultUIPackageBuilder.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

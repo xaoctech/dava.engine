@@ -32,9 +32,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShootSystem)
 {
-    ReflectionRegistrator<ShootSystem>::Begin()[M::Tags("shoot")]
+    ReflectionRegistrator<ShootSystem>::Begin()[M::SystemTags("shoot")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShootSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 8.0f)]
+    .Method("ProcessFixed", &ShootSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 8.0f)]
     .End();
 }
 
@@ -69,7 +69,7 @@ ShootSystem::~ShootSystem()
 
 void ShootSystem::NextState(Entity* bullet, ShootComponent* shootComponent, DAVA::float32 timeElapsed)
 {
-    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponent<CollisionSingleComponent>();
 
     switch (shootComponent->GetPhase())
     {

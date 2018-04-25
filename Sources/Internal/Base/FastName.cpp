@@ -88,10 +88,4 @@ void FastName::Init(FastNameView fview)
     }
 }
 
-template <>
-bool AnyCompare<FastName>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<FastName>() == v2.Get<FastName>();
-}
-
 } // namespace DAVA

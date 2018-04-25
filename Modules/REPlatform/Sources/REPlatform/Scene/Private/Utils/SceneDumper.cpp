@@ -58,7 +58,7 @@ SceneDumper::SceneDumper(const FilePath& scenePath, SceneDumper::eMode mode_, co
     , tags(tags_)
     , mode(mode_)
 {
-    scene = new Scene();
+    scene = new Scene("base");
     if (SceneFileV2::ERROR_NO_ERROR != scene->LoadScene(scenePathname))
     {
         Logger::Error("[SceneDumper::SceneDumper] Can't open file %s", scenePathname.GetStringValue().c_str());
@@ -347,7 +347,7 @@ void SceneDumper::DumpSlot(SlotComponent* slot, Set<FilePath>& links, Set<FilePa
     auto dumpConfig = [&](const FilePath& configPath)
     {
         links.insert(configPath.GetAbsolutePathname());
-        Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(configPath);
+        Vector<SlotSystem::ItemsCache::Item> items = scene->GetSystem<SlotSystem>()->GetItems(configPath);
         for (const SlotSystem::ItemsCache::Item& item : items)
         {
             links.insert(item.scenePath.GetAbsolutePathname());

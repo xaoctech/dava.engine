@@ -3,17 +3,22 @@
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/Components/UpdatableComponent.h"
+#include "Scene3D/Systems/TransformSystem.h"
 #include "Time/SystemTimer.h"
 
 namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(UpdateSystem)
 {
-    ReflectionRegistrator<UpdateSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<UpdateSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
+    // Must be right before TransformSystem::Process
+    .Method("UpdatePreTransform", &UpdateSystem::UpdatePreTransform)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, TransformSystem::systemOrder - 1e-5f)]
+    // Must be right after TransformSystem::Process
+    .Method("UpdatePostTransform", &UpdateSystem::UpdatePostTransform)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, TransformSystem::systemOrder + 1e-5f)]
     .End();
 }
 

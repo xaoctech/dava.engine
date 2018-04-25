@@ -17,6 +17,7 @@
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/TransformComponent.h>
+#include <Reflection/ReflectedTypeDB.h>
 #include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/SkeletonComponent.h>
 #include <Scene3D/SkeletonAnimation/MotionUtils.h>

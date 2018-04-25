@@ -34,6 +34,7 @@ private:
     void Init(DAVA::Core* tarcCore) override;
     void Cleanup() override;
 
+    void RegisterUserTypes() override;
     void RegisterEditorAnyCasts() override;
     bool AllowMultipleInstances() const override;
     QString GetInstanceKey() const override;

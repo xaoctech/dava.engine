@@ -154,7 +154,7 @@ void EntityConfigManager::ReadEntity(const String& fileName, const YamlNode* ent
             FilePath modelFileName("~res:/" + resourceNode->AsString());
             bool isExists = GetEngineContext()->fileSystem->Exists(modelFileName);
             DVASSERT(isExists);
-            ScopedPtr<Scene> scene(new Scene(0));
+            ScopedPtr<Scene> scene(new Scene());
             SceneFileV2::eError err = scene->LoadScene(modelFileName);
             DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
             DVASSERT(scene->GetChildrenCount() == 1);

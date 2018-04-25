@@ -462,7 +462,7 @@ void SceneValidation::ValidateSameNames(DAVA::Scene* scene, ValidationProgress& 
         auto rangePair = entitiesByName.equal_range(currentKey);
         if (std::distance(rangePair.first, rangePair.second) > 1)
         {
-            Logger::Debug("valdating %s", currentKey.c_str());
+            Logger::Debug("validating %s", currentKey.c_str());
             for (auto rangeNextIter = std::next(rangePair.first);
                  rangeNextIter != rangePair.second;
                  ++rangeNextIter)

@@ -13,9 +13,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTransformInterpolationSystem)
 {
-    ReflectionRegistrator<NetworkTransformInterpolationSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkTransformInterpolationSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkTransformInterpolationSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 111.0f)]
+    .Method("ProcessFixed", &NetworkTransformInterpolationSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 111.0f)]
     .End();
 }
 

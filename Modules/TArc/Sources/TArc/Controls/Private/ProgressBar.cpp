@@ -31,8 +31,8 @@ void ProgressBar::UpdateControl(const ControlDescriptor& changedFields)
 
     if (rangeMeta != nullptr)
     {
-        minV = rangeMeta->minValue.Cast<int>(minV);
-        maxV = rangeMeta->maxValue.Cast<int>(maxV);
+        minV = rangeMeta->minValue.CastSafely<int>(minV);
+        maxV = rangeMeta->maxValue.CastSafely<int>(maxV);
     }
 
     if (minV != minimum() || maxV != maximum())

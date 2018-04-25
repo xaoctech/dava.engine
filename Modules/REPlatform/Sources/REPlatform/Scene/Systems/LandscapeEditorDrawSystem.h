@@ -18,6 +18,8 @@ class RECommandNotificationObject;
 
 class LandscapeEditorDrawSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(LandscapeEditorDrawSystem, SceneSystem);
+
 public:
     enum eErrorType
     {

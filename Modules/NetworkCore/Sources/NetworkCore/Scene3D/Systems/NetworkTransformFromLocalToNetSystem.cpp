@@ -11,9 +11,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTransformFromLocalToNetSystem)
 {
-    ReflectionRegistrator<NetworkTransformFromLocalToNetSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkTransformFromLocalToNetSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkTransformFromLocalToNetSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 6.0f)]
+    .Method("ProcessFixed", &NetworkTransformFromLocalToNetSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 6.0f)]
     .End();
 }
 

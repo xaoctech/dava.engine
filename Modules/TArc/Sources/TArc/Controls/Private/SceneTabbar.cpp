@@ -24,7 +24,7 @@ SceneTabbar::SceneTabbar(ContextAccessor* accessor_, Reflection model_, QWidget*
 
     Reflection ref = model.GetField(MainObjectName);
     DVASSERT(ref.IsValid() == true);
-    String mainObjectName = ref.GetValue().Cast<String>(String(""));
+    String mainObjectName = ref.GetValue().CastSafely<String>(String(""));
     DVASSERT(mainObjectName.empty() == false);
 
     QAction* closeTab = new QAction(QString("Close %1").arg(mainObjectName.c_str()), this);

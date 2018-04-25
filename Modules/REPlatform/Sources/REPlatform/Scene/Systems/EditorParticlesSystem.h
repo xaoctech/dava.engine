@@ -20,6 +20,8 @@ class SceneEditor2;
 
 class EditorParticlesSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(EditorParticlesSystem, SceneSystem);
+
     friend class SceneEditor2;
 
 public:

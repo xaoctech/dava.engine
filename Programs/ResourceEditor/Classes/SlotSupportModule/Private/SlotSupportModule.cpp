@@ -24,7 +24,7 @@ namespace SlotSupportModuleDetails
 class SlotSupportData : public DAVA::TArcDataNode
 {
 public:
-    std::unique_ptr<DAVA::EditorSlotSystem> system = nullptr;
+    DAVA::EditorSlotSystem* system = nullptr;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SlotSupportData, DAVA::TArcDataNode)
     {
@@ -67,13 +67,17 @@ void SlotSupportModule::OnContextCreated(DAVA::DataContext* context)
     SceneData* data = context->GetData<SceneData>();
     RefPtr<SceneEditor2> scene = data->GetScene();
 
+    DVASSERT(scene && scene->HasTags("resource_editor"));
+
     SlotSupportModuleDetails::SlotSupportData* slotSupportData = new SlotSupportModuleDetails::SlotSupportData();
     context->CreateData(std::unique_ptr<DAVA::TArcDataNode>(slotSupportData));
-    slotSupportData->system.reset(new EditorSlotSystem(scene.Get(), GetAccessor()));
 
-    scene->AddSystem(slotSupportData->system.get(), scene->slotSystem);
+    scene->AddTags("slot_editor");
 
-    scene->slotSystem->SetExternalEntityLoader(std::shared_ptr<SlotSystem::ExternalEntityLoader>(new EntityForSlotLoader(GetAccessor())));
+    slotSupportData->system = scene->GetSystem<EditorSlotSystem>();
+    slotSupportData->system->SetContextAccessor(GetAccessor());
+
+    scene->GetSystem<SlotSystem>()->SetExternalEntityLoader(std::shared_ptr<SlotSystem::ExternalEntityLoader>(new EntityForSlotLoader(GetAccessor())));
 }
 
 void SlotSupportModule::OnContextDeleted(DAVA::DataContext* context)
@@ -85,7 +89,7 @@ void SlotSupportModule::OnContextDeleted(DAVA::DataContext* context)
         RefPtr<SceneEditor2> scene = data->GetScene();
 
         SlotSupportModuleDetails::SlotSupportData* slotSupportData = context->GetData<SlotSupportModuleDetails::SlotSupportData>();
-        scene->RemoveSystem(slotSupportData->system.get());
+        scene->RemoveTags("slot_editor");
     }
 
     context->DeleteData<SlotSupportModuleDetails::SlotSupportData>();

@@ -108,9 +108,9 @@ public:
         T step = static_cast<T>(1.0f);
         if (range != nullptr)
         {
-            min = range->minValue.Cast<T>(min);
-            max = range->maxValue.Cast<T>(max);
-            step = range->step.Cast<T>(step);
+            min = range->minValue.CastSafely<T>(min);
+            max = range->maxValue.CastSafely<T>(max);
+            step = range->step.CastSafely<T>(step);
         }
 
         return InitRange(min, max, step);

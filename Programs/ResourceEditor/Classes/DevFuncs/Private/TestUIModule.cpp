@@ -23,7 +23,6 @@
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
-#include <TArc/Qt/QtString.h>
 #include <TArc/Qt/QtIcon.h>
 #include <TArc/Utils/Utils.h>
 
@@ -46,6 +45,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QString>
 
 namespace TestUIModuleDetails
 {

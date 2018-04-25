@@ -12,9 +12,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTransformFromNetToLocalSystem)
 {
-    ReflectionRegistrator<NetworkTransformFromNetToLocalSystem>::Begin()[M::Tags("network", "client")]
+    ReflectionRegistrator<NetworkTransformFromNetToLocalSystem>::Begin()[M::SystemTags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkTransformFromNetToLocalSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 14.0f)]
+    .Method("ProcessFixed", &NetworkTransformFromNetToLocalSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 14.0f)]
     .End();
 }
 

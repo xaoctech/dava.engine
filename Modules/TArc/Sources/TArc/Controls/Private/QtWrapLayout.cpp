@@ -1,5 +1,4 @@
 #include "TArc/Controls/QtWrapLayout.h"
-#include "TArc/Qt/QtSize.h"
 
 #include <Debug/DVAssert.h>
 
@@ -8,6 +7,7 @@
 
 #include <QtGlobal>
 #include <QWidget>
+#include <QSize>
 
 namespace DAVA
 {

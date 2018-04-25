@@ -274,7 +274,7 @@ void DrawToTextureForRequest(RequestPointer& request, Entity* fromEntity, Camera
     using namespace DAVA;
 
     request->ReloadTexturesToGPU(GPU_ORIGIN);
-    ScopedPtr<Scene> tempScene(new Scene());
+    ScopedPtr<Scene> tempScene(new Scene("base"));
 
     tempScene->SetMainRenderTarget(request->targetTexture->handle, request->depthTexture,
                                    clearTarget ? rhi::LOADACTION_CLEAR : rhi::LOADACTION_NONE, Color::Clear);
@@ -311,7 +311,7 @@ void DrawToTextureForRequest(RequestPointer& request, Entity* fromEntity, Camera
     tempScene->SetCurrentCamera(camera);
     camera->SetupDynamicParameters(false);
 
-    tempScene->lodSystem->SetForceLodLayer(GetLodComponent(clonedEnity), fromLodLayer);
+    tempScene->GetSystem<LodSystem>()->SetForceLodLayer(GetLodComponent(clonedEnity), fromLodLayer);
     clonedEnity->SetVisible(true);
 
     tempScene->Update(1.0f / 60.0f);

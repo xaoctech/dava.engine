@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Base/Any.h>
 #include <Debug/DVAssert.h>
 
 #include <initializer_list>
@@ -397,16 +396,5 @@ bool operator!=(const FixedVector<U>& v1, const FixedVector<U>& v2)
 {
     return !(v1 == v2);
 }
-
-template <typename T>
-struct AnyCompare<FixedVector<T>>
-{
-    static bool IsEqual(const Any& any1, const Any& any2)
-    {
-        const FixedVector<T>& v1 = any1.Get<FixedVector<T>>();
-        const FixedVector<T>& v2 = any2.Get<FixedVector<T>>();
-        return v1 == v2;
-    }
-};
 
 } // namespace DAVA

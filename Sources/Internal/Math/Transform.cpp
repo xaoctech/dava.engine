@@ -18,12 +18,6 @@ void SafeInverse(float32& component)
 }
 } // TransformDetails
 
-template <>
-bool AnyCompare<Transform>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)
-{
-    return v1.Get<Transform>() == v2.Get<Transform>();
-}
-
 Transform::Transform()
     : scale(1.f, 1.f, 1.f)
 {

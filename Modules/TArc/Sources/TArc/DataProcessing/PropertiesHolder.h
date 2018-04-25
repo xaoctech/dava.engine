@@ -1,11 +1,12 @@
 #pragma once
 
-#include <TArc/Qt/QtRect.h>
-#include <TArc/Qt/QtByteArray.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Base/BaseTypes.h>
 #include <Base/Any.h>
+
+#include <QRect>
+#include <QByteArray>
+#include <QString>
 
 #include <memory>
 
@@ -66,6 +67,6 @@ template <typename T>
 T PropertiesItem::Get(const String& key, const T& defaultValue) const
 {
     Any loadedValue = Get(key, defaultValue, Type::Instance<T>());
-    return loadedValue.Cast<T>(defaultValue);
+    return loadedValue.CastSafely<T>(defaultValue);
 }
 } // namespace DAVA

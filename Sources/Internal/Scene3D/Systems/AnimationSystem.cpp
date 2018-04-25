@@ -18,9 +18,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(AnimationSystem)
 {
-    ReflectionRegistrator<AnimationSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<AnimationSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &AnimationSystem::Process)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::NORMAL, 2.0f)]
+    .Method("Process", &AnimationSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, 2.0f)]
     .End();
 }
 

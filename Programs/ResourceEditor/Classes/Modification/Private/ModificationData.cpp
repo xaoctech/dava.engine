@@ -91,9 +91,9 @@ void ModificationData::SetValueZ(const DAVA::Any& value)
 
 void ModificationData::ApplyEnteredValues(DAVA::ST_Axis axis)
 {
-    DAVA::float32 x = xValue.Get<DAVA::float32>(0.f);
-    DAVA::float32 y = yValue.Get<DAVA::float32>(0.f);
-    DAVA::float32 z = zValue.Get<DAVA::float32>(0.f);
+    DAVA::float32 x = xValue.GetSafely<DAVA::float32>(0.f);
+    DAVA::float32 y = yValue.GetSafely<DAVA::float32>(0.f);
+    DAVA::float32 z = zValue.GetSafely<DAVA::float32>(0.f);
     DAVA::Vector3 values(x, y, z);
     DAVA::SelectableGroup selection = GetTransformableSelection();
     selection.RemoveObjectsWithDependantTransform();

@@ -13,6 +13,7 @@
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Material/NMaterialNames.h"
+#include "Utils/StringFormat.h"
 
 #define FBX_IMPORT_CREATE_MATERIAL_INSTANCES 1
 #define FBX_IMPORT_AUTO_SHADOW_VOLUME_CONVERT 1

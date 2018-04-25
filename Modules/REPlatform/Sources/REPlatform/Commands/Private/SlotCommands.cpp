@@ -37,7 +37,7 @@ void AttachEntityToSlot::Redo()
 
     if (executed == false)
     {
-        undoEntity = RefPtr<Entity>::ConstructWithRetain(scene->slotSystem->LookUpLoadedEntity(component));
+        undoEntity = RefPtr<Entity>::ConstructWithRetain(scene->GetSystem<SlotSystem>()->LookUpLoadedEntity(component));
         undoItemName = component->GetLoadedItemName();
         executed = true;
     }

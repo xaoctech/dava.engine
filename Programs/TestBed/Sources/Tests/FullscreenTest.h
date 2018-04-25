@@ -34,7 +34,6 @@ private:
     DAVA::UIStaticText* currentModeText = nullptr;
     DAVA::UIStaticText* currentScaleText = nullptr;
     DAVA::UI3DView* ui3dview = nullptr;
-    DAVA::RotationControllerSystem* rotationControllerSystem = nullptr;
     DAVA::UIStaticText* currect3dScaleText = nullptr;
     DAVA::UIStaticText* pinningText = nullptr;
     DAVA::UIStaticText* pinningMousePosText = nullptr;

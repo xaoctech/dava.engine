@@ -73,9 +73,9 @@ void CollectRemoteMovingInput(NetworkRemoteInputComponent* networkRemoteInputCom
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PlayerEntitySystem)
 {
-    ReflectionRegistrator<PlayerEntitySystem>::Begin()[M::Tags("playerentity")]
+    ReflectionRegistrator<PlayerEntitySystem>::Begin()[M::SystemTags("playerentity")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &PlayerEntitySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 24.0f)]
+    .Method("ProcessFixed", &PlayerEntitySystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 24.0f)]
     .End();
 }
 
@@ -220,7 +220,7 @@ DAVA::Entity* PlayerEntitySystem::GetModel(const DAVA::String& pathname) const
     if (modelCache.find(pathname) == modelCache.end())
     {
         DAVA::FilePath name(pathname);
-        ScopedPtr<Scene> model(new Scene(0));
+        ScopedPtr<Scene> model(new Scene());
         SceneFileV2::eError err = model->LoadScene(DAVA::FilePath(pathname));
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == err);
         modelCache.emplace(pathname, model->GetEntityByID(1)->Clone());

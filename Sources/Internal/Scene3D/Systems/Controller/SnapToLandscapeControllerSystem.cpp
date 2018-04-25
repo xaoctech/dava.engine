@@ -16,14 +16,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SnapToLandscapeControllerSystem)
 {
-    ReflectionRegistrator<SnapToLandscapeControllerSystem>::Begin()
+    ReflectionRegistrator<SnapToLandscapeControllerSystem>::Begin()[M::SystemTags("controller", "landscape")]
     .ConstructorByPointer<Scene*>()
-    //.Method("Process", &SnapToLandscapeControllerSystem::Process)
+    .Method("Process", &SnapToLandscapeControllerSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, 6.1f)]
     .End();
 }
 
 SnapToLandscapeControllerSystem::SnapToLandscapeControllerSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<SnapToLandscapeControllerComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<CameraComponent, SnapToLandscapeControllerComponent>())
 {
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SNAP_TO_LANDSCAPE_HEIGHT_CHANGED);
 }

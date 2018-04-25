@@ -166,8 +166,4 @@ inline LandscapeSubdivision::SubdivisionMetrics& LandscapeSubdivision::GetMetric
 {
     return metrics;
 }
-
-template <>
-bool AnyCompare<LandscapeSubdivision::SubdivisionMetrics>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-extern template struct AnyCompare<LandscapeSubdivision::SubdivisionMetrics>;
 }

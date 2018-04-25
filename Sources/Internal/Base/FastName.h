@@ -2,7 +2,6 @@
 #define __DAVAENGINE_FAST_NAME__
 
 #include "Base/Hash.h"
-#include "Base/Any.h"
 #include "Concurrency/Spinlock.h"
 
 namespace DAVA
@@ -157,11 +156,7 @@ inline const char* FastName::c_str() const
 {
     return view.str;
 }
-
-template <>
-bool AnyCompare<FastName>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<FastName>;
-};
+} // namespace DAVA
 
 namespace std
 {
@@ -173,6 +168,6 @@ struct hash<DAVA::FastName>
         return reinterpret_cast<size_t>(f.c_str());
     }
 };
-}
+} // namespace std
 
 #endif // __DAVAENGINE_FAST_NAME__

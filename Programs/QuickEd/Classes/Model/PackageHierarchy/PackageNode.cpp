@@ -574,7 +574,7 @@ void PackageNode::OnControlPropertyWillBeChanged(ControlNode* node, AbstractProp
 
     if (dynamic_cast<PackageControlsNode*>(node->GetParent()) != nullptr && property->GetName() == "Name")
     {
-        String name = oldValue.Cast<String>(String());
+        String name = oldValue.CastSafely<String>(String());
         Guides guides = GetGuides(name);
 
         if (FindRootWithSameName(node, this) == false)
@@ -582,7 +582,7 @@ void PackageNode::OnControlPropertyWillBeChanged(ControlNode* node, AbstractProp
             SetGuides(name, Guides());
         }
 
-        String newName = newValue.Cast<String>(String());
+        String newName = newValue.CastSafely<String>(String());
         //we don't support root controls without name
         //all notification messages must be separate from this logic
         if (newName.empty() == false)

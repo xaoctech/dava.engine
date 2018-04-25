@@ -477,7 +477,7 @@ void QualitySwitcher::ApplySettings()
         DAVA::Deprecated::GetAccessor()->ForEachContext([&](const DAVA::DataContext& ctx) {
             DAVA::SceneEditor2* scene = ctx.GetData<DAVA::SceneData>()->GetScene().Get();
             UpdateEntitiesToQuality(scene);
-            scene->foliageSystem->SyncFoliageWithLandscape();
+            scene->GetSystem<DAVA::FoliageSystem>()->SyncFoliageWithLandscape();
         });
     }
 

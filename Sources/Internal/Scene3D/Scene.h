@@ -2,15 +2,14 @@
 
 #include "Base/BaseMath.h"
 #include "Base/BaseTypes.h"
+#include "Base/FastTags.h"
 #include "Base/Observer.h"
-#include "Entity/SceneSystem.h"
+#include "Entity/EntityCache.h"
 #include "Entity/SingleComponent.h"
 #include "Entity/SystemManager.h"
-#include "Reflection/ReflectedTypeDB.h"
 #include "Reflection/Reflection.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
-#include "Render/RenderBase.h"
 #include "Scene3D/ComponentGroup.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/EntityGroup.h"
@@ -24,49 +23,14 @@ namespace DAVA
     \defgroup scene3d 3D Engine
   */
 
-class Texture;
-class StaticMesh;
-class DataNode;
-class ShadowVolumeNode;
-class Light;
-class ShadowRect;
-class QuadTree;
 class Component;
-class RenderSystem;
-class RenderUpdateSystem;
-class TransformSystem;
-class DebugRenderSystem;
-class EventSystem;
-class ParticleEffectSystem;
-class UpdateSystem;
-class LightUpdateSystem;
-class SwitchSystem;
-class SoundUpdateSystem;
-class ActionUpdateSystem;
-class StaticOcclusionSystem;
-class StaticOcclusionDebugDrawSystem;
-class SpeedTreeUpdateSystem;
-class FoliageSystem;
-class WindSystem;
-class WaveSystem;
-class SkeletonSystem;
-class MotionSystem;
-class AnimationSystem;
-class LandscapeSystem;
-class LodSystem;
-class ParticleEffectDebugDrawSystem;
-class GeoDecalSystem;
-class SlotSystem;
-class TransformSingleComponent;
-class ActionsSingleComponent;
-class ActionCollectSystem;
-class MotionSingleComponent;
-class PhysicsSystem;
-class CollisionSingleComponent;
 class EntitiesManager;
-
-class UIEvent;
+class EventSystem;
 class RenderPass;
+class RenderSystem;
+class SceneSystem;
+class Texture;
+class UIEvent;
 
 /**
     \ingroup scene3d
@@ -74,64 +38,42 @@ class RenderPass;
     To visualize any 3d scene you'll need to create Scene object. 
     Scene have visible hierarchy and invisible root nodes. You can add as many root nodes as you want, and do not visualize them.
     For example you can have multiple scenes, load them to one scene, and show each scene when it will be required. 
+
+    Scene may have scene systems - special classes, marked methods of which will be executed on scene events (update, fixed update, input).
+    Scene may have scene systems added by tags or manually added systems, but not both.
+    If you want to combine them, you can do:
+        ```
+        bool exactMatch = true;
+        auto systems = systemManager->GetSystems("tag", exactMatch);
+        for (const Type *system : systems)
+            scene->AddSystemManually(system);
+        scene->AddSystemManually(mySystem1);
+        scene->AddSystemManually(mySystem2);
+        ```
+
+    If you want to switch your scene from tags to manually added systems, you can remove all tags and add your systems on the next update:
+        ```
+        scene->RemoveTags(scene->GetTags());
+        // skip one scene update
+        scene->AddSystemManually(mySystem);
+        ```
+    Other way also works:
+        ```
+        for (const Type *system : mySystems)
+            scene->RemoveSystemManually(system);
+        // skip one scene update
+        scene->AddTags("tag1", "tag2", ..., "tagN");
+        ```
  */
-class EntityCache
-{
-public:
-    ~EntityCache();
-
-    void Preload(const FilePath& path);
-    void Clear(const FilePath& path);
-    void ClearAll();
-
-    Entity* GetOriginal(const FilePath& path);
-    Entity* GetClone(const FilePath& path);
-
-protected:
-    Map<FilePath, Entity*> cachedEntities;
-};
 
 class Scene : public Entity, Observer
 {
 protected:
-    virtual ~Scene();
+    ~Scene() override;
 
 public:
-    enum : uint32
-    {
-        SCENE_SYSTEM_TRANSFORM_FLAG = 1 << 0,
-        SCENE_SYSTEM_RENDER_UPDATE_FLAG = 1 << 1,
-        SCENE_SYSTEM_LOD_FLAG = 1 << 2,
-        SCENE_SYSTEM_DEBUG_RENDER_FLAG = 1 << 3,
-        SCENE_SYSTEM_PARTICLE_EFFECT_FLAG = 1 << 4,
-        SCENE_SYSTEM_UPDATEBLE_FLAG = 1 << 5,
-        SCENE_SYSTEM_LIGHT_UPDATE_FLAG = 1 << 6,
-        SCENE_SYSTEM_SWITCH_FLAG = 1 << 7,
-        SCENE_SYSTEM_SOUND_UPDATE_FLAG = 1 << 8,
-        SCENE_SYSTEM_ACTION_UPDATE_FLAG = 1 << 9,
-        SCENE_SYSTEM_STATIC_OCCLUSION_FLAG = 1 << 11,
-        SCENE_SYSTEM_LANDSCAPE_FLAG = 1 << 12,
-        SCENE_SYSTEM_FOLIAGE_FLAG = 1 << 13,
-        SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG = 1 << 14,
-        SCENE_SYSTEM_WIND_UPDATE_FLAG = 1 << 15,
-        SCENE_SYSTEM_WAVE_UPDATE_FLAG = 1 << 16,
-        SCENE_SYSTEM_SKELETON_FLAG = 1 << 17,
-        SCENE_SYSTEM_ANIMATION_FLAG = 1 << 18,
-        SCENE_SYSTEM_SLOT_FLAG = 1 << 19,
-        SCENE_SYSTEM_GEO_DECAL_FLAG = 1 << 20,
-        SCENE_SYSTEM_SHOOT_FLAG = 1 << 21,
-        SCENE_SYSTEM_ACTION_COLLECT_FLAG = 1 << 22,
-        SCENE_SYSTEM_DIFF_MONITORING_FLAG = 1 << 23,
-        SCENE_SYSTEM_MOTION_FLAG = 1 << 24,
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-        SCENE_SYSTEM_PHYSICS_FLAG = 1 << 19,
-#endif
-        SCENE_SYSTEM_ALL_MASK = 0xFFFFFFFF
-    };
-
-    Scene(uint32 systemsMask = SCENE_SYSTEM_ALL_MASK);
-    Scene(const UnorderedSet<FastName>& tags);
+    Scene();
+    Scene(const FastTags& tags, bool createSystems = true);
 
     /**
         \brief Function to register entity in scene. This function is called when you add entity to scene.
@@ -151,56 +93,49 @@ public:
      */
     void UnregisterComponent(Entity* entity, Component* component);
 
-    virtual void AddSystem(SceneSystem* sceneSystem, SceneSystem* insertBeforeSceneForProcess = nullptr, SceneSystem* insertBeforeSceneForInput = nullptr, SceneSystem* insertBeforeSceneForFixedProcess = nullptr);
-
-    virtual void RemoveSystem(SceneSystem* sceneSystem);
-
     template <class T>
     T* GetSystem();
 
-    /** Take effect on the next frame. Add tag to scene. All affected systems will be added automatically. */
-    void AddTag(FastName tag);
+    /**
+        Add tags to scene. All affected systems will be added automatically, but their processes will not be executed on the current update.
 
-    /** Take effect on the next frame. Remove tag from scene. All affected system will be removed automatically. */
-    void RemoveTag(FastName tag);
+        Usage example:
+            `scene->AddTags("tag")` or `scene->AddTags(FastName("tag"))` for single tag.
+            `scene->AddTags({"tag1", FastName("tag2"), "tag3", "tag4"})` for multiple tags.
+    */
+    void AddTags(const FastTags& tags);
 
-    bool HasTag(FastName tag) const;
+    /**
+        Remove tags from scene. All affected system will be removed automatically. Will take effect on the next frame.
 
-    template <typename Return, typename Cls>
-    void RegisterSystemProcess(Return (Cls::*fp)(float32));
+        Usage example:
+            `scene->RemoveTags("tag")` or `scene->RemoveTags(FastName("tag"))` for single tag.
+            `scene->RemoveTags({"tag1", FastName("tag2"), "tag3", "tag4"})` for multiple tags.
+    */
+    void RemoveTags(const FastTags& tags);
 
-    Vector<SceneSystem*> systemsToProcess;
-    Vector<SceneSystem*> systemsToInput;
-    Vector<SceneSystem*> systemsToFixedProcess;
+    /**
+        Return `true` if scene tags contain `tags`.
 
-    TransformSystem* transformSystem = nullptr;
-    RenderUpdateSystem* renderUpdateSystem = nullptr;
-    LodSystem* lodSystem = nullptr;
-    DebugRenderSystem* debugRenderSystem = nullptr;
+        Usage example:
+            `scene->HasTags("tag")` or `scene->HasTags(FastName("tag"))` for single tag.
+            `scene->HasTags({"tag1", FastName("tag2"), "tag3", "tag4"})` for multiple tags.
+    */
+    bool HasTags(const FastTags& tags) const;
+
+    /** Return scene tags. */
+    const UnorderedSet<FastName>& GetTags();
+
+    /** Add system to scene manually, system processes will not be executed on the current update. */
+    void AddSystemManually(const Type* systemType);
+
+    /** Remove system from scene manually. Will take effect on the next frame. */
+    void RemoveSystemManually(const Type* systemType);
+
     EventSystem* eventSystem = nullptr;
-    ParticleEffectSystem* particleEffectSystem = nullptr;
-    UpdateSystem* updatableSystem = nullptr;
-    LightUpdateSystem* lightUpdateSystem = nullptr;
-    SwitchSystem* switchSystem = nullptr;
     RenderSystem* renderSystem = nullptr;
-    SoundUpdateSystem* soundSystem = nullptr;
-    ActionUpdateSystem* actionSystem = nullptr;
-    StaticOcclusionSystem* staticOcclusionSystem = nullptr;
-    SpeedTreeUpdateSystem* speedTreeUpdateSystem = nullptr;
-    FoliageSystem* foliageSystem = nullptr;
+
     VersionInfo::SceneVersion version;
-    WindSystem* windSystem = nullptr;
-    WaveSystem* waveSystem = nullptr;
-    AnimationSystem* animationSystem = nullptr;
-    StaticOcclusionDebugDrawSystem* staticOcclusionDebugDrawSystem = nullptr;
-    SkeletonSystem* skeletonSystem = nullptr;
-    MotionSystem* motionSystem = nullptr;
-    LandscapeSystem* landscapeSystem = nullptr;
-    ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = nullptr;
-    SlotSystem* slotSystem = nullptr;
-    ActionCollectSystem* actionCollectSystem;
-    GeoDecalSystem* geoDecalSystem = nullptr;
-    PhysicsSystem* physicsSystem = nullptr;
 
     /** Get singleton component. Never return nullptr. */
     template <class T>
@@ -219,12 +154,6 @@ public:
 
     SingleComponent* GetSingleComponentForWrite(const Type* type, const SceneSystem* user);
 
-    /** Clear single components that used only by fixed processes. */
-    void ClearFixedProcessesSingleComponents();
-
-    /** Clear single components that used by all processes. */
-    void ClearAllProcessesSingleComponents();
-
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
@@ -232,11 +161,9 @@ public:
 
     void HandleEvent(Observable* observable) override; //Handle RenderOptions
 
-    //virtual void StopAllAnimations(bool recursive = true);
-
     virtual void Update(float32 timeElapsed);
     virtual void Draw();
-    void SceneDidLoaded() override;
+    void OnSceneLoaded() override;
 
     Camera* GetCamera(int32 n);
     void AddCamera(Camera* c);
@@ -246,32 +173,26 @@ public:
     void SetCurrentCamera(Camera* camera);
     Camera* GetCurrentCamera() const;
 
-    /* 
-        This camera is used for visualization setup only. Most system functions use mainCamere, draw camera is used to setup matrices for render. If you do not call this function GetDrawCamera returns currentCamera. 
+    /*
+        This camera is used for visualization setup only. Most system functions use mainCamera, draw camera is used to setup matrices for render.
+        If you do not call this function GetDrawCamera returns currentCamera. 
         You can use SetCustomDrawCamera function if you want to test frustum clipping, and view the scene from different angles.
-     */
+    */
     void SetCustomDrawCamera(Camera* camera);
     Camera* GetDrawCamera() const;
-
-    void CreateSystems();
 
     EntitiesManager* GetEntitiesManager() const;
 
     EventSystem* GetEventSystem() const;
     RenderSystem* GetRenderSystem() const;
-    AnimationSystem* GetAnimationSystem() const;
-    ParticleEffectDebugDrawSystem* GetParticleEffectDebugDrawSystem() const;
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    PhysicsSystem* GetPhysicsSystem() const;
-#endif
 
-    virtual SceneFileV2::eError LoadScene(const DAVA::FilePath& pathname);
-    virtual SceneFileV2::eError SaveScene(const DAVA::FilePath& pathname, bool saveForGame = false);
+    virtual SceneFileV2::eError LoadScene(const FilePath& pathname);
+    virtual SceneFileV2::eError SaveScene(const FilePath& pathname, bool saveForGame = false);
 
     virtual void OptimizeBeforeExport();
 
-    DAVA::NMaterial* GetGlobalMaterial() const;
-    void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
+    NMaterial* GetGlobalMaterial() const;
+    void SetGlobalMaterial(NMaterial* globalMaterial);
 
     void OnSceneReady(Entity* rootNode);
 
@@ -283,8 +204,6 @@ public:
      */
     virtual void Activate();
     virtual void Deactivate();
-
-    EntityCache cache;
 
     void SetMainPassProperties(uint32 priority, const Rect& viewport, uint32 width, uint32 height, PixelFormat format);
     void SetMainRenderTarget(rhi::HTexture color, rhi::HTexture depthStencil, rhi::LoadAction colorLoadAction, const Color& clearColor);
@@ -300,7 +219,6 @@ public:
     void PauseFixedUpdate();
     void UnpauseFixedUpdate();
     bool IsFixedUpdatePaused() const;
-    void CreateSystemsByTags();
 
     template <class... Args>
     EntityGroup* AquireEntityGroup();
@@ -320,26 +238,39 @@ public:
     Signal<SceneSystem*> systemAdded;
     Signal<SceneSystem*> systemRemoved;
 
-public: // deprecated methods
-    DAVA_DEPRECATED(rhi::RenderPassConfig& GetMainPassConfig());
+    EntityCache cache;
+
+    // TODO: all the stuff below should be private, but due to some modules design it can't be.
+
+    [[deprecated]] void CreateDelayedSystems();
+
+    /** Clear single components that used only by fixed processes. */
+    void ClearFixedProcessesSingleComponents();
+
+    /** Clear single components that used by all processes. */
+    void ClearAllProcessesSingleComponents();
+
+    using ProcessSystemPair = std::pair<const SystemManager::SystemProcess*, SceneSystem*>;
+
+    Vector<ProcessSystemPair> processes;
+    Vector<ProcessSystemPair> fixedProcesses;
+    Vector<ProcessSystemPair> inputProcesses;
 
 protected:
     void RegisterEntitiesInSystemRecursively(SceneSystem* system, Entity* entity);
+    void RegisterSingleComponentsInSystem(SceneSystem* system);
 
-    bool RemoveSystem(Vector<SceneSystem*>& storage, SceneSystem* system);
-
-    uint32 systemsMask;
-    uint32 maxEntityIDCounter;
+    uint32 maxEntityIDCounter = 0;
 
     float32 sceneGlobalTime = 0.f;
 
     UnorderedMap<const Type*, SceneSystem*> systemsMap;
     Vector<Camera*> cameras;
 
-    NMaterial* sceneGlobalMaterial;
+    NMaterial* sceneGlobalMaterial = nullptr;
 
-    Camera* mainCamera;
-    Camera* drawCamera;
+    Camera* mainCamera = nullptr;
+    Camera* drawCamera = nullptr;
 
     struct FixedUpdate
     {
@@ -352,63 +283,62 @@ protected:
         bool firstUpdate = true;
     } fixedUpdate;
 
-    friend class Entity;
-    DAVA_VIRTUAL_REFLECTION(Scene, Entity);
-
 private:
-    void ProcessManuallyAddedSystems(float32 timeElapsed);
-    void ProcessSystemsAddedByTags(float32 timeElapsed);
-    void CreateSystemsToMethods(const Vector<SystemManager::SceneProcessInfo>& methods);
+    void AddSystem(const Type* systemType);
 
-    void InitLegacyPointers();
-    void ProcessChangedTags();
+    void RemoveSystem(const Type* systemType);
 
-    template <typename T>
-    void AddSingleComponent(T* component);
+    void CorrectSystemsList(const UnorderedSet<const Type*>& systems);
+
+    void ExecuteFixedProcesses(float32 timeElapsed);
+
+    void ExecuteProcesses(float32 timeElapsed);
+
     void AddSingleComponent(SingleComponent* component, const Type* type);
 
-    void HandleSingleComponentAccess(const SingleComponent* singleComponent, const SceneSystem* user, bool write);
-    void ValidateSingleComponentsReadsWrites() const;
+    void OnNewSystemRegistered(const Type* systemType, const SystemManager::SystemInfo* systemInfo);
+
+    void QueryRemovedSystems();
 
 private:
-    UnorderedSet<FastName> tags;
-
-    enum TagAction
-    {
-        ADD,
-        REMOVE
-    };
-    Vector<std::pair<FastName, TagAction>> tagsToChange;
-
-    Vector<SceneSystem*> systemsVector;
-
-    Vector<Function<void(float32)>> systemProcesses;
+    UnorderedSet<FastName> sceneTags;
 
     EntitiesManager* entitiesManager = nullptr;
+    const SystemManager* systemManager = nullptr;
+
+    UnorderedSet<FastName> tagsToRemove;
+
+    UnorderedSet<const Type*> systemsToRemove;
+
+    Vector<SceneSystem*> systemsVector;
 
     UnorderedMap<const Type*, SingleComponent*> singleComponents;
     Vector<ClearableSingleComponent*> clearableSingleComponentsAll; // Vector of single components to be cleared after all processes
     Vector<ClearableSingleComponent*> clearableSingleComponentsFixed; // Vector of single components to be cleared after fixed processes
 
 #if defined(__DAVAENGINE_DEBUG__)
+    // For validating usages of single components.
 
-    // For validating usages of single components
+    UnorderedMap<const Type* /* single component type */, UnorderedSet<const SceneSystem*>> clearableSingleComponentsReaders;
+    UnorderedMap<const Type* /* single component type */, UnorderedSet<const SceneSystem*>> clearableSingleComponentsWriters;
 
-    struct SingleComponentAccessInfo final
-    {
-        uint32 systemIndex;
-        const Type* systemType;
-    };
+    void HandleSingleComponentRead(const SceneSystem* system, const Type* singleComponentType);
+    void HandleSingleComponentWrite(const SceneSystem* system, const Type* singleComponentType);
 
-    UnorderedMap<const Type*, SingleComponentAccessInfo> clearableSingleComponentsWriters;
-    UnorderedMap<const Type*, SingleComponentAccessInfo> clearableSingleComponentsReaders;
-    bool pendingSingleComponentsUsageValidation = false;
+    void UnregisterSingleComponentUser(const SceneSystem* system);
+
+    void ValidateSingleComponentsAccessOrder();
+
+    bool pendingSingleComponentsAccessValidation = false;
 #endif
 
     friend class SnapshotSystemBase;
     friend class SnapshotSystem2;
     friend class NetworkDeltaReplicationSystemServer;
+
+    friend class Entity;
+    DAVA_VIRTUAL_REFLECTION(Scene, Entity);
 };
-}
+} // namespace DAVA
 
 #include "Scene3D/Private/Scene.hpp"

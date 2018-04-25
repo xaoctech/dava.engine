@@ -227,7 +227,7 @@ void PackageModule::CreateActions()
         fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
                                          {
-                                             return fieldValue.Cast<PackageNode*>(nullptr) != nullptr;
+                                             return fieldValue.CastSafely<PackageNode*>(nullptr) != nullptr;
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnImport, this));
@@ -708,7 +708,7 @@ void PackageModule::CreateActions()
         fieldDescr.fieldName = FastName(DocumentData::packagePropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any
                                          {
-                                             return fieldValue.Cast<PackageNode*>(nullptr) != nullptr;
+                                             return fieldValue.CastSafely<PackageNode*>(nullptr) != nullptr;
                                          });
 
         connections.AddConnection(action, &QAction::triggered, Bind(&PackageModule::OnCollapseAll, this));

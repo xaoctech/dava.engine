@@ -2,8 +2,9 @@
 #define __LOGGER_OUTPUT_OBJECT_H__
 
 #include "Logger/Logger.h"
-#include <TArc/Qt/QtByteArray.h>
+
 #include <QObject>
+#include <QByteArray>
 
 class LoggerOutputObject final : public QObject
 {

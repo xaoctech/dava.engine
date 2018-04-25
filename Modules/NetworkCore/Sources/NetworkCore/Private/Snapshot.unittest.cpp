@@ -119,15 +119,14 @@ DAVA_TESTCLASS (SnapshotTest)
         GetEngineContext()->componentManager->RegisterComponent(Type::Instance<SnapshotTestDetails::CustomComponent>());
 
         testScene = new Scene();
-        testScene->AddSystem(new NetworkIdSystem(testScene));
         testScene->AddComponent(new NetworkReplicationComponent(NetworkID::SCENE_ID));
+        testScene->AddSystemManually(Type::Instance<NetworkIdSystem>());
+        testScene->AddSystemManually(Type::Instance<SnapshotSystemServer>());
 
         timeSingleComponent = testScene->GetSingleComponent<NetworkTimeSingleComponent>();
 
         SnapshotSystemServer* ss = new SnapshotSystemServer(testScene);
-        snapshot = &ss->snapshot;
-
-        testScene->AddSystem(ss);
+        snapshot = &testScene->GetSystem<SnapshotSystemServer>()->snapshot;
     }
 
     ~SnapshotTest()

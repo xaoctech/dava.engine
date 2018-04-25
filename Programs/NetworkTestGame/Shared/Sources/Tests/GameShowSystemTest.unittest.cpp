@@ -15,16 +15,24 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h"
 
 #include <Entity/ComponentManager.h>
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 using namespace DAVA;
 
 DAVA_TESTCLASS (GameShowSystemTest)
 {
+    GameShowSystemTest()
+    {
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(GameShowSystem);
+        GetEngineContext()->systemManager->RegisterSystem<GameShowSystem>();
+    }
+
     DAVA_TEST (ThePlayerIsWatchingAnotherPlayerTest)
     {
         const uint8 ENTITIES_NUM = 3;
 
-        ScopedPtr<Scene> scene(new Scene(0));
+        ScopedPtr<Scene> scene(new Scene());
         NetworkEntitiesSingleComponent* entitiesSingleComponent = scene->GetSingleComponent<NetworkEntitiesSingleComponent>();
 
         struct ClientMock : public IClient
@@ -79,8 +87,9 @@ DAVA_TESTCLASS (GameShowSystemTest)
         ClientMock client;
         scene->GetSingleComponent<NetworkClientSingleComponent>()->SetClient(&client);
 
-        GameShowSystem* gameShowSystem = new GameShowSystem(scene);
-        scene->AddSystem(gameShowSystem);
+        scene->AddSystemManually(Type::Instance<GameShowSystem>());
+        scene->Update(0.f);
+        GameShowSystem* gameShowSystem = scene->GetSystem<GameShowSystem>();
 
         ScopedPtr<Entity> player1(new Entity());
         ScopedPtr<Entity> player2(new Entity());

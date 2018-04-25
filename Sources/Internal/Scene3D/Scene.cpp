@@ -1,219 +1,39 @@
 #include "Scene3D/Scene.h"
 
-#include "Concurrency/Thread.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Engine/EngineContext.h"
 #include "Entity/ComponentUtils.h"
-#include "FileSystem/FileSystem.h"
-#include "Render/3D/StaticMesh.h"
-#include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/Light.h"
-#include "Render/Highlevel/RenderPass.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/Highlevel/RenderSystem.h"
-#include "Render/Image/Image.h"
-#include "Render/MipmapReplacer.h"
-#include "Render/RenderOptions.h"
-#include "Render/Renderer.h"
-#include "Render/Texture.h"
-#include "Reflection/ReflectionRegistrator.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/SingleComponents/MotionSingleComponent.h"
-#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/UpdatableComponent.h"
-#include "Scene3D/Components/DebugRenderComponent.h"
-#include "Scene3D/Components/StaticOcclusionComponent.h"
-#include "Scene3D/Components/AnimationComponent.h"
-#include "Scene3D/Components/MotionComponent.h"
-#include "Scene3D/Components/SlotComponent.h"
-#include "Scene3D/Components/SwitchComponent.h"
-#include "Scene3D/Components/SoundComponent.h"
-#include "Scene3D/Components/RenderComponent.h"
-#include "Scene3D/Components/LightComponent.h"
-#include "Scene3D/Components/SpeedTreeComponent.h"
-#include "Scene3D/Components/WindComponent.h"
-#include "Scene3D/Components/WaveComponent.h"
-#include "Scene3D/DataNode.h"
-#include "Scene3D/Lod/LodComponent.h"
-#include "Scene3D/Lod/LodSystem.h"
-#include "Scene3D/Private/EntitiesManager.h"
+#include "Entity/SceneSystem.h"
+#include "Entity/SystemProcessInfo.h"
+
 #include "Scene3D/SceneFileV2.h"
-#include "Scene3D/Systems/ActionUpdateSystem.h"
-#include "Scene3D/Systems/AnimationSystem.h"
-#include "Scene3D/Systems/DebugRenderSystem.h"
+#include "Scene3D/Private/EntitiesManager.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/FoliageSystem.h"
-#include "Scene3D/Systems/GeoDecalSystem.h"
-#include "Scene3D/Systems/LandscapeSystem.h"
-#include "Scene3D/Systems/LightUpdateSystem.h"
-#include "Scene3D/Systems/MotionSystem.h"
 #include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
-#include "Scene3D/Systems/RenderUpdateSystem.h"
-#include "Scene3D/Systems/Controller/RotationControllerSystem.h"
-#include "Scene3D/Systems/SkeletonSystem.h"
-#include "Scene3D/Systems/SlotSystem.h"
-#include "Scene3D/Systems/SoundUpdateSystem.h"
-#include "Scene3D/Systems/ParticleEffectDebugDrawSystem.h"
-#include "Scene3D/Systems/GeoDecalSystem.h"
-#include "Scene3D/Systems/SlotSystem.h"
-#include "Scene3D/Systems/ActionCollectSystem.h"
-
-#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
-#include "Scene3D/Components/SingleComponents/ActionsSingleComponent.h"
-
-#include "Debug/ProfilerCPU.h"
-#include "Debug/ProfilerMarkerNames.h"
-#include "Concurrency/Thread.h"
-
-#include "Sound/SoundSystem.h"
-
-#include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene3D/Systems/SwitchSystem.h"
-#include "Scene3D/Systems/TransformSystem.h"
-#include "Scene3D/Systems/UpdateSystem.h"
-#include "Scene3D/Systems/WaveSystem.h"
-#include "Scene3D/Systems/WindSystem.h"
-#include "Sound/SoundSystem.h"
-#include "Time/SystemTimer.h"
-#include "UI/UIEvent.h"
-#include "Utils/Utils.h"
-#include "Entity/SystemManager.h"
-#include "Engine/EngineContext.h"
-#include "Logger/Logger.h"
 
-#if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
-#include "PhysicsDebug/PhysicsDebugDrawSystem.h"
-#endif
+#include "Reflection/ReflectionRegistrator.h"
 
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-#include <Physics/Controllers/WASDPhysicsControllerSystem.h>
-#include <Physics/PhysicsSystem.h>
-#include <Physics/CollisionSingleComponent.h>
-#endif
+#include "Render/MipmapReplacer.h"
+#include "Render/Renderer.h"
+#include "Render/RenderOptions.h"
+#include "Render/Highlevel/RenderSystem.h"
 
-#include <functional>
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
-//TODO: remove this crap with shadow color
-EntityCache::~EntityCache()
-{
-    ClearAll();
-}
-
-void EntityCache::Preload(const FilePath& path)
-{
-    Scene* scene = new Scene(0);
-    if (SceneFileV2::ERROR_NO_ERROR == scene->LoadScene(path))
-    {
-        Entity* srcRootEntity = scene;
-
-        // try to perform little optimization:
-        // if scene has single node with identity transform
-        // we can skip this entity and move only its children
-        if (1 == srcRootEntity->GetChildrenCount())
-        {
-            Entity* child = srcRootEntity->GetChild(0);
-            if (1 == child->GetComponentCount())
-            {
-                TransformComponent* tr = srcRootEntity->GetComponent<TransformComponent>();
-                if (nullptr != tr && tr->GetLocalMatrix() == Matrix4::IDENTITY)
-                {
-                    srcRootEntity = child;
-                }
-            }
-        }
-
-        auto count = srcRootEntity->GetChildrenCount();
-
-        Vector<Entity*> tempV;
-        tempV.reserve(count);
-        for (auto i = 0; i < count; ++i)
-        {
-            tempV.push_back(srcRootEntity->GetChild(i));
-        }
-
-        Entity* dstRootEntity = new Entity();
-        for (auto i = 0; i < count; ++i)
-        {
-            dstRootEntity->AddNode(tempV[i]);
-        }
-
-        dstRootEntity->ResetID();
-        dstRootEntity->SetName(scene->GetName());
-        cachedEntities[path] = dstRootEntity;
-    }
-
-    SafeRelease(scene);
-}
-
-Entity* EntityCache::GetOriginal(const FilePath& path)
-{
-    Entity* ret = nullptr;
-
-    if (cachedEntities.find(path) == cachedEntities.end())
-    {
-        Preload(path);
-    }
-
-    auto i = cachedEntities.find(path);
-    if (i != cachedEntities.end())
-    {
-        ret = i->second;
-    }
-
-    return ret;
-}
-
-Entity* EntityCache::GetClone(const FilePath& path)
-{
-    Entity* ret = nullptr;
-
-    Entity* orig = GetOriginal(path);
-    if (nullptr != orig)
-    {
-        ret = orig->Clone();
-    }
-
-    return ret;
-}
-
-void EntityCache::Clear(const FilePath& path)
-{
-    auto i = cachedEntities.find(path);
-    if (i != cachedEntities.end())
-    {
-        SafeRelease(i->second);
-        cachedEntities.erase(i);
-    }
-}
-
-void EntityCache::ClearAll()
-{
-    for (auto& i : cachedEntities)
-    {
-        SafeRelease(i.second);
-    }
-    cachedEntities.clear();
-}
-
 DAVA_VIRTUAL_REFLECTION_IMPL(Scene)
 {
     ReflectionRegistrator<Scene>::Begin()
     .End();
 }
 
-Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
-    : Entity()
-    , systemsMask(_systemsMask)
-    , maxEntityIDCounter(0)
-    , sceneGlobalMaterial(0)
-    , mainCamera(0)
-    , drawCamera(0)
-    , entitiesManager(new EntitiesManager())
+Scene::Scene()
+    : entitiesManager(new EntitiesManager())
+    , systemManager(GetEngineContext()->systemManager)
 {
     static uint32 idCounter = 0;
     sceneId = ++idCounter;
@@ -223,8 +43,6 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     renderSystem = new RenderSystem();
     eventSystem = new EventSystem();
 
-    CreateSystems();
-
     // this will force scene to create hidden global material
     SetGlobalMaterial(nullptr);
 
@@ -232,16 +50,17 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     options->AddObserver(this);
 }
 
-Scene::Scene(const UnorderedSet<FastName>& tags_)
-    : Scene(0)
+Scene::Scene(const FastTags& tags, bool createSystems /* = true */)
+    : Scene()
 {
-    tags.insert(FastName("base"));
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    tags.insert(FastName("physics"));
-#endif
-
-    tags.insert(tags_.begin(), tags_.end());
+    if (createSystems)
+    {
+        AddTags(tags);
+    }
+    else
+    {
+        sceneTags = tags;
+    }
 }
 
 NMaterial* Scene::GetGlobalMaterial() const
@@ -256,8 +75,12 @@ void Scene::SetGlobalMaterial(NMaterial* globalMaterial)
 
     renderSystem->SetGlobalMaterial(sceneGlobalMaterial);
 
+    ParticleEffectSystem* const particleEffectSystem = GetSystem<ParticleEffectSystem>();
+
     if (nullptr != particleEffectSystem)
+    {
         particleEffectSystem->SetGlobalMaterial(sceneGlobalMaterial);
+    }
 }
 
 void Scene::SetMainPassProperties(uint32 priority, const Rect& viewport, uint32 width, uint32 height, PixelFormat format)
@@ -290,156 +113,9 @@ float32 Scene::GetFixedUpdateOverlap() const
     return fixedUpdate.overlap;
 }
 
-void Scene::SetPerformFixedProcessOnlyOnce(bool isPerformFixedProcessOnlyOnce_)
+void Scene::SetPerformFixedProcessOnlyOnce(bool isPerformFixedProcessOnlyOnce)
 {
-    fixedUpdate.onlyOnce = isPerformFixedProcessOnlyOnce_;
-}
-
-rhi::RenderPassConfig& Scene::GetMainPassConfig()
-{
-    return renderSystem->GetMainPassConfig();
-}
-
-void Scene::CreateSystems()
-{
-    if (!tags.empty())
-    {
-        DVASSERT(tags.empty());
-        return;
-    }
-
-    if (SCENE_SYSTEM_ACTION_COLLECT_FLAG & systemsMask)
-    {
-        AddSystem(new ActionCollectSystem(this));
-    }
-
-    if (SCENE_SYSTEM_STATIC_OCCLUSION_FLAG & systemsMask)
-    {
-        AddSystem(new StaticOcclusionSystem(this));
-    }
-
-    if (SCENE_SYSTEM_ANIMATION_FLAG & systemsMask)
-    {
-        AddSystem(new AnimationSystem(this));
-    }
-
-    if (SCENE_SYSTEM_MOTION_FLAG & systemsMask)
-    {
-        AddSystem(new MotionSystem(this));
-    }
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    if (SCENE_SYSTEM_PHYSICS_FLAG & systemsMask)
-    {
-        AddSystem(new WASDPhysicsControllerSystem(this));
-        AddSystem(new PhysicsSystem(this));
-#if defined(__DAVAENGINE_PHYSICS_DEBUG_DRAW_ENABLED__)
-        AddSystem(new PhysicsDebugDrawSystem(this));
-#endif
-    }
-#endif
-
-    if (SCENE_SYSTEM_SKELETON_FLAG & systemsMask)
-    {
-        AddSystem(new SkeletonSystem(this));
-    }
-
-    if (SCENE_SYSTEM_SLOT_FLAG & systemsMask)
-    {
-        AddSystem(new SlotSystem(this));
-    }
-
-    if (SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)
-    {
-        AddSystem(new TransformSystem(this));
-    }
-
-    if (SCENE_SYSTEM_LOD_FLAG & systemsMask)
-    {
-        AddSystem(new LodSystem(this));
-    }
-
-    if (SCENE_SYSTEM_SWITCH_FLAG & systemsMask)
-    {
-        AddSystem(new SwitchSystem(this));
-    }
-
-    if (SCENE_SYSTEM_PARTICLE_EFFECT_FLAG & systemsMask)
-    {
-        AddSystem(new ParticleEffectSystem(this));
-    }
-
-    if (SCENE_SYSTEM_SOUND_UPDATE_FLAG & systemsMask)
-    {
-        AddSystem(new SoundUpdateSystem(this));
-    }
-
-    if (DAVA::Renderer::GetOptions()->IsOptionEnabled(DAVA::RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION))
-    {
-        AddSystem(new DAVA::StaticOcclusionDebugDrawSystem(this));
-    }
-
-    if (SCENE_SYSTEM_RENDER_UPDATE_FLAG & systemsMask)
-    {
-        AddSystem(new RenderUpdateSystem(this));
-    }
-
-    if (SCENE_SYSTEM_UPDATEBLE_FLAG & systemsMask)
-    {
-        AddSystem(new UpdateSystem(this));
-    }
-
-    if (SCENE_SYSTEM_LIGHT_UPDATE_FLAG & systemsMask)
-    {
-        AddSystem(new LightUpdateSystem(this));
-    }
-
-    if (SCENE_SYSTEM_ACTION_UPDATE_FLAG & systemsMask)
-    {
-        AddSystem(new ActionUpdateSystem(this));
-    }
-
-    if (SCENE_SYSTEM_DEBUG_RENDER_FLAG & systemsMask)
-    {
-        AddSystem(new DebugRenderSystem(this));
-    }
-
-    if (SCENE_SYSTEM_LANDSCAPE_FLAG & systemsMask)
-    {
-        AddSystem(new LandscapeSystem(this));
-    }
-
-    if (SCENE_SYSTEM_FOLIAGE_FLAG & systemsMask)
-    {
-        AddSystem(new FoliageSystem(this));
-    }
-
-    if (SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG & systemsMask)
-    {
-        AddSystem(new SpeedTreeUpdateSystem(this));
-    }
-
-    if (SCENE_SYSTEM_WIND_UPDATE_FLAG & systemsMask)
-    {
-        AddSystem(new WindSystem(this));
-    }
-
-    if (SCENE_SYSTEM_WAVE_UPDATE_FLAG & systemsMask)
-    {
-        AddSystem(new WaveSystem(this));
-    }
-
-    if (SCENE_SYSTEM_GEO_DECAL_FLAG & systemsMask)
-    {
-        AddSystem(new GeoDecalSystem(this));
-    }
-
-    if (DAVA::Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES))
-    {
-        AddSystem(new ParticleEffectDebugDrawSystem(this));
-    }
-
-    InitLegacyPointers();
+    fixedUpdate.onlyOnce = isPerformFixedProcessOnlyOnce;
 }
 
 Scene::~Scene()
@@ -450,46 +126,29 @@ Scene::~Scene()
 
     renderSystem->PrepareForShutdown();
 
-    size_t size = systemsVector.size();
-
-    for (size_t k = 0; k < size; ++k)
+    auto systemsMapCopy = systemsMap;
+    for (const auto& p : systemsMapCopy)
     {
-        systemsVector[k]->PrepareForRemove();
+        const Type* systemType = p.first;
+        RemoveSystem(systemType);
     }
-
-    for (size_t k = 0; k < size; ++k)
-    {
-        systemRemoved.Emit(systemsVector[k]);
-        SafeDelete(systemsVector[k]);
-    }
-    systemsVector.clear();
-    systemsMap.clear();
-
-    // Reinit with nullptrs
-    InitLegacyPointers();
-
     systemAdded.DisconnectAll();
     systemRemoved.DisconnectAll();
+
+    for (auto& p : singleComponents)
+    {
+        SafeDelete(p.second);
+    }
 
     SafeRelease(mainCamera);
     SafeRelease(drawCamera);
     for (Camera*& c : cameras)
+    {
         SafeRelease(c);
-    cameras.clear();
+    }
 
     RemoveAllChildren();
     SafeRelease(sceneGlobalMaterial);
-
-    for (auto& pair : singleComponents)
-    {
-        SafeDelete(pair.second);
-    }
-    singleComponents.clear();
-
-    systemsToProcess.clear();
-    systemsToInput.clear();
-    systemsToFixedProcess.clear();
-    cache.ClearAll();
 
     SafeDelete(eventSystem);
     SafeDelete(renderSystem);
@@ -507,7 +166,7 @@ void Scene::RegisterEntity(Entity* entity)
         entity->SetSceneID(sceneId);
     }
 
-    for (auto& system : systemsVector)
+    for (SceneSystem* system : systemsVector)
     {
         system->RegisterEntity(entity);
     }
@@ -517,7 +176,7 @@ void Scene::RegisterEntity(Entity* entity)
 
 void Scene::UnregisterEntity(Entity* entity)
 {
-    for (auto& system : systemsVector)
+    for (SceneSystem* system : systemsVector)
     {
         system->UnregisterEntity(entity);
     }
@@ -528,356 +187,293 @@ void Scene::UnregisterEntity(Entity* entity)
 void Scene::RegisterEntitiesInSystemRecursively(SceneSystem* system, Entity* entity)
 {
     system->RegisterEntity(entity);
-    for (int32 i = 0, sz = entity->GetChildrenCount(); i < sz; ++i)
+    for (int32 i = 0, size = entity->GetChildrenCount(); i < size; ++i)
+    {
         RegisterEntitiesInSystemRecursively(system, entity->GetChild(i));
+    }
+}
+
+void Scene::RegisterSingleComponentsInSystem(SceneSystem* system)
+{
+    for (const auto& p : singleComponents)
+    {
+        SingleComponent* singleComponent = p.second;
+        system->RegisterSingleComponent(singleComponent);
+    }
 }
 
 void Scene::RegisterComponent(Entity* entity, Component* component)
 {
-    DVASSERT(entity && component);
+    DVASSERT(nullptr != entity && nullptr != component);
+
     static bool entered = false;
+
     DVASSERT(entered == false, "Scene::RegisterComponent should not be called recursively");
+
     entered = true;
-    uint32 systemsCount = static_cast<uint32>(systemsVector.size());
-    for (uint32 k = 0; k < systemsCount; ++k)
+
+    for (SceneSystem* system : systemsVector)
     {
-        systemsVector[k]->RegisterComponent(entity, component);
+        system->RegisterComponent(entity, component);
     }
 
     entitiesManager->RegisterComponent(entity, component);
+
     entered = false;
 }
 
 void Scene::UnregisterComponent(Entity* entity, Component* component)
 {
-    DVASSERT(entity && component);
-    uint32 systemsCount = static_cast<uint32>(systemsVector.size());
-    for (uint32 k = 0; k < systemsCount; ++k)
+    DVASSERT(nullptr != entity && nullptr != component);
+
+    for (SceneSystem* system : systemsVector)
     {
-        systemsVector[k]->UnregisterComponent(entity, component);
+        system->UnregisterComponent(entity, component);
     }
 
     entitiesManager->UnregisterComponent(entity, component);
 }
 
-void Scene::AddSystem(SceneSystem* sceneSystem, SceneSystem* insertBeforeSceneForProcess /*= nullptr*/, SceneSystem* insertBeforeSceneForInput /*= nullptr*/, SceneSystem* insertBeforeSceneForFixedProcess /*= nullptr*/)
+void Scene::AddSystem(const Type* systemType)
 {
-    if (!tags.empty())
-    {
-        DVASSERT(tags.empty(), "Scene was created by tags, system will not be added.");
-        return;
-    }
+    DVASSERT(nullptr != systemType);
 
-    systemsVector.push_back(sceneSystem);
-    const Type* systemType = ReflectedTypeDB::GetByPointer(sceneSystem)->GetType();
-    systemsMap[systemType] = sceneSystem;
-
-    auto insertSystemBefore = [sceneSystem](Vector<SceneSystem*>& container, SceneSystem* beforeThisSystem)
+    if (systemsMap.find(systemType) == systemsMap.end())
     {
-        if (beforeThisSystem != nullptr)
+        const SystemManager::SystemInfo* const systemInfo = systemManager->GetSystemInfo(systemType);
+
+        if (nullptr != systemInfo)
         {
-            Vector<SceneSystem*>::iterator itEnd = container.end();
-            for (Vector<SceneSystem*>::iterator it = container.begin(); it != itEnd; ++it)
+            // All the checks can be avoided here since they are performed by SystemManager in registration step.
+            const ReflectedType* const reflectedType = ReflectedTypeDB::GetByType(systemType);
+            Any object = reflectedType->CreateObject(ReflectedType::CreatePolicy::ByPointer, this);
+
+            SceneSystem* system = static_cast<SceneSystem*>(object.Get<void*>());
+            system->SetScene(this);
+
+            for (const SystemManager::SystemProcess& systemProcess : systemInfo->processMethods)
             {
-                if (beforeThisSystem == (*it))
+                auto insertProcess = [](auto& sortedContainer, const ProcessSystemPair& process) {
+                    auto position = std::lower_bound(begin(sortedContainer), end(sortedContainer), process, [](const ProcessSystemPair& l, const ProcessSystemPair& r) {
+                        const SystemProcessInfo& left = l.first->info;
+                        const SystemProcessInfo& right = r.first->info;
+                        return left < right;
+                    });
+                    DVASSERT(position == end(sortedContainer) || position->first->info != process.first->info);
+                    sortedContainer.insert(position, process);
+                };
+
+                const ProcessSystemPair process = std::make_pair(&systemProcess, system);
+
+                switch (systemProcess.info.type)
                 {
-                    container.insert(it, sceneSystem);
-                    return true;
+                case SPI::Type::Normal:
+                    insertProcess(processes, process);
+                    break;
+                case SPI::Type::Fixed:
+                    insertProcess(fixedProcesses, process);
+                    break;
+                case SPI::Type::Input:
+                    insertProcess(inputProcesses, process);
+                    break;
+                default:
+                    DVASSERT(false, "Unhandled case.");
                 }
             }
+
+            systemsMap[systemType] = system;
+            systemsVector.push_back(system);
+
+            RegisterSingleComponentsInSystem(system);
+            RegisterEntitiesInSystemRecursively(system, this);
+
+            systemAdded.Emit(system);
         }
         else
         {
-            container.push_back(sceneSystem);
-            return true;
+            DVASSERT(false, Format("Unable to get info for system of type `%s`.", systemType->GetName()).c_str());
         }
-
-        return false;
-    };
-
-    bool wasInsertedForProcess = insertSystemBefore(systemsToProcess, insertBeforeSceneForProcess);
-    DVASSERT(wasInsertedForProcess);
-
-    bool wasInsertedForInput = insertSystemBefore(systemsToInput, insertBeforeSceneForInput);
-    DVASSERT(wasInsertedForInput);
-
-    bool wasInserted = insertSystemBefore(systemsToFixedProcess, insertBeforeSceneForFixedProcess);
-    DVASSERT(wasInserted);
-
-    sceneSystem->SetScene(this);
-    RegisterEntitiesInSystemRecursively(sceneSystem, this);
-
-    systemAdded.Emit(sceneSystem);
-}
-
-void Scene::RemoveSystem(SceneSystem* sceneSystem)
-{
-    sceneSystem->PrepareForRemove();
-
-    RemoveSystem(systemsToProcess, sceneSystem);
-    RemoveSystem(systemsToInput, sceneSystem);
-    RemoveSystem(systemsToFixedProcess, sceneSystem);
-    const Type* systemType = ReflectedTypeDB::GetByPointer(sceneSystem)->GetType();
-    systemsMap.erase(systemType);
-
-    bool removed = RemoveSystem(systemsVector, sceneSystem);
-    if (removed)
-    {
-        sceneSystem->SetScene(nullptr);
-        systemRemoved.Emit(sceneSystem);
     }
     else
     {
-        DVASSERT(false, "Failed to remove system from scene");
+        DVASSERT(false, Format("System of type `%s` already exists in the scene.", systemType->GetName()).c_str());
     }
 }
 
-void Scene::AddTag(FastName tag)
+void Scene::RemoveSystem(const Type* systemType)
 {
-    if (tags.empty())
+    const auto it = systemsMap.find(systemType);
+
+    if (it != systemsMap.end())
     {
-        DVASSERT(!tags.empty());
-        return;
+        SceneSystem* system = it->second;
+
+        system->PrepareForRemove();
+
+        auto cleanUp = [system](auto& v) { v.erase(std::remove_if(begin(v), end(v), [system](const auto& p) { return p.second == system; }), end(v)); };
+
+        cleanUp(fixedProcesses);
+        cleanUp(processes);
+        cleanUp(inputProcesses);
+
+        systemsMap.erase(it);
+        systemsVector.erase(std::remove(begin(systemsVector), end(systemsVector), system), end(systemsVector));
+
+        systemRemoved.Emit(system);
+
+        SafeDelete(system);
+
+        entitiesManager->UpdateCaches();
     }
-
-    tagsToChange.emplace_back(tag, TagAction::ADD);
-}
-
-void Scene::RemoveTag(FastName tag)
-{
-    DVASSERT(HasTag(tag));
-
-    tagsToChange.emplace_back(tag, TagAction::REMOVE);
-}
-
-bool Scene::HasTag(FastName tag) const
-{
-    return (tags.find(tag) != tags.end());
-}
-
-bool Scene::RemoveSystem(Vector<SceneSystem*>& storage, SceneSystem* system)
-{
-    Vector<SceneSystem*>::iterator endIt = storage.end();
-    for (Vector<SceneSystem*>::iterator it = storage.begin(); it != endIt; ++it)
+    else
     {
-        if (*it == system)
-        {
-            storage.erase(it);
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void Scene::InitLegacyPointers()
-{
-    // TODO: destroy this legacy
-
-    actionCollectSystem = GetSystem<ActionCollectSystem>();
-    staticOcclusionSystem = GetSystem<StaticOcclusionSystem>();
-    animationSystem = GetSystem<AnimationSystem>();
-    motionSystem = GetSystem<MotionSystem>();
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    physicsSystem = GetSystem<PhysicsSystem>();
-#endif
-
-    skeletonSystem = GetSystem<SkeletonSystem>();
-    slotSystem = GetSystem<SlotSystem>();
-    transformSystem = GetSystem<TransformSystem>();
-    lodSystem = GetSystem<LodSystem>();
-    switchSystem = GetSystem<SwitchSystem>();
-    particleEffectSystem = GetSystem<ParticleEffectSystem>();
-    soundSystem = GetSystem<SoundUpdateSystem>();
-    renderUpdateSystem = GetSystem<RenderUpdateSystem>();
-    updatableSystem = GetSystem<UpdateSystem>();
-    lightUpdateSystem = GetSystem<LightUpdateSystem>();
-    actionSystem = GetSystem<ActionUpdateSystem>();
-    debugRenderSystem = GetSystem<DebugRenderSystem>();
-    landscapeSystem = GetSystem<LandscapeSystem>();
-    foliageSystem = GetSystem<FoliageSystem>();
-    speedTreeUpdateSystem = GetSystem<SpeedTreeUpdateSystem>();
-    windSystem = GetSystem<WindSystem>();
-    waveSystem = GetSystem<WaveSystem>();
-    staticOcclusionDebugDrawSystem = GetSystem<StaticOcclusionDebugDrawSystem>();
-    particleEffectDebugDrawSystem = GetSystem<ParticleEffectDebugDrawSystem>();
-    geoDecalSystem = GetSystem<GeoDecalSystem>();
-}
-
-void Scene::ProcessChangedTags()
-{
-    if (tagsToChange.empty())
-    {
-        return;
-    }
-
-    SystemManager* sm = GetEngineContext()->systemManager;
-
-    bool updateSystemsList = false;
-
-    for (const auto& p : tagsToChange)
-    {
-        FastName tag = p.first;
-        auto it = tags.find(tag);
-
-        if (p.second == TagAction::ADD && it == tags.end())
-        {
-            updateSystemsList = tags.insert(tag).second || updateSystemsList;
-        }
-        else if (p.second == TagAction::REMOVE && it != tags.end())
-        {
-            Vector<SceneSystem*> systemsToRemove;
-
-            for (const auto& sp : systemsMap)
-            {
-                const auto& tagsForSystem = sm->GetTagsForSystem(sp.first);
-                if (std::find(tagsForSystem.begin(), tagsForSystem.end(), tag) != tagsForSystem.end())
-                {
-                    systemsToRemove.push_back(sp.second);
-                }
-            }
-
-            for (SceneSystem* system : systemsToRemove)
-            {
-                RemoveSystem(system);
-                entitiesManager->UpdateCaches();
-            }
-
-            tags.erase(it);
-        }
-    }
-
-    tagsToChange.clear();
-
-    if (updateSystemsList)
-    {
-        CreateSystemsByTags();
-    }
-
-    InitLegacyPointers();
-}
-
-void Scene::CreateSystemsToMethods(const Vector<SystemManager::SceneProcessInfo>& methods)
-{
-    for (const auto& p : methods)
-    {
-        if (systemsMap.find(p.systemType) != systemsMap.end())
-        {
-            continue;
-        }
-
-        const ReflectedType* reflType = ReflectedTypeDB::GetByType(p.systemType);
-        const ReflectedStructure* structure = reflType->GetStructure();
-
-        const auto& systemTags = structure->meta->GetMeta<M::Tags>()->tags;
-
-        bool shouldAddSystem = std::all_of(systemTags.begin(), systemTags.end(), [this](FastName tag) { return tags.find(tag) != tags.end(); });
-
-        if (shouldAddSystem)
-        {
-            Any obj = reflType->CreateObject(ReflectedType::CreatePolicy::ByPointer, this);
-            SceneSystem* sceneSystem = static_cast<SceneSystem*>(obj.Get<void*>());
-            systemsMap[p.systemType] = sceneSystem;
-            systemsVector.push_back(sceneSystem);
-            sceneSystem->SetScene(this);
-            RegisterEntitiesInSystemRecursively(sceneSystem, this);
-            systemAdded.Emit(sceneSystem);
-        }
+        DVASSERT(false, Format("System of type `%s` doesn't exist in the scene.", systemType->GetName()).c_str());
     }
 }
 
-void Scene::ProcessManuallyAddedSystems(float32 timeElapsed)
+void Scene::AddTags(const FastTags& tags)
 {
-    if (!fixedUpdate.paused)
+    if (!sceneTags.empty() || systemsMap.empty())
     {
-        auto ProcessFixedMethods = [this]() {
-            for (SceneSystem* system : systemsToFixedProcess)
-            {
-                system->ProcessFixed(fixedUpdate.fixedTime);
-                entitiesManager->UpdateCaches();
-            }
-        };
+        const bool allTagsAreNewToScene = std::all_of(cbegin(tags.tags), cend(tags.tags), [& sceneTags = this->sceneTags](const FastName& tag) {
+            return sceneTags.find(tag) == sceneTags.end();
+        });
 
-        if (fixedUpdate.accumulatedTime >= fixedUpdate.fixedTime || fixedUpdate.firstUpdate)
+        if (allTagsAreNewToScene)
         {
-            DVASSERT(!Renderer::IsInitialized() || (fixedUpdate.fixedTime >= 1.f / Renderer::GetDesiredFPS()));
+            sceneTags.insert(cbegin(tags.tags), cend(tags.tags));
 
-            ProcessFixedMethods();
-            ClearFixedProcessesSingleComponents();
+            const Vector<const Type*> systems = systemManager->GetSystems(sceneTags);
 
-            fixedUpdate.overlap = 1.0f;
-            fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
-        }
-        else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
-        {
-            size_t fuCount = 0;
-
-            fixedUpdate.accumulatedTime += timeElapsed;
-            while (fixedUpdate.accumulatedTime > 0)
-            {
-                ProcessFixedMethods();
-                ClearFixedProcessesSingleComponents();
-
-                if (fixedUpdate.paused)
-                {
-                    break;
-                }
-
-                fixedUpdate.accumulatedTime -= (fixedUpdate.fixedTime + fixedUpdate.adjustment);
-                fuCount++;
-            }
-
-            fixedUpdate.overlap = (fixedUpdate.fixedTime + fixedUpdate.accumulatedTime + fixedUpdate.adjustment) / fixedUpdate.fixedTime;
-            //Logger::Info("FixedUpdate call count = %u, overlap = %f", fuCount, fixedUpdate.overlap);
-        }
-    }
-
-    for (SceneSystem* system : systemsToProcess)
-    {
-        if (updatableSystem != nullptr && system == transformSystem)
-        {
-            updatableSystem->UpdatePreTransform(timeElapsed);
-            transformSystem->Process(timeElapsed);
-            updatableSystem->UpdatePostTransform(timeElapsed);
-            entitiesManager->UpdateCaches();
-        }
-        else if (system == lodSystem)
-        {
-            if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
-            {
-                lodSystem->Process(timeElapsed);
-                entitiesManager->UpdateCaches();
-            }
+            CorrectSystemsList({ cbegin(systems), cend(systems) });
         }
         else
         {
-            system->Process(timeElapsed);
-            entitiesManager->UpdateCaches();
+            DVASSERT(allTagsAreNewToScene, "Some tags are not unique to scene, function will have no effect.");
         }
     }
-
-    ClearAllProcessesSingleComponents();
+    else
+    {
+        DVASSERT(false, "Tags are forbidden for scene with manually added systems.");
+    }
 }
 
-void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
+void Scene::RemoveTags(const FastTags& tags)
 {
-    ProcessChangedTags(); // Check if tags changed. Correct systems list according to changed tags.
+    if (HasTags(tags))
+    {
+        for (const FastName& tag : tags.tags)
+        {
+            const bool successfulInsert = tagsToRemove.insert(tag).second;
+            DVASSERT(successfulInsert, "Tag is already marked to be removed.");
+        }
+    }
+    else
+    {
+        DVASSERT(false, "Tags marked to be removed are not found in the scene tags, function will have no effect.");
+    }
+}
 
-    SystemManager* sm = GetEngineContext()->systemManager;
+bool Scene::HasTags(const FastTags& tags) const
+{
+    DVASSERT(!tags.tags.empty());
+
+    return std::all_of(cbegin(tags.tags), cend(tags.tags), [& st = sceneTags](const FastName& tag) { return st.find(tag) != st.end(); });
+}
+
+const UnorderedSet<FastName>& Scene::GetTags()
+{
+    return sceneTags;
+}
+
+void Scene::AddSystemManually(const Type* systemType)
+{
+    if (sceneTags.empty())
+    {
+        if (systemsMap.find(systemType) == systemsMap.end())
+        {
+            AddSystem(systemType);
+        }
+        else
+        {
+            DVASSERT(false, "System with given type is already exists in the scene, function will have no effect.");
+        }
+    }
+    else
+    {
+        DVASSERT(false, "Manual modifications of systems list are forbidden for scene with systems added by tags.");
+    }
+}
+
+void Scene::RemoveSystemManually(const Type* systemType)
+{
+    if (sceneTags.empty())
+    {
+        const bool successfulInsert = systemsToRemove.insert(systemType).second;
+        DVASSERT(successfulInsert, "System is already marked to be removed.");
+    }
+    else
+    {
+        DVASSERT(false, "Manual modifications of systems list are forbidden for scene with systems added by tags.");
+    }
+}
+
+void Scene::CorrectSystemsList(const UnorderedSet<const Type*>& systems)
+{
+    auto filterRemovedSystems = [this](const auto& systems)
+    {
+        Vector<const Type*> removedSystems;
+
+        for (const auto& p : systemsMap)
+        {
+            const Type* system = p.first;
+
+            if (systems.find(system) == systems.end())
+            {
+                removedSystems.push_back(system);
+            }
+        }
+
+        return removedSystems;
+    };
+
+    auto filterAddedSystems = [this](const auto& systems)
+    {
+        Vector<const Type*> addedSystems;
+
+        std::copy_if(cbegin(systems), cend(systems), std::back_inserter(addedSystems), [this](const Type* system) {
+            return systemsMap.find(system) == systemsMap.end();
+        });
+
+        return addedSystems;
+    };
+
+    for (const Type* systemType : filterRemovedSystems(systems))
+    {
+        RemoveSystem(systemType);
+    }
+
+    for (const Type* systemType : filterAddedSystems(systems))
+    {
+        AddSystem(systemType);
+    }
+}
+
+void Scene::ExecuteFixedProcesses(float32 timeElapsed)
+{
+    auto fixedProcessesCopy = fixedProcesses; // Iterate over copy to allow immediate systems creation.
 
     if (!fixedUpdate.paused)
     {
-        auto ProcessFixedMethods = [this, sm]() {
-            for (const auto& p : sm->GetFixedProcessMethods())
+        auto ProcessFixedMethods = [this, &fixedProcessesCopy]() {
+            for (const ProcessSystemPair& p : fixedProcessesCopy)
             {
-                auto it = systemsMap.find(p.systemType);
-                if (it != systemsMap.end())
-                {
-                    p.method->InvokeWithCast(it->second, fixedUpdate.fixedTime);
-                    entitiesManager->UpdateCaches();
-                }
+                const AnyFn& fixedProcess = p.first->process;
+                SceneSystem* system = p.second;
+                fixedProcess.InvokeWithCast(system, fixedUpdate.fixedTime);
+                entitiesManager->UpdateCaches();
             }
+            ClearFixedProcessesSingleComponents();
         };
 
         fixedUpdate.accumulatedTime += timeElapsed;
@@ -889,7 +485,6 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
                 DVASSERT(!Renderer::IsInitialized() || (fixedUpdate.fixedTime >= 1.f / Renderer::GetDesiredFPS()));
 
                 ProcessFixedMethods();
-                ClearFixedProcessesSingleComponents();
 
                 fixedUpdate.overlap = 1.0f;
                 fixedUpdate.accumulatedTime -= fixedUpdate.fixedTime;
@@ -897,106 +492,90 @@ void Scene::ProcessSystemsAddedByTags(float32 timeElapsed)
         }
         else //call ProcessFixed N times where N = (timeSinceLastProcessFixed + timeElapsed) / fixedUpdate.constantTime;
         {
-            size_t fuCount = 0;
-
             while (fixedUpdate.accumulatedTime > 0)
             {
                 ProcessFixedMethods();
-                ClearFixedProcessesSingleComponents();
+
+                fixedUpdate.accumulatedTime -= (fixedUpdate.fixedTime + fixedUpdate.adjustment);
 
                 if (fixedUpdate.paused)
                 {
                     break;
                 }
-
-                fixedUpdate.accumulatedTime -= (fixedUpdate.fixedTime + fixedUpdate.adjustment);
-                fuCount++;
             }
 
             fixedUpdate.overlap = (fixedUpdate.fixedTime + fixedUpdate.accumulatedTime + fixedUpdate.adjustment) / fixedUpdate.fixedTime;
             //Logger::Info("FixedUpdate call count = %u, adjustment = %f, overlap = %f", fuCount, fixedUpdate.adjustment, fixedUpdate.overlap);
         }
     }
+}
 
-    for (const auto& p : sm->GetProcessMethods())
+void Scene::ExecuteProcesses(float32 timeElapsed)
+{
+    auto processesCopy = processes; // Iterate over copy to allow immediate systems creation.
+
+    for (const ProcessSystemPair& p : processesCopy)
     {
-        auto it = systemsMap.find(p.systemType);
-        if (it == systemsMap.end())
-        {
-            continue;
-        }
+        const AnyFn& process = p.first->process;
+        SceneSystem* system = p.second;
 
-        SceneSystem* system = it->second;
+        process.InvokeWithCast(system, timeElapsed);
 
-        if (updatableSystem != nullptr && system == transformSystem)
-        {
-            updatableSystem->UpdatePreTransform(timeElapsed);
-            transformSystem->Process(timeElapsed);
-            updatableSystem->UpdatePostTransform(timeElapsed);
-            entitiesManager->UpdateCaches();
-        }
-        else if (system == lodSystem)
-        {
-            if (Renderer::GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
-            {
-                lodSystem->Process(timeElapsed);
-                entitiesManager->UpdateCaches();
-            }
-        }
-        else
-        {
-            p.method->InvokeWithCast(system, timeElapsed);
-            entitiesManager->UpdateCaches();
-        }
+        entitiesManager->UpdateCaches();
     }
 
     ClearAllProcessesSingleComponents();
 }
 
-void Scene::CreateSystemsByTags()
+void Scene::OnNewSystemRegistered(const Type* systemType, const SystemManager::SystemInfo* systemInfo)
 {
-    // TODO: cache methods ptrs
-    // TODO: get rid of public pointers.
-    // TODO: UnregisterComponent(,) for all single components?
-    // TODO: runtime system registration (after init), signals in system manager?
+    const UnorderedSet<FastName>& systemTags = systemInfo->tags->tags;
 
-    if (tags.empty())
+    const bool tagsMatch = std::all_of(cbegin(systemTags), cend(systemTags), [this](const FastName& tag) { return sceneTags.find(tag) != sceneTags.end(); });
+
+    if (tagsMatch && (systemsMap.find(systemType) == systemsMap.end()))
     {
-        DVASSERT(!tags.empty());
-        return;
+        CorrectSystemsList({ systemType });
     }
+}
 
-    SystemManager* sm = GetEngineContext()->systemManager;
-
-    // Add systems without methods.
-    for (const auto& p : sm->GetSystemsWithoutProcessMethods())
+void Scene::QueryRemovedSystems()
+{
+    if (!tagsToRemove.empty())
     {
-        if (systemsMap.find(p.systemType) == systemsMap.end())
+        for (const FastName& tag : std::exchange(tagsToRemove, {}))
         {
-            const ReflectedType* reflType = ReflectedTypeDB::GetByType(p.systemType);
-            const ReflectedStructure* structure = reflType->GetStructure();
-
-            const auto& systemTags = structure->meta->GetMeta<M::Tags>()->tags;
-
-            bool shouldAddSystem = std::all_of(systemTags.begin(), systemTags.end(), [this](FastName tag) { return tags.find(tag) != tags.end(); });
-
-            if (shouldAddSystem)
-            {
-                Any obj = reflType->CreateObject(ReflectedType::CreatePolicy::ByPointer, this);
-                SceneSystem* sceneSystem = static_cast<SceneSystem*>(obj.Get<void*>());
-                systemsMap[p.systemType] = sceneSystem;
-                systemsVector.push_back(sceneSystem);
-                sceneSystem->SetScene(this);
-                RegisterEntitiesInSystemRecursively(sceneSystem, this);
-                systemAdded.Emit(sceneSystem);
-            }
+            const bool successfulErase = sceneTags.erase(tag) != 0;
+            DVASSERT(successfulErase);
         }
+
+        Vector<const Type*> systems;
+
+        if (!sceneTags.empty())
+        {
+            systems = systemManager->GetSystems(sceneTags);
+        }
+
+        CorrectSystemsList({ cbegin(systems), cend(systems) });
     }
+    else if (!systemsToRemove.empty())
+    {
+        UnorderedSet<const Type*> newSystemsList;
 
-    CreateSystemsToMethods(sm->GetProcessMethods());
-    CreateSystemsToMethods(sm->GetFixedProcessMethods());
+        for (const auto& p : systemsMap)
+        {
+            const Type* systemType = p.first;
+            newSystemsList.insert(systemType);
+        }
 
-    InitLegacyPointers();
+        for (const Type* systemType : std::exchange(systemsToRemove, {}))
+        {
+            const bool successfulErase = newSystemsList.erase(systemType) != 0;
+            DVASSERT(successfulErase);
+        }
+
+        CorrectSystemsList(newSystemsList);
+    }
 }
 
 EntityGroupOnAdd* Scene::AquireEntityGroupOnAdd(EntityGroup* eg, SceneSystem* sceneSystem)
@@ -1026,10 +605,9 @@ void Scene::AddSingleComponent(SingleComponent* component, const Type* type)
         }
     }
 
-    uint32 systemsCount = static_cast<uint32>(systemsVector.size());
-    for (uint32 k = 0; k < systemsCount; ++k)
+    for (SceneSystem* system : systemsVector)
     {
-        systemsVector[k]->RegisterSingleComponent(component);
+        system->RegisterSingleComponent(component);
     }
 }
 
@@ -1056,8 +634,11 @@ const SingleComponent* Scene::GetSingleComponentForRead(const Type* type, const 
     DVASSERT(type != nullptr);
     DVASSERT(user != nullptr);
 
+#if defined(__DAVAENGINE_DEBUG__)
+    HandleSingleComponentRead(user, type);
+#endif
+
     const SingleComponent* singleComponent = GetSingleComponent(type);
-    HandleSingleComponentAccess(singleComponent, user, false);
     return singleComponent;
 }
 
@@ -1066,104 +647,26 @@ SingleComponent* Scene::GetSingleComponentForWrite(const Type* type, const Scene
     DVASSERT(type != nullptr);
     DVASSERT(user != nullptr);
 
+#if defined(__DAVAENGINE_DEBUG__)
+    HandleSingleComponentWrite(user, type);
+#endif
+
     SingleComponent* singleComponent = GetSingleComponent(type);
-    HandleSingleComponentAccess(singleComponent, user, true);
     return singleComponent;
 }
 
-void Scene::HandleSingleComponentAccess(const SingleComponent* singleComponent, const SceneSystem* user, bool write)
+void Scene::CreateDelayedSystems()
 {
-#if defined(__DAVAENGINE_DEBUG__)
-    DVASSERT(singleComponent != nullptr);
-    DVASSERT(user != nullptr);
-
-    // We validate only clearable single components
-    const ClearableSingleComponent* clearableSingleComponent = dynamic_cast<const ClearableSingleComponent*>(singleComponent);
-    if (clearableSingleComponent != nullptr)
+    if (systemsMap.empty())
     {
-        const Type* systemType = ReflectedTypeDB::GetByPointer(user)->GetType();
-        DVASSERT(systemType != nullptr);
+        const Vector<const Type*> systems = systemManager->GetSystems(sceneTags);
 
-        const SystemManager* systemManager = GetEngineContext()->systemManager;
-        DVASSERT(systemManager != nullptr);
-
-        // Validate that non-fixed process system does not touch fixed-process single component
-        if (clearableSingleComponent->GetUsage() == ClearableSingleComponent::Usage::FixedProcesses && systemManager->SystemHasProcess(systemType))
-        {
-            DVASSERT(false, Format("Single component (%s), which is cleared after all fixed processes, is used by a system (%s) that has a non-fixed process method", singleComponent->GetType()->GetName(), systemType->GetName()).c_str());
-        }
-
-        // Remember which systems accesses this component for reading or writing to validate later
-        // We only keep topmost systems that read a single component,
-        // and last system that writers to a single component
-
-        const Type* singleComponentType = singleComponent->GetType();
-        DVASSERT(singleComponentType != nullptr);
-
-        uint32 systemIndex = systemManager->GetSystemIndex(systemType);
-
-        if (write)
-        {
-            auto writersIt = clearableSingleComponentsWriters.find(singleComponentType);
-            if (writersIt != clearableSingleComponentsWriters.end())
-            {
-                if (systemIndex > writersIt->second.systemIndex)
-                {
-                    writersIt->second.systemType = systemType;
-                    writersIt->second.systemIndex = systemIndex;
-
-                    pendingSingleComponentsUsageValidation = true;
-                }
-            }
-            else
-            {
-                clearableSingleComponentsWriters[singleComponentType] = SingleComponentAccessInfo{ systemIndex, systemType };
-
-                pendingSingleComponentsUsageValidation = true;
-            }
-        }
-        else
-        {
-            auto readersIt = clearableSingleComponentsReaders.find(singleComponentType);
-            if (readersIt != clearableSingleComponentsReaders.end())
-            {
-                if (systemIndex < readersIt->second.systemIndex)
-                {
-                    readersIt->second.systemType = systemType;
-                    readersIt->second.systemIndex = systemIndex;
-
-                    pendingSingleComponentsUsageValidation = true;
-                }
-            }
-            else
-            {
-                clearableSingleComponentsReaders[singleComponentType] = SingleComponentAccessInfo{ systemIndex, systemType };
-
-                pendingSingleComponentsUsageValidation = true;
-            }
-        }
+        CorrectSystemsList({ cbegin(systems), cend(systems) });
     }
-#endif
-}
-
-void Scene::ValidateSingleComponentsReadsWrites() const
-{
-#if defined(__DAVAENGINE_DEBUG__)
-    for (const auto& readerInfo : clearableSingleComponentsReaders)
+    else
     {
-        auto writersIt = clearableSingleComponentsWriters.find(readerInfo.first);
-
-        // If we know both a writer and a reader, validate that first read happens after last write
-        if (writersIt != clearableSingleComponentsWriters.end())
-        {
-            DVASSERT(
-            readerInfo.second.systemIndex > writersIt->second.systemIndex,
-            Format("Detected read access by system `%s` to single component `%s` before last write to this component (which is performed by `%s`)",
-                   readerInfo.second.systemType->GetName(), readerInfo.first->GetName(), writersIt->second.systemType->GetName())
-            .c_str());
-        }
+        DVASSERT(false, "Systems already created, function will have no effect.");
     }
-#endif
 }
 
 void Scene::ClearFixedProcessesSingleComponents()
@@ -1189,7 +692,7 @@ Scene* Scene::GetScene()
 
 void Scene::AddCamera(Camera* camera)
 {
-    if (camera)
+    if (nullptr != camera)
     {
         camera->Retain();
         cameras.push_back(camera);
@@ -1198,7 +701,7 @@ void Scene::AddCamera(Camera* camera)
 
 bool Scene::RemoveCamera(Camera* c)
 {
-    const auto& it = std::find(cameras.begin(), cameras.end(), c);
+    const auto it = std::find(cameras.begin(), cameras.end(), c);
     if (it != cameras.end())
     {
         SafeRelease(*it);
@@ -1211,7 +714,9 @@ bool Scene::RemoveCamera(Camera* c)
 Camera* Scene::GetCamera(int32 n)
 {
     if (n >= 0 && n < static_cast<int32>(cameras.size()))
+    {
         return cameras[n];
+    }
 
     return nullptr;
 }
@@ -1220,26 +725,24 @@ void Scene::Update(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_UPDATE);
 
-    if (!tags.empty())
+    ExecuteFixedProcesses(timeElapsed);
+
+    ExecuteProcesses(timeElapsed);
+
+    if (processes.empty())
     {
-        ProcessSystemsAddedByTags(timeElapsed);
+        entitiesManager->UpdateCaches();
     }
-    else
-    {
-        ProcessManuallyAddedSystems(timeElapsed);
-    }
+
+    QueryRemovedSystems();
 
     sceneGlobalTime += timeElapsed;
 
-#if defined(__DAVAENGINE_DEBUG__)
-    if (pendingSingleComponentsUsageValidation)
-    {
-        ValidateSingleComponentsReadsWrites();
-        pendingSingleComponentsUsageValidation = false;
-    }
-#endif
-
     fixedUpdate.firstUpdate = false;
+
+#if defined(__DAVAENGINE_DEBUG__)
+    ValidateSingleComponentsAccessOrder();
+#endif
 }
 
 void Scene::Draw()
@@ -1252,10 +755,10 @@ void Scene::Draw()
 
     const float32* shadowDataPtr = defShadowColor.color;
     const float32* waterDataPtr = defWaterClearColor.color;
-    if (sceneGlobalMaterial && sceneGlobalMaterial->HasLocalProperty(DAVA::NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM))
-        shadowDataPtr = sceneGlobalMaterial->GetLocalPropValue(DAVA::NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM);
-    if (sceneGlobalMaterial && sceneGlobalMaterial->HasLocalProperty(DAVA::NMaterialParamName::WATER_CLEAR_COLOR))
-        waterDataPtr = sceneGlobalMaterial->GetLocalPropValue(DAVA::NMaterialParamName::WATER_CLEAR_COLOR);
+    if (sceneGlobalMaterial && sceneGlobalMaterial->HasLocalProperty(NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM))
+        shadowDataPtr = sceneGlobalMaterial->GetLocalPropValue(NMaterialParamName::DEPRECATED_SHADOW_COLOR_PARAM);
+    if (sceneGlobalMaterial && sceneGlobalMaterial->HasLocalProperty(NMaterialParamName::WATER_CLEAR_COLOR))
+        waterDataPtr = sceneGlobalMaterial->GetLocalPropValue(NMaterialParamName::WATER_CLEAR_COLOR);
 
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_SHADOW_COLOR, shadowDataPtr, reinterpret_cast<pointer_size>(shadowDataPtr));
     Renderer::GetDynamicBindings().SetDynamicParam(DynamicBindings::PARAM_WATER_CLEAR_COLOR, waterDataPtr, reinterpret_cast<pointer_size>(waterDataPtr));
@@ -1263,36 +766,44 @@ void Scene::Draw()
 
     renderSystem->Render();
 
-    if (particleEffectDebugDrawSystem != nullptr)
+    ParticleEffectDebugDrawSystem* const particleEffectDebugDrawSystem = GetSystem<ParticleEffectDebugDrawSystem>();
+
+    if (nullptr != particleEffectDebugDrawSystem)
+    {
         particleEffectDebugDrawSystem->Draw();
+    }
 }
 
-void Scene::SceneDidLoaded()
+void Scene::OnSceneLoaded()
 {
     maxEntityIDCounter = 0;
 
     std::function<void(Entity*)> findMaxId = [&](Entity* entity)
     {
         if (maxEntityIDCounter < entity->id)
+        {
             maxEntityIDCounter = entity->id;
-        for (auto child : entity->children) findMaxId(child);
+        }
+        for (Entity* child : entity->children)
+        {
+            findMaxId(child);
+        }
     };
 
     findMaxId(this);
 
-    uint32 systemsCount = static_cast<uint32>(systemsVector.size());
-    for (uint32 k = 0; k < systemsCount; ++k)
+    for (SceneSystem* system : systemsVector)
     {
-        systemsVector[k]->SceneDidLoaded();
+        system->OnSceneLoaded();
     }
 }
 
-void Scene::SetCurrentCamera(Camera* _camera)
+void Scene::SetCurrentCamera(Camera* camera)
 {
     SafeRelease(mainCamera);
-    mainCamera = SafeRetain(_camera);
+    mainCamera = SafeRetain(camera);
     SafeRelease(drawCamera);
-    drawCamera = SafeRetain(_camera);
+    drawCamera = SafeRetain(camera);
 }
 
 Camera* Scene::GetCurrentCamera() const
@@ -1300,10 +811,10 @@ Camera* Scene::GetCurrentCamera() const
     return mainCamera;
 }
 
-void Scene::SetCustomDrawCamera(Camera* _camera)
+void Scene::SetCustomDrawCamera(Camera* camera)
 {
     SafeRelease(drawCamera);
-    drawCamera = SafeRetain(_camera);
+    drawCamera = SafeRetain(camera);
 }
 
 Camera* Scene::GetDrawCamera() const
@@ -1326,24 +837,7 @@ RenderSystem* Scene::GetRenderSystem() const
     return renderSystem;
 }
 
-AnimationSystem* Scene::GetAnimationSystem() const
-{
-    return animationSystem;
-}
-
-ParticleEffectDebugDrawSystem* Scene::GetParticleEffectDebugDrawSystem() const
-{
-    return particleEffectDebugDrawSystem;
-}
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-PhysicsSystem* Scene::GetPhysicsSystem() const
-{
-    return physicsSystem;
-}
-#endif
-
-SceneFileV2::eError Scene::LoadScene(const DAVA::FilePath& pathname)
+SceneFileV2::eError Scene::LoadScene(const FilePath& pathname)
 {
     SceneFileV2::eError ret = SceneFileV2::ERROR_FAILED_TO_CREATE_FILE;
 
@@ -1360,13 +854,18 @@ SceneFileV2::eError Scene::LoadScene(const DAVA::FilePath& pathname)
     return ret;
 }
 
-SceneFileV2::eError Scene::SaveScene(const DAVA::FilePath& pathname, bool saveForGame /*= false*/)
+SceneFileV2::eError Scene::SaveScene(const FilePath& pathname, bool saveForGame /*= false*/)
 {
     std::function<void(Entity*)> resolveId = [&](Entity* entity)
     {
         if (0 == entity->id)
+        {
             entity->id = ++maxEntityIDCounter;
-        for (auto child : entity->children) resolveId(child);
+        }
+        for (Entity* child : entity->children)
+        {
+            resolveId(child);
+        }
     };
 
     resolveId(this);
@@ -1389,15 +888,15 @@ void Scene::OptimizeBeforeExport()
         }
     };
 
-    for (auto& mat : materials)
+    for (NMaterial* material : materials)
     {
-        RemoveMaterialFlag(mat, NMaterialFlagName::FLAG_ILLUMINATION_USED);
-        RemoveMaterialFlag(mat, NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER);
-        RemoveMaterialFlag(mat, NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER);
+        RemoveMaterialFlag(material, NMaterialFlagName::FLAG_ILLUMINATION_USED);
+        RemoveMaterialFlag(material, NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_CASTER);
+        RemoveMaterialFlag(material, NMaterialFlagName::FLAG_ILLUMINATION_SHADOW_RECEIVER);
 
-        if (mat->HasLocalProperty(NMaterialParamName::PARAM_LIGHTMAP_SIZE))
+        if (material->HasLocalProperty(NMaterialParamName::PARAM_LIGHTMAP_SIZE))
         {
-            mat->RemoveProperty(NMaterialParamName::PARAM_LIGHTMAP_SIZE);
+            material->RemoveProperty(NMaterialParamName::PARAM_LIGHTMAP_SIZE);
         }
     }
 
@@ -1408,109 +907,82 @@ void Scene::OnSceneReady(Entity* rootNode)
 {
 }
 
-void Scene::Input(DAVA::UIEvent* event)
+void Scene::Input(UIEvent* event)
 {
-    if (!tags.empty())
-    {
-        RotationControllerSystem* rcs = GetSystem<RotationControllerSystem>();
+    auto inputProcessesCopy = inputProcesses; // Iterate over copy to allow immediate systems creation.
 
-        if (rcs != nullptr)
+    for (const ProcessSystemPair& p : inputProcessesCopy)
+    {
+        const AnyFn& inputProcess = p.first->process;
+        SceneSystem* system = p.second;
+
+        const bool inputHandled = inputProcess.InvokeWithCast(system, event).Get<bool>();
+
+        entitiesManager->UpdateCaches();
+
+        if (inputHandled)
         {
-            rcs->Input(event);
+            break;
         }
-
-        return;
-    }
-
-    for (SceneSystem* system : systemsToInput)
-    {
-        system->Input(event);
     }
 }
 
 void Scene::InputCancelled(UIEvent* event)
 {
-    if (!tags.empty())
+    auto inputProcessesCopy = inputProcesses; // Iterate over copy to allow immediate systems creation.
+
+    for (const ProcessSystemPair& p : inputProcessesCopy)
     {
-        RotationControllerSystem* rcs = GetSystem<RotationControllerSystem>();
+        SceneSystem* system = p.second;
 
-        if (rcs != nullptr)
-        {
-            rcs->InputCancelled(event);
-        }
-
-        return;
-    }
-
-    for (SceneSystem* system : systemsToInput)
-    {
         system->InputCancelled(event);
+
+        entitiesManager->UpdateCaches();
     }
 }
 
 void Scene::HandleEvent(Observable* observable)
 {
+    //                                   DEPRECATED. STOP ADDING STUFF HERE.
+
     RenderOptions* options = dynamic_cast<RenderOptions*>(observable);
 
     if (options->IsOptionEnabled(RenderOptions::REPLACE_LIGHTMAP_MIPMAPS))
+    {
         MipMapReplacer::ReplaceMipMaps(this, NMaterialTextureName::TEXTURE_LIGHTMAP);
+    }
     if (options->IsOptionEnabled(RenderOptions::REPLACE_ALBEDO_MIPMAPS))
+    {
         MipMapReplacer::ReplaceMipMaps(this, NMaterialTextureName::TEXTURE_ALBEDO);
-
-    if (options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && !staticOcclusionDebugDrawSystem)
-    {
-        if (!tags.empty())
-        {
-            AddTag(FastName("static_occlusion_debug"));
-        }
-        else
-        {
-            staticOcclusionDebugDrawSystem = new StaticOcclusionDebugDrawSystem(this);
-            AddSystem(staticOcclusionDebugDrawSystem, renderUpdateSystem);
-        }
-    }
-    else if (!options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && staticOcclusionDebugDrawSystem)
-    {
-        if (!tags.empty())
-        {
-            RemoveTag(FastName("static_occlusion_debug"));
-        }
-        else
-        {
-            RemoveSystem(staticOcclusionDebugDrawSystem);
-            SafeDelete(staticOcclusionDebugDrawSystem);
-        }
     }
 
-    if (DAVA::Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES) && particleEffectDebugDrawSystem == nullptr)
+    const FastName staticOcclusionDebugTag("static_occlusion_debug");
+    const FastName particleEffectDebugTag("particle_effect_debug");
+
+    if (options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && nullptr == GetSystem<StaticOcclusionDebugDrawSystem>())
     {
-        if (!tags.empty())
-        {
-            AddTag(FastName("particle_effect_debug"));
-        }
-        else
-        {
-            particleEffectDebugDrawSystem = new ParticleEffectDebugDrawSystem(this);
-            AddSystem(particleEffectDebugDrawSystem, 0);
-        }
+        (!sceneTags.empty() || systemsMap.empty()) ? AddTags(staticOcclusionDebugTag) : AddSystem(Type::Instance<StaticOcclusionDebugDrawSystem>());
     }
-    else if (!DAVA::Renderer::GetOptions()->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES) && particleEffectDebugDrawSystem != nullptr)
+    else if (!options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_STATIC_OCCLUSION) && nullptr != GetSystem<StaticOcclusionDebugDrawSystem>())
     {
-        if (!tags.empty())
-        {
-            RemoveTag(FastName("particle_effect_debug"));
-        }
-        else
-        {
-            RemoveSystem(particleEffectDebugDrawSystem);
-            SafeDelete(particleEffectDebugDrawSystem);
-        }
+        !sceneTags.empty() ? RemoveTags(staticOcclusionDebugTag) : RemoveSystem(Type::Instance<StaticOcclusionDebugDrawSystem>());
     }
+
+    if (options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES) && nullptr == GetSystem<ParticleEffectDebugDrawSystem>())
+    {
+        (!sceneTags.empty() || systemsMap.empty()) ? AddTags(particleEffectDebugTag) : AddSystem(Type::Instance<ParticleEffectDebugDrawSystem>());
+    }
+    else if (!options->IsOptionEnabled(RenderOptions::DEBUG_DRAW_PARTICLES) && nullptr != GetSystem<ParticleEffectDebugDrawSystem>())
+    {
+        !sceneTags.empty() ? RemoveTags(particleEffectDebugTag) : RemoveSystem(Type::Instance<ParticleEffectDebugDrawSystem>());
+    }
+
+    //                                   DEPRECATED. STOP ADDING STUFF HERE.
 }
 
 void Scene::Activate()
 {
-    for (auto system : systemsVector)
+    for (SceneSystem* system : systemsVector)
     {
         system->Activate();
     }
@@ -1518,7 +990,7 @@ void Scene::Activate()
 
 void Scene::Deactivate()
 {
-    for (auto system : systemsVector)
+    for (SceneSystem* system : systemsVector)
     {
         system->Deactivate();
     }
@@ -1543,4 +1015,146 @@ const Vector<SceneSystem*>& Scene::GetSystems() const
 {
     return systemsVector;
 }
-};
+
+#if defined(__DAVAENGINE_DEBUG__)
+void Scene::HandleSingleComponentRead(const SceneSystem* system, const Type* singleComponentType)
+{
+    DVASSERT(nullptr != system && nullptr != singleComponentType);
+    const bool successfulInsert = clearableSingleComponentsReaders[singleComponentType].insert(system).second;
+    if (successfulInsert)
+    {
+        pendingSingleComponentsAccessValidation = true;
+    }
+}
+
+void Scene::HandleSingleComponentWrite(const SceneSystem* system, const Type* singleComponentType)
+{
+    DVASSERT(nullptr != system && nullptr != singleComponentType);
+    const bool successfulInsert = clearableSingleComponentsWriters[singleComponentType].insert(system).second;
+    if (successfulInsert)
+    {
+        pendingSingleComponentsAccessValidation = true;
+    }
+}
+
+void Scene::UnregisterSingleComponentUser(const SceneSystem* system)
+{
+    DVASSERT(nullptr != system);
+
+    for (auto& p : clearableSingleComponentsReaders)
+    {
+        p.second.erase(system);
+    }
+
+    for (auto& p : clearableSingleComponentsWriters)
+    {
+        p.second.erase(system);
+    }
+}
+
+void Scene::ValidateSingleComponentsAccessOrder()
+{
+    if (!pendingSingleComponentsAccessValidation)
+    {
+        return;
+    }
+
+    pendingSingleComponentsAccessValidation = false;
+
+    Vector<ProcessSystemPair> allProcesses;
+    allProcesses.reserve(fixedProcesses.size() + processes.size() + inputProcesses.size());
+
+    for (const auto& v : { &fixedProcesses, &processes, &inputProcesses })
+    {
+        allProcesses.insert(cend(allProcesses), cbegin(*v), cend(*v));
+    }
+
+    UnorderedMap<const SceneSystem*, std::pair<uint32, uint32>> indexCache;
+
+    auto minMaxIndex = [&allProcesses, &indexCache](const SceneSystem* system)
+    {
+        const auto cacheIt = indexCache.find(system);
+
+        if (cacheIt != cend(indexCache))
+        {
+            return cacheIt->second;
+        }
+
+        uint32 minIndex = std::numeric_limits<uint32>::max();
+        uint32 maxIndex = std::numeric_limits<uint32>::max();
+
+        auto it = std::find_if(cbegin(allProcesses), cend(allProcesses), [system](const ProcessSystemPair& p) { return system == p.second; });
+
+        if (it != cend(allProcesses))
+        {
+            auto maxIt = std::find_if(crbegin(allProcesses), std::make_reverse_iterator(it), [system](const ProcessSystemPair& p) { return system == p.second; });
+            minIndex = static_cast<uint32>(std::distance(cbegin(allProcesses), it));
+            maxIndex = static_cast<uint32>(std::distance(cbegin(allProcesses), (maxIt + 1).base()));
+        }
+
+        return (indexCache[system] = std::make_pair(minIndex, maxIndex));
+    };
+
+    uint32 fixedProcessesSize = static_cast<uint32>(fixedProcesses.size());
+
+    for (ClearableSingleComponent* singleComponent : clearableSingleComponentsFixed)
+    {
+        for (const auto& singleComponentUser : { &clearableSingleComponentsReaders, &clearableSingleComponentsWriters })
+        {
+            const auto it = singleComponentUser->find(singleComponent->GetType());
+
+            if (it != cend(*singleComponentUser))
+            {
+                for (const SceneSystem* system : it->second)
+                {
+                    const Type* const systemType = ReflectedTypeDB::GetByPointer(system)->GetType();
+                    const uint32 maxIndex = minMaxIndex(system).second;
+                    DVASSERT(maxIndex < fixedProcessesSize || std::numeric_limits<uint32>::max() == maxIndex, Format("Single component (%s), which is cleared after all fixed processes, is used by a system (%s) that has a non-fixed process method", singleComponent->GetType()->GetName(), systemType->GetName()).c_str());
+                }
+            }
+        }
+    }
+
+    if (clearableSingleComponentsReaders.empty() || clearableSingleComponentsWriters.empty())
+    {
+        return;
+    }
+
+    for (const auto& p : clearableSingleComponentsWriters)
+    {
+        if (!p.second.empty())
+        {
+            const auto it = clearableSingleComponentsReaders.find(p.first);
+
+            if (it != cend(clearableSingleComponentsReaders) && !it->second.empty())
+            {
+                int64 maxWriteIndex = -1;
+                const SceneSystem* maxWriteSystem = nullptr;
+
+                for (const SceneSystem* system : p.second)
+                {
+                    const int64 writeIndex = static_cast<int64>(minMaxIndex(system).second);
+                    if (std::numeric_limits<uint32>::max() != writeIndex && writeIndex > maxWriteIndex)
+                    {
+                        maxWriteIndex = writeIndex;
+                        maxWriteSystem = system;
+                    }
+                }
+
+                DVASSERT(nullptr != maxWriteSystem && maxWriteIndex >= 0);
+
+                const auto minReadIndexIt = std::min_element(cbegin(it->second), cend(it->second), [&minMaxIndex](const SceneSystem* l, const SceneSystem* r) {
+                    return minMaxIndex(l).first < minMaxIndex(r).first;
+                });
+                const uint32 minReadIndex = minMaxIndex(*minReadIndexIt).first;
+
+                const Type* const maxWriteSystemType = ReflectedTypeDB::GetByPointer(maxWriteSystem)->GetType();
+                const Type* const minReadSystemType = ReflectedTypeDB::GetByPointer(*minReadIndexIt)->GetType();
+
+                DVASSERT(minReadIndex > static_cast<uint32>(maxWriteIndex), Format("Detected read access by system `%s` to single component `%s` before last write to this component (which is performed by `%s`)", minReadSystemType->GetName(), p.first->GetName(), maxWriteSystemType->GetName()).c_str());
+            }
+        }
+    }
+}
+#endif
+} // namespace DAVA

@@ -40,8 +40,9 @@ int BaseApplication::RunImpl()
 
     // TODO remove this retain after merge with PR-2443
     SafeRetain(initInfo.options.Get());
-
+    //e.registerUserTypes
     e.cleanup.Connect(this, &BaseApplication::Cleanup);
+    e.registerUserTypes.Connect(this, &BaseApplication::RegisterUserTypes);
 
     if (CommandLineParser::CommandIsFound("--selftest"))
     {
@@ -84,6 +85,10 @@ void BaseApplication::Init(Core* tarcCore)
 {
     DVASSERT(tarcCore != nullptr);
     Init(tarcCore->GetEngineContext());
+}
+
+void BaseApplication::RegisterUserTypes()
+{
 }
 
 void BaseApplication::RegisterEditorAnyCasts()

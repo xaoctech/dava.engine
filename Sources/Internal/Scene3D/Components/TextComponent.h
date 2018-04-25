@@ -4,7 +4,6 @@
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Reflection/Reflection.h"
 #include "Math/Color.h"
-#include "Base/Any.h"
 #include "Base/BaseTypes.h"
 
 namespace DAVA

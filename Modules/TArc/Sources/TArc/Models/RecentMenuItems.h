@@ -5,7 +5,6 @@
 #include "TArc/DataProcessing/Common.h"
 #include "TArc/Utils/QtConnections.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
-#include "TArc/Qt/QtString.h"
 
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>
@@ -15,6 +14,7 @@
 #include <Functional/Signal.h>
 
 #include <QList>
+#include <QString>
 
 namespace DAVA
 {

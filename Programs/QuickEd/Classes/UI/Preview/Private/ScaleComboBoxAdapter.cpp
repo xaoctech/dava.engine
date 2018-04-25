@@ -37,7 +37,7 @@ DAVA::Any ScaleComboBoxAdapter::GetScale() const
 
 void ScaleComboBoxAdapter::SetScale(const DAVA::Any& scale)
 {
-    canvasDataAdapter.SetScale(scale.Cast<DAVA::float32>(1.0f));
+    canvasDataAdapter.SetScale(scale.CastSafely<DAVA::float32>(1.0f));
 }
 
 const DAVA::Vector<DAVA::float32>& ScaleComboBoxAdapter::GetScales() const

@@ -4,11 +4,10 @@
 #include <Render/Texture.h>
 #include <Render/TextureDescriptor.h>
 
-#include <TArc/Qt/QtString.h>
-
 #include <QApplication>
 #include <QMouseEvent>
 #include <QColor>
+#include <QString>
 
 const int FACE_IMAGE_BORDER = 5;
 const int LIST_ITEM_OFFSET = 1;

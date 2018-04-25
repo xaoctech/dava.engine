@@ -99,7 +99,7 @@ struct StaticAnyFnInvoker<Fn, Ret, Args...>::FinalInvoker<true, R, A...>
         if (castArguments)
             return Any(fn(args.template Cast<Type::DecayT<Args>>()...));
 
-        return Any(fn(args.template Get<Args>()...));
+        return Any(fn(args.template Get<Type::DecayT<Args>>()...));
     };
 };
 
@@ -113,7 +113,7 @@ struct StaticAnyFnInvoker<Fn, Ret, Args...>::FinalInvoker<true, void, A...>
         if (castArguments)
             fn(args.template Cast<Type::DecayT<Args>>()...);
         else
-            fn(args.template Get<Args>()...);
+            fn(args.template Get<Type::DecayT<Args>>()...);
         return Any();
     };
 };
@@ -138,32 +138,38 @@ struct ClassAnyFnInvoker : AnyFnInvoker
 
     Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments, const Any& that) const override
     {
-        return FinalInvoker<0 == sizeof...(Args), Ret>::Invoke(storage, castArguments, that);
+        Any resolvedThat = ResolveThat(castArguments, that);
+        return FinalInvoker<0 == sizeof...(Args), Ret>::Invoke(storage, castArguments, resolvedThat);
     }
 
     Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments, const Any& that, const Any& a1) const override
     {
-        return FinalInvoker<1 == sizeof...(Args), Ret, Any>::Invoke(storage, castArguments, that, a1);
+        Any resolvedThat = ResolveThat(castArguments, that);
+        return FinalInvoker<1 == sizeof...(Args), Ret, Any>::Invoke(storage, castArguments, resolvedThat, a1);
     }
 
     Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments, const Any& that, const Any& a1, const Any& a2) const override
     {
-        return FinalInvoker<2 == sizeof...(Args), Ret, Any, Any>::Invoke(storage, castArguments, that, a1, a2);
+        Any resolvedThat = ResolveThat(castArguments, that);
+        return FinalInvoker<2 == sizeof...(Args), Ret, Any, Any>::Invoke(storage, castArguments, resolvedThat, a1, a2);
     }
 
     Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments, const Any& that, const Any& a1, const Any& a2, const Any& a3) const override
     {
-        return FinalInvoker<3 == sizeof...(Args), Ret, Any, Any, Any>::Invoke(storage, castArguments, that, a1, a2, a3);
+        Any resolvedThat = ResolveThat(castArguments, that);
+        return FinalInvoker<3 == sizeof...(Args), Ret, Any, Any, Any>::Invoke(storage, castArguments, resolvedThat, a1, a2, a3);
     }
 
     Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments, const Any& that, const Any& a1, const Any& a2, const Any& a3, const Any& a4) const override
     {
-        return FinalInvoker<4 == sizeof...(Args), Ret, Any, Any, Any, Any>::Invoke(storage, castArguments, that, a1, a2, a3, a4);
+        Any resolvedThat = ResolveThat(castArguments, that);
+        return FinalInvoker<4 == sizeof...(Args), Ret, Any, Any, Any, Any>::Invoke(storage, castArguments, resolvedThat, a1, a2, a3, a4);
     }
 
     Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments, const Any& that, const Any& a1, const Any& a2, const Any& a3, const Any& a4, const Any& a5) const override
     {
-        return FinalInvoker<5 == sizeof...(Args), Ret, Any, Any, Any, Any, Any>::Invoke(storage, castArguments, that, a1, a2, a3, a4, a5);
+        Any resolvedThat = ResolveThat(castArguments, that);
+        return FinalInvoker<5 == sizeof...(Args), Ret, Any, Any, Any, Any, Any>::Invoke(storage, castArguments, resolvedThat, a1, a2, a3, a4, a5);
     }
 
     AnyFn BindThis(const AnyFn::AnyFnStorage& storage, const void* this_) const override
@@ -174,6 +180,43 @@ struct ClassAnyFnInvoker : AnyFnInvoker
                      {
                          return (p->*fn)(std::forward<Args>(args)...);
                      });
+    }
+
+private:
+    inline Any ResolveThat(bool castArguments, const Any& that) const
+    {
+        Any ret;
+
+        if (castArguments)
+        {
+            // if resolving with cast, `that` can be:
+            // - pointer on any class that can be casted to C*
+            // - can contain instance of C, so the method will be called over that instance
+            const Type* thatType = that.GetType();
+            if (!thatType->IsPointer())
+            {
+                if (thatType == Type::Instance<C>())
+                {
+                    const C* c = static_cast<const C*>(that.GetData());
+                    ret.Set(c);
+                }
+                else
+                {
+                    ret = that;
+                }
+            }
+            else
+            {
+                ret = that.Cast<C*>();
+            }
+        }
+        else
+        {
+            // just return that
+            ret = that;
+        }
+
+        return ret;
     }
 };
 
@@ -194,14 +237,11 @@ struct ClassAnyFnInvoker<Ret, C, Args...>::FinalInvoker<true, R, A...>
     inline static Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments, const Any& cls, const A&... args)
     {
         Fn fn = storage.GetAuto<Fn>();
-        if (castArguments)
-        {
-            C* p = const_cast<C*>(cls.Cast<const C*>());
-            return Any((p->*fn)(args.template Cast<Type::DecayT<Args>>()...));
-        }
-
         C* p = const_cast<C*>(cls.Get<const C*>());
-        return Any((p->*fn)(args.template Get<Args>()...));
+        if (castArguments)
+            return Any((p->*fn)(args.template Cast<Type::DecayT<Args>>()...));
+
+        return Any((p->*fn)(args.template Get<Type::DecayT<Args>>()...));
     }
 };
 
@@ -212,16 +252,11 @@ struct ClassAnyFnInvoker<Ret, C, Args...>::FinalInvoker<true, void, A...>
     inline static Any Invoke(const AnyFn::AnyFnStorage& storage, bool castArguments, const Any& cls, const A&... args)
     {
         Fn fn = storage.GetAuto<Fn>();
+        C* p = const_cast<C*>(cls.Get<const C*>());
         if (castArguments)
-        {
-            C* p = const_cast<C*>(cls.Cast<const C*>());
             (p->*fn)(args.template Cast<Type::DecayT<Args>>()...);
-        }
         else
-        {
-            C* p = const_cast<C*>(cls.Get<const C*>());
-            (p->*fn)(args.template Get<Args>()...);
-        }
+            (p->*fn)(args.template Get<Type::DecayT<Args>>()...);
         return Any();
     }
 };

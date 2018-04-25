@@ -8,8 +8,19 @@
 #include "REPlatform/Scene/Systems/SelectionSystem.h"
 #include "REPlatform/Scene/Utils/Utils.h"
 
+#include <Reflection/ReflectionRegistrator.h>
+
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(RulerToolSystem)
+{
+    ReflectionRegistrator<RulerToolSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &RulerToolSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 11.0f)]
+    .Method("Input", &RulerToolSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 9.0f)]
+    .End();
+}
+
 RulerToolSystem::RulerToolSystem(Scene* scene)
     : LandscapeEditorSystem(scene, DefaultCursorPath())
     , curToolSize(0)

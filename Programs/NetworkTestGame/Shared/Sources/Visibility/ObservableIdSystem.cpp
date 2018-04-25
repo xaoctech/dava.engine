@@ -7,9 +7,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ObservableIdSystem)
 {
-    ReflectionRegistrator<ObservableIdSystem>::Begin()[M::Tags("server")]
+    ReflectionRegistrator<ObservableIdSystem>::Begin()[M::SystemTags("server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ObservableIdSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 999.1f)]
+    .Method("ProcessFixed", &ObservableIdSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 999.1f)]
     .End();
 }
 

@@ -1,12 +1,13 @@
 #pragma once
 
 #include "TArc/Controls/PropertyPanel/PropertyModelExtensions.h"
-#include "TArc/Qt/QtString.h"
 #include "TArc/Qt/QtIcon.h"
 
 #include <Command/Command.h>
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectedMeta.h>
+
+#include <QString>
 
 namespace DAVA
 {

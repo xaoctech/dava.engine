@@ -21,9 +21,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkReplicationSystem)
 {
-    ReflectionRegistrator<NetworkReplicationSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkReplicationSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkReplicationSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.0f)]
+    .Method("ProcessFixed", &NetworkReplicationSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 13.0f)]
     .End();
 }
 

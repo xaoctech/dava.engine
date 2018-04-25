@@ -121,7 +121,7 @@ void ParticleDebugDrawModule::PostInit()
 
 void ParticleDebugDrawModule::OnSelectionChanged(const DAVA::Any selection)
 {
-    DAVA::SelectableGroup group = selection.Cast<DAVA::SelectableGroup>(DAVA::SelectableGroup());
+    DAVA::SelectableGroup group = selection.CastSafely<DAVA::SelectableGroup>(DAVA::SelectableGroup());
     GetAccessor()->GetGlobalContext()->GetData<ParticleDebugDrawData>()->selectedParticles = ProcessSelection(group);
     UpdateSceneSystem();
 }
@@ -176,7 +176,7 @@ void ParticleDebugDrawModule::UpdateSceneSystem()
     accessor->ForEachContext([data, settings](DataContext& ctx)
                              {
                                  SceneData::TSceneType scene = ctx.GetData<SceneData>()->GetScene();
-                                 DAVA::ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = scene->GetParticleEffectDebugDrawSystem();
+                                 DAVA::ParticleEffectDebugDrawSystem* particleEffectDebugDrawSystem = scene->GetSystem<DAVA::ParticleEffectDebugDrawSystem>();
                                  if (particleEffectDebugDrawSystem != nullptr)
                                  {
                                      particleEffectDebugDrawSystem->SetDrawMode(data->drawMode);

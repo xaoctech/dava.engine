@@ -210,7 +210,7 @@ void PackageWidget::RestoreExpandedIndexes(const QModelIndexList& indexes)
 void PackageWidget::OnSelectionChanged(const DAVA::Any& selectionValue)
 {
     disconnect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PackageWidget::OnSelectionChangedFromView);
-    SelectedNodes selection = selectionValue.Cast<SelectedNodes>(SelectedNodes());
+    SelectedNodes selection = selectionValue.CastSafely<SelectedNodes>(SelectedNodes());
     SetSelectedNodes(selection);
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PackageWidget::OnSelectionChangedFromView);
 }

@@ -22,14 +22,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkGameModeSystem)
 {
-    ReflectionRegistrator<NetworkGameModeSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkGameModeSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkGameModeSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 0.7f)]
+    .Method("ProcessFixed", &NetworkGameModeSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 0.7f)]
     .End();
 }
 
 NetworkGameModeSystem::NetworkGameModeSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPlayerComponent>() | ComponentUtils::MakeMask<NetworkReplicationComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPlayerComponent, NetworkReplicationComponent>())
 {
     if (IsServer(this))
     {

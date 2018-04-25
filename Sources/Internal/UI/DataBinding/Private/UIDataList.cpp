@@ -21,6 +21,7 @@
 
 #include "Render/2D/FTFont.h"
 #include "Reflection/ReflectionRegistrator.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

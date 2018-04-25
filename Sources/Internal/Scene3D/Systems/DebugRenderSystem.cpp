@@ -19,9 +19,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(DebugRenderSystem)
 {
-    ReflectionRegistrator<DebugRenderSystem>::Begin()[M::Tags("base", "debug")]
+    ReflectionRegistrator<DebugRenderSystem>::Begin()[M::SystemTags("base", "render_debug")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &DebugRenderSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 10.0f)]
+    .Method("Process", &DebugRenderSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 10.0f)]
     .End();
 }
 

@@ -4,6 +4,7 @@
 
 #include <TArc/Core/Deprecated.h>
 
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/RenderSystem.h>
 #include <Render/RenderHelper.h>
 #include <Scene3D/Scene.h>
@@ -13,6 +14,13 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(SceneGridSystem)
+{
+    ReflectionRegistrator<SceneGridSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .End();
+}
+
 SceneGridSystem::SceneGridSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {

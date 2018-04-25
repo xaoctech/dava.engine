@@ -18,6 +18,8 @@ class EntityModificationSystem;
 
 class ObjectPlacementSystem : public DAVA::SceneSystem, public DAVA::EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(ObjectPlacementSystem, DAVA::SceneSystem);
+
 public:
     ObjectPlacementSystem(DAVA::Scene* scene);
     void SetSnapToLandscape(bool newSnapToLandscape);

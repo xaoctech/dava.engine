@@ -1,5 +1,6 @@
 #pragma once
 #include "Base/BaseTypes.h"
+#include "Base/Type.h"
 
 namespace DAVA
 {
@@ -16,6 +17,7 @@ String GetBacktraceString(void* const* frames, size_t framesSize);
 String GetFrameSymbol(void* frame, bool demangle = true);
 String DemangleFrameSymbol(const char8* symbol);
 String DemangleFrameSymbol(const String& symbol);
+String DemangleType(const Type* type);
 
 } // namespace Debug
 } // namespace DAVA

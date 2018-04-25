@@ -7,6 +7,7 @@ class SignatureModule : public DAVA::ClientModule
 {
 protected:
     void OnContextCreated(DAVA::DataContext* context) override;
+    void OnContextDeleted(DAVA::DataContext* context) override;
     void PostInit() override;
 
 private:

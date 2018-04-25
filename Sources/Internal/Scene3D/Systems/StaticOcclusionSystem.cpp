@@ -26,15 +26,15 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(StaticOcclusionSystem)
 {
-    ReflectionRegistrator<StaticOcclusionSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<StaticOcclusionSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &StaticOcclusionSystem::Process)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::NORMAL, 1.0f)]
+    .Method("Process", &StaticOcclusionSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, 1.0f)]
     .End();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(StaticOcclusionDebugDrawSystem)
 {
-    ReflectionRegistrator<StaticOcclusionDebugDrawSystem>::Begin()[M::Tags("base", "static_occlusion_debug")]
+    ReflectionRegistrator<StaticOcclusionDebugDrawSystem>::Begin()[M::SystemTags("static_occlusion_debug")]
     .ConstructorByPointer<Scene*>()
     .End();
 }
@@ -343,7 +343,7 @@ void StaticOcclusionSystem::InvalidateOcclusionIndicesRecursively(Entity* entity
 }
 
 StaticOcclusionDebugDrawSystem::StaticOcclusionDebugDrawSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<StaticOcclusionDataComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<StaticOcclusionComponent>())
 {
     Color gridColor(0.0f, 0.3f, 0.1f, 0.2f);
     Color coverColor(0.1f, 0.5f, 0.1f, 0.3f);

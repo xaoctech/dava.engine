@@ -3,7 +3,7 @@
 #include <FileSystem/FilePath.h>
 
 #include <TArc/Qt/QtIcon.h>
-#include <TArc/Qt/QtString.h>
+#include <QString>
 
 namespace DAVA
 {

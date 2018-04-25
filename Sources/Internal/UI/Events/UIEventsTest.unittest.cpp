@@ -10,6 +10,7 @@
 #include <UI/Text/UITextComponent.h>
 #include <Reflection/Reflection.h>
 #include <Reflection/ReflectionRegistrator.h>
+#include <Utils/StringFormat.h>
 
 #include <UI/Events/UIEventsSystem.h>
 #include <UI/Events/UIEventBindingComponent.h>

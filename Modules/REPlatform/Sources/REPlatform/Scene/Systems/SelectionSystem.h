@@ -24,6 +24,8 @@ class EntityModificationSystem;
 
 class SelectionSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(SelectionSystem, SceneSystem);
+
 public:
     SelectionSystem(Scene* scene);
     ~SelectionSystem();

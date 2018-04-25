@@ -45,7 +45,7 @@ String TooltipComponentValue::GetTooltip() const
             continue;
         }
 
-        String currentToolTip = r.GetValue().Cast<String>("");
+        String currentToolTip = r.GetValue().CastSafely<String>("");
         if (tooltip.empty() == true)
         {
             tooltip = currentToolTip;

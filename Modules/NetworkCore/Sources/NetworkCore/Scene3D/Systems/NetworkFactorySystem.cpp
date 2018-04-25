@@ -21,9 +21,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkFactorySystem)
 {
-    ReflectionRegistrator<NetworkFactorySystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<NetworkFactorySystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkFactorySystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 8.1f)]
+    .Method("ProcessFixed", &NetworkFactorySystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 8.1f)]
     .End();
 }
 
@@ -173,6 +173,8 @@ uint8 NetworkFactorySystem::GetCurrentDomain(NetworkPlayerID playerId)
     {
         return D::Server;
     }
+
+    DVASSERT(IsClient(this));
 
     const NetworkGameModeSingleComponent* netGameModeComp = GetScene()->GetSingleComponent<NetworkGameModeSingleComponent>();
     DVASSERT(netGameModeComp);

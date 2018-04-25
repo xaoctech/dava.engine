@@ -9,11 +9,21 @@
 
 #include <Base/Vector.h>
 #include <Logger/Logger.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/Landscape.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/RenderComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Systems/LandscapeSystem.h>
+
+DAVA_VIRTUAL_REFLECTION_IMPL(ObjectPlacementSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<ObjectPlacementSystem>::Begin()[M::SystemTags("resource_editor", "object_placement")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &ObjectPlacementSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 18.0f)]
+    .End();
+}
 
 ObjectPlacementSystem::ObjectPlacementSystem(DAVA::Scene* scene)
     : DAVA::SceneSystem(scene, DAVA::ComponentUtils::MakeMask<DAVA::RenderComponent>())

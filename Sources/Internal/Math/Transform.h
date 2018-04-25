@@ -71,9 +71,4 @@ inline const Quaternion& Transform::GetRotation() const
 {
     return rotation;
 }
-
-template <>
-bool AnyCompare<Transform>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<Transform>;
-
 } //DAVA

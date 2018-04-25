@@ -7,8 +7,12 @@
 
 class OwnersSignatureSystem : public DAVA::SceneSystem, public DAVA::EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(OwnersSignatureSystem, DAVA::SceneSystem);
+
 public:
-    OwnersSignatureSystem(DAVA::Scene* scene, const DAVA::String& userName);
+    OwnersSignatureSystem(DAVA::Scene* scene);
+
+    void SetUserName(const DAVA::String& userName);
 
     void AddEntity(DAVA::Entity* entity) override;
     void PrepareForRemove() override

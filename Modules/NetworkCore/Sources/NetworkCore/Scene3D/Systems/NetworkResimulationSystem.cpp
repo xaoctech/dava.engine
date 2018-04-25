@@ -26,10 +26,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkResimulationSystem)
 {
-    ReflectionRegistrator<NetworkResimulationSystem>::Begin()[M::Tags("network", "client")]
+    ReflectionRegistrator<NetworkResimulationSystem>::Begin()[M::SystemTags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkResimulationSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.3f)]
-    .Method("CollectBbHistory", &NetworkResimulationSystem::CollectBbHistory)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 1000.f)]
+    .Method("ProcessFixed", &NetworkResimulationSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 13.3f)]
+    .Method("CollectBbHistory", &NetworkResimulationSystem::CollectBbHistory)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 1000.f)]
     .End();
 }
 
@@ -37,11 +37,11 @@ NetworkResimulationSystem::NetworkResimulationSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPredictComponent, NetworkReplicationComponent>())
     , predictictedEntities(scene->AquireEntityGroup<NetworkPredictComponent, NetworkReplicationComponent>())
 {
-    networkTimeSingleComponent = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    networkTimeSingleComponent = scene->GetSingleComponent<NetworkTimeSingleComponent>();
     predictionSingleComponent = scene->GetSingleComponentForRead<NetworkPredictionSingleComponent>(this);
     networkEntitiesSingleComponent = scene->GetSingleComponentForRead<NetworkEntitiesSingleComponent>(this);
     snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
-    networkResimulationSingleComponent = scene->GetSingleComponentForWrite<NetworkResimulationSingleComponent>(this);
+    networkResimulationSingleComponent = scene->GetSingleComponent<NetworkResimulationSingleComponent>();
 
     networkResimulationSingleComponent->RegisterEngineVariables();
 
@@ -153,10 +153,10 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
 
         const uint32 resimulationStartFrameId = resimulationFrameIdToEntities.begin()->first;
 
-        const auto& methods = GetEngineContext()->systemManager->GetFixedProcessMethods();
+        const auto& methods = GetScene()->fixedProcesses;
 
-        const auto networkTransformFromNetToLocalSystemMethod = std::find_if(methods.begin(), methods.end(), [](const SystemManager::SceneProcessInfo& x) {
-            return x.systemType->Is<NetworkTransformFromNetToLocalSystem>();
+        const auto networkTransformFromNetToLocalSystemMethod = std::find_if(methods.begin(), methods.end(), [](const Scene::ProcessSystemPair& x) {
+            return ReflectedTypeDB::GetByPointer(x.second)->GetType()->Is<NetworkTransformFromNetToLocalSystem>();
         });
 
         DVASSERT(networkTransformFromNetToLocalSystemMethod != methods.end());
@@ -183,9 +183,8 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
 
         networkResimulationSingleComponent->resimulationFrameId = resimulationStartFrameId;
 
-        for (const auto& p : resimulationSystems)
+        for (ISimulationSystem* system : resimulationSystems)
         {
-            ISimulationSystem* system = dynamic_cast<ISimulationSystem*>(p.second);
             system->ReSimulationStart();
         }
 
@@ -230,12 +229,11 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
                 entitiesManager->UpdateCaches();
             }
 
-            auto InvokeIfPartOfResimulation = [this, entitiesManager](const SystemManager::SceneProcessInfo& processInfo) {
-                auto it = resimulationSystems.find(processInfo.systemType);
-                if (it != resimulationSystems.end())
+            auto InvokeIfPartOfResimulation = [this, entitiesManager](const Scene::ProcessSystemPair& p) {
+                SceneSystem* system = p.second;
+                if (nullptr != dynamic_cast<BaseSimulationSystem*>(system))
                 {
-                    SceneSystem* system = it->second;
-                    processInfo.method->InvokeWithCast(system, NetworkTimeSingleComponent::FrameDurationS);
+                    p.first->process.InvokeWithCast(system, NetworkTimeSingleComponent::FrameDurationS);
                     entitiesManager->UpdateCaches();
                 }
             };
@@ -268,9 +266,8 @@ void NetworkResimulationSystem::ProcessFixed(float32 timeElapsed)
         */
         entitiesManager->RestoreGroups();
 
-        for (const auto& p : resimulationSystems)
+        for (ISimulationSystem* system : resimulationSystems)
         {
-            ISimulationSystem* system = dynamic_cast<ISimulationSystem*>(p.second);
             system->ReSimulationEnd();
         }
 
@@ -379,21 +376,21 @@ void NetworkResimulationSystem::UpdateListOfResimulatingEntities()
 
 void NetworkResimulationSystem::OnSystemAdded(SceneSystem* system)
 {
-    if (dynamic_cast<ISimulationSystem*>(system) != nullptr)
+    ISimulationSystem* simulationSystem = dynamic_cast<ISimulationSystem*>(system);
+    if (nullptr != simulationSystem)
     {
-        const Type* type = ReflectedTypeDB::GetByPointer(system)->GetType();
-        DVASSERT(resimulationSystems.count(type) == 0);
-        resimulationSystems[type] = system;
+        DVASSERT(resimulationSystems.count(simulationSystem) == 0);
+        resimulationSystems.insert(simulationSystem);
     }
 }
 
 void NetworkResimulationSystem::OnSystemRemoved(SceneSystem* system)
 {
-    if (dynamic_cast<ISimulationSystem*>(system) != nullptr)
+    ISimulationSystem* simulationSystem = dynamic_cast<ISimulationSystem*>(system);
+    if (nullptr != simulationSystem)
     {
-        const Type* type = ReflectedTypeDB::GetByPointer(system)->GetType();
-        DVASSERT(resimulationSystems.count(type) != 0);
-        resimulationSystems.erase(type);
+        DVASSERT(resimulationSystems.count(simulationSystem) != 0);
+        resimulationSystems.erase(simulationSystem);
     }
 }
 }

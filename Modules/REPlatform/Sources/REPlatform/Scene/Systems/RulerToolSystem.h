@@ -11,6 +11,8 @@ namespace DAVA
 class SceneEditor2;
 class RulerToolSystem : public LandscapeEditorSystem
 {
+    DAVA_VIRTUAL_REFLECTION(RulerToolSystem, SceneSystem);
+
     static const int32 APPROXIMATION_COUNT = 10;
 
 public:

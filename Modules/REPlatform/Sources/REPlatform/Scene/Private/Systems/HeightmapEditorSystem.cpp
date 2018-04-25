@@ -9,6 +9,7 @@
 
 #include "REPlatform/Commands/HeightmapEditorCommands2.h"
 
+#include <Reflection/ReflectionRegistrator.h>
 #include <TArc/Utils/Utils.h>
 
 #include <Render/Image/ImageConvert.h>
@@ -16,6 +17,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(HeightmapEditorSystem)
+{
+    ReflectionRegistrator<HeightmapEditorSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &HeightmapEditorSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 5.0f)]
+    .End();
+}
+
 HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
     : LandscapeEditorSystem(scene, DefaultCursorPath())
     , copyPasteFrom(-1.f, -1.f)

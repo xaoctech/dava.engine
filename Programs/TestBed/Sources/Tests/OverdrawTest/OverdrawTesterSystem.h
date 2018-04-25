@@ -25,10 +25,13 @@ class OverdrawTesterRenderObject;
 
 class OverdrawTesterSystem : public DAVA::SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(OverdrawTesterSystem, DAVA::SceneSystem);
+
 public:
-    OverdrawTesterSystem(DAVA::Scene* scene, DAVA::PixelFormat textureFormat_, DAVA::uint16 textureResolution_, DAVA::Function<void(DAVA::Array<DAVA::Vector<FrameData>, 6>*)> finishCallback_);
+    OverdrawTesterSystem(DAVA::Scene* scene);
     ~OverdrawTesterSystem();
 
+    void SetParams(DAVA::PixelFormat textureFormat_, DAVA::uint16 textureResolution_, DAVA::Function<void(DAVA::Array<DAVA::Vector<FrameData>, 6>*)> finishCallback_);
     void AddEntity(DAVA::Entity* entity) override;
     void RemoveEntity(DAVA::Entity* entity) override;
     void PrepareForRemove() override;

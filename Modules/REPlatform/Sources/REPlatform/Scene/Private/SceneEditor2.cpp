@@ -108,42 +108,20 @@ void CollectEmittersForSave(ParticleEmitter* topLevelEmitter, List<EmitterDescri
 }
 
 SceneEditor2::SceneEditor2()
-    : Scene()
+    : Scene("base")
     , commandStack(new RECommandStack())
 {
     DVASSERT(Engine::Instance()->IsConsoleMode() == false);
+
+    systemAdded.Connect(this, &SceneEditor2::OnSystemAdded);
+    systemRemoved.Connect(this, &SceneEditor2::OnSystemRemoved);
 
     ScopedPtr<EditorCommandNotify> notify(new EditorCommandNotify(this));
     commandStack->SetNotify(notify);
 
     using namespace SceneEditorDetail;
 
-    AddSystem(new SceneGridSystem(this), renderUpdateSystem);
-    AddSystem(new SceneCameraSystem(this), transformSystem);
-    AddSystem(new RotationControllerSystem(this));
-    AddSystem(new SnapToLandscapeControllerSystem(this));
-    AddSystem(new WASDControllerSystem(this));
-    AddSystem(new SceneCollisionSystem(this), renderUpdateSystem);
-    AddSystem(new HoodSystem(this), renderUpdateSystem);
-    AddSystem(new EntityModificationSystem(this), renderUpdateSystem);
-    AddSystem(new LandscapeEditorDrawSystem(this), renderUpdateSystem);
-    AddSystem(new HeightmapEditorSystem(this), renderUpdateSystem);
-    AddSystem(new TilemaskEditorSystem(this), renderUpdateSystem);
-    AddSystem(new CustomColorsSystem(this), renderUpdateSystem);
-    AddSystem(new RulerToolSystem(this), renderUpdateSystem);
-    AddSystem(new StructureSystem(this), renderUpdateSystem);
-    AddSystem(new EditorParticlesSystem(this), renderUpdateSystem);
-    AddSystem(new TextDrawSystem(this), renderUpdateSystem);
-    AddSystem(new EditorLightSystem(this), transformSystem);
-    AddSystem(new BeastSystem(this));
-    AddSystem(new StaticOcclusionBuildSystem(this), renderUpdateSystem);
-    AddSystem(new EditorMaterialSystem(this), renderUpdateSystem);
-    AddSystem(new WayEditSystem(this));
-    AddSystem(new PathSystem(this));
-    AddSystem(new EditorLODSystem(this));
-    AddSystem(new EditorStatisticsSystem(this));
-    AddSystem(new VisibilityCheckSystem(this));
-    AddSystem(new EditorVegetationSystem(this));
+    AddTags({ "controller", "resource_editor", "landscape" });
 
     WayEditSystem* wayEditSystem = GetSystem<WayEditSystem>();
     PathSystem* pathSystem = GetSystem<PathSystem>();
@@ -160,13 +138,12 @@ SceneEditor2::~SceneEditor2()
 {
     RenderContextGuard guard;
     commandStack.reset();
-    RemoveSystems();
+    systemAdded.Disconnect(this);
+    systemRemoved.Disconnect(this);
 }
 
 SceneFileV2::eError SceneEditor2::LoadScene(const FilePath& path)
 {
-    StructureSystem* structureSystem = GetSystem<StructureSystem>();
-
     RenderContextGuard guard;
     SceneFileV2::eError ret = Scene::LoadScene(path);
     if (ret == SceneFileV2::ERROR_NO_ERROR)
@@ -256,35 +233,6 @@ SceneFileV2::eError SceneEditor2::SaveScene(const FilePath& path, bool saveForGa
     }
 
     return err;
-}
-
-void SceneEditor2::AddSystem(SceneSystem* sceneSystem, SceneSystem* insertBeforeSceneForProcess, SceneSystem* insertBeforeSceneForInput, SceneSystem* insertBeforeSceneForFixedProcess)
-{
-    Scene::AddSystem(sceneSystem, insertBeforeSceneForProcess, insertBeforeSceneForInput);
-    EditorSceneSystem* editorSystem = dynamic_cast<EditorSceneSystem*>(sceneSystem);
-    if (editorSystem != nullptr)
-    {
-        editorSystems.push_back(editorSystem);
-        if (dynamic_cast<LandscapeEditorSystem*>(sceneSystem) != nullptr)
-        {
-            landscapeEditorSystems.push_back(editorSystem);
-        }
-    }
-}
-
-void SceneEditor2::RemoveSystem(SceneSystem* sceneSystem)
-{
-    EditorSceneSystem* editorSystem = dynamic_cast<EditorSceneSystem*>(sceneSystem);
-    if (editorSystem != nullptr)
-    {
-        FindAndRemoveExchangingWithLast(editorSystems, editorSystem);
-        if (dynamic_cast<LandscapeEditorSystem*>(sceneSystem) != nullptr)
-        {
-            FindAndRemoveExchangingWithLast(landscapeEditorSystems, editorSystem);
-        }
-    }
-
-    Scene::RemoveSystem(sceneSystem);
 }
 
 bool SceneEditor2::AcquireInputLock(EditorSceneSystem* system)
@@ -797,15 +745,7 @@ void SceneEditor2::RemoveSystems()
         landscapeEditorDrawSystem = nullptr;
     }
 
-    Vector<EditorSceneSystem*> localEditorSystems = editorSystems;
-    for (EditorSceneSystem* system : localEditorSystems)
-    {
-        SceneSystem* sceneSystem = dynamic_cast<SceneSystem*>(system);
-        DVASSERT(sceneSystem != nullptr);
-
-        RemoveSystem(sceneSystem);
-        SafeDelete(system);
-    }
+    RemoveTags("resource_editor");
 }
 
 void SceneEditor2::MarkAsChanged()
@@ -855,6 +795,32 @@ uint32 SceneEditor2::GetFramesCount() const
 void SceneEditor2::ResetFramesCount()
 {
     framesCount = 0;
+}
+
+void SceneEditor2::OnSystemAdded(SceneSystem* system)
+{
+    EditorSceneSystem* editorSystem = dynamic_cast<EditorSceneSystem*>(system);
+    if (editorSystem != nullptr)
+    {
+        editorSystems.push_back(editorSystem);
+        if (dynamic_cast<LandscapeEditorSystem*>(system) != nullptr)
+        {
+            landscapeEditorSystems.push_back(editorSystem);
+        }
+    }
+}
+
+void SceneEditor2::OnSystemRemoved(SceneSystem* system)
+{
+    EditorSceneSystem* editorSystem = dynamic_cast<EditorSceneSystem*>(system);
+    if (editorSystem != nullptr)
+    {
+        FindAndRemoveExchangingWithLast(editorSystems, editorSystem);
+        if (dynamic_cast<LandscapeEditorSystem*>(system) != nullptr)
+        {
+            FindAndRemoveExchangingWithLast(landscapeEditorSystems, editorSystem);
+        }
+    }
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SceneEditor2)

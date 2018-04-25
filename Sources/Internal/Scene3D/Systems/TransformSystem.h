@@ -28,6 +28,8 @@ public:
     void PrepareForRemove() override;
     void Process(float32 timeElapsed) override;
 
+    static const float32 systemOrder;
+
 private:
     Vector<Entity*> updatableEntities;
 

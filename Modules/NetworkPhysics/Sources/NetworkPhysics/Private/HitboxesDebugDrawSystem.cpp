@@ -19,9 +19,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(HitboxesDebugDrawSystem)
 {
-    ReflectionRegistrator<HitboxesDebugDrawSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<HitboxesDebugDrawSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &HitboxesDebugDrawSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 0.0f)]
+    .Method("ProcessFixed", &HitboxesDebugDrawSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 0.0f)]
     .End();
 }
 

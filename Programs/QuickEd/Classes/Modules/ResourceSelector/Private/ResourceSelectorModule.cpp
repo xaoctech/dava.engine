@@ -251,7 +251,7 @@ void ResourceSelectorModule::CreateAction(const QString& actionName, const QStri
 
     QtAction* action = new QtAction(GetAccessor(), actionName);
     action->SetStateUpdationFunction(QtAction::Checked, fieldDescr, [gfxMode](const Any& fieldValue) -> Any {
-        return fieldValue.Cast<DAVA::int32>(0) == gfxMode;
+        return fieldValue.CastSafely<DAVA::int32>(0) == gfxMode;
     });
 
     connections.AddConnection(action, &QAction::triggered, Bind(&ResourceSelectorModule::OnGfxSelected, this, gfxMode));

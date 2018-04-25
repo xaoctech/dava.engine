@@ -7,6 +7,7 @@
 #include <Debug/DVAssert.h>
 #include <Entity/Component.h>
 #include <Entity/ComponentUtils.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/Camera.h>
 #include <Render/Highlevel/Light.h>
 #include <Scene3D/Components/ComponentHelpers.h>
@@ -16,6 +17,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorLightSystem)
+{
+    ReflectionRegistrator<EditorLightSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &EditorLightSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 4.0f)]
+    .End();
+}
+
 EditorLightSystem::EditorLightSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<LightComponent>())
 {
@@ -94,7 +103,7 @@ void EditorLightSystem::RemoveCameraLightFromScene()
     }
 }
 
-void EditorLightSystem::SceneDidLoaded()
+void EditorLightSystem::OnSceneLoaded()
 {
     if (isEnabled && lightEntities == 0)
     {

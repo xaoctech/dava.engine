@@ -7,8 +7,6 @@
 #include "TArc/Controls/ControlProxy.h"
 #include "TArc/Controls/Widget.h"
 #include "TArc/Controls/Label.h"
-#include "TArc/Qt/QtSize.h"
-#include "TArc/Qt/QtString.h"
 #include "TArc/DataProcessing/AnyQMetaType.h"
 #include "TArc/Utils/Utils.h"
 
@@ -20,6 +18,8 @@
 #include <QInputDialog>
 #include <QWidgetAction>
 #include <QDebug>
+#include <QString>
+#include <QSize>
 #include <QStyleOptionFrame>
 
 namespace DAVA
@@ -656,23 +656,4 @@ DAVA_REFLECTION_IMPL(ContentFilter)
     .Method("renameAvailableFilter", &ContentFilter::OnRenameAvailableFilter)
     .End();
 }
-
-template <>
-bool AnyCompare<ContentFilter::AvailableFilter>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<ContentFilter::AvailableFilter>() == v2.Get<ContentFilter::AvailableFilter>();
-}
-
-template <>
-bool AnyCompare<ContentFilter::SeparatorTag>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<ContentFilter::SeparatorTag>() == v2.Get<ContentFilter::SeparatorTag>();
-}
-
-template <>
-bool AnyCompare<ContentFilter::AvailableFiltersGroup>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<ContentFilter::AvailableFiltersGroup>() == v2.Get<ContentFilter::AvailableFiltersGroup>();
-}
-
 } // namespace DAVA

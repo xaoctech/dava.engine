@@ -58,7 +58,28 @@ bool Selectable::operator!=(const Selectable& other) const
 
 bool Selectable::operator<(const Selectable& other) const
 {
-    return PointerValueAnyLess()(object, other.object);
+    bool v1Empty = object.IsEmpty();
+    bool v2Empty = other.object.IsEmpty();
+
+    if (v1Empty == true && v2Empty == true)
+    {
+        return false;
+    }
+
+    if (v1Empty == true && v2Empty == false)
+    {
+        return false;
+    }
+
+    if (v1Empty == false && v2Empty == true)
+    {
+        return true;
+    }
+
+    DVASSERT(object.GetType()->IsPointer() == true);
+    DVASSERT(other.object.GetType()->IsPointer() == true);
+
+    return object.Get<void*>() < other.object.Get<void*>();
 }
 
 const ReflectedType* Selectable::GetObjectType() const

@@ -7,6 +7,7 @@
 #include <Physics/Core/SphereShapeComponent.h>
 
 #include <Engine/Engine.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Entity/Component.h>
@@ -14,11 +15,20 @@
 
 #include <physx/PxRigidDynamic.h>
 
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorPhysicsSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<EditorPhysicsSystem>::Begin()[M::SystemTags("resource_editor", "physics_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &EditorPhysicsSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 17.0f)]
+    .End();
+}
+
 EditorPhysicsSystem::EditorPhysicsSystem(DAVA::Scene* scene)
     : SceneSystem(scene, DAVA::ComponentMask())
 {
-    scene->physicsSystem->SetDebugDrawEnabled(true);
-    scene->physicsSystem->SetSimulationEnabled(false);
+    scene->GetSystem<DAVA::PhysicsSystem>()->SetDebugDrawEnabled(true);
+    scene->GetSystem<DAVA::PhysicsSystem>()->SetSimulationEnabled(false);
 }
 
 void EditorPhysicsSystem::RegisterEntity(DAVA::Entity* entity)
@@ -114,7 +124,7 @@ void EditorPhysicsSystem::SetSimulationState(eSimulationState newState)
         return;
     }
 
-    DAVA::PhysicsSystem* physicsSystem = GetScene()->physicsSystem;
+    DAVA::PhysicsSystem* const physicsSystem = GetScene()->GetSystem<DAVA::PhysicsSystem>();
 
     switch (newState)
     {

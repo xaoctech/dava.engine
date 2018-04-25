@@ -26,10 +26,13 @@ void SelectionModule::OnContextCreated(DAVA::DataContext* context)
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
     DVASSERT(scene != nullptr);
+    DVASSERT(scene->HasTags("resource_editor"));
+
+    scene->AddTags("selection");
 
     std::unique_ptr<SelectionData> selectionData = std::make_unique<SelectionData>();
-    selectionData->selectionSystem.reset(new SelectionSystem(scene));
-    scene->AddSystem(selectionData->selectionSystem.get(), scene->renderUpdateSystem, scene->GetSystem<HeightmapEditorSystem>());
+
+    selectionData->selectionSystem = scene->GetSystem<SelectionSystem>();
 
     //TODO: Workaround to save old process
     selectionData->selectionSystem->AddDelegate(scene->GetSystem<DAVA::EntityModificationSystem>());
@@ -48,8 +51,7 @@ void SelectionModule::OnContextDeleted(DAVA::DataContext* context)
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
 
-    SelectionData* selectionData = context->GetData<SelectionData>();
-    scene->RemoveSystem(selectionData->selectionSystem.get());
+    scene->RemoveTags("selection");
 }
 
 void SelectionModule::PostInit()

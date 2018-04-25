@@ -8,6 +8,7 @@
 #include <Debug/DVAssert.h>
 #include <Logger/Logger.h>
 #include <Math/MathConstants.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/Material/NMaterialNames.h>
 #include <Render/Material/NMaterial.h>
 #include <Render/Highlevel/RenderObject.h>
@@ -20,6 +21,15 @@
 #include <Scene3D/SceneFileV2.h>
 #include <Scene3D/Scene.h>
 #include <Utils/Utils.h>
+
+DAVA_VIRTUAL_REFLECTION_IMPL(UserNodeSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<UserNodeSystem>::Begin()[M::SystemTags("resource_editor", "user_node")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &UserNodeSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 22.135f)]
+    .End();
+}
 
 namespace UserNodeSystemDetails
 {
@@ -66,8 +76,20 @@ DAVA::RenderObject* CreateRenderObject(const DAVA::FilePath& scenePath)
 }
 }
 
-UserNodeSystem::UserNodeSystem(DAVA::Scene* scene, const DAVA::FilePath& scenePath)
+UserNodeSystem::UserNodeSystem(DAVA::Scene* scene)
     : SceneSystem(scene, DAVA::ComponentUtils::MakeMask<DAVA::UserComponent>())
+{
+}
+
+UserNodeSystem::~UserNodeSystem()
+{
+    SafeRelease(sourceObject);
+
+    DVASSERT(userNodes.empty());
+    DVASSERT(spawnNodes.empty());
+}
+
+void UserNodeSystem::SetScenePath(const DAVA::FilePath& scenePath)
 {
     sourceObject = UserNodeSystemDetails::CreateRenderObject(scenePath);
     if (sourceObject != nullptr)
@@ -78,14 +100,6 @@ UserNodeSystem::UserNodeSystem(DAVA::Scene* scene, const DAVA::FilePath& scenePa
         //TODO::CODEREVIEW:: i_radkevich: is it problem to use non uniform scale?
         nodeMatrix = Matrix4::MakeRotation(Vector3::UnitZ, -DAVA::PI) * Matrix4::MakeScale(Vector3(6.f / size.x, 13.f / size.y, 6.f / size.z));
     }
-}
-
-UserNodeSystem::~UserNodeSystem()
-{
-    SafeRelease(sourceObject);
-
-    DVASSERT(userNodes.empty());
-    DVASSERT(spawnNodes.empty());
 }
 
 void UserNodeSystem::AddEntity(DAVA::Entity* entity)

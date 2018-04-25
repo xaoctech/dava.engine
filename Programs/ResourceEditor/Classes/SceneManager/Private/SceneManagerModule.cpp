@@ -469,7 +469,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::UI* ui)
         FieldDescriptor fieldDescr;
         DAVA::Reflection model = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
         action->SetStateUpdationFunction(QtAction::Enabled, model, DAVA::FastName("saveToFolderAvailable"), [](const DAVA::Any& fieldValue) -> DAVA::Any {
-            return fieldValue.Get<bool>(false);
+            return fieldValue.GetSafely<bool>(false);
         });
 
         ActionPlacementInfo placementInfo;
@@ -485,7 +485,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::UI* ui)
         QtAction* action = new QtAction(accessor, QStringLiteral("Save To Folder With Children"));
         DAVA::Reflection model = DAVA::Reflection::Create(DAVA::ReflectedObject(this));
         action->SetStateUpdationFunction(QtAction::Enabled, model, DAVA::FastName("saveToFolderAvailable"), [](const DAVA::Any& fieldValue) -> DAVA::Any {
-            return fieldValue.Get<bool>(false);
+            return fieldValue.GetSafely<bool>(false);
         });
 
         ActionPlacementInfo placementInfo;
@@ -529,7 +529,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::UI* ui)
 
     // Undo/Redo
     DAVA::Function<DAVA::Any(DAVA::String, const DAVA::Any&)> makeUndoRedoText = [](DAVA::String prefix, const DAVA::Any& v) {
-        DAVA::String descr = v.Cast<DAVA::String>("");
+        DAVA::String descr = v.CastSafely<DAVA::String>("");
         if (descr.empty() == false)
         {
             return prefix + ": " + descr;
@@ -540,7 +540,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::UI* ui)
     {
         QtAction* undo = new QtAction(accessor, QIcon(":/QtIcons/edit_undo.png"), QStringLiteral("Undo"));
         undo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanUndoPropertyName), [](const DAVA::Any& v) {
-            return v.Cast<bool>(false);
+            return v.CastSafely<bool>(false);
         });
         undo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
         undo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneUndoDescriptionPropertyName), Bind(makeUndoRedoText, "Undo", DAVA::_1));
@@ -567,7 +567,7 @@ void SceneManagerModule::CreateModuleActions(DAVA::UI* ui)
     {
         QtAction* redo = new QtAction(accessor, QIcon(":/QtIcons/edit_redo.png"), QStringLiteral("Redo"));
         redo->SetStateUpdationFunction(QtAction::Enabled, MakeFieldDescriptor<SceneData>(SceneData::sceneCanRedoPropertyName), [](const DAVA::Any& v) {
-            return v.Cast<bool>(false);
+            return v.CastSafely<bool>(false);
         });
         redo->SetStateUpdationFunction(QtAction::Text, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));
         redo->SetStateUpdationFunction(QtAction::Tooltip, MakeFieldDescriptor<SceneData>(SceneData::sceneRedoDescriptionPropertyName), Bind(makeUndoRedoText, "Redo", DAVA::_1));

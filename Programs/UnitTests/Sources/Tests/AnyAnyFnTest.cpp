@@ -1,7 +1,12 @@
 #include "Base/Any.h"
 #include "Base/AnyFn.h"
+#include "Base/FastName.h"
 #include "Base/TypeInheritance.h"
+#include "Base/RefPtr.h"
+#include "FileSystem/FilePath.h"
+#include "FileSystem/KeyedArchive.h"
 #include "Math/Vector.h"
+#include "Math/Color.h"
 #include "UnitTests/UnitTests.h"
 #include <numeric>
 
@@ -13,11 +18,22 @@ DAVA_TESTCLASS (AnyAnyFnTest)
     {
     };
 
+    template <typename T>
+    struct NoCompareTemplate
+    {
+        T t;
+    };
+
     struct Trivial
     {
         bool operator==(const Trivial& t) const
         {
             return (a == t.a && b == t.b && c == t.c);
+        }
+
+        bool operator<(const Trivial& t) const
+        {
+            return (a <= t.a && b <= t.b && c < t.c);
         }
 
         int a;
@@ -46,16 +62,23 @@ DAVA_TESTCLASS (AnyAnyFnTest)
             E2_2
         };
 
+        virtual ~A() = default;
+
         int a = 1;
 
-        Vector3 TestFn(Vector3 v1, Vector3 v2)
+        virtual Vector3 TestFn(Vector3 v1, Vector3 v2)
         {
             return (v1 * v2) * static_cast<float32>(a);
         }
 
-        Vector3 TestFnConst(Vector3 v1, Vector3 v2) const
+        virtual Vector3 TestFnConst(Vector3 v1, Vector3 v2) const
         {
-            return (v1 * v2);
+            return (v1 * v2) * static_cast<float32>(a);
+        }
+
+        float32 TestFnFloat(float32 b)
+        {
+            return static_cast<float32>(a) - b;
         }
 
         static int32 StaticTestFn(int32 a, int32 b)
@@ -84,7 +107,25 @@ DAVA_TESTCLASS (AnyAnyFnTest)
     class B : public A
     {
     public:
+        B() = default;
+
+        B(int b_)
+            : b(b_)
+        {
+            a = 0;
+        }
+
         int b;
+
+        Vector3 TestFn(Vector3 v1, Vector3 v2) override
+        {
+            return (v1 + v2) * static_cast<float32>(b);
+        }
+
+        Vector3 TestFnConst(Vector3 v1, Vector3 v2) const override
+        {
+            return (v1 + v2) * static_cast<float32>(b);
+        }
     };
 
     class D : public A, public A1
@@ -164,6 +205,8 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         TEST_VERIFY(value == a.Get<T>());
         TEST_VERIFY(value == a.Get<const T&>());
 
+        TEST_VERIFY(std::hash<typename std::decay<T>::type>()(value) == a.Hash());
+
         a.Set(valueRef);
         TEST_VERIFY(!a.IsEmpty());
         TEST_VERIFY(value == a.Get<T>());
@@ -179,7 +222,7 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         TEST_VERIFY(!a.CanGet<int>());
         TEST_VERIFY(!a.CanGet<void*>());
 
-        TEST_VERIFY(123 == a.Get<int>(123));
+        TEST_VERIFY(123 == a.GetSafely<int>(123));
 
         try
         {
@@ -192,21 +235,114 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         }
     }
 
+#ifdef _MSVC_LANG
+#pragma warning(push)
+#pragma warning(disable : 4756) // ignore "overflow in constant arithmetic" warning
+#endif
+
     template <typename T1, typename T2>
-    void DoAnyCastTest()
+    void DoAnyCastHashTest()
     {
-        int v = 123;
-        T1 t1 = static_cast<T1>(v);
+        T1 t1Lowest = std::numeric_limits<T1>::lowest();
+        T1 t1Max = std::numeric_limits<T1>::max();
+        T1 t1Min = std::numeric_limits<T1>::min();
+        T1 t1 = static_cast<T1>(123);
+        T1 t1_0 = static_cast<T1>(0);
+        T1 t1_plus = static_cast<T1>(1);
+        T1 t1_minus = static_cast<T1>(-1);
 
-        Any a(t1);
-        T2 t2 = a.Cast<T2>();
+        T2 t2Lowest = std::numeric_limits<T2>::lowest();
+        T2 t2Max = std::numeric_limits<T2>::max();
+        T2 t2Min = std::numeric_limits<T2>::min();
+        T2 t2 = static_cast<T2>(123);
+        T2 t2_0 = static_cast<T2>(0);
+        T2 t2_plus = static_cast<T2>(1);
+        T2 t2_minus = static_cast<T2>(-1);
 
-        Any b(t2);
-        T1 t3 = a.Cast<T1>();
+        auto castT1toT2 = [](const T1& in) -> T2 {
+            return static_cast<T2>(in);
+        };
 
-        TEST_VERIFY(t3 == t1);
-        TEST_VERIFY(!a.CanCast<Stub>());
-        TEST_VERIFY(!b.CanCast<Stub>());
+        auto castT2toT1 = [](const T2& in) -> T1 {
+            return static_cast<T1>(in);
+        };
+
+        {
+            TEST_VERIFY(Any(t1Lowest).Cast<T2>() == castT1toT2(t1Lowest));
+            TEST_VERIFY(Any(t1Max).Cast<T2>() == castT1toT2(t1Max));
+            TEST_VERIFY(Any(t1Min).Cast<T2>() == castT1toT2(t1Min));
+            TEST_VERIFY(Any(t1).Cast<T2>() == castT1toT2(t1));
+            TEST_VERIFY(Any(t1_0).Cast<T2>() == castT1toT2(t1_0));
+            TEST_VERIFY(Any(t1_plus).Cast<T2>() == castT1toT2(t1_plus));
+            TEST_VERIFY(Any(t1_minus).Cast<T2>() == castT1toT2(t1_minus));
+
+            TEST_VERIFY(Any(t2Lowest).Cast<T1>() == castT2toT1(t2Lowest));
+            TEST_VERIFY(Any(t2Max).Cast<T1>() == castT2toT1(t2Max));
+            TEST_VERIFY(Any(t2Min).Cast<T1>() == castT2toT1(t2Min));
+            TEST_VERIFY(Any(t2).Cast<T1>() == castT2toT1(t2));
+            TEST_VERIFY(Any(t2_0).Cast<T1>() == castT2toT1(t2_0));
+            TEST_VERIFY(Any(t2_plus).Cast<T1>() == castT2toT1(t2_plus));
+            TEST_VERIFY(Any(t2_minus).Cast<T1>() == castT2toT1(t2_minus));
+        }
+
+        {
+            Any a(t1);
+            T2 t2 = a.Cast<T2>();
+
+            Any b(t2);
+            T1 t3 = a.Cast<T1>();
+
+            TEST_VERIFY(t3 == t1);
+            TEST_VERIFY(!a.CanCast<Stub>());
+            TEST_VERIFY(!b.CanCast<Stub>());
+        }
+
+        {
+            auto x1 = std::hash<T1>()(t1Lowest);
+            TEST_VERIFY(Any(t1Lowest).Hash() == x1);
+
+            auto x2 = std::hash<T1>()(t1Max);
+            TEST_VERIFY(Any(t1Max).Hash() == x2);
+
+            auto x3 = std::hash<T1>()(t1Min);
+            TEST_VERIFY(Any(t1Min).Hash() == x3);
+
+            auto x4 = std::hash<T1>()(t1);
+            TEST_VERIFY(Any(t1).Hash() == x4);
+
+            auto x5 = std::hash<T1>()(t1_0);
+            TEST_VERIFY(Any(t1_0).Hash() == x5);
+
+            auto x6 = std::hash<T1>()(t1_plus);
+            TEST_VERIFY(Any(t1_plus).Hash() == x6);
+
+            auto x7 = std::hash<T1>()(t1_minus);
+            TEST_VERIFY(Any(t1_minus).Hash() == x7);
+        }
+    }
+
+#ifdef _MSVC_LANG
+#pragma warning(pop) 
+#endif
+
+    template <typename T>
+    void DoAnyCompareEqualTest(T v1, T v2)
+    {
+        Any a(v1);
+        Any b(v1);
+        Any c(v2);
+
+        Any i(35245225);
+        Any s("tmpstr23545");
+        Any ss(String("fw2452458"));
+
+        TEST_VERIFY(a == b);
+        TEST_VERIFY(a != c);
+        TEST_VERIFY(b != c);
+
+        TEST_VERIFY(a != i);
+        TEST_VERIFY(a != s);
+        TEST_VERIFY(a != ss);
     }
 
     DAVA_TEST (AutoStorageTest)
@@ -374,7 +510,7 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         TEST_VERIFY((Any() != Any()) == false); //-V501
     }
 
-    DAVA_TEST (AnyTestPtr)
+    DAVA_TEST (AnyCastGetPtrTest)
     {
         B b;
         D d;
@@ -441,7 +577,7 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         }
     }
 
-    DAVA_TEST (AnyTestEnum)
+    DAVA_TEST (AnyCastGetEnumTest)
     {
         Any a;
 
@@ -452,9 +588,96 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         a.Set(A::E2::E2_2);
         TEST_VERIFY(A::E2::E2_1 != a.Get<A::E2>());
         TEST_VERIFY(A::E2::E2_2 == a.Get<A::E2>());
+
+        TEST_VERIFY(Any(A::E1_1).Cast<int8>() == static_cast<int8>(A::E1_1));
+        TEST_VERIFY(Any(A::E1_1).Cast<int16>() == static_cast<int16>(A::E1_1));
+        TEST_VERIFY(Any(A::E1_1).Cast<int32>() == static_cast<int32>(A::E1_1));
+        TEST_VERIFY(Any(A::E1_1).Cast<int64>() == static_cast<int64>(A::E1_1));
+        TEST_VERIFY(Any(A::E1_1).Cast<uint8>() == static_cast<uint8>(A::E1_1));
+        TEST_VERIFY(Any(A::E1_1).Cast<uint16>() == static_cast<uint16>(A::E1_1));
+        TEST_VERIFY(Any(A::E1_1).Cast<uint32>() == static_cast<uint32>(A::E1_1));
+        TEST_VERIFY(Any(A::E1_1).Cast<uint64>() == static_cast<uint64>(A::E1_1));
+
+        int v = static_cast<int>(A::E1_2);
+
+        TEST_VERIFY(Any(static_cast<int8>(v)).Cast<A::E1>() == static_cast<A::E1>(static_cast<int8>(v)));
+        TEST_VERIFY(Any(static_cast<int16>(v)).Cast<A::E1>() == static_cast<A::E1>(static_cast<int16>(v)));
+        TEST_VERIFY(Any(static_cast<int32>(v)).Cast<A::E1>() == static_cast<A::E1>(static_cast<int32>(v)));
+        TEST_VERIFY(Any(static_cast<int64>(v)).Cast<A::E1>() == static_cast<A::E1>(static_cast<int64>(v)));
+        TEST_VERIFY(Any(static_cast<uint8>(v)).Cast<A::E1>() == static_cast<A::E1>(static_cast<uint8>(v)));
+        TEST_VERIFY(Any(static_cast<uint16>(v)).Cast<A::E1>() == static_cast<A::E1>(static_cast<uint16>(v)));
+        TEST_VERIFY(Any(static_cast<uint32>(v)).Cast<A::E1>() == static_cast<A::E1>(static_cast<uint32>(v)));
+        TEST_VERIFY(Any(static_cast<uint64>(v)).Cast<A::E1>() == static_cast<A::E1>(static_cast<uint64>(v)));
     }
 
-    DAVA_TEST (AnyLoadStoreCompare)
+    DAVA_TEST (AnyCastFundamentalTest)
+    {
+        DoAnyCastHashTest<int8, int16>();
+        DoAnyCastHashTest<int8, int32>();
+        DoAnyCastHashTest<int8, int64>();
+        DoAnyCastHashTest<int8, uint8>();
+        DoAnyCastHashTest<int8, uint16>();
+        DoAnyCastHashTest<int8, uint32>();
+        DoAnyCastHashTest<int8, uint64>();
+        DoAnyCastHashTest<int8, float32>();
+        DoAnyCastHashTest<int8, float64>();
+        DoAnyCastHashTest<int8, size_t>();
+
+        DoAnyCastHashTest<int16, int32>();
+        DoAnyCastHashTest<int16, int64>();
+        DoAnyCastHashTest<int16, uint8>();
+        DoAnyCastHashTest<int16, uint16>();
+        DoAnyCastHashTest<int16, uint32>();
+        DoAnyCastHashTest<int16, uint64>();
+        DoAnyCastHashTest<int16, float32>();
+        DoAnyCastHashTest<int16, float64>();
+        DoAnyCastHashTest<int16, size_t>();
+
+        DoAnyCastHashTest<int32, int64>();
+        DoAnyCastHashTest<int32, uint8>();
+        DoAnyCastHashTest<int32, uint16>();
+        DoAnyCastHashTest<int32, uint32>();
+        DoAnyCastHashTest<int32, uint64>();
+        DoAnyCastHashTest<int32, float32>();
+        DoAnyCastHashTest<int32, float64>();
+        DoAnyCastHashTest<int32, size_t>();
+
+        DoAnyCastHashTest<int64, uint8>();
+        DoAnyCastHashTest<int64, uint16>();
+        DoAnyCastHashTest<int64, uint32>();
+        DoAnyCastHashTest<int64, uint64>();
+        DoAnyCastHashTest<int64, float32>();
+        DoAnyCastHashTest<int64, float64>();
+        DoAnyCastHashTest<int64, size_t>();
+
+        DoAnyCastHashTest<uint8, uint16>();
+        DoAnyCastHashTest<uint8, uint32>();
+        DoAnyCastHashTest<uint8, uint64>();
+        DoAnyCastHashTest<uint8, float32>();
+        DoAnyCastHashTest<uint8, float64>();
+        DoAnyCastHashTest<uint8, size_t>();
+
+        DoAnyCastHashTest<uint16, uint32>();
+        DoAnyCastHashTest<uint16, uint64>();
+        DoAnyCastHashTest<uint16, float32>();
+        DoAnyCastHashTest<uint16, float64>();
+        DoAnyCastHashTest<uint16, size_t>();
+
+        DoAnyCastHashTest<uint32, uint64>();
+        DoAnyCastHashTest<uint32, float32>();
+        DoAnyCastHashTest<uint32, float64>();
+        DoAnyCastHashTest<uint32, size_t>();
+
+        DoAnyCastHashTest<uint64, float32>();
+        DoAnyCastHashTest<uint64, float64>();
+        DoAnyCastHashTest<uint64, size_t>();
+
+        DoAnyCastHashTest<float32, float64>();
+        DoAnyCastHashTest<float32, size_t>();
+        DoAnyCastHashTest<float64, size_t>();
+    }
+
+    DAVA_TEST (AnyLoadStoreTest)
     {
         int v1 = 11223344;
         int v2 = 321;
@@ -462,53 +685,7 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         int* iptr1 = &v1;
         int* iptr2 = nullptr;
 
-        // two values ==
-        Any a(v1);
-        Any b(v1);
-        TEST_VERIFY(a == b);
-
-        Any a1(a);
-        Any b1(b);
-        TEST_VERIFY(a1 == b1);
-
-        // two values !=
-        a.Set(v1);
-        b.Set(String("str"));
-        TEST_VERIFY(a != b);
-
-        a1.Set(a);
-        b1.Set(b);
-        TEST_VERIFY(a1 != b1);
-
-        // two pointer !=
-        a.Set(&v1);
-        b.Set(&v2);
-        TEST_VERIFY(a != b);
-
-        // pointer and value !=
-        a.Set(v1);
-        b.Set(&v2);
-        TEST_VERIFY(a != b);
-
-        // empty != value
-        a.Clear();
-        b.Set(v1);
-        TEST_VERIFY(a != b);
-
-        // empty != pointer
-        a.Clear();
-        b.Set(&v1);
-        TEST_VERIFY(a != b);
-
-        // empty != nullptr
-        a.Clear();
-        b.Set(nullptr);
-        TEST_VERIFY(a != b);
-
-        // two empties ==
-        a.Clear();
-        b.Clear();
-        TEST_VERIFY(a == b);
+        Any a;
 
         // load test
         a.LoadData(&v1, Type::Instance<int>());
@@ -538,74 +715,111 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         TEST_VERIFY(!a.StoreData(&triv, sizeof(triv) / 2));
     }
 
-    DAVA_TEST (AnyCastTest)
+    DAVA_TEST (AnyCompareTest)
     {
-#if 0
-        DoAnyCastTest<int8, int16>();
-        DoAnyCastTest<int8, int32>();
-        DoAnyCastTest<int8, int64>();
-        DoAnyCastTest<int8, uint8>();
-        DoAnyCastTest<int8, uint16>();
-        DoAnyCastTest<int8, uint32>();
-        DoAnyCastTest<int8, uint64>();
-        DoAnyCastTest<int8, float32>();
-        DoAnyCastTest<int8, float64>();
-        DoAnyCastTest<int8, size_t>();
+        // simple
+        {
+            bool b1 = TypeDetails::IsEqualComparable<bool>::value;
 
-        DoAnyCastTest<int16, int32>();
-        DoAnyCastTest<int16, int64>();
-        DoAnyCastTest<int16, uint8>();
-        DoAnyCastTest<int16, uint16>();
-        DoAnyCastTest<int16, uint32>();
-        DoAnyCastTest<int16, uint64>();
-        DoAnyCastTest<int16, float32>();
-        DoAnyCastTest<int16, float64>();
-        DoAnyCastTest<int16, size_t>();
+            DoAnyCompareEqualTest<bool>(true, false);
+            DoAnyCompareEqualTest<int32>(10, 20);
+            DoAnyCompareEqualTest<uint32>(10, 20);
+            DoAnyCompareEqualTest(10.0, 20.0);
+        }
 
-        DoAnyCastTest<int32, int64>();
-        DoAnyCastTest<int32, uint8>();
-        DoAnyCastTest<int32, uint16>();
-        DoAnyCastTest<int32, uint32>();
-        DoAnyCastTest<int32, uint64>();
-        DoAnyCastTest<int32, float32>();
-        DoAnyCastTest<int32, float64>();
-        DoAnyCastTest<int32, size_t>();
+        // base
+        {
+            DoAnyCompareEqualTest(Color::Blue, Color::Red);
+            DoAnyCompareEqualTest(Vector3(1.0f, 2.0f, 3.0f), Vector3(3.0f, 2.0f, 1.0f));
 
-        DoAnyCastTest<int64, uint8>();
-        DoAnyCastTest<int64, uint16>();
-        DoAnyCastTest<int64, uint32>();
-        DoAnyCastTest<int64, uint64>();
-        DoAnyCastTest<int64, float32>();
-        DoAnyCastTest<int64, float64>();
-        DoAnyCastTest<int64, size_t>();
+            Matrix4 m;
+            m.BuildScale(Vector3(1.0, 2.0f, 3.0f));
+            DoAnyCompareEqualTest(m, Matrix4::IDENTITY);
+        }
 
-        DoAnyCastTest<uint8, uint16>();
-        DoAnyCastTest<uint8, uint32>();
-        DoAnyCastTest<uint8, uint64>();
-        DoAnyCastTest<uint8, float32>();
-        DoAnyCastTest<uint8, float64>();
-        DoAnyCastTest<uint8, size_t>();
+        // strings
+        {
+            const char* str1 = "str1";
+            const char* str2 = "str2";
 
-        DoAnyCastTest<uint16, uint32>();
-        DoAnyCastTest<uint16, uint64>();
-        DoAnyCastTest<uint16, float32>();
-        DoAnyCastTest<uint16, float64>();
-        DoAnyCastTest<uint16, size_t>();
+            DoAnyCompareEqualTest(str1, str2);
+            DoAnyCompareEqualTest(String(str1), String(str2));
+            DoAnyCompareEqualTest(FastName(str1), FastName(str2));
+            DoAnyCompareEqualTest(FilePath(str1), FilePath(str2));
+        }
 
-        DoAnyCastTest<uint32, uint64>();
-        DoAnyCastTest<uint32, float32>();
-        DoAnyCastTest<uint32, float64>();
-        DoAnyCastTest<uint32, size_t>();
+        // pointer
+        {
+            int i = 11223344;
+            int* iptr = &i;
+            void* vptr = static_cast<void*>(iptr);
+            void* nptr = nullptr;
 
-        DoAnyCastTest<uint64, float32>();
-        DoAnyCastTest<uint64, float64>();
-        DoAnyCastTest<uint64, size_t>();
+            Any a(iptr);
+            Any b(vptr);
+            Any a0(static_cast<int*>(nptr));
+            Any b0(nptr);
 
-        DoAnyCastTest<float32, float64>();
-        DoAnyCastTest<float32, size_t>();
+            DoAnyCompareEqualTest<int*>(iptr, nullptr);
 
-        DoAnyCastTest<float64, size_t>();
-#endif
+            TEST_VERIFY(a == b);
+            TEST_VERIFY(a0 == b0);
+            TEST_VERIFY(a != a0);
+            TEST_VERIFY(b != b0);
+        }
+
+        // RefPtr
+        {
+            RefPtr<KeyedArchive> ka1(new KeyedArchive());
+            RefPtr<KeyedArchive> ka2(new KeyedArchive());
+            DoAnyCompareEqualTest(ka1, ka2);
+        }
+
+        // Vector
+        {
+            Vector<int> vec1{ 1, 2, 3 };
+            Vector<int> vec2;
+
+            Vector<Trivial> vecTrivial1;
+            Vector<Trivial> vecTrivial2;
+            vecTrivial1.push_back(Trivial());
+            vecTrivial1.back().a = 10;
+
+            DoAnyCompareEqualTest(vec1, vec2);
+            DoAnyCompareEqualTest(vecTrivial1, vecTrivial2);
+        }
+
+        // no compare or less
+        {
+            NoCompareTemplate<int> i;
+            TEST_VERIFY(!Any(i).IsEmpty());
+        }
+
+        // empty
+        {
+            Any a;
+            Any b;
+
+            // empty != value
+            a.Clear();
+            b.Set(123321);
+            TEST_VERIFY(a != b);
+
+            // empty != pointer
+            a.Clear();
+            b.Set(&a);
+            TEST_VERIFY(a != b);
+
+            // empty != nullptr
+            a.Clear();
+            b.Set(nullptr);
+            TEST_VERIFY(a != b);
+
+            // two empties ==
+            a.Clear();
+            b.Clear();
+            TEST_VERIFY(a == b);
+        }
     }
 
     DAVA_TEST (AnyFnTest)
@@ -669,6 +883,73 @@ DAVA_TESTCLASS (AnyAnyFnTest)
         fn = AnyFn(&A::TestFnConst);
         res = fn.Invoke(Any(&a), Any(op2), Any(op3));
         TEST_VERIFY(a.TestFnConst(op2, op3) == res.Get<Vector3>());
+    }
+
+    DAVA_TEST (AnyFnWithCastTest)
+    {
+        A a;
+        a.a = 13;
+
+        A* b = new B(31);
+
+        // check args casting
+        {
+            AnyFn aFnInt(&A::StaticTestFn);
+            AnyFn aFnFloat(&A::TestFnFloat);
+
+            float32 farg1 = 111.5445346f;
+            float32 farg2 = 46768.12543f;
+            Any anyRet = aFnInt.InvokeWithCast(farg1, farg2);
+            int32 iret = A::StaticTestFn(static_cast<int32>(farg1), static_cast<int32>(farg2));
+            TEST_VERIFY(iret == anyRet.Get<int32>());
+
+            anyRet = aFnInt.InvokeWithCast(farg1, static_cast<int32>(farg2));
+            TEST_VERIFY(iret == anyRet.Get<int32>());
+
+            int32 arg1 = 543;
+            anyRet = aFnFloat.InvokeWithCast(&a, arg1);
+            float32 fret = a.TestFnFloat(static_cast<float32>(arg1));
+            TEST_VERIFY(fret == anyRet.Get<float32>());
+
+            anyRet = aFnFloat.InvokeWithCast(&a, static_cast<float32>(arg1));
+            TEST_VERIFY(fret == anyRet.Get<float32>());
+        }
+
+        // check first argument 'this' casting
+        {
+            AnyFn aFn(&A::TestFn);
+            AnyFn aFnConst(&A::TestFnConst);
+
+            AnyFn bFn(&B::TestFn);
+            AnyFn bFnConst(&B::TestFnConst);
+
+            Vector3 arg1(11.0f, 22.44f, 3.38f);
+            Vector3 arg2(71.15f, 0.7f, 130.0f);
+
+            A tmpA;
+            tmpA.a = 43;
+
+            // call A functions with that = A
+            Any res = aFn.InvokeWithCast(tmpA, arg1, arg2);
+            TEST_VERIFY(res.Get<Vector3>() == tmpA.TestFn(arg1, arg2));
+
+            res = aFnConst.InvokeWithCast(tmpA, arg1, arg2);
+            TEST_VERIFY(res.Get<Vector3>() == tmpA.TestFnConst(arg1, arg2));
+
+            // call A functions with that = A*, that points on B
+            res = aFn.InvokeWithCast(b, arg1, arg2);
+            TEST_VERIFY(res.Get<Vector3>() == b->TestFn(arg1, arg2));
+
+            res = aFnConst.InvokeWithCast(b, arg1, arg2);
+            TEST_VERIFY(res.Get<Vector3>() == b->TestFnConst(arg1, arg2));
+
+            // call B functions that = A*, that points on B
+            res = bFn.InvokeWithCast(b, arg1, arg2);
+            TEST_VERIFY(res.Get<Vector3>() == b->TestFn(arg1, arg2));
+
+            res = bFnConst.InvokeWithCast(b, arg1, arg2);
+            TEST_VERIFY(res.Get<Vector3>() == b->TestFnConst(arg1, arg2));
+        }
     }
 
     template <typename R, typename... T>

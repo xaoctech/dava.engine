@@ -2,7 +2,6 @@
 #include "REPlatform/DataNodes/ProjectManagerData.h"
 
 #include <TArc/Core/Deprecated.h>
-#include <TArc/Qt/QtString.h>
 #include <TArc/WindowSubSystem/UI.h>
 
 #include <Base/GlobalEnum.h>
@@ -15,6 +14,8 @@
 #include <Render/Material/NMaterial.h>
 #include <Render/TextureDescriptor.h>
 #include <Utils/StringFormat.h>
+
+#include <QString>
 
 namespace DAVA
 {

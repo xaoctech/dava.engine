@@ -8,44 +8,18 @@ namespace DAVA
 template <class T>
 T* Scene::GetSystem()
 {
-    T* res = nullptr;
-    const std::type_info& type = typeid(T);
-    for(SceneSystem* system : systemsVector)
+    T* system = nullptr;
+
+    const Type *systemType = Type::Instance<T>();
+
+    const auto it = systemsMap.find(systemType);
+
+    if (it != systemsMap.end())
     {
-        const std::type_info& currType = typeid(*system);
-        if(currType == type)
-        {
-            res = static_cast<T*>(system);
-            break;
-        }
+        system = static_cast<T*>(it->second);
     }
 
-    return res;
-}
-
-template <typename Return, typename Cls>
-void Scene::RegisterSystemProcess(Return(Cls::*fp)(float32))
-{
-    DVASSERT(tags.empty());
-
-    Cls* system = GetSystem<Cls>();
-    if(!system)
-    {
-        DVASSERT(false); //create systems here
-    }
-
-    systemProcesses.push_back([system, fp] (float32 timeElapsed)
-    {
-        (system->*fp)(timeElapsed);
-    });
-}
-
-template <typename T>
-void Scene::AddSingleComponent(T* component)
-{
-    static_assert(std::is_base_of<SingleComponent, T>::value, "Has to be derived from SingleComponent");
-    static_assert(!std::is_same<SingleComponent, T>::value, "Has to be derived from SingleComponent");
-    AddSingleComponent(component, Type::Instance<T>());
+    return system;
 }
 
 template <class T>

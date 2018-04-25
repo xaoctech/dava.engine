@@ -85,7 +85,7 @@ void DeveloperTools::OnDebugFunctionsGridCopy()
                 else
                     material->AddProperty(inSpecularityName, &inSpecularity, rhi::ShaderProp::TYPE_FLOAT1);
 
-                StaticOcclusionSystem* sosystem = currentScene->staticOcclusionSystem;
+                StaticOcclusionSystem* const sosystem = currentScene->GetSystem<StaticOcclusionSystem>();
                 DVASSERT(sosystem);
                 sosystem->InvalidateOcclusionIndicesRecursively(clonedEntity);
 
@@ -423,7 +423,7 @@ void DeveloperTools::OnToggleLandscapeInstancing()
     using namespace DAVA;
 
     SceneEditor2* currentScene = DeveloperToolsDetails::GetActiveScene();
-    for (Landscape* l : currentScene->landscapeSystem->GetLandscapeObjects())
+    for (Landscape* l : currentScene->GetSystem<LandscapeSystem>()->GetLandscapeObjects())
     {
         l->SetUseInstancing(!l->IsUseInstancing());
         Logger::FrameworkDebug("Landscape uses instancing: %s", l->IsUseInstancing() ? "true" : "false");

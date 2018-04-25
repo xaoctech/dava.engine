@@ -11,10 +11,10 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(BotSystem)
 {
-    ReflectionRegistrator<BotSystem>::Begin()[M::Tags("bot", "randombot")]
+    ReflectionRegistrator<BotSystem>::Begin()[M::SystemTags("bot", "randombot")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessClient", &BotSystem::ProcessClient)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 17.0f)]
-    .Method("ProcessServer", &BotSystem::ProcessServer)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 4.0f)]
+    .Method("ProcessClient", &BotSystem::ProcessClient)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 17.0f)]
+    .Method("ProcessServer", &BotSystem::ProcessServer)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 4.0f)]
     .End();
 }
 

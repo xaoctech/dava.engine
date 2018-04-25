@@ -16,9 +16,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SwitchSystem)
 {
-    ReflectionRegistrator<SwitchSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<SwitchSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &SwitchSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 4.0f)]
+    .Method("Process", &SwitchSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 4.0f)]
     .End();
 }
 

@@ -665,7 +665,4 @@ inline void Quaternion::Unpack(uint64 pack)
     }
 }
 
-template <>
-bool AnyCompare<Quaternion>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<Quaternion>;
 };

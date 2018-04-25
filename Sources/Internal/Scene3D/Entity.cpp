@@ -382,10 +382,10 @@ void Entity::BakeTransforms()
     }
 }
 
-void Entity::SceneDidLoaded()
+void Entity::OnSceneLoaded()
 {
     for (auto child : children)
-        child->SceneDidLoaded();
+        child->OnSceneLoaded();
 }
 
 Entity* Entity::Clone(Entity* dstNode)

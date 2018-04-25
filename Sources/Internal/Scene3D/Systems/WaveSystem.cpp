@@ -18,9 +18,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(WaveSystem)
 {
-    ReflectionRegistrator<WaveSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<WaveSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &WaveSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 15.0f)]
+    .Method("Process", &WaveSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 15.0f)]
     .End();
 }
 
@@ -55,10 +55,6 @@ WaveSystem::~WaveSystem()
     Renderer::GetOptions()->RemoveObserver(this);
 
     ClearWaves();
-}
-
-void WaveSystem::PrepareForRemove()
-{
 }
 
 void WaveSystem::ImmediateEvent(Component* component, uint32 event)

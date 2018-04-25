@@ -6,7 +6,6 @@
 #include "TArc/Controls/ReflectedButton.h"
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "TArc/Utils/QtConnections.h"
-#include "TArc/Qt/QtString.h"
 #include "TArc/Qt/QtIcon.h"
 #include "TArc/Utils/Utils.h"
 
@@ -19,6 +18,7 @@
 #include <QtTest>
 #include <QStyle>
 #include <QStyleOption>
+#include <QString>
 #include <QToolButton>
 
 namespace ReflectedButtonTestDetails

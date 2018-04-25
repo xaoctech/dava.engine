@@ -14,7 +14,7 @@ public:
     DAVA_VIRTUAL_REFLECTION(ActionUpdateSystem, SceneSystem);
 
     ActionUpdateSystem(Scene* scene);
-    void Process(float32 timeElapsed) override;
+    void ProcessFixed(float32 timeElapsed) override;
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;

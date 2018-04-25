@@ -8,7 +8,6 @@
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Utils/ScopedValueGuard.h"
 #include "TArc/Utils/ReflectionHelpers.h"
-#include "TArc/Qt/QtSize.h"
 
 #include <Engine/PlatformApiQt.h>
 #include <Reflection/ReflectionRegistrator.h>
@@ -16,6 +15,7 @@
 
 #include <QApplication>
 #include <QtEvents>
+#include <QSize>
 #include <QStyle>
 #include <QStyleOption>
 #include <QPainter>

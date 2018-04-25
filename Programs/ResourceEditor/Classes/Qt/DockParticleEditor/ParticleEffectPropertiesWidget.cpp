@@ -143,7 +143,7 @@ void ParticleEffectPropertiesWidget::UpdateVaribleTables()
         i++;
     }
 
-    DAVA::Map<DAVA::String, DAVA::float32> globalVariablesSet = effect->GetEntity()->GetScene()->particleEffectSystem->GetGlobalExternals();
+    DAVA::Map<DAVA::String, DAVA::float32> globalVariablesSet = effect->GetEntity()->GetScene()->GetSystem<DAVA::ParticleEffectSystem>()->GetGlobalExternals();
     globalVariables->clearContents();
     globalVariables->setRowCount(static_cast<int>(globalVariablesSet.size()));
     i = 0;
@@ -175,7 +175,7 @@ void ParticleEffectPropertiesWidget::OnGlobalVariableValueChanged(int row, int c
         return;
     DAVA::String varNam = globalVariables->item(row, 0)->text().toStdString();
     float varValue = globalVariables->item(row, 1)->text().toFloat();
-    GetEffect(GetActiveScene())->GetEntity()->GetScene()->particleEffectSystem->SetGlobalExtertnalValue(varNam, varValue);
+    GetEffect(GetActiveScene())->GetEntity()->GetScene()->GetSystem<DAVA::ParticleEffectSystem>()->SetGlobalExtertnalValue(varNam, varValue);
     UpdateVaribleTables();
 }
 
@@ -184,7 +184,7 @@ void ParticleEffectPropertiesWidget::OnAddGlobalExternal()
     AddGlobalExternalDialog dialog(this);
     if (dialog.exec())
     {
-        GetEffect(GetActiveScene())->GetEntity()->GetScene()->particleEffectSystem->SetGlobalExtertnalValue(dialog.GetVariableName(), dialog.GetVariableValue());
+        GetEffect(GetActiveScene())->GetEntity()->GetScene()->GetSystem<DAVA::ParticleEffectSystem>()->SetGlobalExtertnalValue(dialog.GetVariableName(), dialog.GetVariableValue());
         UpdateVaribleTables();
     }
 }

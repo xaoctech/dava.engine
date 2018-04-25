@@ -11,9 +11,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterExternalImpulseSystem)
 {
-    ReflectionRegistrator<ShooterExternalImpulseSystem>::Begin()[M::Tags("gm_shooter")]
+    ReflectionRegistrator<ShooterExternalImpulseSystem>::Begin()[M::SystemTags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterExternalImpulseSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 19.1f)]
+    .Method("ProcessFixed", &ShooterExternalImpulseSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 19.1f)]
     .End();
 }
 

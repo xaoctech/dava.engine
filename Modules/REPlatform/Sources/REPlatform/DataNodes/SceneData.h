@@ -4,10 +4,11 @@
 #include "REPlatform/Scene/Utils/Utils.h"
 
 #include <TArc/DataProcessing/TArcDataNode.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Reflection/ReflectionRegistrator.h>
 #include <Base/RefPtr.h>
+
+#include <QString>
 
 class SceneManagerModule;
 namespace DAVA

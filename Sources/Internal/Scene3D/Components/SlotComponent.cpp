@@ -5,6 +5,7 @@
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
 #include "FileSystem/KeyedArchive.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

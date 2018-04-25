@@ -37,7 +37,7 @@ void PowerupSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("PowerupSystem::ProcessFixed");
 
-    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponent<CollisionSingleComponent>();
 
     for (Entity* bonus : bonuses)
     {

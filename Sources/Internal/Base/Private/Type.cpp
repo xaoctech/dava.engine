@@ -124,7 +124,6 @@ uint32_t Type::AllocUserData()
     size_t i = typeUserDataStorageIndex.fetch_add(1);
 
     DVASSERT(i < Type::userDataStorageSize);
-
     return static_cast<uint32_t>(i);
 }
 

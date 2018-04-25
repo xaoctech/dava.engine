@@ -35,11 +35,10 @@ void ScenePreviewControl::RecreateScene()
 {
     DVASSERT(editorScene == nullptr);
 
-    editorScene = new DAVA::Scene();
+    editorScene = new DAVA::Scene("base", "rotation_controller");
 
-    rotationSystem = new DAVA::RotationControllerSystem(editorScene);
+    rotationSystem = editorScene->GetSystem<DAVA::RotationControllerSystem>();
     rotationSystem->SetRotationSpeeed(0.10f);
-    editorScene->AddSystem(rotationSystem);
 }
 
 void ScenePreviewControl::ReleaseScene()

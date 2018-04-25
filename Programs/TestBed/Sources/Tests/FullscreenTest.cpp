@@ -101,7 +101,7 @@ void FullscreenTest::LoadResources()
     ui3dview = new UI3DView(Rect(10, y, 320, 240));
     ui3dview->GetOrCreateComponent<UIDebugRenderComponent>();
 
-    ScopedPtr<Scene> scene(new Scene());
+    ScopedPtr<Scene> scene(new Scene(FastTags{ "base", "controller" }));
     scene->LoadScene("~res:/TestBed/3d/Objects/monkey.sc2");
 
     ScopedPtr<Camera> camera(new Camera());
@@ -117,10 +117,6 @@ void FullscreenTest::LoadResources()
     cameraEntity->AddComponent(new CameraComponent(camera));
     cameraEntity->AddComponent(new RotationControllerComponent());
     scene->AddNode(cameraEntity);
-
-    rotationControllerSystem = new RotationControllerSystem(scene);
-
-    scene->AddSystem(rotationControllerSystem);
 
     scene->AddCamera(camera);
     scene->SetCurrentCamera(camera);
@@ -221,11 +217,6 @@ void FullscreenTest::UnloadResources()
     GetPrimaryWindow()->sizeChanged.Disconnect(this);
     GetPrimaryWindow()->update.Disconnect(this);
 
-    if (ui3dview->GetScene())
-    {
-        ui3dview->GetScene()->RemoveSystem(rotationControllerSystem);
-    }
-    SafeDelete(rotationControllerSystem);
     SafeRelease(ui3dview);
     SafeRelease(currect3dScaleText);
     SafeRelease(currentModeText);

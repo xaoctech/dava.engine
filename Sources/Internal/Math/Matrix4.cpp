@@ -252,10 +252,4 @@ Quaternion Matrix4::GetRotation() const
 
     return rot;
 }
-
-template <>
-bool AnyCompare<Matrix4>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)
-{
-    return v1.Get<Matrix4>() == v2.Get<Matrix4>();
-}
 };

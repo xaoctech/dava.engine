@@ -1,7 +1,6 @@
 #include "Utils/QtDavaConvertion.h"
 
 #include <TArc/Utils/Utils.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Reflection/ReflectedMeta.h>
 #include <Reflection/ReflectedTypeDB.h>
@@ -10,6 +9,7 @@
 #include <QColor>
 #include <QVariant>
 #include <QVector2D>
+#include <QString>
 
 using namespace DAVA;
 

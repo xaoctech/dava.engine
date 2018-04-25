@@ -108,7 +108,7 @@ void RenderOptionsModule::PostInit()
         fieldIsEnabled.type = ReflectedTypeDB::Get<RenderOptionsDetails::RenderOptionsData>();
         fieldIsEnabled.fieldName = FastName("isEnabled");
         action->SetStateUpdationFunction(QtAction::Enabled, fieldIsEnabled, [](const Any& fieldValue) -> Any {
-            return fieldValue.Cast<bool>(false);
+            return fieldValue.CastSafely<bool>(false);
         });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &RenderOptionsModule::ShowRenderOptionsDialog));

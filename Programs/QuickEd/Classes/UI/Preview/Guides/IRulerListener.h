@@ -1,10 +1,10 @@
 #pragma once
 
-#include <TArc/Qt/QtRect.h>
 #include <Base/BaseTypes.h>
 
 #include <QAction>
 #include <QList>
+#include <QRect>
 
 class IRulerListener
 {

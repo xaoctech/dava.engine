@@ -16,9 +16,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkPredictSystem)
 {
-    ReflectionRegistrator<NetworkPredictSystem>::Begin()[M::Tags("network", "client")]
+    ReflectionRegistrator<NetworkPredictSystem>::Begin()[M::SystemTags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkPredictSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.2f)]
+    .Method("ProcessFixed", &NetworkPredictSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 13.2f)]
     .End();
 }
 

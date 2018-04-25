@@ -35,6 +35,8 @@ public:
         AnalogPrecision precision;
 
         bool operator==(const AnalogActionInfo& info) const;
+
+        operator const FastName&() const;
     };
 
     struct AnalogActionInfoHasher

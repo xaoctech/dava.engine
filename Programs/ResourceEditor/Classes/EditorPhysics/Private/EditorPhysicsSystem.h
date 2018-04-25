@@ -5,6 +5,8 @@
 
 class EditorPhysicsSystem : public DAVA::SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(EditorPhysicsSystem, DAVA::SceneSystem);
+
 public:
     enum class eSimulationState
     {

@@ -24,10 +24,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaReplicationSystemClient)
 {
-    ReflectionRegistrator<NetworkDeltaReplicationSystemClient>::Begin()[M::Tags("network", "client")]
+    ReflectionRegistrator<NetworkDeltaReplicationSystemClient>::Begin()[M::SystemTags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessReceivePackets", &NetworkDeltaReplicationSystemClient::ProcessReceivePackets)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 12.0f)]
-    .Method("ProcessAppliedPackets", &NetworkDeltaReplicationSystemClient::ProcessAppliedPackets)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.1f)]
+    .Method("ProcessReceivePackets", &NetworkDeltaReplicationSystemClient::ProcessReceivePackets)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 12.0f)]
+    .Method("ProcessAppliedPackets", &NetworkDeltaReplicationSystemClient::ProcessAppliedPackets)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 13.1f)]
     .End();
 }
 

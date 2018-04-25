@@ -288,7 +288,7 @@ public:
         \brief This function is called after scene is loaded from file.
         You can perform additional initialization here.
      */
-    virtual void SceneDidLoaded();
+    virtual void OnSceneLoaded();
 
     // Property names.
     static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;

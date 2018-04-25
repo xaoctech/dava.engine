@@ -3,11 +3,12 @@
 #include "REPlatform/Scene/SceneEditor2.h"
 
 #include <TArc/Qt/QtIcon.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Base/RefPtr.h>
 #include <Functional/Signal.h>
 #include <Reflection/Reflection.h>
+
+#include <QString>
 
 namespace DAVA
 {

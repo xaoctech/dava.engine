@@ -5,6 +5,7 @@
 
 #include <Debug/DVAssert.h>
 #include <Base/BaseTypes.h>
+#include <Utils/StringFormat.h>
 
 #include <algorithm>
 

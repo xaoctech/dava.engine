@@ -11,8 +11,11 @@ namespace DAVA
 {
 class HoodSystem;
 class SceneEditor2;
+
 class HeightmapEditorSystem : public LandscapeEditorSystem
 {
+    DAVA_VIRTUAL_REFLECTION(HeightmapEditorSystem, SceneSystem);
+
 public:
     enum eHeightmapDrawType
     {

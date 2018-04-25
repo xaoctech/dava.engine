@@ -101,7 +101,7 @@ void SceneSystem::RemoveComponent(Entity* entity, Component* component)
 {
 }
 
-void SceneSystem::SceneDidLoaded()
+void SceneSystem::OnSceneLoaded()
 {
 }
 

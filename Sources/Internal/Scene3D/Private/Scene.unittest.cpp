@@ -20,7 +20,8 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(MySystem, SceneSystem)
     {
-        ReflectionRegistrator<MySystem>::Begin()
+        ReflectionRegistrator<MySystem>::Begin()[M::SystemTags("MySystem")]
+        .ConstructorByPointer<Scene*>()
         .End();
     }
 };
@@ -45,9 +46,9 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(UTSystem, SceneSystem)
     {
-        ReflectionRegistrator<UTSystem>::Begin()[M::Tags("UTSystem")]
-        .Method("Process", &UTSystem::Process)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::NORMAL, -1337.42f)]
-        .Method("ProcessFixed", &UTSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, -42.1337f)]
+        ReflectionRegistrator<UTSystem>::Begin()[M::SystemTags("UTSystem")]
+        .Method("Process", &UTSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, -1337.42f)]
+        .Method("ProcessFixed", &UTSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, -42.1337f)]
         .ConstructorByPointer<Scene*>()
         .End();
     }
@@ -74,29 +75,25 @@ DAVA_TESTCLASS (SceneTest)
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MySystem);
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UTSystem);
         GetEngineContext()->componentManager->RegisterComponent<MyComponent>();
-        GetEngineContext()->systemManager->RegisterAllDerivedSceneSystemsRecursively();
+
+        GetEngineContext()->systemManager->RegisterSystem<MySystem>();
+        GetEngineContext()->systemManager->RegisterSystem<UTSystem>();
     }
 
     DAVA_TEST (GetSystem)
     {
-        Scene* scene = new Scene();
+        Scene* scene = new Scene("MySystem");
         SCOPE_EXIT
         {
             SafeRelease(scene);
         };
 
-        MySystem* mySystem = new MySystem(scene);
-        SCOPE_EXIT
-        {
-            delete mySystem;
-        };
+        MySystem* mySystem = scene->GetSystem<MySystem>();
 
-        TEST_VERIFY(scene->GetSystem<MySystem>() == nullptr);
+        TEST_VERIFY(mySystem != nullptr);
 
-        scene->AddSystem(mySystem);
-        TEST_VERIFY(scene->GetSystem<MySystem>() == mySystem);
-
-        scene->RemoveSystem(mySystem);
+        scene->RemoveTags("MySystem");
+        scene->Update(0.f);
         TEST_VERIFY(scene->GetSystem<MySystem>() == nullptr);
     }
 
@@ -112,14 +109,7 @@ DAVA_TESTCLASS (SceneTest)
         auto ResetScene = [&]()
         {
             SafeRelease(scene);
-            scene = new Scene({ FastName("UTSystem") });
-            scene->CreateSystemsByTags();
-
-            scene->RemoveTag(FastName("base"));
-            if (scene->HasTag(FastName("physics")))
-            {
-                scene->RemoveTag(FastName("physics"));
-            }
+            scene = new Scene("UTSystem");
 
             utSystem = scene->GetSystem<UTSystem>();
         };

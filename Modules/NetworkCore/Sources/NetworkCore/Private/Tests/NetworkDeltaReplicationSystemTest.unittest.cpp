@@ -18,6 +18,8 @@
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/SingleComponents/NetworkEntitiesSingleComponent.h"
 #include "NetworkCore/Scene3D/Components/NetworkReplicationComponent.h"
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectionRegistrator.h>
 
 using namespace DAVA;
 
@@ -193,6 +195,14 @@ struct DeltaReplicationSystemServerMock : public NetworkDeltaReplicationSystemSe
     UnorderedMap<NetworkID, bool> emptyDiffResults;
     Vector<uint32> entities = {};
     Info info;
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DeltaReplicationSystemServerMock, NetworkDeltaReplicationSystemServer)
+    {
+        ReflectionRegistrator<DeltaReplicationSystemServerMock>::Begin()[M::SystemTags("ndrs_test", "server")]
+        .ConstructorByPointer<Scene*>()
+        .Method("ProcessFixed", &NetworkDeltaReplicationSystemServer::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 12321312.907345f)]
+        .End();
+    }
 };
 
 struct DeltaReplicationSystemClientMock : public NetworkDeltaReplicationSystemClient
@@ -223,13 +233,21 @@ struct DeltaReplicationSystemClientMock : public NetworkDeltaReplicationSystemCl
 
     UnorderedMap<NetworkID, bool> applyDiffResults;
     Info info;
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(DeltaReplicationSystemClientMock, NetworkDeltaReplicationSystemClient)
+    {
+        ReflectionRegistrator<DeltaReplicationSystemServerMock>::Begin()[M::SystemTags("ndrs_test", "client")]
+        .ConstructorByPointer<Scene*>()
+        .Method("ProcessFixed", &NetworkDeltaReplicationSystemClient::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 907345.12321312f)]
+        .End();
+    }
 };
 
 struct CommonContext
 {
     CommonContext()
     {
-        scene = new Scene(0);
+        scene = new Scene();
         netTimeComp = scene->GetSingleComponent<NetworkTimeSingleComponent>();
     }
 
@@ -250,8 +268,9 @@ struct ServerContext : public CommonContext
         auto* netGameModeComp = scene->GetSingleComponent<NetworkGameModeSingleComponent>();
         scene->GetSingleComponent<NetworkServerSingleComponent>()->SetServer(&server);
 
-        system = new DeltaReplicationSystemServerMock(scene);
-        scene->AddSystem(system);
+        scene->AddSystemManually(Type::Instance<DeltaReplicationSystemServerMock>());
+        scene->Update(0.f);
+        system = scene->GetSystem<DeltaReplicationSystemServerMock>();
 
         netGameModeComp->AddNetworkPlayerID(server.responder.GetToken(), server.responder.ID);
         SetEntitiesCount(1);
@@ -302,8 +321,9 @@ struct ClientContext : public CommonContext
     ClientContext()
     {
         scene->GetSingleComponent<NetworkClientSingleComponent>()->SetClient(&client);
-        system = new DeltaReplicationSystemClientMock(scene);
-        scene->AddSystem(system);
+        scene->AddSystemManually(Type::Instance<DeltaReplicationSystemClientMock>());
+        scene->Update(0.f);
+        system = scene->GetSystem<DeltaReplicationSystemClientMock>();
     }
 
     DeltaReplicationSystemClientMock* system;
@@ -322,6 +342,15 @@ void ServerContext::SendTo(ClientContext& clientCtx)
 
 DAVA_TESTCLASS (NetworkDeltaReplicationSystemTest)
 {
+    NetworkDeltaReplicationSystemTest()
+    {
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DeltaReplicationSystemClientMock);
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DeltaReplicationSystemServerMock);
+
+        GetEngineContext()->systemManager->RegisterSystem<DeltaReplicationSystemClientMock>();
+        GetEngineContext()->systemManager->RegisterSystem<DeltaReplicationSystemServerMock>();
+    }
+
     DAVA_TEST (SimplePositiveTest)
     {
         ServerContext serverCtx;

@@ -66,12 +66,6 @@ AABBox3 AABBox3::GetMaxRotationExtentBox(const Vector3& rotationCenter) const
     return AABBox3(rotationCenter, 2.0f * (rotationRadius + GetBoundingSphereRadius()));
 }
 
-template <>
-bool AnyCompare<AABBox3>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)
-{
-    return v1.Get<AABBox3>() == v2.Get<AABBox3>();
-}
-
 namespace Intersection
 {
 bool RayBox(const Ray3& r, const AABBox3& box)

@@ -4,7 +4,6 @@
 #include "TArc/WindowSubSystem/ActionUtils.h"
 #include "TArc/WindowSubSystem/QtAction.h"
 #include "TArc/Controls/ColorPicker/ColorPickerSettings.h"
-#include "TArc/Qt/QtString.h"
 #include "TArc/Qt/QtIcon.h"
 #include "TArc/Utils/ReflectionHelpers.h"
 
@@ -13,6 +12,7 @@
 #include <Functional/Function.h>
 
 #include <QList>
+#include <QString>
 
 namespace DAVA
 {

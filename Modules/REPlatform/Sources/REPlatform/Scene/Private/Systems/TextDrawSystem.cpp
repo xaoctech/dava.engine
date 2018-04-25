@@ -2,6 +2,7 @@
 #include "REPlatform/Scene/Systems/CameraSystem.h"
 
 // framework
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/2D/Systems/RenderSystem2D.h>
 #include <Render/2D/TextBlockGraphicRender.h>
 #include <Render/DynamicBufferAllocator.h>
@@ -13,9 +14,15 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(TextDrawSystem)
+{
+    ReflectionRegistrator<TextDrawSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .End();
+}
+
 TextDrawSystem::TextDrawSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<ParticleEffectComponent>())
-    , cameraSystem(scene->GetSystem<SceneCameraSystem>())
 {
     FilePath fntPath = FilePath("~res:/ResourceEditor/Fonts/DejaVuSans.fnt");
     FilePath texPath = FilePath("~res:/ResourceEditor/Fonts/DejaVuSans.tex");
@@ -50,7 +57,7 @@ void TextDrawSystem::PrepareForRemove()
 
 Vector2 TextDrawSystem::ToPos2d(const Vector3& pos3d) const
 {
-    Vector3 pos2ddepth = cameraSystem->GetScreenPosAndDepth(pos3d);
+    Vector3 pos2ddepth = GetScene()->GetSystem<SceneCameraSystem>()->GetScreenPosAndDepth(pos3d);
     return (pos2ddepth.z >= 0.0f) ? Vector2(pos2ddepth.x, pos2ddepth.y) : Vector2(-1.0f, -1.0f);
 }
 

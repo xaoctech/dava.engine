@@ -28,10 +28,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkRemoteInputSystem)
 {
-    ReflectionRegistrator<NetworkRemoteInputSystem>::Begin()[M::Tags("network", "input")]
+    ReflectionRegistrator<NetworkRemoteInputSystem>::Begin()[M::SystemTags("network", "input")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessClient", &NetworkRemoteInputSystem::ProcessClient)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 19.0f)]
-    .Method("ProcessServer", &NetworkRemoteInputSystem::ProcessServer)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 3.0f)]
+    .Method("ProcessClient", &NetworkRemoteInputSystem::ProcessClient)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 19.0f)]
+    .Method("ProcessServer", &NetworkRemoteInputSystem::ProcessServer)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 3.0f)]
     .End();
 }
 
@@ -158,7 +158,7 @@ uint32 NetworkRemoteInputSystem::GetIncorrectServerFramesNumber() const
 
 void NetworkRemoteInputSystem::TransferInputToComponents()
 {
-    const NetworkTimeSingleComponent* networkTimeSingleComponent = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    const NetworkTimeSingleComponent* networkTimeSingleComponent = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
 
     uint32 currentFrameId = networkTimeSingleComponent->GetFrameId();
 
@@ -201,7 +201,7 @@ void NetworkRemoteInputSystem::TransferInputToComponents()
 
 void NetworkRemoteInputSystem::TransferInputFromComponentsAndCompare()
 {
-    const NetworkTimeSingleComponent* networkTimeSingleComponent = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    const NetworkTimeSingleComponent* networkTimeSingleComponent = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
 
     if (!networkTimeSingleComponent->IsInitialized())
     {

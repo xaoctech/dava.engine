@@ -18,6 +18,7 @@ class StaticOcclusionDebugDrawComponent;
 class NMaterial;
 
 // System that allow to build occlusion information. Required only in editor.
+// --So why it in the engine?
 class StaticOcclusionBuildSystem : public SceneSystem
 {
 public:

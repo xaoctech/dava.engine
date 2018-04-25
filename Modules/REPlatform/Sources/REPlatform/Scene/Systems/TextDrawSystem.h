@@ -10,8 +10,11 @@ namespace DAVA
 {
 class NMaterial;
 class SceneCameraSystem;
+
 class TextDrawSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(TextDrawSystem, SceneSystem);
+
 public:
     enum class Align : uint8
     {
@@ -66,7 +69,6 @@ protected:
     void PushNextBatch(const Color& color);
 
 private:
-    SceneCameraSystem* cameraSystem = nullptr;
     GraphicFont* font = nullptr;
     float32 fontSize = 14.f;
     NMaterial* fontMaterial = nullptr;

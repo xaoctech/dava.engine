@@ -27,10 +27,14 @@ class EditorSlotSystem : public SceneSystem,
                          public EditorSceneSystem,
                          public EntityModificationSystemDelegate
 {
+    DAVA_VIRTUAL_REFLECTION(EditorSlotSystem, SceneSystem);
+
 public:
     static const FastName emptyItemName;
 
-    EditorSlotSystem(Scene* scene, ContextAccessor* accessor);
+    EditorSlotSystem(Scene* scene);
+
+    void SetContextAccessor(ContextAccessor* accessor);
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;

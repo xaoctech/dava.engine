@@ -5,7 +5,6 @@
 #include <TArc/Core/OperationRegistrator.h>
 #include <TArc/Core/OperationInvoker.h>
 #include <TArc/Utils/QtConnections.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>
@@ -14,6 +13,8 @@
 #include <FileSystem/FilePath.h>
 #include <Functional/Signal.h>
 #include <Reflection/ReflectedType.h>
+
+#include <QString>
 
 namespace DAVA
 {

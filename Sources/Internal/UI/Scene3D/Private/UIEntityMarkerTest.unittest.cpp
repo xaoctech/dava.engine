@@ -61,7 +61,7 @@ DAVA_TESTCLASS (UIEntityMarkerTest)
     {
         using namespace DAVA;
 
-        scene.Set(new Scene());
+        scene.Set(new Scene("base"));
 
         RefPtr<Entity> e1 = CreateEntity(FastName("ENTITY_ONE"), Vector3(-1.f, -1.f, -1.f));
         scene->AddNode(e1.Get());

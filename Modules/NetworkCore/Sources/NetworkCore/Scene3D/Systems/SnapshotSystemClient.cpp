@@ -14,9 +14,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SnapshotSystemClient)
 {
-    ReflectionRegistrator<SnapshotSystemClient>::Begin()[M::Tags("client")]
+    ReflectionRegistrator<SnapshotSystemClient>::Begin()[M::SystemTags("client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &SnapshotSystemClient::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 7.0f)]
+    .Method("ProcessFixed", &SnapshotSystemClient::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 7.0f)]
     .End();
 }
 

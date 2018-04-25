@@ -2,73 +2,20 @@
 #include "GameClient.h"
 #include "Game.h"
 
-#include "Systems/GameInputSystem.h"
-#include "Systems/GameModeSystem.h"
-#include "Systems/GameModeSystemCars.h"
-#include "Systems/GameShowSystem.h"
-#include "Systems/MarkerSystem.h"
-#include "Systems/PhysicsProjectileInputSystem.h"
-#include "Systems/PhysicsProjectileSystem.h"
-#include "Systems/PlayerEntitySystem.h"
-#include "Bots/BotSystem.h"
-#include "Bots/BotTaskSystem.h"
-#include "Bots/TankBattleRoyaleBehaviorSystem.h"
-#include "Bots/InvaderBehaviorSystem.h"
-
-#include "Components/GameStunnableComponent.h"
-#include "Components/HealthComponent.h"
-#include "Components/PhysicsProjectileComponent.h"
-#include "Components/ShootComponent.h"
-#include "Components/ShootCooldownComponent.h"
 #include "Components/SingleComponents/GameCollisionSingleComponent.h"
 #include "Components/SingleComponents/BattleOptionsSingleComponent.h"
 
-#include <Debug/DebugOverlay.h>
 #include <Debug/ProfilerCPU.h>
-#include <Debug/ProfilerGPU.h>
-#include <Debug/ProfilerOverlay.h>
-#include <Engine/Engine.h>
-#include <Logger/Logger.h>
-#include <Reflection/ReflectionRegistrator.h>
-#include <Render/2D/Systems/VirtualCoordinatesSystem.h>
-#include <Scene3D/Scene.h>
-#include <Scene3D/Systems/TransformSystem.h>
-#include <UI/Flow/UIFlowContext.h>
-#include <UI/UIControlSystem.h>
 
-#include <NetworkCore/Scene3D/Components/NetworkPlayerComponent.h>
-#include <NetworkCore/Scene3D/Components/NetworkTransformComponent.h>
+#include <Reflection/Reflection.h>
+#include <Reflection/ReflectedObject.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Scene.h>
+
 #include <NetworkCore/Scene3D/Components/NetworkReplicationComponent.h>
 #include <NetworkCore/Scene3D/Components/SingleComponents/NetworkClientSingleComponent.h>
-#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkGameModeSingleComponent.h>
-#include <NetworkCore/Scene3D/Components/SingleComponents/NetworkTimeSingleComponent.h>
-#include <NetworkCore/Scene3D/Systems/NetworkGameModeSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkIdSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkInputSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkTimeSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkTimelineControlSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkRemoteInputSystem.h>
 
-#include <NetworkCore/Scene3D/Systems/NetworkDeltaReplicationSystemClient.h>
-#include <NetworkCore/Scene3D/Systems/NetworkPredictSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkReplicationSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkResimulationSystem.h>
-#include <NetworkCore/Scene3D/Systems/SnapshotSystemClient.h>
-
-#include <NetworkCore/Scene3D/Systems/NetworkDebugPredictDrawSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkDebugDrawSystem.h>
-
-#include <Physics/Core/BoxShapeComponent.h>
-#include <Physics/Core/ConvexHullShapeComponent.h>
-#include <Physics/Core/DynamicBodyComponent.h>
 #include <Physics/PhysicsSystem.h>
-#include <Physics/Vehicles/VehicleCarComponent.h>
-#include <Physics/Vehicles/VehicleChassisComponent.h>
-#include <Physics/Vehicles/VehicleTankComponent.h>
-#include <Physics/Vehicles/VehicleWheelComponent.h>
-
-#include <NetworkCore/Scene3D/Systems/NetworkTransformFromLocalToNetSystem.h>
-#include <NetworkCore/Scene3D/Systems/NetworkTransformFromNetToLocalSystem.h>
 
 DAVA_REFLECTION_IMPL(Battle)
 {
@@ -117,7 +64,7 @@ void Battle::CreateBattleScene()
 {
     using namespace DAVA;
 
-    tags.insert({ FastName("client"), FastName("network"), FastName("marker") });
+    tags.insert({ FastName("base"), FastName("physics"), FastName("client"), FastName("network"), FastName("marker") });
 
     if (optionsSingleComp->options.isDebug)
     {
@@ -169,7 +116,8 @@ void Battle::SetupTestGame()
         }
     }
 
-    battleScene = new Scene(tags);
+    const bool createSystems = false;
+    battleScene = new Scene(tags, createSystems);
     battleScene->AddComponent(new DAVA::NetworkReplicationComponent(NetworkID::SCENE_ID));
 
     ScopedPtr<Camera> camera(new Camera());
@@ -179,7 +127,7 @@ void Battle::SetupTestGame()
     *battleScene->GetSingleComponent<BattleOptionsSingleComponent>() = *optionsSingleComp;
 
     battleScene->GetSingleComponent<NetworkClientSingleComponent>()->SetClient(gameClient->GetUDPClientPtr());
-    battleScene->CreateSystemsByTags();
+    battleScene->CreateDelayedSystems();
 
     if (battleScene->GetSystem<PhysicsSystem>() != nullptr)
     {

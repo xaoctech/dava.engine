@@ -20,9 +20,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SlotSystem)
 {
-    ReflectionRegistrator<SlotSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<SlotSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &SlotSystem::Process)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::NORMAL, 5.0f)]
+    .Method("Process", &SlotSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, 5.0f)]
     .End();
 }
 

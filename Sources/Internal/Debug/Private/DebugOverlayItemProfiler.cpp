@@ -6,6 +6,7 @@
 #include "Debug/ProfilerCPU.h"
 #include "Engine/Engine.h"
 #include "Render/RHI/dbg_Draw.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

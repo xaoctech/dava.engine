@@ -13,6 +13,15 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(HoodSystem)
+{
+    ReflectionRegistrator<HoodSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &HoodSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 9.0f)]
+    .Method("Input", &HoodSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 4.0f)]
+    .End();
+}
+
 class SceneCollisionDebugDrawer final : public btIDebugDraw
 {
 public:
@@ -97,8 +106,6 @@ HoodSystem::HoodSystem(Scene* scene)
     normalHood->colorY = Color(0.3f, 0.7f, 0.3f, 1);
     normalHood->colorZ = Color(0.3f, 0.3f, 0.7f, 1);
     normalHood->colorS = Color(0, 0, 0, 1);
-
-    cameraSystem = scene->GetSystem<DAVA::SceneCameraSystem>();
 }
 
 HoodSystem::~HoodSystem()
@@ -288,6 +295,11 @@ void HoodSystem::ResetModifValues()
 
 void HoodSystem::Process(float32 timeElapsed)
 {
+    if (nullptr == cameraSystem)
+    {
+        cameraSystem = GetScene()->GetSystem<DAVA::SceneCameraSystem>();
+    }
+
     InputLockGuard guard(GetScene(), this);
     if (guard.IsLockAcquired() == false)
     {
@@ -329,7 +341,7 @@ bool HoodSystem::Input(UIEvent* event)
             mouseOverAxis = ST_AXIS_NONE;
 
             // if is visible and not locked check mouse over status
-            if (!lockedModif && NULL != curHood)
+            if (!lockedModif && NULL != curHood && nullptr != cameraSystem)
             {
                 // get intersected items in the line from camera to current mouse position
                 Vector3 traceFrom;

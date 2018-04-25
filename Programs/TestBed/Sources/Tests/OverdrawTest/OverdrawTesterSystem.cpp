@@ -9,8 +9,7 @@
 #include "Base/String.h"
 #include "Entity/ComponentUtils.h"
 #include "Functional/Function.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/Scene.h"
+#include "Reflection/ReflectionRegistrator.h"
 #include "Render/Renderer.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
@@ -18,6 +17,8 @@
 #include "Render/Image/Image.h"
 #include "Render/RHI/rhi_Type.h"
 #include "Render/Texture.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
 #include "Time/SystemTimer.h"
 #include "Utils/StringFormat.h"
 
@@ -56,28 +57,23 @@ const FastName dependentReadKeyword("DEPENDENT_READ_TEST");
 const uint32 accumulatedFramesCount = 20;
 const bool generateTexWithMips = true;
 
-OverdrawTesterSystem::OverdrawTesterSystem(DAVA::Scene* scene, DAVA::PixelFormat textureFormat_, DAVA::uint16 textureResolution_, DAVA::Function<void(DAVA::Array<DAVA::Vector<FrameData>, 6>*)> finishCallback_)
+DAVA_VIRTUAL_REFLECTION_IMPL(OverdrawTesterSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<OverdrawTesterSystem>::Begin()[M::SystemTags("overdraw_test")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &OverdrawTesterSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 1.0f)]
+    .End();
+}
+
+OverdrawTesterSystem::OverdrawTesterSystem(DAVA::Scene* scene)
     : SceneSystem(scene, DAVA::ComponentUtils::MakeMask<OverdrawTesterComponent>())
-    , textureFormat(textureFormat_)
-    , textureResolution(textureResolution_)
-    , finishCallback(finishCallback_)
 {
     overdrawMaterial = new NMaterial();
     overdrawMaterial->SetFXName(materialPath);
     overdrawMaterial->AddFlag(FastName("SAMPLE_COUNT"), 0);
     overdrawMaterial->PreBuildMaterial(DAVA::PASS_FORWARD);
 
-    if (textureFormat == DAVA::FORMAT_A8)
-        overdrawMaterial->AddFlag(FastName("ALPHA8"), 1);
-
-    std::mt19937 rng;
-    rng.seed(std::random_device()());
-    std::uniform_int_distribution<std::mt19937::result_type> dist255(1, 255);
-
-    for (uint32 i = 0; i < maxTexturesCount; i++)
-    {
-        textures.push_back(GenerateTexture(rng, dist255));
-    }
     DAVA::Renderer::GetSignals().needRestoreResources.Connect(this, &OverdrawTesterSystem::Restore);
 }
 
@@ -90,6 +86,25 @@ OverdrawTesterSystem::~OverdrawTesterSystem()
     }
     textures.clear();
     DAVA::Renderer::GetSignals().needRestoreResources.Disconnect(this);
+}
+
+void OverdrawTesterSystem::SetParams(DAVA::PixelFormat textureFormat_, DAVA::uint16 textureResolution_, DAVA::Function<void(DAVA::Array<DAVA::Vector<FrameData>, 6>*)> finishCallback_)
+{
+    textureFormat = textureFormat_;
+    textureResolution = textureResolution_;
+    finishCallback = finishCallback_;
+
+    if (textureFormat == DAVA::FORMAT_A8)
+        overdrawMaterial->AddFlag(FastName("ALPHA8"), 1);
+
+    std::mt19937 rng;
+    rng.seed(std::random_device()());
+    std::uniform_int_distribution<std::mt19937::result_type> dist255(1, 255);
+
+    for (uint32 i = 0; i < maxTexturesCount; i++)
+    {
+        textures.push_back(GenerateTexture(rng, dist255));
+    }
 }
 
 void OverdrawTesterSystem::AddEntity(DAVA::Entity* entity)

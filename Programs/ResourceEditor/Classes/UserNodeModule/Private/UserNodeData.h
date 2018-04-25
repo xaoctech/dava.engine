@@ -20,7 +20,7 @@ private:
     void SetDrawingEnabled(bool enabled);
     bool IsDrawingEnabled() const;
 
-    std::unique_ptr<UserNodeSystem> system;
+    UserNodeSystem* system = nullptr;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(UserNodeData, DAVA::TArcDataNode)
     {

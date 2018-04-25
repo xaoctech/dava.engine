@@ -1,11 +1,12 @@
 #pragma once
 
 #include <TArc/DataProcessing/SettingsNode.h>
-#include <TArc/Qt/QtString.h>
 
 #include <FileSystem/FilePath.h>
 #include <Math/Color.h>
 #include <Reflection/Reflection.h>
+
+#include <QString>
 
 namespace DAVA
 {

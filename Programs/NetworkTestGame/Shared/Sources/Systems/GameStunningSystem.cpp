@@ -18,9 +18,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(GameStunningSystem)
 {
-    ReflectionRegistrator<GameStunningSystem>::Begin()[M::Tags("server")]
+    ReflectionRegistrator<GameStunningSystem>::Begin()[M::SystemTags("server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &GameStunningSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 1.0f)]
+    .Method("ProcessFixed", &GameStunningSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 1.0f)]
     .End();
 }
 

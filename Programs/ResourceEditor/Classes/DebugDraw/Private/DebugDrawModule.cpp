@@ -49,7 +49,7 @@ class DebugDrawData : public DAVA::TArcDataNode
 {
 private:
     friend class DebugDrawModule;
-    std::unique_ptr<DAVA::DebugDrawSystem> debugDrawSystem;
+    DAVA::DebugDrawSystem* debugDrawSystem = nullptr;
 
     DAVA::int32 GetCollisionType() const
     {
@@ -98,11 +98,14 @@ void DebugDrawModule::OnContextCreated(DAVA::DataContext* context)
 {
     DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
     DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
+
     DVASSERT(scene != nullptr);
+    DVASSERT(scene->HasTags("resource_editor"));
+
+    scene->AddTags("debug_draw");
 
     std::unique_ptr<DebugDrawData> debugDrawData = std::make_unique<DebugDrawData>();
-    debugDrawData->debugDrawSystem.reset(new DAVA::DebugDrawSystem(scene));
-    scene->AddSystem(debugDrawData->debugDrawSystem.get());
+    debugDrawData->debugDrawSystem = scene->GetSystem<DAVA::DebugDrawSystem>();
 
     context->CreateData(std::move(debugDrawData));
 }
@@ -112,8 +115,7 @@ void DebugDrawModule::OnContextDeleted(DAVA::DataContext* context)
     DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
     DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
-    DebugDrawData* debugDrawData = context->GetData<DebugDrawData>();
-    scene->RemoveSystem(debugDrawData->debugDrawSystem.get());
+    scene->RemoveTags("debug_draw");
 }
 
 void DebugDrawModule::OnInterfaceRegistered(const DAVA::Type* interfaceType)

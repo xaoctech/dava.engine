@@ -18,9 +18,9 @@ constexpr uint8 DEFAULT_UPDATE_PERIOD = 8u;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SimpleVisibilitySystem)
 {
-    ReflectionRegistrator<SimpleVisibilitySystem>::Begin()[M::Tags("server", "simple_visibility")]
+    ReflectionRegistrator<SimpleVisibilitySystem>::Begin()[M::SystemTags("server", "simple_visibility")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &SimpleVisibilitySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 999.2f)]
+    .Method("ProcessFixed", &SimpleVisibilitySystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 999.2f)]
     .End();
 }
 

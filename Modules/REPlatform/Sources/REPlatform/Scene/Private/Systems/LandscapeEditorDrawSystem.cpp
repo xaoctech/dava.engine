@@ -19,6 +19,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(LandscapeEditorDrawSystem)
+{
+    ReflectionRegistrator<LandscapeEditorDrawSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &LandscapeEditorDrawSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 10.1317f)]
+    .End();
+}
+
 LandscapeEditorDrawSystem::LandscapeEditorDrawSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
@@ -230,7 +238,7 @@ void LandscapeEditorDrawSystem::UpdateBaseLandscapeHeightmap()
 
     baseLandscape->SetHeightmap(h);
 
-    GetScene()->foliageSystem->SyncFoliageWithLandscape();
+    GetScene()->GetSystem<FoliageSystem>()->SyncFoliageWithLandscape();
 }
 
 float32 LandscapeEditorDrawSystem::GetTextureSize(const FastName& level)
@@ -477,7 +485,7 @@ void LandscapeEditorDrawSystem::RemoveEntity(Entity* entity)
 
         if (needRemoveBaseLandscape)
         {
-            sceneEditor->renderUpdateSystem->RemoveEntity(entity);
+            sceneEditor->GetSystem<RenderUpdateSystem>()->RemoveEntity(entity);
         }
 
         DeinitLandscape();
@@ -660,7 +668,7 @@ void LandscapeEditorDrawSystem::ProcessCommand(const RECommandNotificationObject
     });
 
     commandNotification.ForEach<SetFieldValueCommand>([this](const SetFieldValueCommand* cmd) {
-        if (heightmapPath == cmd->GetField().key.Cast<FastName>(FastName("")) && baseLandscape != nullptr)
+        if (heightmapPath == cmd->GetField().key.CastSafely<FastName>(FastName("")) && baseLandscape != nullptr)
         {
             Heightmap* heightmap = baseLandscape->GetHeightmap();
             if ((heightmap != nullptr) && (heightmap->Size() > 0))

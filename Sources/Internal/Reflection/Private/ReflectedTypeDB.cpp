@@ -47,7 +47,7 @@ const ReflectedType* ReflectedTypeDB::GetByPointer(const void* ptr, const Type* 
     DVASSERT(nullptr != derefType);
     DVASSERT(!derefType->IsPointer());
 
-    Type::SeedCastOP seedOP = derefType->GetSeedCastOP();
+    Type::SeedCastOp seedOP = derefType->GetSeedCastOp();
 
     if (nullptr != seedOP)
     {

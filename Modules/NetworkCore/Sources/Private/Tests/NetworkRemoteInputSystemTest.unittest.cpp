@@ -41,7 +41,7 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
         {
             using namespace DAVA;
 
-            scene = new Scene(0);
+            scene = new Scene();
 
             actionsSingleComponent = scene->GetSingleComponent<ActionsSingleComponent>();
 
@@ -57,8 +57,9 @@ DAVA_TESTCLASS (NetworkRemoteInputSystemTest)
 
             networkReplicationSingleComponent = scene->GetSingleComponent<NetworkReplicationSingleComponent>();
 
-            remoteInputSystem = new DAVA::NetworkRemoteInputSystem(scene);
-            scene->AddSystem(remoteInputSystem);
+            scene->AddSystemManually(Type::Instance<DAVA::NetworkRemoteInputSystem>());
+            scene->Update(0.f);
+            remoteInputSystem = scene->GetSystem<DAVA::NetworkRemoteInputSystem>();
 
             entity = new DAVA::Entity();
 

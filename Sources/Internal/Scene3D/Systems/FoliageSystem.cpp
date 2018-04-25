@@ -14,9 +14,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(FoliageSystem)
 {
-    ReflectionRegistrator<FoliageSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<FoliageSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &FoliageSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 12.0f)]
+    .Method("Process", &FoliageSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 12.0f)]
     .End();
 }
 
@@ -105,7 +105,7 @@ void FoliageSystem::Process(float32 timeElapsed)
 
 void FoliageSystem::ProcessVegetationRenderObject(VegetationRenderObject* vegetationRO, float32 timeElapsed)
 {
-    WindSystem* windSystem = GetScene()->windSystem;
+    WindSystem* windSystem = GetScene()->GetSystem<WindSystem>();
 
     Camera* camera = GetScene()->GetRenderSystem()->GetMainCamera();
     Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& visibleCells = vegetationRO->BuildVisibleCellList(camera);

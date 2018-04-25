@@ -15,10 +15,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTimelineControlSystem)
 {
-    ReflectionRegistrator<NetworkTimelineControlSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkTimelineControlSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &NetworkTimelineControlSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 18.0f)]
-    .Method("ProcessFixed", &NetworkTimelineControlSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 2.0f)]
+    .Method("Process", &NetworkTimelineControlSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 18.0f)]
+    .Method("ProcessFixed", &NetworkTimelineControlSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 2.0f)]
     .End();
 }
 

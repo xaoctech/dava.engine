@@ -39,10 +39,10 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystem)
 {
-    ReflectionRegistrator<GameModeSystem>::Begin()[M::Tags("gm_tanks")]
+    ReflectionRegistrator<GameModeSystem>::Begin()[M::SystemTags("gm_tanks")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &GameModeSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 5.0f)]
-    .Method("ProcessFixed", &GameModeSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 0.1f)]
+    .Method("Process", &GameModeSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 5.0f)]
+    .Method("ProcessFixed", &GameModeSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 0.1f)]
     .End();
 }
 

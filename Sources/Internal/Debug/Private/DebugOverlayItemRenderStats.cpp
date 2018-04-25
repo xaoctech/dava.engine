@@ -4,6 +4,7 @@
 #include "Engine/Engine.h"
 #include "Render/Renderer.h"
 #include "Render/VisibilityQueryResults.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

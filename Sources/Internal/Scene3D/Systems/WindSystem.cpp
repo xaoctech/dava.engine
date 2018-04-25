@@ -21,9 +21,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(WindSystem)
 {
-    ReflectionRegistrator<WindSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<WindSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &WindSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 14.0f)]
+    .Method("Process", &WindSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 14.0f)]
     .End();
 }
 

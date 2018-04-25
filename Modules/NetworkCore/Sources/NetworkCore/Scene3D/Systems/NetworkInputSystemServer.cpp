@@ -24,9 +24,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSystem)
 {
-    ReflectionRegistrator<NetworkInputSystem>::Begin()[M::Tags("network", "input")]
+    ReflectionRegistrator<NetworkInputSystem>::Begin()[M::SystemTags("network", "input")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 18.0f)]
+    .Method("ProcessFixed", &NetworkInputSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 18.0f)]
     .End();
 }
 
@@ -39,7 +39,7 @@ NetworkInputSystem::NetworkInputSystem(Scene* scene)
 
 void NetworkInputSystem::AddEntity(Entity* entity)
 {
-    const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
     entitiesToBuffers.emplace(entity, NetworkInputBuffer(NetworkInputComponent::MAX_HISTORY_SIZE, netTimeComp->GetFrameId()));
 }
 
@@ -64,7 +64,7 @@ void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
 
     ProcessReceivedInputData();
 
-    const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
     for (auto& entityToBuffer : entitiesToBuffers)
     {
         Entity* entity = entityToBuffer.first;
@@ -102,6 +102,8 @@ void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
                     }
                 }
             }
+
+            const size_t analogActionsSize = actions.analogActions.size();
 
             AddActionsForClient(this, entity, std::move(actions));
         }

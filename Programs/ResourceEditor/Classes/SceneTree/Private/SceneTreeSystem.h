@@ -15,6 +15,8 @@ class RECommandNotificationObject;
 
 class SceneTreeSystem : public DAVA::SceneSystem, public DAVA::EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(SceneTreeSystem, DAVA::SceneSystem);
+
 public:
     SceneTreeSystem(DAVA::Scene* scene);
 

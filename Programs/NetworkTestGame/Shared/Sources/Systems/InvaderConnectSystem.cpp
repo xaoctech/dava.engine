@@ -29,10 +29,10 @@
 
 DAVA_VIRTUAL_REFLECTION_IMPL(InvaderConnectSystem)
 {
-    ReflectionRegistrator<InvaderConnectSystem>::Begin()[M::Tags("gm_invaders", "server")]
+    ReflectionRegistrator<InvaderConnectSystem>::Begin()[M::SystemTags("gm_invaders", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &InvaderConnectSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 7.0f)]
-    .Method("ProcessFixed", &InvaderConnectSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 0.3f)]
+    .Method("Process", &InvaderConnectSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 7.0f)]
+    .Method("ProcessFixed", &InvaderConnectSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 0.3f)]
     .End();
 }
 

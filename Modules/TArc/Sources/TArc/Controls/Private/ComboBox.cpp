@@ -138,7 +138,7 @@ void ComboBox::CreateItems(const Reflection& fieldValue, const Reflection& field
             QVariant dataValue;
             dataValue.setValue(field.key);
 
-            addItem(fieldDescr.Cast<QIcon>(QIcon()), fieldDescr.Cast<String>().c_str(), dataValue);
+            addItem(fieldDescr.CastSafely<QIcon>(QIcon()), fieldDescr.Cast<String>().c_str(), dataValue);
         }
     }
 }
@@ -156,10 +156,17 @@ int ComboBox::SelectCurrentItem(const Reflection& fieldValue, const Reflection& 
             {
                 return i;
             }
-            else if (iAny.CanCast<int>() && value.CanCast<int>() &&
-                     iAny.Cast<int>() == value.Cast<int>())
+            else
             {
-                return i;
+                const Type* type1 = iAny.GetType();
+                const Type* type2 = value.GetType();
+
+                if (type1 != nullptr && type2 != nullptr
+                    && type1->IsIntegral() == true && type2->IsIntegral() == true
+                    && iAny.Cast<int>() == value.Cast<int>())
+                {
+                    return i;
+                }
             }
         }
     }

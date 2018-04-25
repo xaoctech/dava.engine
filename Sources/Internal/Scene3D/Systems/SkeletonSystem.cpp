@@ -20,9 +20,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SkeletonSystem)
 {
-    ReflectionRegistrator<SkeletonSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<SkeletonSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &SkeletonSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 1.2f)]
+    .Method("ProcessFixed", &SkeletonSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 1.2f)]
     .End();
 }
 

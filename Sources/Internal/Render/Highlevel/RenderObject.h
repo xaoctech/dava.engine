@@ -502,9 +502,4 @@ inline uint32 RenderObject::GetVisibilityStructureNodeCount() const
 {
     return inVisibilityNodeCount;
 }
-
-template <>
-bool AnyCompare<RenderBatchWithOptions>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2);
-
-extern template struct AnyCompare<RenderBatchWithOptions>;
 }

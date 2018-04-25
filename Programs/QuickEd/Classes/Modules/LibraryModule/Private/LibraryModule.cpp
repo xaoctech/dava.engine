@@ -129,7 +129,7 @@ void LibraryModule::CreateActions()
         fieldDescr.type = ReflectedTypeDB::Get<ProjectData>();
         fieldDescr.fieldName = FastName(ProjectData::projectPathPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-            return fieldValue.Cast<FilePath>(FilePath()).IsEmpty() == false;
+            return fieldValue.CastSafely<FilePath>(FilePath()).IsEmpty() == false;
         });
         libraryWidgetTreeView->addAction(action);
         GetUI()->AddAction(DAVA::mainWindowKey, ActionPlacementInfo(CreateInvisiblePoint()), action);
@@ -159,7 +159,7 @@ void LibraryModule::OnProjectPathChanged(const DAVA::Any& projectPath)
 
     Vector<RefPtr<PackageNode>> libraryPackages;
 
-    if (projectPath.Cast<FilePath>(FilePath()).IsEmpty() == false)
+    if (projectPath.CastSafely<FilePath>(FilePath()).IsEmpty() == false)
     {
         const DataContext* globalContext = GetAccessor()->GetGlobalContext();
         ProjectData* projectData = globalContext->GetData<ProjectData>();
@@ -298,7 +298,7 @@ void LibraryModule::AddProjectPinnedControls(const ProjectData* projectData, con
                 actionInfo.placement.AddPlacementPoint(CreateMenuPoint("Controls", insertionParams));
                 actionInfo.placement.AddPlacementPoint(CreateToolbarPoint(LibraryModuleDetails::controlsToolbarName, insertionParams));
                 actionInfo.action->SetStateUpdationFunction(QtAction::Enabled, packageField, [](const Any& fieldValue) -> Any {
-                    PackageNode* package = fieldValue.Cast<PackageNode*>(nullptr);
+                    PackageNode* package = fieldValue.CastSafely<PackageNode*>(nullptr);
                     return (package != nullptr);
                 });
                 connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, controlNode, false));
@@ -391,7 +391,7 @@ void LibraryModule::AddProjectLibraryControls(const ProjectData* projectData, co
                     actionInfo.placement.AddPlacementPoint(pinnedToolbarMenuPoint);
                 }
                 actionInfo.action->SetStateUpdationFunction(QtAction::Enabled, packageField, [](const Any& fieldValue) -> Any {
-                    PackageNode* package = fieldValue.Cast<PackageNode*>(nullptr);
+                    PackageNode* package = fieldValue.CastSafely<PackageNode*>(nullptr);
                     return (package != nullptr);
                 });
                 connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, node, false));
@@ -432,7 +432,7 @@ void LibraryModule::AddDefaultControls()
         actionInfo.placement.AddPlacementPoint(menuPoint);
         actionInfo.placement.AddPlacementPoint(toolbarMenuPoint);
         actionInfo.action->SetStateUpdationFunction(QtAction::Enabled, packageField, [](const Any& fieldValue) -> Any {
-            PackageNode* package = fieldValue.Cast<PackageNode*>(nullptr);
+            PackageNode* package = fieldValue.CastSafely<PackageNode*>(nullptr);
             return (package != nullptr);
         });
         connections.AddConnection(actionInfo.action, &QAction::triggered, DAVA::Bind(&LibraryModule::OnControlCreateTriggered, this, control.Get(), false));

@@ -15,10 +15,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkMotionSystem)
 {
-    ReflectionRegistrator<NetworkMotionSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkMotionSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixedBeginFrame", &NetworkMotionSystem::ProcessFixedBeginFrame)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 20.0f)]
-    .Method("ProcessFixedEndFrame", &NetworkMotionSystem::ProcessFixedEndFrame)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 6.0f)]
+    .Method("ProcessFixedBeginFrame", &NetworkMotionSystem::ProcessFixedBeginFrame)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 20.0f)]
+    .Method("ProcessFixedEndFrame", &NetworkMotionSystem::ProcessFixedEndFrame)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 6.0f)]
     .End();
 }
 

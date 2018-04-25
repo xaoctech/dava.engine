@@ -3,11 +3,13 @@
 #include "OverdrawTestConfig.h"
 #include "OverdrawTesterComponent.h"
 
+#include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/Systems/RenderSystem2D.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/RHI/dbg_Draw.h"
 #include "Render/Renderer.h"
 #include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
 #include "UI/UIControlSystem.h"
 #include "Engine/Engine.h"
 
@@ -57,9 +59,17 @@ const Array<Color, modsCount> ChartPainterSystem::chartColors =
 { 1.0f, 0.0f, 0.0f, 1.0f }
 } };
 
-ChartPainterSystem::ChartPainterSystem(Scene* scene, float32 maxFrametime_)
+DAVA_VIRTUAL_REFLECTION_IMPL(ChartPainterSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<ChartPainterSystem>::Begin()[M::SystemTags("overdraw_test")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &ChartPainterSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 2.0f)]
+    .End();
+}
+
+ChartPainterSystem::ChartPainterSystem(Scene* scene)
     : SceneSystem(scene, DAVA::ComponentUtils::MakeMask<OverdrawTesterComponent>())
-    , maxFrametime(maxFrametime_)
     , textColor(rhi::NativeColorRGBA(1.0f, 1.0f, 1.0f, 1.0f))
 {
     passConfig.colorBuffer[0].loadAction = rhi::LOADACTION_LOAD;

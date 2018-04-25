@@ -75,7 +75,7 @@ void GroupingControlsModule::PostInit()
         action->setShortcut(QKeySequence("Ctrl+G"));
         action->SetStateUpdationFunction(QtAction::Enabled, selectionField, [&](const Any& fieldValue) -> Any
                                          {
-                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).empty() == false);
+                                             return (fieldValue.CastSafely<SelectedNodes>(SelectedNodes()).empty() == false);
                                          });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &GroupingControlsModule::DoGroup));
@@ -93,7 +93,7 @@ void GroupingControlsModule::PostInit()
         action->setShortcut(QKeySequence("Ctrl+Shift+G"));
         action->SetStateUpdationFunction(QtAction::Enabled, selectionField, [&](const Any& fieldValue) -> Any
                                          {
-                                             return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).size() == 1);
+                                             return (fieldValue.CastSafely<SelectedNodes>(SelectedNodes()).size() == 1);
                                          });
 
         connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &GroupingControlsModule::DoUngroup));

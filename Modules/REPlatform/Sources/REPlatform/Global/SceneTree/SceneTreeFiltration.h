@@ -2,10 +2,10 @@
 
 #include "REPlatform/DataNodes/Selectable.h"
 
-#include <TArc/Qt/QtString.h>
-
 #include <Functional/Signal.h>
 #include <Reflection/Reflection.h>
+
+#include <QString>
 
 namespace DAVA
 {

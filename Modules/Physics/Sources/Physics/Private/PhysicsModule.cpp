@@ -61,7 +61,7 @@ physx::PxPvd* CreatePvd(physx::PxFoundation* foundation)
     DVASSERT(params.argsType[0] == Type::Instance<physx::PxFoundation*>());
 #endif
 
-    return fn.Invoke(foundation).Cast<physx::PxPvd*>(nullptr);
+    return fn.Invoke(foundation).CastSafely<physx::PxPvd*>(nullptr);
 }
 
 void ReleasePvd()

@@ -27,8 +27,8 @@ Any BoolComponentValue::GetMultipleValue() const
 
 bool BoolComponentValue::IsValidValueToSet(const Any& newValue, const Any& currentValue) const
 {
-    Qt::CheckState newCheckedState = newValue.Cast<Qt::CheckState>(Qt::PartiallyChecked);
-    Qt::CheckState currentCheckedState = currentValue.Cast<Qt::CheckState>(Qt::PartiallyChecked);
+    Qt::CheckState newCheckedState = newValue.CastSafely<Qt::CheckState>(Qt::PartiallyChecked);
+    Qt::CheckState currentCheckedState = currentValue.CastSafely<Qt::CheckState>(Qt::PartiallyChecked);
     return newCheckedState != Qt::PartiallyChecked && newCheckedState != currentCheckedState;
 }
 

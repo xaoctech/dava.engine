@@ -20,7 +20,7 @@ void SkeletonAnimationTest::LoadResources()
     Rect screenRect = Rect(0.f, 0.f, float32(screenSize.dx), float32(screenSize.dy));
     SetRect(screenRect);
 
-    scene = new Scene();
+    scene = new Scene("base");
     scene->LoadScene("~res:/TestBed/3d/animations/MotusMan/MotusMan_Run.sc2");
 
     ScopedPtr<Camera> camera(new Camera());

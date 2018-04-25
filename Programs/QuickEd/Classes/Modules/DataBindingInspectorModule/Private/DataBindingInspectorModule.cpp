@@ -146,7 +146,7 @@ void DataBindingInspectorModule::OnSelectionChanged(const DAVA::Any& selectionVa
     DataBindingInspectorData* data = GetAccessor()->GetGlobalContext()->GetData<DataBindingInspectorData>();
     data->currentControl = nullptr;
 
-    SelectedNodes selection = selectionValue.Cast<SelectedNodes>(SelectedNodes());
+    SelectedNodes selection = selectionValue.CastSafely<SelectedNodes>(SelectedNodes());
     for (const PackageBaseNode* node : selection)
     {
         const ControlNode* controlNode = dynamic_cast<const ControlNode*>(node);

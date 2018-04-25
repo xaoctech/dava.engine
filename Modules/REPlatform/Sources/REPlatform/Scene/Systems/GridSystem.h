@@ -8,6 +8,8 @@ namespace DAVA
 {
 class SceneGridSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(SceneGridSystem, SceneSystem);
+
 public:
     SceneGridSystem(Scene* scene);
 

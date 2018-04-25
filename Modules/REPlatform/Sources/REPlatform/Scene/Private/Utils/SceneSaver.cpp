@@ -60,7 +60,7 @@ void SceneSaver::SaveFile(const String& fileName)
     FilePath filePath = sceneUtils.dataSourceFolder + fileName;
 
     //Load scene with *.sc2
-    Scene* scene = new Scene();
+    Scene* scene = new Scene("base");
     if (SceneFileV2::ERROR_NO_ERROR == scene->LoadScene(filePath))
     {
         SaveScene(scene, filePath);
@@ -310,7 +310,7 @@ void SceneSaver::CopySlots(Entity* node, Set<FilePath>& externalScenes)
     {
         sceneUtils.AddFile(configPath);
 
-        Vector<SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(configPath);
+        Vector<SlotSystem::ItemsCache::Item> items = scene->GetSystem<SlotSystem>()->GetItems(configPath);
         for (const SlotSystem::ItemsCache::Item& item : items)
         {
             if (savedExternalScenes.count(item.scenePath) == 0)

@@ -45,7 +45,7 @@ public:
 
     Reflection GetField(const ReflectedObject& obj, const ValueWrapper* vw, const Any& key) const override
     {
-        if (key.CanCast<size_t>())
+        if (key.GetType()->IsIntegral())
         {
             size_t i = key.Cast<size_t>();
             return GetField(obj, vw, i).ref;
@@ -169,7 +169,7 @@ public:
             return false;
         }
 
-        if (!beforeKey.CanCast<size_t>())
+        if (!beforeKey.GetType()->IsIntegral())
         {
             return false;
         }
@@ -190,7 +190,7 @@ public:
             return false;
         }
 
-        if (!key.CanCast<size_t>())
+        if (!key.GetType()->IsIntegral())
         {
             return false;
         }

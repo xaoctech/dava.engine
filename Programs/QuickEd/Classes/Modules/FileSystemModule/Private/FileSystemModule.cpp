@@ -63,10 +63,10 @@ void FileSystemModule::CreateActions()
         fieldDescr.type = ReflectedTypeDB::Get<ProjectData>();
         fieldDescr.fieldName = FastName(ProjectData::projectPathPropertyName);
         action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-            return fieldValue.Cast<FilePath>(FilePath()).IsEmpty() == false;
+            return fieldValue.CastSafely<FilePath>(FilePath()).IsEmpty() == false;
         });
         action->SetStateUpdationFunction(QtAction::Visible, fieldDescr, [](const Any& fieldValue) -> Any {
-            return fieldValue.Cast<FilePath>(FilePath()).IsEmpty() == false;
+            return fieldValue.CastSafely<FilePath>(FilePath()).IsEmpty() == false;
         });
         treeView->addAction(action);
         GetUI()->AddAction(DAVA::mainWindowKey, ActionPlacementInfo(CreateInvisiblePoint()), action);

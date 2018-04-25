@@ -21,6 +21,8 @@
 
 namespace DAVA
 {
+const FastName TestCharacterControllerModule::systemsTag = FastName("test_character_controller");
+
 DAVA_VIRTUAL_REFLECTION_IMPL(TestCharacterControllerModule)
 {
     ReflectionRegistrator<TestCharacterControllerModule>::Begin()
@@ -68,33 +70,69 @@ void TestCharacterControllerModule::CheckCharacterResources()
     }
 }
 
-bool TestCharacterControllerModule::AddSceneSystems(DAVA::Scene* scene)
+bool TestCharacterControllerModule::AddSceneSystems(Scene* scene)
 {
     CheckCharacterResources();
 
     if (testCharacterEntity == nullptr)
+    {
         return false;
+    }
 
     if (activeControllers.count(scene) != 0)
+    {
         return false;
+    }
 
     SceneContext& context = activeControllers[scene];
 
-    context.characterControllerSystem = new TestCharacterControllerSystem(scene);
-    scene->AddSystem(context.characterControllerSystem, scene->motionSystem);
-
+    if (!scene->GetTags().empty())
+    {
+        DVASSERT(!scene->HasTags(systemsTag));
+        scene->AddTags(systemsTag);
+    }
+    else
+    {
+        scene->AddSystemManually(Type::Instance<TestCharacterControllerSystem>());
+        scene->AddSystemManually(Type::Instance<TestCharacterWeaponSystem>());
+        scene->AddSystemManually(Type::Instance<TestCharacterCameraSystem>());
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    context.characterMoveSystem = new TestCharacterMoveSystem(scene);
-    scene->AddSystem(context.characterMoveSystem, scene->physicsSystem);
+        scene->AddSystemManually(Type::Instance<TestCharacterMoveSystem>());
 #endif
+    }
 
-    context.characterWeaponSystem = new TestCharacterWeaponSystem(scene);
-    scene->AddSystem(context.characterWeaponSystem, scene->transformSystem);
-
-    context.characterCameraSystem = new TestCharacterCameraSystem(scene);
-    scene->AddSystem(context.characterCameraSystem, scene->renderUpdateSystem);
+    context.characterControllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+    context.characterMoveSystem = scene->GetSystem<TestCharacterMoveSystem>();
+#endif
+    context.characterWeaponSystem = scene->GetSystem<TestCharacterWeaponSystem>();
+    context.characterCameraSystem = scene->GetSystem<TestCharacterCameraSystem>();
 
     return true;
+}
+
+void TestCharacterControllerModule::RemoveSceneSystems(Scene* scene)
+{
+    if (scene->HasTags(systemsTag))
+    {
+        scene->RemoveTags(systemsTag);
+    }
+    else
+    {
+        scene->RemoveSystemManually(Type::Instance<TestCharacterControllerSystem>());
+        scene->RemoveSystemManually(Type::Instance<TestCharacterWeaponSystem>());
+        scene->RemoveSystemManually(Type::Instance<TestCharacterCameraSystem>());
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+        scene->RemoveSystemManually(Type::Instance<TestCharacterMoveSystem>());
+#endif
+    }
+
+    SceneContext& context = activeControllers[scene];
+
+    context.characterControllerSystem = nullptr;
+    context.characterMoveSystem = nullptr;
+    context.characterWeaponSystem = nullptr;
+    context.characterCameraSystem = nullptr;
 }
 
 void TestCharacterControllerModule::Shutdown()
@@ -102,12 +140,14 @@ void TestCharacterControllerModule::Shutdown()
     SafeRelease(testCharacterEntity);
 }
 
-bool TestCharacterControllerModule::EnableController(DAVA::Scene* scene, const Vector3& spawnPoint)
+bool TestCharacterControllerModule::EnableController(Scene* scene, const Vector3& spawnPoint)
 {
     AddSceneSystems(scene);
 
     if (testCharacterEntity == nullptr)
+    {
         return false;
+    }
 
     SceneContext& context = activeControllers[scene];
 
@@ -121,28 +161,18 @@ bool TestCharacterControllerModule::EnableController(DAVA::Scene* scene, const V
     return true;
 }
 
-bool TestCharacterControllerModule::DisableController(DAVA::Scene* scene)
+bool TestCharacterControllerModule::DisableController(Scene* scene)
 {
     if (activeControllers.count(scene) == 0)
+    {
         return false;
+    }
 
     SceneContext& context = activeControllers[scene];
 
     context.characterControllerSystem->SetCharacterEntity(nullptr);
 
-    scene->RemoveSystem(context.characterControllerSystem);
-    SafeDelete(context.characterControllerSystem);
-
-#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
-    scene->RemoveSystem(context.characterMoveSystem);
-    SafeDelete(context.characterMoveSystem);
-#endif
-
-    scene->RemoveSystem(context.characterWeaponSystem);
-    SafeDelete(context.characterWeaponSystem);
-
-    scene->RemoveSystem(context.characterCameraSystem);
-    SafeDelete(context.characterCameraSystem);
+    RemoveSceneSystems(scene);
 
     if (context.characterEntity != nullptr)
     {
@@ -155,13 +185,16 @@ bool TestCharacterControllerModule::DisableController(DAVA::Scene* scene)
     return true;
 }
 
-TestCharacterControllerSystem* TestCharacterControllerModule::GetCharacterControllerSystem(DAVA::Scene* scene) const
+TestCharacterControllerSystem* TestCharacterControllerModule::GetCharacterControllerSystem(Scene* scene) const
 {
     auto found = activeControllers.find(scene);
+
     if (found != activeControllers.end())
+    {
         return found->second.characterControllerSystem;
-    else
-        return nullptr;
+    }
+
+    return nullptr;
 }
 
-}; //ns
+} // namespace DAVA

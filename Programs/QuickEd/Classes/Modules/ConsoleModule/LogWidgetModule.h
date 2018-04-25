@@ -2,7 +2,8 @@
 
 #include <TArc/Core/ClientModule.h>
 #include <TArc/Utils/QtConnections.h>
-#include <TArc/Qt/QtByteArray.h>
+
+#include <QByteArray>
 
 class LogWidget;
 class LoggerOutputObject;

@@ -2,14 +2,15 @@
 
 #include "Debug/Private/DebugOverlayItemLogger.h"
 
-#include "Engine/Engine.h"
-#include "Engine/EngineSettings.h"
 #include "Concurrency/LockGuard.h"
 #include "Concurrency/Mutex.h"
 #include "Debug/DebugOverlay.h"
 #include "Debug/Private/RingArray.h"
 #include "Debug/Private/ImGui.h"
+#include "Engine/Engine.h"
+#include "Engine/EngineSettings.h"
 #include "Logger/Logger.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

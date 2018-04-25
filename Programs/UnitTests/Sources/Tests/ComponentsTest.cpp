@@ -16,10 +16,10 @@
 
 using namespace DAVA;
 
-class SingleComponentSystem : public SceneSystem
+class BaseSingleComponentSystem : public SceneSystem
 {
 public:
-    SingleComponentSystem(Scene* scene, const ComponentMask& requiredComponents);
+    BaseSingleComponentSystem(Scene* scene, const ComponentMask& requiredComponents);
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
@@ -33,12 +33,44 @@ public:
 
     Vector<Component*> components;
     Vector<Entity*> entities;
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(BaseSingleComponentSystem, SceneSystem)
+    {
+        ReflectionRegistrator<BaseSingleComponentSystem>::Begin()
+        .End();
+    }
+};
+
+class SingleComponentSystem : public BaseSingleComponentSystem
+{
+public:
+    SingleComponentSystem(Scene* scene);
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SingleComponentSystem, SceneSystem)
+    {
+        ReflectionRegistrator<SingleComponentSystem>::Begin()[M::SystemTags("ComponentsTest")]
+        .ConstructorByPointer<Scene*>()
+        .End();
+    }
+};
+
+class SingleComponentSystem2 : public BaseSingleComponentSystem
+{
+public:
+    SingleComponentSystem2(Scene* scene);
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(SingleComponentSystem2, SceneSystem)
+    {
+        ReflectionRegistrator<SingleComponentSystem2>::Begin()[M::SystemTags("ComponentsTest")]
+        .ConstructorByPointer<Scene*>()
+        .End();
+    }
 };
 
 class MultiComponentSystem : public SceneSystem
 {
 public:
-    MultiComponentSystem(Scene* scene, const ComponentMask& requiredComponents);
+    MultiComponentSystem(Scene* scene);
 
     void AddEntity(Entity* entity) override;
     void RemoveEntity(Entity* entity) override;
@@ -54,6 +86,13 @@ public:
 
     Map<const Type*, Vector<Component*>> components;
     Vector<Entity*> entities;
+
+    DAVA_VIRTUAL_REFLECTION_IN_PLACE(MultiComponentSystem, SceneSystem)
+    {
+        ReflectionRegistrator<MultiComponentSystem>::Begin()[M::SystemTags("ComponentsTest")]
+        .ConstructorByPointer<Scene*>()
+        .End();
+    }
 };
 
 template <class T>
@@ -72,12 +111,22 @@ void RemovePointerFromVector(DAVA::Vector<T*>& elements, const T* element)
     DVASSERT(0);
 }
 
-SingleComponentSystem::SingleComponentSystem(Scene* scene, const ComponentMask& requiredComponents)
+BaseSingleComponentSystem::BaseSingleComponentSystem(Scene* scene, const ComponentMask& requiredComponents)
     : SceneSystem(scene, requiredComponents)
 {
 }
 
-void SingleComponentSystem::AddEntity(Entity* entity)
+SingleComponentSystem::SingleComponentSystem(Scene* scene)
+    : BaseSingleComponentSystem(scene, ComponentUtils::MakeMask<LightComponent>())
+{
+}
+
+SingleComponentSystem2::SingleComponentSystem2(Scene* scene)
+    : BaseSingleComponentSystem(scene, ComponentUtils::MakeMask<ActionComponent>())
+{
+}
+
+void BaseSingleComponentSystem::AddEntity(Entity* entity)
 {
     entities.push_back(entity);
 
@@ -97,7 +146,7 @@ void SingleComponentSystem::AddEntity(Entity* entity)
     }
 }
 
-void SingleComponentSystem::RemoveEntity(Entity* entity)
+void BaseSingleComponentSystem::RemoveEntity(Entity* entity)
 {
     ComponentManager* cm = GetEngineContext()->componentManager;
     const Vector<const Type*>& registeredComponentsTypes = cm->GetRegisteredSceneComponents();
@@ -117,35 +166,35 @@ void SingleComponentSystem::RemoveEntity(Entity* entity)
     RemovePointerFromVector(entities, entity);
 }
 
-void SingleComponentSystem::AddComponent(Entity* entity, Component* component)
+void BaseSingleComponentSystem::AddComponent(Entity* entity, Component* component)
 {
     components.push_back(component);
 }
 
-void SingleComponentSystem::RemoveComponent(Entity* entity, Component* component)
+void BaseSingleComponentSystem::RemoveComponent(Entity* entity, Component* component)
 {
     RemovePointerFromVector(components, component);
 }
 
-void SingleComponentSystem::PrepareForRemove()
+void BaseSingleComponentSystem::PrepareForRemove()
 {
     entities.clear();
     components.clear();
 }
 
-uint32 SingleComponentSystem::GetEnititesCount() const
+uint32 BaseSingleComponentSystem::GetEnititesCount() const
 {
     return static_cast<uint32>(entities.size());
 }
 
-uint32 SingleComponentSystem::GetComponentsCount() const
+uint32 BaseSingleComponentSystem::GetComponentsCount() const
 {
     return static_cast<uint32>(components.size());
 }
 
 //=============================================
-MultiComponentSystem::MultiComponentSystem(Scene* scene, const ComponentMask& requiredComponents)
-    : SceneSystem(scene, requiredComponents)
+MultiComponentSystem::MultiComponentSystem(Scene* scene)
+    : SceneSystem(scene, ComponentUtils::MakeMask<LightComponent, ActionComponent>())
 {
 }
 
@@ -244,6 +293,19 @@ FAKE_COMPONENT(Component10);
 
 DAVA_TESTCLASS (ComponentsTest)
 {
+    ComponentsTest()
+    {
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BaseSingleComponentSystem);
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SingleComponentSystem);
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SingleComponentSystem2);
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(MultiComponentSystem);
+
+        for (const Type* systemType : { Type::Instance<SingleComponentSystem>(), Type::Instance<SingleComponentSystem2>(), Type::Instance<MultiComponentSystem>() })
+        {
+            GetEngineContext()->systemManager->RegisterSystem(systemType);
+        }
+    }
+
     DAVA_TEST (SortedComponentIdTest)
     {
         FAKE_COMPONENT_REG(Component1, "a");
@@ -422,10 +484,12 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
 
-        SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene, ComponentUtils::MakeMask<LightComponent>());
-        SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene, ComponentUtils::MakeMask<ActionComponent>());
-        scene->AddSystem(testSystemLight);
-        scene->AddSystem(testSystemAction);
+        scene->AddSystemManually(Type::Instance<SingleComponentSystem>());
+        scene->AddSystemManually(Type::Instance<SingleComponentSystem2>());
+        scene->Update(0.f);
+
+        SingleComponentSystem* testSystemLight = scene->GetSystem<SingleComponentSystem>();
+        SingleComponentSystem2* testSystemAction = scene->GetSystem<SingleComponentSystem2>();
 
         Entity* e1 = new Entity();
         e1->AddComponent(new LightComponent());
@@ -458,10 +522,12 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
 
-        SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene, ComponentUtils::MakeMask<LightComponent>());
-        SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene, ComponentUtils::MakeMask<ActionComponent>());
-        scene->AddSystem(testSystemLight);
-        scene->AddSystem(testSystemAction);
+        scene->AddSystemManually(Type::Instance<SingleComponentSystem>());
+        scene->AddSystemManually(Type::Instance<SingleComponentSystem2>());
+        scene->Update(0.f);
+
+        SingleComponentSystem* testSystemLight = scene->GetSystem<SingleComponentSystem>();
+        SingleComponentSystem2* testSystemAction = scene->GetSystem<SingleComponentSystem2>();
 
         Entity* e1 = new Entity();
         scene->AddNode(e1);
@@ -518,10 +584,12 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
 
-        SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene, ComponentUtils::MakeMask<LightComponent>());
-        SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene, ComponentUtils::MakeMask<ActionComponent>());
-        scene->AddSystem(testSystemLight);
-        scene->AddSystem(testSystemAction);
+        scene->AddSystemManually(Type::Instance<SingleComponentSystem>());
+        scene->AddSystemManually(Type::Instance<SingleComponentSystem2>());
+        scene->Update(0.f);
+
+        SingleComponentSystem* testSystemLight = scene->GetSystem<SingleComponentSystem>();
+        SingleComponentSystem2* testSystemAction = scene->GetSystem<SingleComponentSystem2>();
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -561,10 +629,12 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
 
-        SingleComponentSystem* testSystemLight = new SingleComponentSystem(scene, ComponentUtils::MakeMask<LightComponent>());
-        SingleComponentSystem* testSystemAction = new SingleComponentSystem(scene, ComponentUtils::MakeMask<ActionComponent>());
-        scene->AddSystem(testSystemLight);
-        scene->AddSystem(testSystemAction);
+        scene->AddSystemManually(Type::Instance<SingleComponentSystem>());
+        scene->AddSystemManually(Type::Instance<SingleComponentSystem2>());
+        scene->Update(0.f);
+
+        SingleComponentSystem* testSystemLight = scene->GetSystem<SingleComponentSystem>();
+        SingleComponentSystem2* testSystemAction = scene->GetSystem<SingleComponentSystem2>();
 
         Entity* e1 = new Entity();
         e1->AddComponent(new ActionComponent());
@@ -696,8 +766,9 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
 
-        MultiComponentSystem* testSystem = new MultiComponentSystem(scene, ComponentUtils::MakeMask<LightComponent>() | ComponentUtils::MakeMask<ActionComponent>());
-        scene->AddSystem(testSystem);
+        scene->AddSystemManually(Type::Instance<MultiComponentSystem>());
+        scene->Update(0.f);
+        MultiComponentSystem* testSystem = scene->GetSystem<MultiComponentSystem>();
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -751,8 +822,9 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
 
-        MultiComponentSystem* testSystem = new MultiComponentSystem(scene, ComponentUtils::MakeMask<LightComponent>() | ComponentUtils::MakeMask<ActionComponent>());
-        scene->AddSystem(testSystem);
+        scene->AddSystemManually(Type::Instance<MultiComponentSystem>());
+        scene->Update(0.f);
+        MultiComponentSystem* testSystem = scene->GetSystem<MultiComponentSystem>();
 
         Entity* e1 = new Entity();
         Component* a = new ActionComponent();
@@ -800,8 +872,9 @@ DAVA_TESTCLASS (ComponentsTest)
     {
         Scene* scene = new Scene();
 
-        MultiComponentSystem* testSystem = new MultiComponentSystem(scene, ComponentUtils::MakeMask<LightComponent>() | ComponentUtils::MakeMask<ActionComponent>());
-        scene->AddSystem(testSystem);
+        scene->AddSystemManually(Type::Instance<MultiComponentSystem>());
+        scene->Update(0.f);
+        MultiComponentSystem* testSystem = scene->GetSystem<MultiComponentSystem>();
 
         Entity* e1 = new Entity();
 

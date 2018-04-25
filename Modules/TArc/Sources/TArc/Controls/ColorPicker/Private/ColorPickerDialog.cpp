@@ -9,7 +9,6 @@
 
 #include "TArc/Core/ContextAccessor.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
-#include "TArc/Qt/QtByteArray.h"
 
 #include "ui_ColorPicker.h"
 
@@ -18,6 +17,7 @@
 #include <Qt>
 #include <QKeyEvent>
 #include <QDataStream>
+#include <QByteArray>
 
 namespace DAVA
 {

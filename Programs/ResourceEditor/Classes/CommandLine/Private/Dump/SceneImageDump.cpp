@@ -86,7 +86,7 @@ DAVA::ConsoleModule::eFrameResult SceneImageDump::OnFrameInternal()
     Vector<eGPUFamily> textureLoadingOrder = Texture::GetGPULoadingOrder();
     Texture::SetGPULoadingOrder({ gpuFamily });
 
-    ScopedPtr<Scene> scene(new Scene());
+    ScopedPtr<Scene> scene(new Scene("base"));
     if (scene->LoadScene(sceneFilePath) == SceneFileV2::eError::ERROR_NO_ERROR)
     {
         Camera* camera = FindCamera(scene);

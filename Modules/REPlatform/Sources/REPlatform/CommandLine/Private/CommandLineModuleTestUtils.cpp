@@ -199,7 +199,7 @@ Entity* CreateVegetationEntity(const FilePath& scenePathname)
     customGeometryPathname.ReplaceBasename("customGeometry");
 
     { //create custom geometry
-        ScopedPtr<Scene> scene(new Scene());
+        ScopedPtr<Scene> scene(new Scene("base"));
 
         ScopedPtr<Entity> vegetationGeometry(new Entity());
         vegetationGeometry->SetName(FastName("variation_0"));
@@ -723,7 +723,7 @@ SceneBuilder::SceneBuilder(const FilePath& scenePathname_, const FilePath& proje
 
     if (!scene)
     {
-        scene.reset(new Scene);
+        scene.reset(new Scene("base"));
     }
 }
 

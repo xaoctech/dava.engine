@@ -12,7 +12,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkIdSystem)
 {
-    ReflectionRegistrator<NetworkIdSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkIdSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
     .End();
 }

@@ -171,9 +171,9 @@ private:
 
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDeltaReplicationSystemServer)
 {
-    ReflectionRegistrator<NetworkDeltaReplicationSystemServer>::Begin()[M::Tags("network", "server")]
+    ReflectionRegistrator<NetworkDeltaReplicationSystemServer>::Begin()[M::SystemTags("network", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkDeltaReplicationSystemServer::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 11.0f)]
+    .Method("ProcessFixed", &NetworkDeltaReplicationSystemServer::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 11.0f)]
     .End();
 }
 
@@ -191,7 +191,7 @@ NetworkDeltaReplicationSystemServer::NetworkDeltaReplicationSystemServer(Scene* 
 
     snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
     netGameModeComp = scene->GetSingleComponentForRead<NetworkGameModeSingleComponent>(this);
-    timeComp = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    timeComp = scene->GetSingleComponent<NetworkTimeSingleComponent>();
 
     playerComponentGroup = scene->AquireComponentGroup<NetworkPlayerComponent, NetworkPlayerComponent, NetworkReplicationComponent>();
     for (NetworkPlayerComponent* c : playerComponentGroup->components)

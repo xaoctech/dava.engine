@@ -31,9 +31,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(ParticleEffectSystem)
 {
-    ReflectionRegistrator<ParticleEffectSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<ParticleEffectSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &ParticleEffectSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 5.0f)]
+    .Method("Process", &ParticleEffectSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 5.0f)]
     .End();
 }
 

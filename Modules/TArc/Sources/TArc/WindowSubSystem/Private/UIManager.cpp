@@ -6,7 +6,6 @@
 #include "TArc/WindowSubSystem/Private/OverlayWidget.h"
 #include "TArc/Controls/Private/NotificationLayout.h"
 #include "TArc/DataProcessing/PropertiesHolder.h"
-#include "TArc/Qt/QtByteArray.h"
 
 #include <Base/BaseTypes.h>
 #include <Base/Any.h>
@@ -27,6 +26,7 @@
 #include <QLayout>
 #include <QFrame>
 #include <QEvent>
+#include <QByteArray>
 
 #include <QFileDialog>
 #include <QMessageBox>

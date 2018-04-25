@@ -6,12 +6,12 @@
 #include "TArc/DataProcessing/DataWrappersProcessor.h"
 #include "TArc/Utils/QtConnections.h"
 #include "TArc/WindowSubSystem/UI.h"
-#include "TArc/Qt/QtString.h"
 #include "TArc/Qt/QtIcon.h"
 
 #include <QToolButton>
 #include <QPushButton>
 #include <QTimer>
+#include <QString>
 
 namespace DAVA
 {

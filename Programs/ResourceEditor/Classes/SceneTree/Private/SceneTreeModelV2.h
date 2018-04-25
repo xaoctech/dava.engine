@@ -6,7 +6,6 @@
 
 #include <TArc/Utils/QtDelayedExecutor.h>
 #include <TArc/Controls/PropertyPanel/Private/ObjectsPool.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Scene3D/Scene.h>
 
@@ -15,6 +14,7 @@
 #include <QModelIndexList>
 #include <QObject>
 #include <QStringList>
+#include <QString>
 
 struct SceneTreeItemV2
 {

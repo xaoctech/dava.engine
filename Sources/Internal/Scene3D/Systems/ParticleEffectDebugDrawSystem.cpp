@@ -13,7 +13,7 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(ParticleEffectDebugDrawSystem)
 {
-    ReflectionRegistrator<ParticleEffectDebugDrawSystem>::Begin()[M::Tags("base", "particle_effect_debug")]
+    ReflectionRegistrator<ParticleEffectDebugDrawSystem>::Begin()[M::SystemTags("particle_effect_debug")]
     .ConstructorByPointer<Scene*>()
     .End();
 }

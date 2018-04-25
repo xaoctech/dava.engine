@@ -39,10 +39,13 @@ void ApplyModificationToScene(Scene* scene, const Vector<EntityToModify>& entiti
 
 class EntityModificationSystem : public SceneSystem, public SelectionSystemDelegate
 {
+    DAVA_VIRTUAL_REFLECTION(EntityModificationSystem, SceneSystem);
+
     friend class SceneEditor2;
 
 public:
     EntityModificationSystem(Scene* scene);
+    ~EntityModificationSystem();
 
     ST_Axis GetModifAxis() const;
     void SetModifAxis(ST_Axis axis);
@@ -146,9 +149,6 @@ private:
     void CalculateMedianAxes(const SelectableGroup& selection, DAVA::Vector3& axisX, DAVA::Vector3& axisY, DAVA::Vector3& axisZ) const;
 
 private:
-    SceneCollisionSystem* collisionSystem = nullptr;
-    SceneCameraSystem* cameraSystem = nullptr;
-    HoodSystem* hoodSystem = nullptr;
 
     // entities to modify
     Vector<EntityToModify> modifEntities;

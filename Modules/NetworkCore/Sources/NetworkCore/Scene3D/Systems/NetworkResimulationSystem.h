@@ -8,6 +8,7 @@
 
 namespace DAVA
 {
+class ISimulationSystem;
 class NetworkPlayerComponent;
 class NetworkTimeSingleComponent;
 class NetworkPredictionSingleComponent;
@@ -40,7 +41,7 @@ private:
     uint32 mispredictedEntitiesCount = 0;
     uint32 resimulatedEntitiesCount = 0;
 
-    UnorderedMap<const Type*, SceneSystem*> resimulationSystems;
+    UnorderedSet<ISimulationSystem*> resimulationSystems;
 
     const NetworkTimeSingleComponent* networkTimeSingleComponent = nullptr;
     const NetworkPredictionSingleComponent* predictionSingleComponent = nullptr;

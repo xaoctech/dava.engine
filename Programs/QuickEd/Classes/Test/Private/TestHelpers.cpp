@@ -1,5 +1,4 @@
 #include "Test/Private/TestHelpers.h"
-#include <TArc/Qt/QtString.h>
 
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
@@ -8,6 +7,7 @@
 #include <QWidget>
 #include <QMenuBar>
 #include <QMenu>
+#include <QString>
 
 void TestHelpers::CreateProjectFolder(const DAVA::FilePath& folderName)
 {

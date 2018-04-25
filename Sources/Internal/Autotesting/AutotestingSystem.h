@@ -10,6 +10,7 @@
 #include "Render/RHI/rhi_Public.h"
 #include "Time/DateTime.h"
 #include "UI/UIEvent.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

@@ -2,14 +2,13 @@
 
 #include <REPlatform/DataNodes/Selectable.h>
 
-#include <TArc/Qt/QtString.h>
-
 #include <Base/BaseTypes.h>
 
 #include <QWidget>
 #include <QMimeData>
 #include <QLineEdit>
 #include <QToolButton>
+#include <QString>
 
 namespace DAVA
 {

@@ -10,8 +10,10 @@ struct FrameData;
 
 class ChartPainterSystem : public DAVA::SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(ChartPainterSystem, DAVA::SceneSystem);
+
 public:
-    ChartPainterSystem(DAVA::Scene* scene, DAVA::float32 maxFrametime_);
+    ChartPainterSystem(DAVA::Scene* scene);
 
     void AddEntity(DAVA::Entity* entity) override;
     void PrepareForRemove() override;

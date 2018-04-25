@@ -36,9 +36,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsDebugDrawSystem)
 {
-    ReflectionRegistrator<PhysicsDebugDrawSystem>::Begin()[M::Tags("base", "physics")]
+    ReflectionRegistrator<PhysicsDebugDrawSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &PhysicsDebugDrawSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 100.1f)]
+    .Method("ProcessFixed", &PhysicsDebugDrawSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 100.1f)]
     .End();
 }
 

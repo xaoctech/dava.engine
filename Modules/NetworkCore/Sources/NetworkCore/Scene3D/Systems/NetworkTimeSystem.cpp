@@ -15,7 +15,6 @@
 #include <Debug/ProfilerOverlay.h>
 #include <Logger/Logger.h>
 #include <Reflection/ReflectionRegistrator.h>
-#include <Scene3D/Components/ActionComponent.h>
 #include <Scene3D/Scene.h>
 #include <Time/SystemTimer.h>
 
@@ -23,11 +22,11 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkTimeSystem)
 {
-    ReflectionRegistrator<NetworkTimeSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkTimeSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &NetworkTimeSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 17.0f)]
-    .Method("ProcessFixedUpdateStats", &NetworkTimeSystem::ProcessFixedUpdateStats)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 3.0f)]
-    .Method("ProcessFixedSendStats", &NetworkTimeSystem::ProcessFixedSendStats)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 14.2f)]
+    .Method("Process", &NetworkTimeSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 17.0f)]
+    .Method("ProcessFixedUpdateStats", &NetworkTimeSystem::ProcessFixedUpdateStats)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 3.0f)]
+    .Method("ProcessFixedSendStats", &NetworkTimeSystem::ProcessFixedSendStats)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 14.2f)]
     .End();
 }
 
@@ -68,7 +67,7 @@ NetworkTimeSystem::NetworkTimeSystem(Scene* scene)
     , fpsMeter(10.f)
     , ffpsMeter(10.f)
 {
-    netTimeComp = scene->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
+    netTimeComp = scene->GetSingleComponent<NetworkTimeSingleComponent>();
     scene->SetFixedUpdateTime(NetworkTimeSingleComponent::FrameDurationS);
 
     if (IsClient(this))
@@ -121,7 +120,6 @@ void NetworkTimeSystem::OnReceiveClient(const uint8* data, size_t, uint8 channel
 {
     const TimeSyncHeader* timeSyncHeader = reinterpret_cast<const TimeSyncHeader*>(data);
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     netTimeComp->SetClientOutrunning(client->GetAuthToken(), timeSyncHeader->netDiff);
 
     switch (timeSyncHeader->type)
@@ -156,7 +154,6 @@ void NetworkTimeSystem::OnReceiveServer(const Responder& responder, const void* 
     DAVA_PROFILER_CPU_SCOPE("NetworkTimeSystem::OnReceiveServer");
     const auto* inHeader = reinterpret_cast<const TimeSyncHeader*>(data);
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     uint32 lastClientFrameId = netTimeComp->GetLastClientFrameId(responder.GetToken());
     if (inHeader->frameId <= lastClientFrameId)
     { // is too late
@@ -283,7 +280,6 @@ void NetworkTimeSystem::ProcessFrameDiff(int32 diff)
         return;
     }
 
-    NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForWrite<NetworkTimeSingleComponent>(this);
     int32 adjustedFrames = netTimeComp->GetAdjustedFrames();
     bool sameDirection = (diff > 0) ^ (adjustedFrames < 0);
 

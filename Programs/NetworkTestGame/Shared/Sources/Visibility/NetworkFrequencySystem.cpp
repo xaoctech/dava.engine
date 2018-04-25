@@ -16,9 +16,9 @@ constexpr uint8 MAX_SEND_PERIOD = 8u;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkFrequencySystem)
 {
-    ReflectionRegistrator<NetworkFrequencySystem>::Begin()[M::Tags("server")]
+    ReflectionRegistrator<NetworkFrequencySystem>::Begin()[M::SystemTags("server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkFrequencySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 999.4f)]
+    .Method("ProcessFixed", &NetworkFrequencySystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 999.4f)]
     .End();
 }
 

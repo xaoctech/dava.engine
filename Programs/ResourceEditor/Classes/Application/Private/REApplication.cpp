@@ -17,6 +17,42 @@
 #include "Classes/CommandLine/SceneValidationTool.h"
 #include "Classes/DevFuncs/TestUIModuleData.h"
 
+// TODO: dirty way to register all systems b4 engine init, should be replaced with signal.
+#include "Classes/EditorPhysics/Private/EditorPhysicsSystem.h"
+#include "Classes/ObjectPlacement/Private/ObjectPlacementSystem.h"
+#include "Classes/SceneTree/Private/SceneTreeSystem.h"
+#include "Classes/SignatureModule/Private/OwnersSignatureSystem.h"
+#include "Classes/TextModule/Private/EditorTextSystem.h"
+#include "Classes/UserNodeModule/Private/UserNodeSystem.h"
+
+#include <REPlatform/Scene/Systems/BeastSystem.h>
+#include <REPlatform/Scene/Systems/CameraSystem.h>
+#include <REPlatform/Scene/Systems/CollisionSystem.h>
+#include <REPlatform/Scene/Systems/CustomColorsSystem.h>
+#include <REPlatform/Scene/Systems/DebugDrawSystem.h>
+#include <REPlatform/Scene/Systems/EditorLightSystem.h>
+#include <REPlatform/Scene/Systems/EditorLODSystem.h>
+#include <REPlatform/Scene/Systems/EditorMaterialSystem.h>
+#include <REPlatform/Scene/Systems/EditorParticlesSystem.h>
+#include <REPlatform/Scene/Systems/EditorSlotSystem.h>
+#include <REPlatform/Scene/Systems/EditorStatisticsSystem.h>
+#include <REPlatform/Scene/Systems/EditorVegetationSystem.h>
+#include <REPlatform/Scene/Systems/GridSystem.h>
+#include <REPlatform/Scene/Systems/HeightmapEditorSystem.h>
+#include <REPlatform/Scene/Systems/HoodSystem.h>
+#include <REPlatform/Scene/Systems/LandscapeEditorDrawSystem.h>
+#include <REPlatform/Scene/Systems/ModifSystem.h>
+#include <REPlatform/Scene/Systems/PathSystem.h>
+#include <REPlatform/Scene/Systems/RulerToolSystem.h>
+#include <REPlatform/Scene/Systems/SelectionSystem.h>
+#include <REPlatform/Scene/Systems/StructureSystem.h>
+#include <REPlatform/Scene/Systems/TextDrawSystem.h>
+#include <REPlatform/Scene/Systems/TilemaskEditorSystem.h>
+#include <REPlatform/Scene/Systems/VisibilityCheckSystem.h>
+#include <REPlatform/Scene/Systems/WayEditSystem.h>
+
+// \\ todo
+
 #include <REPlatform/DataNodes/Settings/RESettings.h>
 #include <REPlatform/Deprecated/EditorConfig.h>
 #include <REPlatform/Deprecated/SceneValidator.h>
@@ -247,6 +283,44 @@ void REApplication::CreateConsoleModules(DAVA::Core* tarcCore) const
         DAVA::Logger::Error("Cannot create commandLine module for command \'%s\'", command.c_str());
         createModuleFn("-help");
     }
+}
+
+void REApplication::RegisterUserTypes()
+{
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorPhysicsSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ObjectPlacementSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneTreeSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(OwnersSignatureSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorTextSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(UserNodeSystem);
+
+    using namespace DAVA;
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(BeastSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneCameraSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneCollisionSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(CustomColorsSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(DebugDrawSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorLightSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorLODSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorMaterialSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorParticlesSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorSlotSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorStatisticsSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EditorVegetationSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SceneGridSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HeightmapEditorSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(HoodSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(LandscapeEditorDrawSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EntityModificationSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(PathSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(RulerToolSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(SelectionSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(StructureSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TextDrawSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TilemaskEditorSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VisibilityCheckSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(WayEditSystem);
 }
 
 void REApplication::RegisterEditorAnyCasts()

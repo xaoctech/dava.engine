@@ -15,9 +15,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSimulationSystem)
 {
-    ReflectionRegistrator<NetworkInputSimulationSystem>::Begin()[M::Tags("network", "input", "client")]
+    ReflectionRegistrator<NetworkInputSimulationSystem>::Begin()[M::SystemTags("network", "input", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkInputSimulationSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 14.1f)]
+    .Method("ProcessFixed", &NetworkInputSimulationSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 14.1f)]
     .End();
 }
 

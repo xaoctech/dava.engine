@@ -2,6 +2,7 @@
 #include "ColladaAnimation.h"
 #include "ColladaScene.h"
 #include "ColladaSceneNode.h"
+#include <Utils/StringFormat.h>
 
 namespace DAVA
 {

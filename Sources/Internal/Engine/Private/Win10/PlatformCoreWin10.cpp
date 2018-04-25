@@ -221,9 +221,9 @@ void PlatformCore::OnMemoryUsageLimitChanging(::Windows::System::AppMemoryUsageL
     using namespace ::Windows::System;
 
     // https://github.com/Microsoft/Windows-universal-samples/blob/master/Samples/BackgroundMediaPlayback/README.md
-    if (MemoryManager::AppMemoryUsage > arg->NewLimit)
+    if (::Windows::System::MemoryManager::AppMemoryUsage > arg->NewLimit)
     {
-        Logger::PlatformLog(Logger::LEVEL_INFO, Format("Memory usage [%ull] is higher than limit [%ull].", MemoryManager::AppMemoryUsage, arg->NewLimit).c_str());
+        Logger::PlatformLog(Logger::LEVEL_INFO, Format("Memory usage [%ull] is higher than limit [%ull].", ::Windows::System::MemoryManager::AppMemoryUsage, arg->NewLimit).c_str());
         dispatcher->PostEvent(MainDispatcherEvent(MainDispatcherEvent::LOW_MEMORY));
     }
 }
@@ -232,7 +232,7 @@ void PlatformCore::OnMemoryUsageIncreased()
 {
     using namespace ::Windows::System;
 
-    if (MemoryManager::AppMemoryUsageLevel >= AppMemoryUsageLevel::High)
+    if (::Windows::System::MemoryManager::AppMemoryUsageLevel >= AppMemoryUsageLevel::High)
     {
         Logger::PlatformLog(Logger::LEVEL_INFO, "Memory usage level is high.");
         dispatcher->PostEvent(MainDispatcherEvent(MainDispatcherEvent::LOW_MEMORY));

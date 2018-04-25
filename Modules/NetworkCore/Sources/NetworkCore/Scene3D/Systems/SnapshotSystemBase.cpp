@@ -112,7 +112,7 @@ SnapshotSystemBase::SnapshotSystemBase(Scene* scene)
     // used for NetworkID generation, that should be right in snapshot
     //DVASSERT(nullptr != scene->GetSystem<NetworkIdSystem>());
 
-    timeSingleComponent = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    timeSingleComponent = scene->GetSingleComponent<NetworkTimeSingleComponent>();
     snapshotSingleComponent = scene->GetSingleComponentForWrite<SnapshotSingleComponent>(this);
 }
 

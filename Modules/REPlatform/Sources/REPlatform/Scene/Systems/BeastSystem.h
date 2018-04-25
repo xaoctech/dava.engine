@@ -11,6 +11,8 @@ class KeyedArchive;
 
 class BeastSystem : public SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(BeastSystem, SceneSystem);
+
 public:
     BeastSystem(Scene* scene);
 

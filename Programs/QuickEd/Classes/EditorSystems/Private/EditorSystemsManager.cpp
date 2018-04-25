@@ -149,7 +149,7 @@ void EditorSystemsManager::OnInput(UIEvent* currentInput, eInputSource inputSour
 
 void EditorSystemsManager::OnEmulationModeChanged(const DAVA::Any& emulationModeValue)
 {
-    bool emulationMode = emulationModeValue.Cast<bool>(false);
+    bool emulationMode = emulationModeValue.CastSafely<bool>(false);
     SetDisplayState(emulationMode ? eDisplayState::Emulation : previousDisplayState);
 }
 

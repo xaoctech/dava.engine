@@ -7,7 +7,6 @@
 #include <TArc/Controls/Label.h>
 #include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>
-#include <TArc/Qt/QtString.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/WindowSubSystem/UI.h>
 
@@ -18,6 +17,7 @@
 #include <Debug/DVAssert.h>
 
 #include <QPushButton>
+#include <QString>
 
 namespace UIViewerDialogDetails
 {

@@ -21,6 +21,8 @@ class WayEditSystem : public SceneSystem,
                       public EditorSceneSystem
 
 {
+    DAVA_VIRTUAL_REFLECTION(WayEditSystem, SceneSystem);
+
     friend class SceneEditor2;
 
 public:

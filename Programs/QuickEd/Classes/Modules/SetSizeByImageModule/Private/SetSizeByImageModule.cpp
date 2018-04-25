@@ -35,7 +35,7 @@ void SetSizeByImageModule::PostInit()
     fieldDescr.fieldName = FastName(DocumentData::selectionPropertyName);
     action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [&](const Any& fieldValue) -> Any
                                      {
-                                         return (fieldValue.Cast<SelectedNodes>(SelectedNodes()).size() == 1);
+                                         return (fieldValue.CastSafely<SelectedNodes>(SelectedNodes()).size() == 1);
                                      });
 
     connections.AddConnection(action, &QAction::triggered, MakeFunction(this, &SetSizeByImageModule::OnSetSizeFromImage));

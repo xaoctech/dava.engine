@@ -28,8 +28,6 @@
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/AnyQMetaType.h>
 #include <TArc/Qt/QtIcon.h>
-#include <TArc/Qt/QtSize.h>
-#include <TArc/Qt/QtString.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Utils/ScopedValueGuard.h>
 #include <TArc/Utils/Utils.h>
@@ -48,6 +46,9 @@
 #include <QToolBar>
 #include <QBoxLayout>
 #include <QMenu>
+#include <QString>
+#include <QSize>
+
 #include "Debug/DVAssert.h"
 
 namespace SceneTreeModuleDetail
@@ -350,18 +351,6 @@ private:
 
 } // namespace SceneTreeModuleDetail
 
-namespace DAVA
-{
-template <>
-struct AnyCompare<SceneTreeModuleDetail::AvailableFilterKey>
-{
-    static bool IsEqual(const Any& v1, const Any& v2)
-    {
-        return v1.Get<SceneTreeModuleDetail::AvailableFilterKey>() == v2.Get<SceneTreeModuleDetail::AvailableFilterKey>();
-    }
-};
-} // namespace DAVA
-
 SceneTreeModule::~SceneTreeModule()
 {
     using namespace SceneTreeModuleDetail;
@@ -377,11 +366,14 @@ void SceneTreeModule::OnContextCreated(DAVA::DataContext* context)
     DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
     DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
+    DVASSERT(scene && scene->HasTags("resource_editor"));
+
+    scene->AddTags("scene_tree");
+
     SceneTreeData* data = new SceneTreeData();
-    data->system = new SceneTreeSystem(scene);
+    data->system = scene->GetSystem<SceneTreeSystem>();
+
     data->system->syncIsNecessary.Connect(DAVA::MakeFunction(this, &SceneTreeModule::OnSyncRequested));
-    data->system->DisableSystem();
-    scene->AddSystem(data->system);
     data->system->EnableSystem();
 
     DAVA::ContextAccessor* accessor = GetAccessor();
@@ -421,6 +413,8 @@ void SceneTreeModule::OnContextDeleted(DAVA::DataContext* context)
     DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
     DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
+    DVASSERT(scene && scene->HasTags("resource_editor"));
+
     SceneTreeData* data = context->GetData<SceneTreeData>();
     DAVA::SafeDelete(data->filterModel);
     DAVA::SafeDelete(data->model);
@@ -431,8 +425,10 @@ void SceneTreeModule::OnContextDeleted(DAVA::DataContext* context)
     }
 
     data->system->syncIsNecessary.DisconnectAll();
-    scene->RemoveSystem(data->system);
-    DAVA::SafeDelete(data->system);
+
+    scene->RemoveTags("scene_tree");
+
+    data->system = nullptr;
 
     context->DeleteData<SceneTreeData>();
 }

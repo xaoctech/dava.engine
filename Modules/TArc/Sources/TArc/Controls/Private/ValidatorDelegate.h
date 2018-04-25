@@ -1,8 +1,9 @@
 #pragma once
 
-#include "TArc/Qt/QtString.h"
 #include <Reflection/ReflectedMeta.h>
 #include <Base/Any.h>
+
+#include <QString>
 
 namespace DAVA
 {

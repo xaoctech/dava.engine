@@ -1,8 +1,5 @@
 #pragma once
 
-#include <TArc/Qt/QtByteArray.h>
-#include <TArc/Qt/QtSize.h>
-
 #include <Logger/Logger.h>
 #include <functional>
 
@@ -10,6 +7,8 @@
 #include <QAbstractListModel>
 #include <QPixmap>
 #include <QMutex>
+#include <QByteArray>
+#include <QSize>
 
 class QTimer;
 

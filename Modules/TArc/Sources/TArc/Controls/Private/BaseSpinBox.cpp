@@ -77,8 +77,8 @@ void BaseSpinBox<TBase, TEditableType>::UpdateRange()
 
     if (iter != defaultRangeMap.end()) // we can use any type that can be casted to double or int (Any for example)
     {
-        minV = iter->second.first.Cast<TEditableType>(std::numeric_limits<TEditableType>::lowest());
-        maxV = iter->second.second.Cast<TEditableType>(std::numeric_limits<TEditableType>::max());
+        minV = iter->second.first.CastSafely<TEditableType>(std::numeric_limits<TEditableType>::lowest());
+        maxV = iter->second.second.CastSafely<TEditableType>(std::numeric_limits<TEditableType>::max());
     }
 
     const M::Range* rangeMeta = nullptr;
@@ -95,9 +95,9 @@ void BaseSpinBox<TBase, TEditableType>::UpdateRange()
 
     if (rangeMeta != nullptr)
     {
-        minV = rangeMeta->minValue.Cast<TEditableType>(minV);
-        maxV = rangeMeta->maxValue.Cast<TEditableType>(maxV);
-        valueStep = rangeMeta->step.Cast<TEditableType>(valueStep);
+        minV = rangeMeta->minValue.CastSafely<TEditableType>(minV);
+        maxV = rangeMeta->maxValue.CastSafely<TEditableType>(maxV);
+        valueStep = rangeMeta->step.CastSafely<TEditableType>(valueStep);
     }
 
     if (minV != this->minimum() || maxV != this->maximum())
@@ -140,7 +140,14 @@ void BaseSpinBox<TBase, TEditableType>::UpdateControl(const ControlDescriptor& c
         if (valueChanged == true)
         {
             Any value = fieldValue.GetValue();
-            if (value.CanCast<TEditableType>())
+            bool valueTypeValid = false;
+            if (value.IsEmpty() == false)
+            {
+                const Type* valueType = value.GetType();
+                valueTypeValid = valueType->IsIntegral() || valueType->IsFloatingPoint();
+            }
+
+            if (valueTypeValid == true && value.CanCast<TEditableType>() == true)
             {
                 QLineEdit* edit = this->lineEdit();
                 QString selectedText = edit->selectedText();

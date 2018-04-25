@@ -331,7 +331,7 @@ void ColladaDocument::SaveScene(const String& scenePath, const String& sceneName
 
     //	printf("* Verify start: %s\n", scenePathName.c_str());
     //	SceneFile file;
-    //	Scene * scene = new Scene();
+    //	Scene * scene = new Scene("base");
     //	file.LoadScene(scenePathName.c_str(), scene, false);
     //	printf("* Verify end\n");
 }

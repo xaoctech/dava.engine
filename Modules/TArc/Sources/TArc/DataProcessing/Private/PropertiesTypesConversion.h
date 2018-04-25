@@ -1,8 +1,8 @@
 #pragma once
 
-#include "TArc/Qt/QtRect.h"
-#include "TArc/Qt/QtByteArray.h"
-#include "TArc/Qt/QtString.h"
+#include <QByteArray>
+#include <QRect>
+#include <QString>
 
 namespace DAVA
 {

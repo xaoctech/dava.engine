@@ -12,38 +12,44 @@ namespace DAVA
 namespace TypeDetails
 {
 template <typename T>
+struct Void
+{
+    using type = void;
+};
+
+template <typename T>
 struct TypeSize
 {
-    static const size_t size = sizeof(T);
-    static const size_t arraySize = 0;
+    static constexpr size_t size = sizeof(T);
+    static constexpr size_t arraySize = 0;
 };
 
 template <>
 struct TypeSize<void>
 {
-    static const size_t size = 0;
-    static const size_t arraySize = 0;
+    static constexpr size_t size = 0;
+    static constexpr size_t arraySize = 0;
 };
 
 template <>
 struct TypeSize<const void>
 {
-    static const size_t size = 0;
-    static const size_t arraySize = 0;
+    static constexpr size_t size = 0;
+    static constexpr size_t arraySize = 0;
 };
 
 template <typename T, size_t N>
 struct TypeSize<T[N]>
 {
-    static const size_t size = sizeof(T[N]);
-    static const size_t arraySize = N;
+    static constexpr size_t size = sizeof(T[N]);
+    static constexpr size_t arraySize = N;
 };
 
 template <typename T, size_t N>
 struct TypeSize<Array<T, N>>
 {
-    static const size_t size = sizeof(Array<T, N>);
-    static const size_t arraySize = N;
+    static constexpr size_t size = sizeof(Array<T, N>);
+    static constexpr size_t arraySize = N;
 };
 
 template <typename T>
@@ -62,6 +68,72 @@ template <typename T, size_t N>
 struct IsArray<Array<T, N>> : std::true_type
 {
     using type = T;
+};
+
+template <typename T, typename = void>
+struct HasEqualOperator : std::false_type
+{
+};
+
+template <typename T>
+struct HasEqualOperator<T, typename Void<decltype(std::declval<T>() == std::declval<T>())>::type> : std::true_type
+{
+};
+
+template <typename T, typename = void>
+struct TemplatedValueType
+{
+    using type = bool;
+};
+
+template <template <typename...> class T, typename... U>
+struct TemplatedValueType<T<U...>, typename Void<typename T<U...>::value_type>::type>
+{
+    using type = typename T<U...>::value_type;
+};
+
+template <typename T, typename = void>
+struct TemplatedKeyType
+{
+    using type = bool;
+    static constexpr bool value = false;
+};
+
+template <template <typename...> class T, typename... U>
+struct TemplatedKeyType<T<U...>, typename Void<typename T<U...>::key_type>::type>
+{
+    using type = typename T<U...>::key_type;
+    static constexpr bool value = true;
+};
+
+template <typename T, typename = void>
+struct TemplatedMappedType
+{
+    using type = bool;
+    static constexpr bool value = false;
+};
+
+template <template <typename...> class T, typename... U>
+struct TemplatedMappedType<T<U...>, typename Void<typename T<U...>::mapped_type>::type>
+{
+    using type = typename T<U...>::mapped_type;
+    static constexpr bool value = true;
+};
+
+template <typename T, typename = void>
+struct IsEqualComparable
+{
+    static constexpr bool value = HasEqualOperator<T>::value;
+};
+
+template <template <typename...> class T, typename... U>
+struct IsEqualComparable<T<U...>>
+{
+    using C = T<U...>;
+    using V = typename TemplatedValueType<C>::type;
+    using K = typename TemplatedKeyType<C>::type;
+    using M = typename TemplatedMappedType<C>::type;
+    static constexpr bool value = HasEqualOperator<C>::value && HasEqualOperator<V>::value && HasEqualOperator<K>::value && HasEqualOperator<M>::value;
 };
 
 template <typename T>
@@ -96,22 +168,37 @@ Type* const* GetTypeIfTrue(std::true_type)
 }
 
 template <typename T>
-Type::SeedCastOP GetCastIfSeed(std::true_type)
+Type::SeedCastOp GetCastIfSeed(std::true_type)
 {
     static auto op = [](const void* ptr) -> const Type::Seed*
     {
         const T* tptr = static_cast<const T*>(ptr);
         return static_cast<const Type::Seed*>(tptr);
     };
-    return static_cast<Type::SeedCastOP>(op);
+    return static_cast<Type::SeedCastOp>(op);
 }
 
 template <typename T>
-Type::SeedCastOP GetCastIfSeed(std::false_type)
+Type::SeedCastOp GetCastIfSeed(std::false_type)
 {
     return nullptr;
 }
 
+template <typename T>
+Type::CompareOp GetEqualIfComparable(std::true_type)
+{
+    static auto op = [](const void* data1, const void* data2) -> bool
+    {
+        return (*static_cast<const T*>(data1) == *static_cast<const T*>(data2));
+    };
+    return static_cast<Type::CompareOp>(op);
+}
+
+template <typename T>
+Type::CompareOp GetEqualIfComparable(std::false_type)
+{
+    return nullptr;
+}
 } // namespace TypeDetails
 
 struct Type::Seed
@@ -156,12 +243,7 @@ inline uint32_t Type::GetArrayDimension() const
 
 inline const char* Type::GetName() const
 {
-    return stdTypeInfo->name();
-}
-
-inline std::type_index Type::GetTypeIndex() const
-{
-    return std::type_index(*stdTypeInfo);
+    return name;
 }
 
 inline const TypeInheritance* Type::GetInheritance() const
@@ -169,15 +251,20 @@ inline const TypeInheritance* Type::GetInheritance() const
     return inheritance.get();
 }
 
-inline unsigned long Type::GetTypeFlags() const
+inline uint32_t Type::GetTypeFlags() const
 {
-    return flags.to_ulong();
+    return static_cast<uint32_t>(flags.to_ulong());
 }
 
 template <typename T>
 inline bool Type::Is() const
 {
     return (this == Instance<T>());
+}
+
+inline bool Type::IsVoid() const
+{
+    return flags.test(static_cast<size_t>(eTypeFlag::isVoid));
 }
 
 inline bool Type::IsConst() const
@@ -190,9 +277,19 @@ inline bool Type::IsPointer() const
     return flags.test(static_cast<size_t>(eTypeFlag::isPointer));
 }
 
+inline bool Type::IsPointerToConst() const
+{
+    return flags.test(static_cast<size_t>(eTypeFlag::isPointerToConst));
+}
+
 inline bool Type::IsReference() const
 {
     return flags.test(static_cast<size_t>(eTypeFlag::isReference));
+}
+
+inline bool Type::IsReferenceToConst() const
+{
+    return flags.test(static_cast<size_t>(eTypeFlag::isReferenceToConst));
 }
 
 inline bool Type::IsFundamental() const
@@ -218,7 +315,6 @@ inline bool Type::IsIntegral() const
 inline bool Type::IsSigned() const
 {
     return flags.test(static_cast<size_t>(eTypeFlag::isSigned));
-    ;
 }
 
 inline bool Type::IsFloatingPoint() const
@@ -231,9 +327,9 @@ inline bool Type::IsEnum() const
     return flags.test(static_cast<size_t>(eTypeFlag::isEnum));
 }
 
-inline bool Type::IsPOD() const
+inline bool Type::IsPod() const
 {
-    return flags.test(static_cast<size_t>(eTypeFlag::isPOD));
+    return flags.test(static_cast<size_t>(eTypeFlag::isPod));
 }
 
 inline bool Type::IsAbstract() const
@@ -246,9 +342,14 @@ inline bool Type::IsArray() const
     return flags.test(static_cast<size_t>(eTypeFlag::isArray));
 }
 
-inline Type::SeedCastOP Type::GetSeedCastOP() const
+inline Type::SeedCastOp Type::GetSeedCastOp() const
 {
-    return seedCastOP;
+    return seedCastOp;
+}
+
+inline Type::CompareOp Type::GetEqualCompareOp() const
+{
+    return equalCompareOp;
 }
 
 inline const Type* Type::Decay() const
@@ -285,20 +386,20 @@ Type* Type::Init()
     using DecayU = DecayT<T>;
     using PointerU = PointerT<T>;
 
-    static const bool needDeref = (!std::is_same<T, DerefU>::value);
-    static const bool needDecay = (!std::is_same<T, DecayU>::value);
-    static const bool needPointer = (!std::is_pointer<T>::value);
-    static const bool needSeed = (std::is_base_of<Type::Seed, T>::value || std::is_same<Type::Seed, T>::value);
+    static constexpr bool needDeref = (!std::is_same<T, DerefU>::value);
+    static constexpr bool needDecay = (!std::is_same<T, DecayU>::value);
+    static constexpr bool needPointer = (!std::is_pointer<T>::value);
+    static constexpr bool needSeed = (std::is_base_of<Type::Seed, T>::value || std::is_same<Type::Seed, T>::value);
+    static constexpr bool needEqualCompare = (!needDecay && !std::is_function<T>::value && TypeDetails::IsEqualComparable<T>::value);
 
     static_assert(TypeDetails::TypeSize<T>::size < std::numeric_limits<uint16_t>::max(), "Size of T doesn't fit Type::size");
     static_assert(TypeDetails::TypeSize<T>::arraySize < std::numeric_limits<uint16_t>::max(), "Array size of T[] doesn't fit Type::size");
 
+    type.name = typeid(T).name();
     type.size = static_cast<uint32_t>(TypeDetails::TypeSize<T>::size);
     type.arraySize = static_cast<uint32_t>(TypeDetails::TypeSize<T>::arraySize);
 
-    type.name = typeid(T).name();
-    type.stdTypeInfo = &typeid(T);
-
+    type.flags.set(isVoid, std::is_void<T>::value);
     type.flags.set(isConst, std::is_const<T>::value);
     type.flags.set(isPointer, std::is_pointer<T>::value);
     type.flags.set(isPointerToConst, std::is_pointer<T>::value && std::is_const<typename std::remove_pointer<T>::type>::value);
@@ -312,11 +413,14 @@ Type* Type::Init()
     type.flags.set(isFloatingPoint, std::is_floating_point<T>::value);
     type.flags.set(isEnum, std::is_enum<T>::value);
     type.flags.set(isAbstract, std::is_abstract<T>::value);
-    type.flags.set(isPOD, std::is_pod<T>::value);
+    type.flags.set(isPod, std::is_pod<T>::value);
     type.flags.set(isArray, TypeDetails::IsArray<T>::value);
 
     auto condSeed = std::integral_constant<bool, needSeed>();
-    type.seedCastOP = TypeDetails::GetCastIfSeed<T>(condSeed);
+    type.seedCastOp = TypeDetails::GetCastIfSeed<T>(condSeed);
+
+    auto condEqualComparable = std::integral_constant<bool, needEqualCompare>();
+    type.equalCompareOp = TypeDetails::GetEqualIfComparable<T>(condEqualComparable);
 
     auto condDeref = std::integral_constant<bool, needDeref>();
     type.derefType = TypeDetails::GetTypeIfTrue<DerefU>(condDeref);
@@ -331,7 +435,6 @@ Type* Type::Init()
     type.arrayElementType = TypeDetails::GetTypeIfTrue<typename TypeDetails::IsArray<T>::type>(condArray);
 
     TypeDB::GetLocalDB()->AddType(TypeDetails::TypeHolder<T>::InstancePointer());
-
     return &type;
 }
 

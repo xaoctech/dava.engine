@@ -1148,7 +1148,7 @@ void QtMainWindow::OnInavalidateStaticOcclusion()
     DAVA::RefPtr<DAVA::SceneEditor2> scene = MainWindowDetails::GetCurrentScene();
     if (!scene)
         return;
-    scene->staticOcclusionSystem->InvalidateOcclusion();
+    scene->GetSystem<DAVA::StaticOcclusionSystem>()->InvalidateOcclusion();
     scene->MarkAsChanged();
 }
 

@@ -24,6 +24,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(VisibilityCheckSystem)
+{
+    ReflectionRegistrator<VisibilityCheckSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &VisibilityCheckSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 16.0f)]
+    .End();
+}
+
 namespace VCSInternal
 {
 static const uint32 CUBEMAPS_POOL_SIZE = 1;

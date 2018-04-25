@@ -7,8 +7,11 @@ namespace DAVA
 {
 class Entity;
 class VegetationRenderObject;
+
 class EditorVegetationSystem : public SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(EditorVegetationSystem, SceneSystem);
+
 public:
     EditorVegetationSystem(Scene* scene);
 

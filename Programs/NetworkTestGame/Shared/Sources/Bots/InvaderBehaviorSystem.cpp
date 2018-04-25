@@ -24,9 +24,9 @@ static const float32 SCENARIO_DURATION = 2.5f;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(InvaderBehaviorSystem)
 {
-    ReflectionRegistrator<InvaderBehaviorSystem>::Begin()[M::Tags("bot", "invaderbot")]
+    ReflectionRegistrator<InvaderBehaviorSystem>::Begin()[M::SystemTags("bot", "invaderbot")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &BehaviorSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 15.1f)]
+    .Method("ProcessFixed", &BehaviorSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 15.1f)]
     .End();
 }
 

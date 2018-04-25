@@ -10,8 +10,9 @@
                                 Logger::Debug("%s_2 = %f, %f, %f, %f", #param, param._30, param._31, param._32, param._33);
 
 #include "Base/BaseTypes.h"
-
+#include "Debug/DVAssert.h"
 #include "FileSystem/FilePath.h"
+#include "Utils/StringFormat.h"
 
 #include <cstdarg>
 

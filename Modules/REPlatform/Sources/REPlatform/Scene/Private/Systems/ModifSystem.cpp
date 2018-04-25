@@ -1,4 +1,5 @@
 #include "REPlatform/Scene/Systems/ModifSystem.h"
+
 #include "REPlatform/Commands/BakeTransformCommand.h"
 #include "REPlatform/Commands/EntityAddCommand.h"
 #include "REPlatform/Commands/EntityLockCommand.h"
@@ -25,6 +26,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(EntityModificationSystem)
+{
+    ReflectionRegistrator<EntityModificationSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Input", &EntityModificationSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 5.0f)]
+    .End();
+}
+
 Vector<EntityToModify> CreateEntityToModifyVector(SelectableGroup entities, Scene* scene)
 {
     Vector<EntityToModify> modifEntities;
@@ -134,13 +143,29 @@ void ApplyModificationToScene(Scene* scene, const Vector<EntityToModify>& entiti
 EntityModificationSystem::EntityModificationSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
-    collisionSystem = scene->GetSystem<SceneCollisionSystem>();
-    cameraSystem = scene->GetSystem<SceneCameraSystem>();
-    hoodSystem = scene->GetSystem<HoodSystem>();
-
     SetTransformType(Selectable::TransformType::Disabled);
     SetModifAxis(ST_AXIS_Z);
     UpdateTransformationAxes();
+
+    // FIXME: we need to pass params to HoodSystem, but we have no guarantee that it exists in the scene at this point.
+    if (nullptr == scene->GetSystem<HoodSystem>())
+    {
+        scene->systemAdded.Connect(this, [this](SceneSystem* system) {
+            HoodSystem* const hoodSystem = dynamic_cast<HoodSystem*>(system);
+            if (nullptr != hoodSystem)
+            {
+                hoodSystem->SetModifAxis(curAxis);
+                hoodSystem->SetAxes(axisX, axisY, axisZ);
+                hoodSystem->SetTransformType(transformType);
+                GetScene()->systemAdded.Disconnect(this);
+            }
+        });
+    }
+}
+
+EntityModificationSystem::~EntityModificationSystem()
+{
+    GetScene()->systemAdded.Disconnect(this);
 }
 
 void EntityModificationSystem::SetModifAxis(ST_Axis axis)
@@ -148,7 +173,13 @@ void EntityModificationSystem::SetModifAxis(ST_Axis axis)
     if (axis != ST_AXIS_NONE)
     {
         curAxis = axis;
-        hoodSystem->SetModifAxis(axis);
+
+        HoodSystem* const hoodSystem = GetScene()->GetSystem<HoodSystem>();
+
+        if (nullptr != hoodSystem)
+        {
+            hoodSystem->SetModifAxis(axis);
+        }
     }
 }
 
@@ -175,7 +206,12 @@ ST_Axis EntityModificationSystem::GetModifAxis() const
 void EntityModificationSystem::SetTransformType(Selectable::TransformType mode)
 {
     transformType = mode;
-    hoodSystem->SetTransformType(mode);
+
+    HoodSystem* const hoodSystem = GetScene()->GetSystem<HoodSystem>();
+    if (nullptr != hoodSystem)
+    {
+        hoodSystem->SetTransformType(mode);
+    }
 }
 
 bool EntityModificationSystem::GetModifyInLocalCoordinates() const
@@ -259,14 +295,15 @@ bool EntityModificationSystem::InCloneDoneState() const
 
 bool EntityModificationSystem::Input(UIEvent* event)
 {
-    if (IsLocked() || (collisionSystem == nullptr))
+    if (IsLocked() || (GetScene()->GetSystem<SceneCollisionSystem>() == nullptr))
     {
         return false;
     }
 
-    SelectionSystem* selectionSystem = GetScene()->GetSystem<SelectionSystem>();
+    SelectionSystem* const selectionSystem = GetScene()->GetSystem<SelectionSystem>();
+    HoodSystem* const hoodSystem = GetScene()->GetSystem<HoodSystem>();
 
-    Camera* camera = cameraSystem->GetCurCamera();
+    Camera* camera = GetScene()->GetSystem<SceneCameraSystem>()->GetCurCamera();
 
     // if we are not in modification state, try to find some selected item
     // that have mouse cursor at the top of it
@@ -457,10 +494,10 @@ void EntityModificationSystem::BeginModification(const SelectableGroup& inputEnt
     Vector2 rotateAxis = Cam2dProjection(modifEntitiesCenter, modifEntitiesCenter + rotateAround);
 
     // axis dot products
-    DAVA::Vector2 zeroPos = cameraSystem->GetScreenPos(modifEntitiesCenter);
-    DAVA::Vector2 xPos = cameraSystem->GetScreenPos(modifEntitiesCenter + axisX);
-    DAVA::Vector2 yPos = cameraSystem->GetScreenPos(modifEntitiesCenter + axisY);
-    DAVA::Vector2 zPos = cameraSystem->GetScreenPos(modifEntitiesCenter + axisZ);
+    DAVA::Vector2 zeroPos = GetScene()->GetSystem<SceneCameraSystem>()->GetScreenPos(modifEntitiesCenter);
+    DAVA::Vector2 xPos = GetScene()->GetSystem<SceneCameraSystem>()->GetScreenPos(modifEntitiesCenter + axisX);
+    DAVA::Vector2 yPos = GetScene()->GetSystem<SceneCameraSystem>()->GetScreenPos(modifEntitiesCenter + axisY);
+    DAVA::Vector2 zPos = GetScene()->GetSystem<SceneCameraSystem>()->GetScreenPos(modifEntitiesCenter + axisZ);
 
     Vector2 vx = xPos - zeroPos;
     Vector2 vy = yPos - zeroPos;
@@ -478,7 +515,7 @@ void EntityModificationSystem::BeginModification(const SelectableGroup& inputEnt
         rotateNormal.Normalize();
     }
 
-    Camera* camera = cameraSystem->GetCurCamera();
+    Camera* camera = GetScene()->GetSystem<SceneCameraSystem>()->GetCurCamera();
     if (camera != nullptr)
     {
         isOrthoModif = camera->GetIsOrtho();
@@ -504,7 +541,7 @@ bool EntityModificationSystem::ModifCanStartByMouse(const SelectableGroup& objec
 
     // we can start modification if mouse is over hood
     // on mouse is over one of currently selected items
-    if (hoodSystem->GetPassingAxis() != ST_AXIS_NONE)
+    if (GetScene()->GetSystem<HoodSystem>()->GetPassingAxis() != ST_AXIS_NONE)
         return true;
 
     if (Deprecated::GetDataNode<GlobalSceneSettings>()->modificationByGizmoOnly == true)
@@ -514,7 +551,7 @@ bool EntityModificationSystem::ModifCanStartByMouse(const SelectableGroup& objec
     // check if one of got collision objects is intersected with selected items
     // if so - we can start modification
     SelectableGroup::CollectionType collisionEntities;
-    collisionSystem->ObjectsRayTestFromCamera(collisionEntities);
+    GetScene()->GetSystem<SceneCollisionSystem>()->ObjectsRayTestFromCamera(collisionEntities);
     if (collisionEntities.empty())
         return false;
 
@@ -556,14 +593,14 @@ Vector3 EntityModificationSystem::CamCursorPosToModifPos(Camera* camera, Vector2
     {
         if (camera->GetIsOrtho())
         {
-            Vector3 dir = cameraSystem->GetPointDirection(pos);
+            Vector3 dir = GetScene()->GetSystem<SceneCameraSystem>()->GetPointDirection(pos);
             ret = Vector3(dir.x, dir.y, 0);
         }
         else
         {
             Vector3 planeNormal;
-            Vector3 camPosition = cameraSystem->GetCameraPosition();
-            Vector3 camToPointDirection = cameraSystem->GetPointDirection(pos);
+            Vector3 camPosition = GetScene()->GetSystem<SceneCameraSystem>()->GetCameraPosition();
+            Vector3 camToPointDirection = GetScene()->GetSystem<SceneCameraSystem>()->GetPointDirection(pos);
 
             switch (curAxis)
             {
@@ -616,8 +653,8 @@ Vector3 EntityModificationSystem::CamCursorPosToModifPos(Camera* camera, Vector2
 
 Vector2 EntityModificationSystem::Cam2dProjection(const Vector3& from, const Vector3& to)
 {
-    Vector2 axisBegin = cameraSystem->GetScreenPos(from);
-    Vector2 axisEnd = cameraSystem->GetScreenPos(to);
+    Vector2 axisBegin = GetScene()->GetSystem<SceneCameraSystem>()->GetScreenPos(from);
+    Vector2 axisEnd = GetScene()->GetSystem<SceneCameraSystem>()->GetScreenPos(to);
     Vector2 ret = axisEnd - axisBegin;
 
     if (ret.IsZero())
@@ -760,7 +797,7 @@ Matrix4 EntityModificationSystem::SnapToLandscape(const Vector3& point, const Ma
     Matrix4 ret;
     ret.Identity();
 
-    Landscape* landscape = collisionSystem->GetCurrentLandscape();
+    Landscape* landscape = GetScene()->GetSystem<SceneCollisionSystem>()->GetCurrentLandscape();
     if (NULL != landscape)
     {
         Vector3 resPoint;
@@ -849,7 +886,7 @@ void EntityModificationSystem::CloneBegin()
         Scene* scene = origEntity->GetScene();
         if (scene != nullptr)
         {
-            StaticOcclusionSystem* occlusionSystem = scene->staticOcclusionSystem;
+            StaticOcclusionSystem* occlusionSystem = scene->GetSystem<StaticOcclusionSystem>();
             DVASSERT(occlusionSystem);
             occlusionSystem->InvalidateOcclusionIndicesRecursively(newEntity);
         }
@@ -1016,7 +1053,6 @@ void EntityModificationSystem::BakeGeometry(const SelectableGroup& entities, Bak
                 for (int32 i = 0; i < en->GetChildrenCount(); ++i)
                 {
                     Entity* childEntity = en->GetChild(i);
-
                     TransformComponent* childTC = childEntity->GetComponent<TransformComponent>();
                     Matrix4 childOrigTransform = childTC->GetLocalMatrix();
                     Matrix4 childNewTransform = childOrigTransform * bakeTransform;
@@ -1033,8 +1069,7 @@ void EntityModificationSystem::BakeGeometry(const SelectableGroup& entities, Bak
 
         if (mode == BAKE_CENTER_PIVOT)
         {
-            SceneCollisionSystem* collisionSystem = GetScene()->GetSystem<SceneCollisionSystem>();
-            AABBox3 bbox = collisionSystem->GetUntransformedBoundingBox(entity);
+            AABBox3 bbox = GetScene()->GetSystem<SceneCollisionSystem>()->GetUntransformedBoundingBox(entity);
             DVASSERT(!bbox.IsEmpty());
             newPivotPos = bbox.GetCenter();
         }
@@ -1284,7 +1319,12 @@ void EntityModificationSystem::UpdateTransformationAxes() const
         axisZ = DAVA::Vector3(0, 0, 1);
     }
 
-    hoodSystem->SetAxes(axisX, axisY, axisZ);
+    HoodSystem* const hoodSystem = GetScene()->GetSystem<HoodSystem>();
+
+    if (nullptr != hoodSystem)
+    {
+        hoodSystem->SetAxes(axisX, axisY, axisZ);
+    }
 }
 
 void EntityModificationSystem::CalculateMedianAxes(const SelectableGroup& selection, DAVA::Vector3& axisX, DAVA::Vector3& axisY, DAVA::Vector3& axisZ) const

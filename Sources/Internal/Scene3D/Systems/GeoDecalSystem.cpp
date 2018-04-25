@@ -19,9 +19,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(GeoDecalSystem)
 {
-    ReflectionRegistrator<GeoDecalSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<GeoDecalSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &GeoDecalSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 16.0f)]
+    .Method("Process", &GeoDecalSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 16.0f)]
     .End();
 }
 
@@ -228,7 +228,7 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
             // update mesh before creating decal in order to have valid skinning
             SkinnedMesh* mesh = static_cast<SkinnedMesh*>(e.renderObject);
             Scene* scene = GetScene();
-            scene->skeletonSystem->UpdateSkinnedMesh(skeletonComponent, mesh);
+            scene->GetSystem<SkeletonSystem>()->UpdateSkinnedMesh(skeletonComponent, mesh);
         }
 
         GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), transformComponent->GetWorldMatrix(), e.renderObject);

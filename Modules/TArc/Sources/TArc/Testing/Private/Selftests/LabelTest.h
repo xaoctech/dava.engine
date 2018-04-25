@@ -7,8 +7,6 @@
 #include "TArc/Controls/QtBoxLayouts.h"
 #include "TArc/Controls/CommonStrings.h"
 
-#include "TArc/Qt/QtString.h"
-
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>
 #include <Math/Matrix2.h>
@@ -18,6 +16,7 @@
 #include <Reflection/ReflectedMeta.h>
 
 #include <QtTest>
+#include <QString>
 
 namespace LabelTestDetails
 {

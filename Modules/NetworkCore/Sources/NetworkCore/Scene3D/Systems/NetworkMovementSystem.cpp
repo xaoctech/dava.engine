@@ -21,10 +21,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkMovementSystem)
 {
-    ReflectionRegistrator<NetworkMovementSystem>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<NetworkMovementSystem>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkMovementSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 5.0f)]
-    .Method("Process", &NetworkMovementSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 1.9f)]
+    .Method("ProcessFixed", &NetworkMovementSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 5.0f)]
+    .Method("Process", &NetworkMovementSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 1.9f)]
     .End();
 }
 
@@ -151,7 +151,7 @@ NetworkMovementSystem::NetworkMovementSystem(Scene* scene)
     : BaseSimulationSystem(scene, ComponentUtils::MakeMask<NetworkMovementComponent, TransformComponent>())
 {
     transformAndMovementGroup = GetScene()->AquireEntityGroup<NetworkMovementComponent, TransformComponent>();
-    timeSingleComponent = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    timeSingleComponent = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
 
     transformAndMovementGroup->onEntityAdded->Connect(this, &NetworkMovementSystem::OnMovementEntityAdded);
     settings = NetworkMovementSettings::Instance();

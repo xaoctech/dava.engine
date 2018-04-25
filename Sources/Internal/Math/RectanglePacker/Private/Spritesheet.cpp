@@ -1,9 +1,10 @@
 #include "Math/RectanglePacker/Spritesheet.h"
 
 #include "Base/BaseTypes.h"
-#include "Utils/StringFormat.h"
-#include "Logger/Logger.h"
 #include "Base/GlobalEnum.h"
+#include "Debug/DVAssert.h"
+#include "Logger/Logger.h"
+#include "Utils/StringFormat.h"
 
 ENUM_DECLARE(DAVA::PackingAlgorithm)
 {

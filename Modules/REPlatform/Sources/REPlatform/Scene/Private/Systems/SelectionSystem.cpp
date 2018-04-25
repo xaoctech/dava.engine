@@ -30,6 +30,16 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(SelectionSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<SelectionSystem>::Begin()[M::SystemTags("resource_editor", "selection")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &SelectionSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 21.0f)]
+    .Method("Input", &SelectionSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 6.0f)]
+    .End();
+}
+
 SelectionSystem::SelectionSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {

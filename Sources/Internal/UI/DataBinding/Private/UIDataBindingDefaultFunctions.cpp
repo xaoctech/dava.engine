@@ -1,7 +1,8 @@
 #include "UIDataBindingDefaultFunctions.h"
 
-#include "Math/MathHelpers.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "Math/MathHelpers.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

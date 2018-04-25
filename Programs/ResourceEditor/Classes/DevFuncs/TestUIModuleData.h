@@ -34,12 +34,12 @@ struct ComboBoxTestDataDescr
     }
 };
 
-inline DAVA::String ComboBoxTestDataDescrToString(const DAVA::Any& value)
+inline DAVA::Any ComboBoxTestDataDescrToString(const DAVA::Any& value)
 {
     return value.Get<ComboBoxTestDataDescr>().text;
 }
 
-inline QIcon ComboBoxTestDataDescrToQIcon(const DAVA::Any& value)
+inline DAVA::Any ComboBoxTestDataDescrToQIcon(const DAVA::Any& value)
 {
     return value.Get<ComboBoxTestDataDescr>().icon;
 }

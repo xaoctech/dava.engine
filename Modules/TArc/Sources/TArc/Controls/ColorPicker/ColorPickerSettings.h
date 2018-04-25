@@ -1,10 +1,11 @@
 #pragma once
 
 #include "TArc/DataProcessing/SettingsNode.h"
-#include "TArc/Qt/QtByteArray.h"
-#include "TArc/Qt/QtRect.h"
 
 #include <Reflection/Reflection.h>
+
+#include <QRect>
+#include <QByteArray>
 
 namespace DAVA
 {

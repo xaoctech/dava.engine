@@ -1,6 +1,7 @@
 #include "Classes/CommandLine/Private/ResourceDependency/SlotDependency.h"
 #include "Classes/CommandLine/Private/ResourceDependency/ResourceDependencyConstants.h"
 
+#include <FileSystem/KeyedArchive.h>
 #include <Render/TextureDescriptor.h>
 #include <Render/TextureDescriptorUtils.h>
 #include <Scene3D/Systems/SlotSystem.h>

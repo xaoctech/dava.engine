@@ -74,7 +74,7 @@ public:
     }
 };
 
-DAVA::Vector<DAVA::Reflection> CastSelectableGroupToReflection(const DAVA::Any& v)
+DAVA::Any CastSelectableGroupToReflection(const DAVA::Any& v)
 {
     const DAVA::SelectableGroup& selection = v.Get<DAVA::SelectableGroup>();
     DAVA::Vector<DAVA::Reflection> result;

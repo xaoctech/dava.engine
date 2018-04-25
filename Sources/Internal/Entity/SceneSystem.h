@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/BaseTypes.h"
+#include "Base/Hash.h"
 #include "Entity/ComponentMask.h"
 #include "Scene3D/ComponentGroup.h"
 #include "Scene3D/EntityGroup.h"
@@ -28,7 +29,7 @@ public:
 
     SceneSystem(Scene* scene, const ComponentMask& requiredComponents);
 
-    virtual ~SceneSystem() = default;
+    ~SceneSystem() override = default;
 
     inline const ComponentMask& GetRequiredComponents() const;
 
@@ -62,6 +63,7 @@ public:
     virtual void UnregisterComponent(Entity* entity, Component* component);
 
     virtual void RegisterSingleComponent(Component* component);
+
     virtual void UnregisterSingleComponent(Component* component);
 
     /**
@@ -92,7 +94,7 @@ public:
     /**
         \brief This function is called when scene loading did finished.
      */
-    virtual void SceneDidLoaded();
+    virtual void OnSceneLoaded();
 
     /**
         /brief This function is called before system will be removed from scene
@@ -158,4 +160,4 @@ inline const ComponentMask& SceneSystem::GetRequiredComponents() const
 {
     return requiredComponents;
 }
-}
+} // namespace DAVA

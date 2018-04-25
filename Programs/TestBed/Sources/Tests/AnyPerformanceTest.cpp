@@ -5,6 +5,7 @@
 #include "Scene3D/SceneFileV2.h"
 
 #include "Reflection/Reflection.h"
+#include "Reflection/ReflectedTypeDB.h"
 #include "Reflection/ReflectionSerializer.h"
 
 #include <fstream>
@@ -239,6 +240,7 @@ void AnyPerformanceTest::LoadResources()
 
         fn(sceneRef);
     }
+
     Logger::Info("Done");
 
     std::sort(sceneFieldsBool.begin(), sceneFieldsBool.end(), [](const SceneField<bool>& p1, const SceneField<bool>& p2) -> bool { return p1.valuePtr < p2.valuePtr; });

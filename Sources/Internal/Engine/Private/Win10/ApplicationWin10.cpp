@@ -147,8 +147,8 @@ void Application::InstallEventHandlers()
     DisplayInformation^ displayInformation = DisplayInformation::GetForCurrentView();
     displayInformation->DpiChanged += ref new TypedEventHandler<DisplayInformation^, Object^>(this, &Application::OnDpiChanged);
 
-    MemoryManager::AppMemoryUsageLimitChanging += ref new EventHandler<AppMemoryUsageLimitChangingEventArgs^>(this, &Application::OnMemoryUsageLimitChanging);
-    MemoryManager::AppMemoryUsageIncreased += ref new EventHandler<Object^>(this, &Application::OnMemoryUsageIncreased);
+    ::Windows::System::MemoryManager::AppMemoryUsageLimitChanging += ref new EventHandler<AppMemoryUsageLimitChangingEventArgs^>(this, &Application::OnMemoryUsageLimitChanging);
+    ::Windows::System::MemoryManager::AppMemoryUsageIncreased += ref new EventHandler<Object^>(this, &Application::OnMemoryUsageIncreased);
 }
 
 } // namespace Private

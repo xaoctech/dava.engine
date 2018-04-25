@@ -4,10 +4,11 @@
 #include "EditorSystems/SelectionContainer.h"
 
 #include <TArc/DataProcessing/TArcDataNode.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Base/BaseTypes.h>
 #include <Base/RefPtr.h>
+
+#include <QString>
 
 namespace DAVA
 {
@@ -114,7 +115,3 @@ void DocumentData::ExecCommand(Arguments&&... args)
     std::unique_ptr<DAVA::Command> command = CreateCommand<T>(std::forward<Arguments>(args)...);
     ExecCommand(std::move(command));
 }
-
-template <>
-bool DAVA::AnyCompare<PackageNode::Guides>::IsEqual(const DAVA::Any&, const DAVA::Any&);
-extern template struct DAVA::AnyCompare<PackageNode::Guides>;

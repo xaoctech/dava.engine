@@ -7,6 +7,7 @@
 
 #include <FileSystem/FileList.h>
 #include <Debug/DVAssert.h>
+#include <Utils/StringFormat.h>
 
 #define PLUGIN_MANAGER_STR_VALUE_IMPL(name) #name
 #define PLUGIN_MANAGER_STR_VALUE(name) PLUGIN_MANAGER_STR_VALUE_IMPL(name)

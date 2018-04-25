@@ -25,9 +25,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsProjectileInputSystem)
 {
-    ReflectionRegistrator<PhysicsProjectileInputSystem>::Begin()[M::Tags("gm_characters", "physics", "input")]
+    ReflectionRegistrator<PhysicsProjectileInputSystem>::Begin()[M::SystemTags("gm_characters", "physics", "input")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &PhysicsProjectileInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 7.0f)]
+    .Method("ProcessFixed", &PhysicsProjectileInputSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 7.0f)]
     .End();
 }
 

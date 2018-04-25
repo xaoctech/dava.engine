@@ -46,16 +46,13 @@ void UIEntityMarkerTest::LoadResources()
     BringChildBack(dialog);
 
     // Load scene
-    ScopedPtr<Scene> scene(new Scene());
+    ScopedPtr<Scene> scene(new Scene(FastTags{ "base", "controller" }));
     SceneFileV2::eError error = scene->LoadScene("~res:/TestBed/3d/simple_scene.sc2");
     if (error != SceneFileV2::ERROR_NO_ERROR)
     {
         Logger::Error("Error while opening simple_scene.sc2: %d", error);
         return;
     }
-
-    scene->AddSystem(new RotationControllerSystem(scene));
-    scene->AddSystem(new WASDControllerSystem(scene));
 
     Entity* cameraNode = scene->FindByName("Camera");
     if (cameraNode)

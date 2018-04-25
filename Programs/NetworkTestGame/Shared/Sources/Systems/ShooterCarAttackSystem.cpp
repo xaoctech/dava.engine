@@ -35,9 +35,9 @@ bool IsCar(DAVA::Entity* entity)
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCarAttackSystem)
 {
     using namespace DAVA;
-    ReflectionRegistrator<ShooterCarAttackSystem>::Begin()[M::Tags("gm_shooter", "server")]
+    ReflectionRegistrator<ShooterCarAttackSystem>::Begin()[M::SystemTags("gm_shooter", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterCarAttackSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 19.0f)]
+    .Method("ProcessFixed", &ShooterCarAttackSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 19.0f)]
     .End();
 }
 
@@ -52,7 +52,7 @@ void ShooterCarAttackSystem::ProcessFixed(DAVA::float32 dt)
     using namespace DAVA;
     using namespace ShooterCarAttackSystemDetail;
 
-    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponent<CollisionSingleComponent>();
     DVASSERT(collisionSingleComponent != nullptr);
 
     for (CapsuleCharacterControllerComponent* cctComponent : ccts->components)

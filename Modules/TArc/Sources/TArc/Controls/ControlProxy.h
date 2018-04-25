@@ -285,7 +285,7 @@ protected:
         DAVA::Any constValue = descriptor.GetConstValue(role);
         if (constValue.IsEmpty() == false)
         {
-            return constValue.Cast<CastType>(defaultValue);
+            return constValue.CastSafely<CastType>(defaultValue);
         }
 
         const FastName& fieldName = GetFieldName(role);
@@ -294,7 +294,7 @@ protected:
             Reflection field = model.GetField(fieldName);
             if (field.IsValid())
             {
-                return field.GetValue().Cast<CastType>(defaultValue);
+                return field.GetValue().CastSafely<CastType>(defaultValue);
             }
         }
 

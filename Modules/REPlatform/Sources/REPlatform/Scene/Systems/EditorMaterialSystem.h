@@ -12,8 +12,11 @@ class RECommandNotificationObject;
 class NMaterial;
 class Entity;
 class RenderBatch;
+
 class EditorMaterialSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(EditorMaterialSystem, SceneSystem);
+
 public:
     EditorMaterialSystem(Scene* scene);
     ~EditorMaterialSystem();

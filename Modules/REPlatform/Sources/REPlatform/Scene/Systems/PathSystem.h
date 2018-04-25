@@ -16,8 +16,11 @@ namespace DAVA
 static const uint32 WAYPOINTS_DRAW_LIFTING = 1;
 
 class RECommandNotificationObject;
+
 class PathSystem : public SceneSystem, public EntityModificationSystemDelegate, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(PathSystem, SceneSystem);
+
 public:
     PathSystem(Scene* scene);
     ~PathSystem() override;

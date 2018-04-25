@@ -136,12 +136,5 @@ FloatNetPacking::Layout FloatNetPacking::ComputeLayout(float32 range, float32 pr
     return layout;
 }
 
-SystemProcess::SystemProcess::SystemProcess(Group group_, Type type_, float32 order_)
-    : group(group_)
-    , type(type_)
-    , order(order_)
-{
-}
-
 } // namespace Metas
 } // namespace DAVA

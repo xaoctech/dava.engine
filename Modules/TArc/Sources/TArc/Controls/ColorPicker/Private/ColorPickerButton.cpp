@@ -48,7 +48,7 @@ void ColorPickerButton::UpdateControl(const ControlDescriptor& changedFields)
     if (changedFields.IsChanged(Fields::Color) == true)
     {
         cachedColor = fieldValue.GetValue();
-        setIcon(cachedColor.Cast<QIcon>(QIcon()));
+        setIcon(cachedColor.CastSafely<QIcon>(QIcon()));
     }
 }
 
@@ -109,7 +109,7 @@ void ColorPickerButton::OnColorChanging(Color colorValue, ColorPickerButton::Fie
     }
 
     cachedColor = colorValue;
-    setIcon(cachedColor.Cast<QIcon>(QIcon()));
+    setIcon(cachedColor.CastSafely<QIcon>(QIcon()));
     wrapper.SetFieldValue(fieldName, colorValue);
 }
 

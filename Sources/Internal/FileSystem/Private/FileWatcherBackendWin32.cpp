@@ -3,8 +3,9 @@
 #if defined(__DAVAENGINE_WIN32__)
 #include "Concurrency/Thread.h"
 #include "Concurrency/Atomic.h"
-#include "Utils/UTF8Utils.h"
 #include "Time/SystemTimer.h"
+#include "Utils/UTF8Utils.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

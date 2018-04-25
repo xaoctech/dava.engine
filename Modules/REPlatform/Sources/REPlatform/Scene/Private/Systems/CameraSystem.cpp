@@ -22,6 +22,7 @@
 #include <Entity/ComponentUtils.h>
 #include <Input/InputSystem.h>
 #include <Input/Keyboard.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/RenderHelper.h>
 #include <Scene3D/Components/CameraComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
@@ -37,6 +38,15 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(SceneCameraSystem)
+{
+    ReflectionRegistrator<SceneCameraSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &SceneCameraSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 7.0f)]
+    .Method("Input", &SceneCameraSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 2.0f)]
+    .End();
+}
+
 namespace CameraSystemDetails
 {
 const auto wheelAdjust = 0.002;

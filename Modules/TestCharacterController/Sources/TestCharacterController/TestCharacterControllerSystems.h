@@ -13,47 +13,50 @@ class CharacterControllerComponent;
 class TestCharacterMoveSystem;
 class TestCharacterWeaponSystem;
 class TestCharacterCameraSystem;
-class TestCharacterControllerSystem : public DAVA::SceneSystem
+
+class TestCharacterControllerSystem : public SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(TestCharacterControllerSystem, SceneSystem);
+
 public:
-    TestCharacterControllerSystem(DAVA::Scene* scene);
+    TestCharacterControllerSystem(Scene* scene);
     virtual ~TestCharacterControllerSystem();
 
     void PrepareForRemove() override;
 
-    void Process(DAVA::float32 timeElapsed) override;
-    bool Input(DAVA::UIEvent* uiEvent) override;
+    void Process(float32 timeElapsed) override;
+    bool Input(UIEvent* uiEvent) override;
 
-    void SetCharacterEntity(DAVA::Entity* entity);
-    void SetJoypadDirection(const DAVA::Vector2& direction);
+    void SetCharacterEntity(Entity* entity);
+    void SetJoypadDirection(const Vector2& direction);
 
 private:
-    DAVA::Entity* characterEntity = nullptr;
-    DAVA::CharacterControllerComponent* controllerComponent = nullptr;
+    Entity* characterEntity = nullptr;
+    CharacterControllerComponent* controllerComponent = nullptr;
 
-    DAVA::Entity* characterMeshEntity = nullptr;
-    DAVA::Entity* weaponEntity = nullptr;
-    DAVA::Entity* shootEffect = nullptr;
-    DAVA::MotionComponent* characterMotionComponent = nullptr;
-    DAVA::SkeletonComponent* characterSkeleton = nullptr;
+    Entity* characterMeshEntity = nullptr;
+    Entity* weaponEntity = nullptr;
+    Entity* shootEffect = nullptr;
+    MotionComponent* characterMotionComponent = nullptr;
+    SkeletonComponent* characterSkeleton = nullptr;
 
-    DAVA::Vector2 inputJoypadDirection;
-    DAVA::Vector2 inputBeginPosition;
-    DAVA::Vector2 inputEndPosition;
+    Vector2 inputJoypadDirection;
+    Vector2 inputBeginPosition;
+    Vector2 inputEndPosition;
 
-    DAVA::Vector3 characterForward;
-    DAVA::Vector3 characterLeft;
-    DAVA::Vector3 cameraDirection;
-    DAVA::float32 cameraAngle = 0.f;
+    Vector3 characterForward;
+    Vector3 characterLeft;
+    Vector3 cameraDirection;
+    float32 cameraAngle = 0.f;
 
-    DAVA::Vector2 directionParam;
-    DAVA::float32 runningParam = 0.f;
-    DAVA::float32 crouchingParam = 0.f;
-    DAVA::float32 aimAngleParam = 0.f;
-    DAVA::float32 zoomFactor = 0.f;
+    Vector2 directionParam;
+    float32 runningParam = 0.f;
+    float32 crouchingParam = 0.f;
+    float32 aimAngleParam = 0.f;
+    float32 zoomFactor = 0.f;
 
-    DAVA::uint32 headJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
-    DAVA::uint32 weaponPointJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
+    uint32 headJointIndex = SkeletonComponent::INVALID_JOINT_INDEX;
+    uint32 weaponPointJointIndex = SkeletonComponent::INVALID_JOINT_INDEX;
 
     bool isMoving = false;
     bool isRun = false;
@@ -68,39 +71,46 @@ private:
     friend class TestCharacterCameraSystem;
 };
 
-class TestCharacterMoveSystem : public DAVA::SceneSystem
+class TestCharacterMoveSystem : public SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(TestCharacterMoveSystem, SceneSystem);
+
 public:
-    TestCharacterMoveSystem(DAVA::Scene* scene);
+    TestCharacterMoveSystem(Scene* scene);
 
     void PrepareForRemove() override;
-    void Process(DAVA::float32 timeElapsed) override;
+    void ProcessFixed(float32 timeElapsed) override;
 
 protected:
     TestCharacterControllerSystem* controllerSystem = nullptr;
 };
 
-class TestCharacterWeaponSystem : public DAVA::SceneSystem
+class TestCharacterWeaponSystem : public SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(TestCharacterWeaponSystem, SceneSystem);
+
 public:
-    TestCharacterWeaponSystem(DAVA::Scene* scene);
+    TestCharacterWeaponSystem(Scene* scene);
 
     void PrepareForRemove() override;
-    void Process(DAVA::float32 timeElapsed) override;
+    void Process(float32 timeElapsed) override;
 
 protected:
     TestCharacterControllerSystem* controllerSystem = nullptr;
 };
 
-class TestCharacterCameraSystem : public DAVA::SceneSystem
+class TestCharacterCameraSystem : public SceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(TestCharacterCameraSystem, SceneSystem);
+
 public:
-    TestCharacterCameraSystem(DAVA::Scene* scene);
+    TestCharacterCameraSystem(Scene* scene);
 
     void PrepareForRemove() override;
-    void Process(DAVA::float32 timeElapsed) override;
+    void Process(float32 timeElapsed) override;
 
 protected:
     TestCharacterControllerSystem* controllerSystem = nullptr;
 };
-};
+
+} // namespace DAVA

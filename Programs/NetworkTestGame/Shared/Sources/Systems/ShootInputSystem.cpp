@@ -33,9 +33,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShootInputSystem)
 {
-    ReflectionRegistrator<ShootInputSystem>::Begin()[M::Tags("gameinput", "shoot")]
+    ReflectionRegistrator<ShootInputSystem>::Begin()[M::SystemTags("gameinput", "shoot")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShootInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 6.0f)]
+    .Method("ProcessFixed", &ShootInputSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 6.0f)]
     .End();
 }
 

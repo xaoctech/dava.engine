@@ -63,7 +63,7 @@ void StyleSheetInspectorWidget::StyleSheetsWereRebuilt()
 void StyleSheetInspectorWidget::OnSelectionChanged(const DAVA::Any& selectionValue)
 {
     currentControl = nullptr;
-    SelectedNodes selection = selectionValue.Cast<SelectedNodes>(SelectedNodes());
+    SelectedNodes selection = selectionValue.CastSafely<SelectedNodes>(SelectedNodes());
     for (const PackageBaseNode* node : selection)
     {
         const ControlNode* controlNode = dynamic_cast<const ControlNode*>(node);

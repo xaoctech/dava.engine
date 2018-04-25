@@ -123,7 +123,7 @@ void CharacterControllerComponent::ScheduleUpdate()
         Scene* scene = entity->GetScene();
         DVASSERT(scene != nullptr);
 
-        scene->physicsSystem->ScheduleUpdate(this);
+        scene->GetSystem<PhysicsSystem>()->ScheduleUpdate(this);
     }
 }
 

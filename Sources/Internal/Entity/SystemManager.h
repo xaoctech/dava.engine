@@ -1,16 +1,21 @@
 #pragma once
 
-#include "Base/FastName.h"
-#include "Base/Type.h"
-#include "Base/BaseTypes.h"
+#include "Entity/SceneSystem.h"
+#include "Entity/SystemProcessInfo.h"
 
 namespace DAVA
 {
 /**
-    Tracks Systems/UISystems types.
-    When you need to add system from module, you should register your system in reflection.
-    Systems are registered in scene in ascending order. Higher order means later execution of system process.
-    Systems that do not have order meta for class are not executed.
+    Tracks SceneSystems types.
+
+    When you need to register a scene system, you should register its reflection and provide a permanent name for it.
+
+    If reflection registration is done before engine init, scene system will be automatically registered in SystemManager,
+    otherwise call to SystemManager::RegisterSystem is required.
+
+    Systems that do not have tags (M::SystemTags) will not be registered in SystemManager.
+
+    If your system requires process, you should specify process info meta (M::SystemProcessInfo) for system methods.
  
     Example:
      \code
@@ -28,69 +33,106 @@ namespace DAVA
          DAVA_VIRTUAL_REFLECTION(YourCustomSystem, SceneSystem);
      };
  
-     // In you system .cpp file
+     // In your system .cpp file
      DAVA_VIRTUAL_REFLECTION_IMPL(YourCustomSystem)
      {
-     ReflectionRegistrator<YourCustomSystem>::Begin()[M::Tags("tag1", "tag2", ..., "tagn")]
+     ReflectionRegistrator<YourCustomSystem>::Begin()[M::SystemTags("tag1", FastName("tag2"), ..., "tagn")]
      .ConstructorByPointer<Scene*>()
-     .Method("ProcessFixed", &YourCustomSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 4.0f)]
-     .Method("Process", &YourCustomSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 2.0f)]
+     .Method("ProcessFixed", &YourCustomSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 4.0f)]
+     .Method("Process", &YourCustomSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 2.0f)]
      .End();
      }
      \endcode
 */
 
 class AnyFn;
-class UISystem;
-class System;
+class FastTags;
+class SystemProcessInfo;
+class ReflectedStructure;
 
 namespace Private
 {
 class EngineBackend;
 }
 
-class SystemManager
+class SystemManager final
 {
-    friend class Private::EngineBackend; // For creation
 public:
-    struct SceneTagInfo
+    struct SystemProcess final
     {
-        const Type* systemType;
-        const Vector<FastName>* tags;
+        SystemProcess(const AnyFn& process, const SystemProcessInfo& info)
+            : process(process)
+            , info(info)
+        {
+        }
+
+        const AnyFn& process;
+        const SystemProcessInfo& info;
     };
 
-    struct SceneProcessInfo
+    struct SystemInfo final
     {
-        const Type* systemType;
-        const AnyFn* method;
+        const FastTags* tags = nullptr;
+        Vector<SystemProcess> processMethods;
     };
 
-    const Vector<SceneTagInfo>& GetRegisteredSceneSystems() const;
-    const Vector<SceneTagInfo>& GetSystemsWithoutProcessMethods() const;
+    /** Register system with type `T`. `SystemTags` meta is required for type `T`. */
+    template <typename T>
+    bool RegisterSystem();
 
-    const Vector<FastName>& GetTagsForSystem(const Type* systemType);
+    /** Register system with Type `systemType`. `SystemTags` meta is required for Type `systemType`. */
+    bool RegisterSystem(const Type* systemType);
 
-    const Vector<SceneProcessInfo>& GetProcessMethods() const;
-    const Vector<SceneProcessInfo>& GetFixedProcessMethods() const;
+    /** Return `true` if system with type `T` is registered. */
+    template <typename T>
+    bool IsSystemRegistered() const;
 
-    /** Return true if system has a fixed process. */
-    bool SystemHasFixedProcess(const Type* systemType) const;
+    /** Return `true` if system with Type `systemType` is registered. */
+    bool IsSystemRegistered(const Type* systemType) const;
 
-    /** Return true if system has a non-fixed process. */
-    bool SystemHasProcess(const Type* systemType) const;
+    /** Return list of all registered systems. */
+    const Vector<const Type*>& GetSystems() const;
 
-    /** Return 'index' of a system which is an integer that describes it's order among all fixed and non-fixed processes. */
-    uint32 GetSystemIndex(const Type* systemType) const;
+    /**
+        Return registered systems with given `tags`.
+        If `exactMatch` is `false`, system's tags will be checked as subset of `tags`.
+        If `exactMatch` is `true`, system's tags will be checked as exact match of `tags`.
+    */
+    Vector<const Type*> GetSystems(const FastTags& tags, bool exactMatch = false) const;
 
-    void RegisterAllDerivedSceneSystemsRecursively();
+    /** Return info for registered system of type `T`. */
+    template <typename T>
+    const SystemInfo* GetSystemInfo() const;
+
+    /** Return info for registered system of Type `systemType`. */
+    const SystemInfo* GetSystemInfo(const Type* systemType) const;
+
+    /** Print sorted (by type, group & order) process methods info for `systemsTypes`. */
+    void PrintSystemsSortedProcessMethodsInfo(const Vector<const Type*>& systemsTypes) const;
+
+    /* Emitted when new system is registered in SystemManager. */
+    Signal<const Type*, const SystemInfo*> systemRegistered;
 
 private:
     SystemManager() = default;
 
-    Vector<SceneTagInfo> sceneSystems;
-    Vector<SceneTagInfo> systemsWithoutProcessMethods;
+    bool RegisterSystem(const Type& systemType, bool warningsAsAsserts);
 
-    Vector<SceneProcessInfo> methodsToProcess;
-    Vector<SceneProcessInfo> methodsToFixedProcess;
+    void PreregisterAllDerivedSceneSystemsRecursively();
+
+    bool VerifySystemConstructor(const Vector<std::unique_ptr<AnyFn>>& systemConstructors) const;
+
+    bool VerifyProcessMethods(const Vector<SystemProcess>& processMethods) const;
+
+    SystemInfo CollectSystemInfo(const ReflectedStructure& reflectedStructure) const;
+
+    Vector<const Type*> systems;
+    UnorderedMap<const Type*, SystemInfo> systemsInfo;
+    mutable UnorderedSet<SystemProcessInfo> systemProcessesVerificationCache;
+
+    friend class Private::EngineBackend; // For creation
 };
-}
+
+} // namespace DAVA
+
+#include "Entity/Private/SystemManager_impl.h"

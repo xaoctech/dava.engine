@@ -5,10 +5,11 @@
 #include <TArc/DataProcessing/DataListener.h>
 #include <TArc/Utils/QtConnections.h>
 #include <TArc/Utils/QtDelayedExecutor.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Base/BaseTypes.h>
 #include <Reflection/Reflection.h>
+
+#include <QString>
 
 namespace DAVA
 {

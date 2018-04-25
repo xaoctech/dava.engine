@@ -33,9 +33,9 @@
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterAimSystem)
 {
     using namespace DAVA;
-    ReflectionRegistrator<ShooterAimSystem>::Begin()[M::Tags("gm_shooter")]
+    ReflectionRegistrator<ShooterAimSystem>::Begin()[M::SystemTags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterAimSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 12.0f)]
+    .Method("ProcessFixed", &ShooterAimSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 12.0f)]
     .End();
 }
 

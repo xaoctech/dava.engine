@@ -81,7 +81,7 @@ void SaveEntityAsAction::Run()
         DVASSERT(firstEntity != nullptr);
         ElegantSceneGuard guard(firstEntity->GetScene());
 
-        ScopedPtr<Scene> scene(new Scene());
+        ScopedPtr<Scene> scene(new Scene("base"));
         ScopedPtr<Entity> container(nullptr);
 
         if (count == 1) // saving of single object
@@ -114,7 +114,7 @@ void SaveEntityAsAction::Run()
         DVASSERT(container);
 
         scene->AddNode(container); //1. Added new items in zero position with identity matrix
-        scene->staticOcclusionSystem->InvalidateOcclusion(); //2. invalidate static occlusion indeces
+        scene->GetSystem<StaticOcclusionSystem>()->InvalidateOcclusion(); //2. invalidate static occlusion indeces
         RemoveLightmapsRecursive(container); //3. Reset lightmaps
 
         scene->SaveScene(sc2Path);

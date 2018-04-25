@@ -20,14 +20,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(MotionSystem)
 {
-    ReflectionRegistrator<MotionSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<MotionSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &MotionSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 1.1f)]
+    .Method("ProcessFixed", &MotionSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 1.1f)]
     .End();
 }
 
 MotionSystem::MotionSystem(Scene* scene)
-    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<SkeletonComponent>() | ComponentUtils::MakeMask<MotionComponent>())
+    : BaseSimulationSystem(scene, ComponentUtils::MakeMask<SkeletonComponent, MotionComponent>())
 {
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SKELETON_CONFIG_CHANGED);
 }

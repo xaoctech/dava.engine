@@ -18,9 +18,9 @@ static const size_t HEARTBEAT_CODE_SIZE = sizeof(uint16);
 
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkHealthCheckSystem)
 {
-    ReflectionRegistrator<NetworkHealthCheckSystem>::Begin()[M::Tags("network", "server")]
+    ReflectionRegistrator<NetworkHealthCheckSystem>::Begin()[M::SystemTags("network", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &NetworkHealthCheckSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 1000.0f)]
+    .Method("Process", &NetworkHealthCheckSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 1000.0f)]
     .End();
 }
 

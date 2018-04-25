@@ -30,6 +30,13 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(DebugDrawSystem)
+{
+    ReflectionRegistrator<DebugDrawSystem>::Begin()[M::SystemTags("resource_editor", "debug_draw")]
+    .ConstructorByPointer<Scene*>()
+    .End();
+}
+
 const float32 DebugDrawSystem::HANGING_OBJECTS_DEFAULT_HEIGHT = 0.001f;
 
 DebugDrawSystem::DebugDrawSystem(Scene* scene)

@@ -2,6 +2,8 @@
 #include "Debug/Backtrace.h"
 #include "Utils/StringFormat.h"
 
+#include <sstream>
+
 #if defined(__DAVAENGINE_WIN32__)
 #   include "Concurrency/Atomic.h"
 #   include "Concurrency/Mutex.h"
@@ -327,6 +329,32 @@ String GetBacktraceString(const Vector<void*>& backtrace, size_t framesSize)
 String GetBacktraceString(size_t depth)
 {
     return GetBacktraceString(GetBacktrace(depth));
+}
+
+String DemangleType(const Type* type)
+{
+    std::ostringstream ss;
+
+    if(type->IsConst())
+    {
+        ss << "const ";
+    }
+
+    ss << DemangleFrameSymbol(type->GetName());
+
+    if(type->IsReference())
+    {
+        if (type->IsReferenceToConst())
+        {
+            ss << "const&";
+        }
+        else
+        {
+            ss << "&";
+        }
+    }
+
+    return ss.str();
 }
 
 } // namespace Debug

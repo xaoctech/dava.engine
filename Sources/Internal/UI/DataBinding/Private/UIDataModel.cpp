@@ -2,9 +2,6 @@
 
 #include "UI/DataBinding/Private/UIDataList.h"
 #include "UI/DataBinding/Private/UIDataChildFactory.h"
-
-#include "FileSystem/File.h"
-
 #include "UI/DataBinding/Private/UIDataBindingDefaultFunctions.h"
 
 #include "UI/Formula/FormulaContext.h"
@@ -13,7 +10,9 @@
 #include "UI/Formula/Private/FormulaExecutor.h"
 #include "UI/UIControl.h"
 
+#include "FileSystem/File.h"
 #include "Reflection/ReflectedTypeDB.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

@@ -26,9 +26,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SpeedTreeUpdateSystem)
 {
-    ReflectionRegistrator<SpeedTreeUpdateSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<SpeedTreeUpdateSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &SpeedTreeUpdateSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 13.0f)]
+    .Method("Process", &SpeedTreeUpdateSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 13.0f)]
     .End();
 }
 
@@ -122,8 +122,8 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
     if (!isAnimationEnabled || !isVegetationAnimationEnabled)
         return;
 
-    WindSystem* windSystem = GetScene()->windSystem;
-    WaveSystem* waveSystem = GetScene()->waveSystem;
+    WindSystem* windSystem = GetScene()->GetSystem<WindSystem>();
+    WaveSystem* waveSystem = GetScene()->GetSystem<WaveSystem>();
 
     //Update trees
     uint32 treeCount = static_cast<uint32>(allTrees.size());
@@ -180,7 +180,7 @@ void SpeedTreeUpdateSystem::HandleEvent(Observable* observable)
     }
 }
 
-void SpeedTreeUpdateSystem::SceneDidLoaded()
+void SpeedTreeUpdateSystem::OnSceneLoaded()
 {
     for (auto tree : allTrees)
     {

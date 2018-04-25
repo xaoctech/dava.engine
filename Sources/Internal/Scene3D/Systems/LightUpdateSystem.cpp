@@ -19,9 +19,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(LightUpdateSystem)
 {
-    ReflectionRegistrator<LightUpdateSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<LightUpdateSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &LightUpdateSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 8.f)]
+    .Method("Process", &LightUpdateSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 8.f)]
     .End();
 }
 

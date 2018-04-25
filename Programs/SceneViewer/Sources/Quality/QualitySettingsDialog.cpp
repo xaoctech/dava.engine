@@ -526,7 +526,7 @@ void QualitySettingsDialog::ApplyQualitySettings()
     if (materialSettingsChanged || optionSettingsChanged)
     {
         DAVA::QualitySettingsSystem::Instance()->UpdateEntityVisibility(scene);
-        scene->foliageSystem->SyncFoliageWithLandscape();
+        scene->GetSystem<DAVA::FoliageSystem>()->SyncFoliageWithLandscape();
     }
 
     QualityPreferences::SaveToSettings(settings);

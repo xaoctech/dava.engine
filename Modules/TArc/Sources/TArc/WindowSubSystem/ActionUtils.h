@@ -1,10 +1,10 @@
 #pragma once
 
-#include "TArc/Qt/QtString.h"
 #include <Base/BaseTypes.h>
 
 #include <QUrl>
 #include <QKeySequence>
+#include <QString>
 
 class QAction;
 class QWidget;

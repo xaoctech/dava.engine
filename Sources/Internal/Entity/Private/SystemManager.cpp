@@ -1,236 +1,196 @@
 #include "Entity/SystemManager.h"
 
-#include "Base/AnyFn.h"
-#include "Entity/SceneSystem.h"
+#include "Base/FastTags.h"
 #include "Logger/Logger.h"
-#include "Reflection/ReflectedTypeDB.h"
-#include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
-#include "UI/UISystem.h"
+#include "Reflection/ReflectedTypeDB.h"
 
 namespace DAVA
 {
 namespace SystemManagerDetails
 {
-struct SysTypeToMethod
+const ReflectedStructure* GetTypeReflectedStructure(const Type& type)
 {
-    SysTypeToMethod(const Type* type_, const ReflectedStructure::Method* method_)
-        : type(type_)
-        , method(method_)
+    const ReflectedStructure* reflectedStructure = nullptr;
+
+    const ReflectedType* const reflectedType = ReflectedTypeDB::GetLocalDB()->GetByType(&type);
+
+    if (nullptr != reflectedType)
     {
+        reflectedStructure = reflectedType->GetStructure();
     }
-    const Type* type;
-    const ReflectedStructure::Method* method;
 
-    bool operator<(const SysTypeToMethod& other) const
-    {
-        const M::SystemProcess* lMeta = method->meta->GetMeta<M::SystemProcess>();
-        const M::SystemProcess* rMeta = other.method->meta->GetMeta<M::SystemProcess>();
-
-        return lMeta->group == rMeta->group ? lMeta->order < rMeta->order : lMeta->group < rMeta->group;
-    }
-};
-
-static const Array<String, 3> groups = { "ENGINE_BEGIN", "GAMEPLAY", "ENGINE_END" };
-
-void CollectMethods(UnorderedMap<SP::Type, Set<SysTypeToMethod>>& methods, const Type* type, const Vector<std::unique_ptr<ReflectedStructure::Method>>& systemMethods)
-{
-    for (const auto& method : systemMethods)
-    {
-        if (method->meta != nullptr)
-        {
-            const M::SystemProcess* meta = method->meta->GetMeta<M::SystemProcess>();
-            if (meta != nullptr)
-            {
-                const auto& argsType = method->fn.GetInvokeParams().argsType;
-                if (argsType.size() == 2 && argsType[0]->IsPointer() && argsType[1]->Is<float32>())
-                {
-                    DVASSERT(methods[meta->type].count({ type, method.get() }) == 0, "Order already in use. System will not be added.");
-                    methods[meta->type].emplace(type, method.get());
-                }
-                else
-                {
-                    DVASSERT(false, "Method will not be added, arguments are incorrect.");
-                }
-            }
-        }
-    }
+    return reflectedStructure;
 }
+} // namespace SystemManagerDetails
+
+bool SystemManager::RegisterSystem(const Type* systemType)
+{
+    DVASSERT(nullptr != systemType);
+
+    const bool warningsAsAsserts = true;
+
+    const bool isSystemRegistered = RegisterSystem(*systemType, warningsAsAsserts);
+
+    if (isSystemRegistered)
+    {
+        Logger::Info("\nSystemManager | New system registered: %s", systemType->GetName());
+
+        PrintSystemsSortedProcessMethodsInfo({ systemType });
+    }
+
+    return isSystemRegistered;
 }
 
-void SystemManager::RegisterAllDerivedSceneSystemsRecursively()
+bool SystemManager::IsSystemRegistered(const Type* systemType) const
 {
-    //cause can be called several times
-    sceneSystems.clear();
-    systemsWithoutProcessMethods.clear();
-    methodsToProcess.clear();
-    methodsToFixedProcess.clear();
+    DVASSERT_ALWAYS(TypeInheritance::CanCast(systemType, Type::Instance<SceneSystem>()));
 
-    const TypeInheritance* inheritance = Type::Instance<SceneSystem>()->GetInheritance();
-    Vector<TypeInheritance::Info> derivedTypes = inheritance->CollectRecursiveDerivedTypes();
-    sceneSystems.reserve(derivedTypes.size());
+    return nullptr != systemType && systemsInfo.find(systemType) != systemsInfo.end();
+}
 
-#define PRINT_BY_TAGS 
-#ifdef PRINT_BY_TAGS
-    UnorderedMap<FastName, Vector<const Type*>> tagToType;
-#endif
+const Vector<const Type*>& SystemManager::GetSystems() const
+{
+    return systems;
+}
 
-    const ReflectedTypeDB* db = ReflectedTypeDB::GetLocalDB();
-    UnorderedMap<SP::Type, Set<SystemManagerDetails::SysTypeToMethod>> methods;
+Vector<const Type*> SystemManager::GetSystems(const FastTags& tags, bool exactMatch) const
+{
+    Vector<const Type*> matchedSystems;
 
-    for (auto& it : derivedTypes)
+    for (const auto& p : systemsInfo)
     {
-        const Type* type = it.type;
-        const ReflectedType* rType = db->GetByType(type);
-        //
-        // TODO: Use ReflectionHelpers GetReflectedMeta, when it will be in Engine.
-        // Need to move ReflectionHelpers.h from TArc to Engine
-        const ReflectedStructure* structure = rType->GetStructure();
-        if (structure == nullptr || structure->meta == nullptr)
+        const Type* systemType = p.first;
+        const auto& systemTags = p.second.tags->tags;
+
+        bool needAddSystem = false;
+
+        if (!exactMatch)
         {
-            Logger::Debug("SystemManager: System '%s' has no meta. System will not be added.", rType->GetPermanentName().c_str());
-            continue;
-        }
-
-        const M::Tags* tags = structure->meta->GetMeta<M::Tags>();
-
-        if (tags == nullptr)
-        {
-            Logger::Debug("SystemManager: System '%s' has no tags meta. System will not be added.", rType->GetPermanentName().c_str());
-            continue;
-        }
-
-        if (rType->GetCtor<Scene*>(type->Pointer()) != nullptr)
-        {
-#ifdef PRINT_BY_TAGS
-            for (FastName tag : tags->tags)
-            {
-                tagToType[tag].push_back(type);
-            }
-#endif
-            if (!structure->methods.empty())
-            {
-                SystemManager::SceneTagInfo tinfo;
-                tinfo.systemType = type;
-                tinfo.tags = &tags->tags;
-
-                sceneSystems.push_back(tinfo);
-
-                SystemManagerDetails::CollectMethods(methods, type, structure->methods);
-            }
-            else
-            {
-                SystemManager::SceneTagInfo tinfo;
-                tinfo.systemType = type;
-                tinfo.tags = &tags->tags;
-
-                systemsWithoutProcessMethods.push_back(tinfo);
-
-                Logger::Debug("SystemManager: system with tags and without methods: '%s'", rType->GetPermanentName().c_str());
-            }
+            needAddSystem = std::all_of(cbegin(systemTags), cend(systemTags), [& tags = tags.tags](const auto& tag) { return tags.count(tag) != 0; });
         }
         else
         {
-            Logger::Debug("SystemManager: There is no (Scene*) constructor for the '%s' system. System will not be added.", rType->GetPermanentName().c_str());
+            needAddSystem = (systemTags == tags.tags);
         }
-    }
 
-#ifdef PRINT_BY_TAGS
-    Logger::Info("System manager: registered systems:");
-    for (const auto& p : tagToType)
-    {
-        Logger::Info("\n%s:", p.first.c_str());
-        for (const Type* t : p.second)
+        if (needAddSystem)
         {
-            Logger::Info("    %s", db->GetByType(t)->GetPermanentName().c_str());
+            matchedSystems.push_back(systemType);
         }
     }
-#endif
-    const String format("    %-40s | %-20s : %g");
 
-    int32 currentGroup = -1;
+    return matchedSystems;
+}
 
-    Logger::Info("\nFixed process methods order:");
-    for (const auto& p : methods[SP::Type::FIXED])
+const SystemManager::SystemInfo* SystemManager::GetSystemInfo(const Type* systemType) const
+{
+    DVASSERT(nullptr != systemType);
+
+    DVASSERT_ALWAYS(TypeInheritance::CanCast(systemType, Type::Instance<SceneSystem>()));
+
+    const SystemInfo* systemInfo = nullptr;
+
+    const auto it = systemsInfo.find(systemType);
+
+    if (it != systemsInfo.cend())
     {
-        SystemManager::SceneProcessInfo pinfo;
-        pinfo.systemType = p.type;
-        pinfo.method = &p.method->fn;
+        systemInfo = &it->second;
+    }
 
-        methodsToFixedProcess.push_back(pinfo);
+    DVASSERT(nullptr != systemInfo, Format("System with type '%s' is not registered.", systemType->GetName()).c_str());
 
-        int32 group = static_cast<int32>(p.method->meta->GetMeta<M::SystemProcess>()->group);
+    return systemInfo;
+}
 
-        if (currentGroup != group)
+bool SystemManager::RegisterSystem(const Type& systemType, bool warningsAsAsserts)
+{
+    auto warning = [warningsAsAsserts](const String& warningMessage)
+    {
+        !warningsAsAsserts ? Logger::Warning(warningMessage.c_str()) : [&warningMessage]() { DVASSERT(false, warningMessage.c_str()); }();
+    };
+
+    DVASSERT_ALWAYS(TypeInheritance::CanCast(&systemType, Type::Instance<SceneSystem>()));
+
+    if (systemsInfo.find(&systemType) != systemsInfo.end())
+    {
+        warning(Format("System with type '%s' is already registered.", systemType.GetName()));
+        return false;
+    }
+
+    const ReflectedStructure* const reflectedStructure = SystemManagerDetails::GetTypeReflectedStructure(systemType);
+
+    if (nullptr == reflectedStructure)
+    {
+        warning(Format("System with type '%s' has no reflected structure, system will not be registered.", systemType.GetName()));
+        return false;
+    }
+
+    const SystemInfo systemInfo = CollectSystemInfo(*reflectedStructure);
+
+    if (nullptr == systemInfo.tags)
+    {
+        warning(Format("System with type '%s' has no system tags meta, system will not be registered.", systemType.GetName()));
+        return false;
+    }
+
+    const bool systemHasRightConstructor = VerifySystemConstructor(reflectedStructure->ctors);
+
+    if (!systemHasRightConstructor)
+    {
+        warning(Format("System with type '%s' has no constructor with `Scene*` argument, system will not be registered.", systemType.GetName()));
+        return false;
+    }
+
+    const bool processMethodsVerified = VerifyProcessMethods(systemInfo.processMethods);
+
+    if (!processMethodsVerified)
+    {
+        DVASSERT_ALWAYS(false, Format("System with type '%s' has incorrect process methods. System will not be registered.", systemType.GetName()).c_str());
+        return false;
+    }
+
+    systems.push_back(&systemType);
+    systemsInfo.emplace(&systemType, std::move(systemInfo));
+    systemRegistered.Emit(&systemType, &systemsInfo[&systemType]);
+
+    return true;
+}
+
+void SystemManager::PreregisterAllDerivedSceneSystemsRecursively()
+{
+    const Type* baseSceneSystemType = Type::Instance<SceneSystem>();
+
+    const TypeInheritance* const sceneSystemInheritance = baseSceneSystemType->GetInheritance();
+
+    if (nullptr != sceneSystemInheritance)
+    {
+        Vector<TypeInheritance::Info> sceneSystemDerivedTypes = sceneSystemInheritance->CollectRecursiveDerivedTypes();
+
+        systems.reserve(sceneSystemDerivedTypes.size());
+
+        for (const TypeInheritance::Info& info : sceneSystemDerivedTypes)
         {
-            currentGroup = group;
-            Logger::Info("\n%s", SystemManagerDetails::groups[currentGroup].c_str());
+            const Type& systemType = *info.type;
+
+            const bool warningsAsAsserts = false;
+
+            RegisterSystem(systemType, warningsAsAsserts);
         }
-
-        Logger::Info(format.c_str(), db->GetByType(p.type)->GetPermanentName().c_str(), p.method->name.c_str(), p.method->meta->GetMeta<M::SystemProcess>()->order);
     }
 
-    currentGroup = -1;
+    Logger::Info("\nSystemManager | Registered systems:");
 
-    Logger::Info("\nNormal process methods order:");
-    for (const auto& p : methods[SP::Type::NORMAL])
+    PrintSystemsSortedProcessMethodsInfo(systems);
+}
+
+bool SystemManager::VerifySystemConstructor(const Vector<std::unique_ptr<AnyFn>>& systemConstructors) const
+{
+    for (const std::unique_ptr<AnyFn>& constructor : systemConstructors)
     {
-        SystemManager::SceneProcessInfo pinfo;
-        pinfo.systemType = p.type;
-        pinfo.method = &p.method->fn;
+        const Vector<const Type*>& argsTypes = constructor->GetInvokeParams().argsType;
 
-        methodsToProcess.push_back(pinfo);
-
-        int32 group = static_cast<int32>(p.method->meta->GetMeta<M::SystemProcess>()->group);
-
-        if (currentGroup != group)
-        {
-            currentGroup = group;
-            Logger::Info("\n%s", SystemManagerDetails::groups[currentGroup].c_str());
-        }
-
-        Logger::Info(format.c_str(), db->GetByType(p.type)->GetPermanentName().c_str(), p.method->name.c_str(), p.method->meta->GetMeta<M::SystemProcess>()->order);
-    }
-}
-
-const Vector<SystemManager::SceneTagInfo>& SystemManager::GetRegisteredSceneSystems() const
-{
-    return sceneSystems;
-}
-
-const Vector<SystemManager::SceneTagInfo>& SystemManager::GetSystemsWithoutProcessMethods() const
-{
-    return systemsWithoutProcessMethods;
-}
-
-const Vector<FastName>& SystemManager::GetTagsForSystem(const Type* systemType)
-{
-    static Vector<FastName> empty;
-
-    auto it = std::find_if(sceneSystems.begin(), sceneSystems.end(), [systemType](const auto& p) { return p.systemType == systemType; });
-    if (it != sceneSystems.end())
-    {
-        return *it->tags;
-    }
-
-    return empty;
-}
-
-const Vector<SystemManager::SceneProcessInfo>& SystemManager::GetProcessMethods() const
-{
-    return methodsToProcess;
-}
-
-const Vector<SystemManager::SceneProcessInfo>& SystemManager::GetFixedProcessMethods() const
-{
-    return methodsToFixedProcess;
-}
-
-bool SystemManager::SystemHasFixedProcess(const Type* systemType) const
-{
-    for (const SceneProcessInfo& fixedProcessInfo : methodsToFixedProcess)
-    {
-        if (fixedProcessInfo.systemType == systemType)
+        if (argsTypes.size() == 1 && argsTypes[0]->Is<Scene*>())
         {
             return true;
         }
@@ -239,37 +199,203 @@ bool SystemManager::SystemHasFixedProcess(const Type* systemType) const
     return false;
 }
 
-bool SystemManager::SystemHasProcess(const Type* systemType) const
+bool SystemManager::VerifyProcessMethods(const Vector<SystemProcess>& processMethods) const
 {
-    for (const SceneProcessInfo& processInfo : methodsToProcess)
+    for (const SystemProcess& systemProcess : processMethods)
     {
-        if (processInfo.systemType == systemType)
+        auto VerifyArgumentsTypes = [](SPI::Type processType, const AnyFn::Params& params) {
+            const Vector<const Type*>& argsTypes = params.argsType;
+            if (argsTypes.size() == 2 && argsTypes[0]->IsPointer() && TypeInheritance::CanCast(argsTypes[0], Type::Instance<SceneSystem*>()))
+            {
+                return processType != SPI::Type::Input ? argsTypes[1]->Is<float32>() : argsTypes[1]->Is<UIEvent*>() && params.retType->Is<bool>();
+            }
+            return false;
+        };
+
+        const bool argumentsTypesAreVerified = VerifyArgumentsTypes(systemProcess.info.type, systemProcess.process.GetInvokeParams());
+
+        if (!argumentsTypesAreVerified)
         {
-            return true;
+            DVASSERT(false, "Process method has invalid arguments.");
+            return false;
+        }
+
+        const bool successfulInsert = systemProcessesVerificationCache.insert(systemProcess.info).second;
+
+        if (!successfulInsert)
+        {
+            DVASSERT(false, "Process method order already in use.");
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
-uint32 SystemManager::GetSystemIndex(const Type* systemType) const
+SystemManager::SystemInfo SystemManager::CollectSystemInfo(const ReflectedStructure& reflectedStructure) const
 {
-    for (uint32 i = 0; i < methodsToFixedProcess.size(); ++i)
+    SystemManager::SystemInfo systemInfo;
+
+    const ReflectedMeta* const reflectedStructureMeta = reflectedStructure.meta.get();
+
+    if (nullptr != reflectedStructureMeta)
     {
-        if (methodsToFixedProcess[i].systemType == systemType)
+        const M::SystemTags* const systemTags = reflectedStructureMeta->GetMeta<M::SystemTags>();
+
+        if (nullptr != systemTags)
         {
-            return i;
+            systemInfo.tags = systemTags;
         }
     }
 
-    for (uint32 i = 0; i < methodsToProcess.size(); ++i)
+    for (const std::unique_ptr<ReflectedStructure::Method>& method : reflectedStructure.methods)
     {
-        if (methodsToProcess[i].systemType == systemType)
+        const ReflectedMeta* const methodMeta = method->meta.get();
+
+        if (nullptr != methodMeta)
         {
-            return static_cast<uint32>(methodsToFixedProcess.size() + i);
+            const M::SystemProcessInfo* const systemProcessInfo = methodMeta->GetMeta<M::SystemProcessInfo>();
+
+            if (nullptr != systemProcessInfo)
+            {
+                systemInfo.processMethods.emplace_back(method->fn, *systemProcessInfo);
+            }
         }
     }
 
-    return UINT32_MAX;
+    return systemInfo;
 }
+
+void SystemManager::PrintSystemsSortedProcessMethodsInfo(const Vector<const Type*>& systemsTypes) const
+{
+    struct Info
+    {
+        Info(const char* systemName, const char* processName, const SystemProcessInfo* processInfo)
+            : systemName(systemName)
+            , processName(processName)
+            , processInfo(processInfo)
+        {
+        }
+        const char* systemName;
+        const char* processName;
+        const SystemProcessInfo* processInfo;
+    };
+
+    Vector<Info> fixedProcesses;
+    Vector<Info> processes;
+    Vector<Info> inputProcesses;
+
+    for (const Type* systemType : systemsTypes)
+    {
+        if (!IsSystemRegistered(systemType))
+        {
+            DVASSERT(false, "System is not registered.");
+            continue;
+        }
+
+        const ReflectedType* const reflectedType = ReflectedTypeDB::GetLocalDB()->GetByType(systemType);
+
+        if (nullptr == reflectedType) // Should always be true since system is registered, but we don't want to crash in `print` method.
+        {
+            continue;
+        }
+
+        const ReflectedStructure* const reflectedStructure = reflectedType->GetStructure();
+
+        if (nullptr == reflectedStructure) // Should always be true since system is registered, but we don't want to crash in `print` method.
+        {
+            continue;
+        }
+
+        const char* systemName = reflectedType->GetPermanentName().c_str();
+
+        for (const std::unique_ptr<ReflectedStructure::Method>& method : reflectedStructure->methods)
+        {
+            const ReflectedMeta* const methodMeta = method->meta.get();
+
+            if (nullptr != methodMeta)
+            {
+                auto insertInfo = [](auto& sortedContainer, const Info& info) {
+                    const auto position = std::lower_bound(cbegin(sortedContainer), cend(sortedContainer), info, [](const Info& l, const Info& r) {
+                        return *l.processInfo < *r.processInfo;
+                    });
+                    sortedContainer.insert(position, info);
+                };
+
+                const M::SystemProcessInfo* const systemProcessInfo = methodMeta->GetMeta<M::SystemProcessInfo>();
+
+                if (nullptr != systemProcessInfo)
+                {
+                    Info info(systemName, method->name.c_str(), systemProcessInfo);
+
+                    switch (systemProcessInfo->type)
+                    {
+                    case SPI::Type::Fixed:
+                        insertInfo(fixedProcesses, info);
+                        break;
+                    case SPI::Type::Normal:
+                        insertInfo(processes, info);
+                        break;
+                    case SPI::Type::Input:
+                        insertInfo(inputProcesses, info);
+                        break;
+                    default:
+                        DVASSERT(false, "Unhandled case.");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    const char* format("    %-40s | %-25s : %g");
+
+    const Array<const char*, 3> groups = { "EngineBegin", "Gameplay", "EngineEnd" };
+
+    using T = std::underlying_type_t<SPI::Group>;
+
+    static_assert(static_cast<T>(SPI::Group::EngineBegin) == 0, "");
+    static_assert(static_cast<T>(SPI::Group::Gameplay) == 1, "");
+    static_assert(static_cast<T>(SPI::Group::EngineEnd) == 2, "");
+
+    int32 currentPrintGroup = -1;
+
+    struct ProcessesTypeNamePair
+    {
+        ProcessesTypeNamePair(Vector<Info>& processes, const char* name)
+            : processes(processes)
+            , name(name)
+        {
+        }
+        Vector<Info>& processes;
+        const char* name;
+    };
+
+    const Array<ProcessesTypeNamePair, 3> processesInfo{ { { fixedProcesses, "Fixed processes:" }, { processes, "Processes:" }, { inputProcesses, "Input processes:" } } };
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        if (processesInfo[i].processes.empty())
+        {
+            continue;
+        }
+
+        Logger::Info("\n%s\n", processesInfo[i].name);
+
+        for (const Info& info : processesInfo[i].processes)
+        {
+            const int32 group = static_cast<int32>(info.processInfo->group);
+
+            if (group != currentPrintGroup)
+            {
+                Logger::Info(groups[group]);
+                currentPrintGroup = group;
+            }
+
+            Logger::Info(format, info.systemName, info.processName, info.processInfo->order);
+        }
+
+        currentPrintGroup = -1;
+    }
 }
+} // namespace DAVA

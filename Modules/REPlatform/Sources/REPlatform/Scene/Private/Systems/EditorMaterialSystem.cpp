@@ -23,6 +23,13 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorMaterialSystem)
+{
+    ReflectionRegistrator<EditorMaterialSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .End();
+}
+
 EditorMaterialSystem::MaterialMapping::MaterialMapping(Entity* entity_, RenderBatch* renderBatch_)
     : entity(entity_)
 {
@@ -318,7 +325,7 @@ void EditorMaterialSystem::ProcessCommand(const RECommandNotificationObject& com
     });
 
     commandNotification.ForEach<InspMemberModifyCommand>([&](const InspMemberModifyCommand* cmd) {
-        const Vector<Entity*>& landscapes = GetScene()->landscapeSystem->GetLandscapeEntities();
+        const Vector<Entity*>& landscapes = GetScene()->GetSystem<LandscapeSystem>()->GetLandscapeEntities();
         for (Entity* landEntity : landscapes)
         {
             Landscape* landObject = GetLandscape(landEntity);
@@ -337,7 +344,7 @@ void EditorMaterialSystem::ProcessCommand(const RECommandNotificationObject& com
         if (object.GetReflectedType() == ReflectedTypeDB::Get<Landscape>())
         {
             Landscape* landscape = object.GetPtr<Landscape>();
-            const Vector<Entity*>& landscapes = GetScene()->landscapeSystem->GetLandscapeEntities();
+            const Vector<Entity*>& landscapes = GetScene()->GetSystem<LandscapeSystem>()->GetLandscapeEntities();
             for (Entity* landEntity : landscapes)
             {
                 Landscape* landObject = GetLandscape(landEntity);

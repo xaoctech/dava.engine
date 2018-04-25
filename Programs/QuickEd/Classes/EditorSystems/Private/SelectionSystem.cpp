@@ -94,7 +94,7 @@ void SelectionSystem::FocusToChild(bool next)
     }
 
     PackageBaseNode* startNode = nullptr;
-    SelectedNodes selection = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName).Cast<SelectedNodes>(SelectedNodes());
+    SelectedNodes selection = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName).CastSafely<SelectedNodes>(SelectedNodes());
 
     if (!selection.empty())
     {
@@ -137,7 +137,7 @@ void SelectionSystem::SelectNodesImpl(const SelectedNodes& selection)
 void SelectionSystem::SelectNode(ControlNode* selectedNode)
 {
     SelectedNodes newSelection;
-    SelectedNodes currentSelection = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName).Cast<SelectedNodes>(SelectedNodes());
+    SelectedNodes currentSelection = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName).CastSafely<SelectedNodes>(SelectedNodes());
     if (DAVA::IsKeyPressed(DAVA::eModifierKeys::SHIFT) ||
         (GetSystemsManager()->GetDisplayState() == eDisplayState::Edit && currentSelection.find(selectedNode) != currentSelection.end()))
     {
@@ -268,7 +268,7 @@ ControlNode* SelectionSystem::GetCommonNodeUnderPoint(const DAVA::Vector2& point
 
     DAVA::Vector<ControlNode*> nodesUnderPoint;
     GetNodesForSelection(nodesUnderPoint, point);
-    SelectedNodes selection = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName).Cast<SelectedNodes>(SelectedNodes());
+    SelectedNodes selection = documentDataWrapper.GetFieldValue(DocumentData::selectionPropertyName).CastSafely<SelectedNodes>(SelectedNodes());
 
     //here we use only selected controls
     for (auto iter = selection.begin(); iter != selection.end();)

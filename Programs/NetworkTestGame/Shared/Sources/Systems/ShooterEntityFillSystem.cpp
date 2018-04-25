@@ -65,9 +65,9 @@
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterEntityFillSystem)
 {
     using namespace DAVA;
-    ReflectionRegistrator<ShooterEntityFillSystem>::Begin()[M::Tags("gm_shooter")]
+    ReflectionRegistrator<ShooterEntityFillSystem>::Begin()[M::SystemTags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterEntityFillSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 10.0f)]
+    .Method("ProcessFixed", &ShooterEntityFillSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 10.0f)]
     .End();
 }
 

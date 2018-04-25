@@ -53,7 +53,7 @@ void FindInProjectModule::PostInit()
 
     const auto updater =
     [](const Any& fieldValue) -> Any {
-        return !fieldValue.Cast<FilePath>(FilePath()).IsEmpty();
+        return !fieldValue.CastSafely<FilePath>(FilePath()).IsEmpty();
     };
 
     const QString selectCurrentDocumentActionName = QStringLiteral("Select Current Document in File System");

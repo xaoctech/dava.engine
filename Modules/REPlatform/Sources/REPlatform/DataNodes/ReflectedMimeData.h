@@ -2,14 +2,13 @@
 
 #include <REPlatform/DataNodes/Selectable.h>
 
-#include <TArc/Qt/QtString.h>
-
 #include <Base/Any.h>
 #include <Base/BaseTypes.h>
 #include <Reflection/ReflectedTypeDB.h>
 
 #include <QMimeData>
 #include <QVariant>
+#include <QString>
 
 namespace DAVA
 {

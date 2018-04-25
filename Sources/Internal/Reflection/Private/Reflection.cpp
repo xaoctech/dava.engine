@@ -460,7 +460,7 @@ void ProvideReflectionDebugInfo()
         if (ImGui::IsInitialized())
         {
             static int updateFrame = 0;
-            static TypeDetail::TypeDB::Stats typeStats;
+            static TypeDetails::TypeDB::Stats typeStats;
             static ReflectedTypeDB::Stats reflectionStats;
 
             if (updateFrame > 0)
@@ -470,7 +470,7 @@ void ProvideReflectionDebugInfo()
             else
             {
                 updateFrame = 120; // once per 120 frames
-                typeStats = TypeDetail::TypeDB::GetStats();
+                typeStats = TypeDetails::TypeDB::GetStats();
                 reflectionStats = ReflectedTypeDB::GetStats();
             }
 

@@ -74,7 +74,7 @@ struct TypeInitializer : public StaticSingleton<ComponentCreator>
     };
     TypeInitializer()
     {
-        AnyCast<TypePair, String>::Register([](const Any& v) -> String
+        AnyCast<TypePair, String>::Register([](const Any& v) -> Any
                                             {
                                                 return v.Get<TypePair>().first;
                                             });
@@ -342,14 +342,23 @@ private:
 namespace DAVA
 {
 template <>
-struct AnyCompare<PropertyModelExtDetails::TypeInitializer::TypePair>
+struct TypeDetails::IsEqualComparable<PropertyModelExtDetails::TypeInitializer::TypePair> : std::true_type
 {
-    static bool IsEqual(const Any& v1, const Any& v2)
+};
+
+template <>
+Type::CompareOp TypeDetails::GetEqualIfComparable<PropertyModelExtDetails::TypeInitializer::TypePair>(std::true_type)
+{
+    static auto op = [](const void* data1, const void* data2) -> bool
     {
         using T = PropertyModelExtDetails::TypeInitializer::TypePair;
-        return v1.Get<T>().second == v2.Get<T>().second;
-    }
-};
+        const T* v1 = static_cast<const T*>(data1);
+        const T* v2 = static_cast<const T*>(data2);
+        return v1->second == v2->second;
+    };
+
+    return static_cast<Type::CompareOp>(op);
+}
 } // namespace DAVA
 
 REModifyPropertyExtension::REModifyPropertyExtension(DAVA::ContextAccessor* accessor_)

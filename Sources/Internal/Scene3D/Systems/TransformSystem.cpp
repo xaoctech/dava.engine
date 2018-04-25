@@ -14,11 +14,13 @@
 
 namespace DAVA
 {
+const float32 TransformSystem::systemOrder = 2.f;
+
 DAVA_VIRTUAL_REFLECTION_IMPL(TransformSystem)
 {
-    ReflectionRegistrator<TransformSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<TransformSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &TransformSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 2.0f)]
+    .Method("Process", &TransformSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, TransformSystem::systemOrder)]
     .End();
 }
 

@@ -17,7 +17,7 @@ public:
 private:
     friend class TextModule;
 
-    std::unique_ptr<EditorTextSystem> editorTextSystem;
+    EditorTextSystem* editorTextSystem = nullptr;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(TextModuleData, DAVA::TArcDataNode)
     {

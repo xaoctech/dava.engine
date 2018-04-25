@@ -4,11 +4,20 @@
 #include <REPlatform/Scene/Systems/TextDrawSystem.h>
 
 #include <Debug/DVAssert.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/TextComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Utils/Utils.h>
 #include <Math/Transform.h>
+
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorTextSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<EditorTextSystem>::Begin()[M::SystemTags("resource_editor", "text_editor")]
+    .ConstructorByPointer<Scene*>()
+    .End();
+}
 
 EditorTextSystem::EditorTextSystem(DAVA::Scene* scene)
     : SceneSystem(scene, DAVA::ComponentUtils::MakeMask<DAVA::TextComponent>())

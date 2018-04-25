@@ -72,10 +72,10 @@ void UserNodeModule::PostInit()
         fieldDescr.fieldName = DAVA::FastName(UserNodeData::drawingEnabledPropertyName);
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<UserNodeData>();
         action->SetStateUpdationFunction(QtAction::Checked, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            return value.Get<bool>(false);
+            return value.GetSafely<bool>(false);
         });
         action->SetStateUpdationFunction(QtAction::Text, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            if (value.Get<bool>(false))
+            if (value.GetSafely<bool>(false))
                 return DAVA::String("Custom UserNode Drawing Enabled");
             return DAVA::String("Custom UserNode Drawing Disabled");
         });
@@ -109,12 +109,16 @@ void UserNodeModule::OnContextCreated(DAVA::DataContext* context)
     using namespace DAVA;
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
+
     DVASSERT(scene != nullptr);
+    DVASSERT(scene->HasTags("resource_editor"));
+
+    scene->AddTags("user_node");
 
     std::unique_ptr<UserNodeData> userData = std::make_unique<UserNodeData>();
-    userData->system.reset(new UserNodeSystem(scene, GetBotSpawnPath()));
+    userData->system = scene->GetSystem<UserNodeSystem>();
+    userData->system->SetScenePath(GetBotSpawnPath());
     userData->system->DisableSystem();
-    scene->AddSystem(userData->system.get());
 
     context->CreateData(std::move(userData));
 }
@@ -126,8 +130,7 @@ void UserNodeModule::OnContextDeleted(DAVA::DataContext* context)
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
 
-    UserNodeData* userData = context->GetData<UserNodeData>();
-    scene->RemoveSystem(userData->system.get());
+    scene->RemoveTags("user_node");
 }
 
 void UserNodeModule::ChangeDrawingState()
@@ -147,7 +150,7 @@ void UserNodeModule::OnHUDVisibilityChanged(const DAVA::Any& hudVisibilityValue)
         UserNodeData* userData = context->GetData<UserNodeData>();
         DVASSERT(userData != nullptr);
 
-        bool isHudVisible = hudVisibilityValue.Cast<bool>(false);
+        bool isHudVisible = hudVisibilityValue.CastSafely<bool>(false);
         userData->system->SetVisible(isHudVisible);
     }
 }

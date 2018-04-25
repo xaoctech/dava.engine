@@ -430,7 +430,7 @@ void TestServer::AddTokenToGame(NetworkGameModeSingleComponent* netGameModeComp,
 
 void TestServer::CreateScene(DAVA::float32 screenAspect)
 {
-    tags.insert({ FastName("server"), FastName("input"), FastName("network"), FastName("marker") });
+    tags.insert({ FastName("base"), FastName("physics"), FastName("server"), FastName("input"), FastName("network"), FastName("marker") });
 
     if (botsCount > 0)
     {
@@ -483,7 +483,8 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
         tags.insert({ FastName("replay") }); // add ReplayServerSystem for now
     }
 
-    scene = new Scene(tags);
+    const bool createSystems = false;
+    scene = new Scene(tags, createSystems);
     scene->SetPerformFixedProcessOnlyOnce(true);
 
     NetworkReplicationComponent* nrc = new NetworkReplicationComponent(NetworkID::SCENE_ID);
@@ -523,7 +524,7 @@ void TestServer::CreateScene(DAVA::float32 screenAspect)
     }
 
     scene->GetSingleComponent<NetworkServerSingleComponent>()->SetServer(&gameServer.GetUDPServer());
-    scene->CreateSystemsByTags();
+    scene->CreateDelayedSystems();
 
     const bool isRecording = CommandLineParser::CommandIsFound("--record");
     const bool isReplaying = CommandLineParser::CommandIsFound("--replay");

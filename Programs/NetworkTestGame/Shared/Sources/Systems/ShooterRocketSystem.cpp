@@ -41,9 +41,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterRocketSystem)
 {
-    ReflectionRegistrator<ShooterRocketSystem>::Begin()[M::Tags("gm_shooter")]
+    ReflectionRegistrator<ShooterRocketSystem>::Begin()[M::SystemTags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterRocketSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 14.2f)]
+    .Method("ProcessFixed", &ShooterRocketSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 14.2f)]
     .End();
 }
 
@@ -62,7 +62,7 @@ ShooterRocketSystem::~ShooterRocketSystem()
 
 void ShooterRocketSystem::SimulateRocket(Entity* rocket)
 {
-    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponent<CollisionSingleComponent>();
     ShooterRocketComponent* rocketComp = rocket->GetComponent<ShooterRocketComponent>();
     const uint32 distance = rocketComp->GetDistance();
     if (destroyedEntities.find(rocket) != destroyedEntities.end())
@@ -171,7 +171,7 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
         const Entity* target = entitiesComp->FindByID(rocketComp->targetId);
         DVASSERT(target);
         const Vector3& targetFeet = target->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
-        const float32 targetHeight = target->GetComponent<CapsuleCharacterControllerComponent>()->GetHeight();
+        const float32 targetHeight = SHOOTER_CHARACTER_CAPSULE_HEIGHT;
         const Vector3 targetPos = targetFeet + Vector3(0.f, 0.f, targetHeight);
         const Vector3& currentPos = rocket->GetComponent<TransformComponent>()->GetWorldTransform().GetTranslation();
 
@@ -204,7 +204,7 @@ void ShooterRocketSystem::SimulateRocket(Entity* rocket)
 
 void ShooterRocketSystem::SimulateRocket2(DAVA::Entity* rocket)
 {
-    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponentForRead<CollisionSingleComponent>(this);
+    const CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponent<CollisionSingleComponent>();
 
     TransformComponent* transComp = rocket->GetComponent<TransformComponent>();
     const Transform& transform = transComp->GetLocalTransform();

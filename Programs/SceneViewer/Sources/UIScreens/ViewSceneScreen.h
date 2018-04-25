@@ -96,9 +96,6 @@ private:
     MenuItem* performanceTestMenuItem = nullptr;
     MenuItem* characterSpawnMenuItem = nullptr;
 
-    DAVA::RotationControllerSystem* rotationControllerSystem = nullptr;
-    DAVA::WASDControllerSystem* wasdSystem = nullptr;
-
     DAVA::FpsMeter fpsMeter;
 
 #ifdef WITH_SCENE_PERFORMANCE_TESTS

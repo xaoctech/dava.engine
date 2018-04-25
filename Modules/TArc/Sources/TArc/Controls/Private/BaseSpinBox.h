@@ -3,13 +3,13 @@
 #include "TArc/Controls/ControlProxy.h"
 #include "TArc/Controls/CommonStrings.h"
 #include "TArc/Utils/QtConnections.h"
-#include "TArc/Qt/QtString.h"
 
 #include <QDoubleSpinBox>
 #include <QSpinBox>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QToolTip>
+#include <QString>
 
 namespace DAVA
 {

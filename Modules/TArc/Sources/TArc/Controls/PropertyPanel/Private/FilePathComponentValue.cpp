@@ -15,7 +15,7 @@ Any FilePathComponentValue::GetMultipleValue() const
 
 bool FilePathComponentValue::IsValidValueToSet(const Any& newValue, const Any& currentValue) const
 {
-    if (newValue.Cast<String>(MultipleValuesString) == String(MultipleValuesString))
+    if (newValue.CastSafely<String>(MultipleValuesString) == String(MultipleValuesString))
     {
         return false;
     }

@@ -41,14 +41,6 @@ public:
     SceneEditor2();
     ~SceneEditor2() override;
 
-    //to manage editor systems adding/deleting
-    //to manage editor systems adding/deleting
-    void AddSystem(SceneSystem* sceneSystem,
-                   SceneSystem* insertBeforeSceneForProcess = nullptr,
-                   SceneSystem* insertBeforeSceneForInput = nullptr,
-                   SceneSystem* insertBeforeSceneForFixedProcess = nullptr) override;
-    void RemoveSystem(SceneSystem* sceneSystem) override;
-
     bool AcquireInputLock(EditorSceneSystem* system);
     void ReleaseInputLock(EditorSceneSystem* system);
 
@@ -129,6 +121,9 @@ public:
     DAVA_DEPRECATED(void MarkAsChanged()); // for old material & particle editors
 
 protected:
+    void OnSystemAdded(SceneSystem* system);
+    void OnSystemRemoved(SceneSystem* system);
+
     bool isLoaded = false;
     bool isHUDVisible = true;
 

@@ -21,9 +21,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(EnemyMovingSystem)
 {
-    ReflectionRegistrator<EnemyMovingSystem>::Begin()[M::Tags("network", "gameinput", "client", "enemy_predict")]
+    ReflectionRegistrator<EnemyMovingSystem>::Begin()[M::SystemTags("network", "gameinput", "client", "enemy_predict")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &EnemyMovingSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 2.0f)]
+    .Method("ProcessFixed", &EnemyMovingSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 2.0f)]
     .End();
 }
 

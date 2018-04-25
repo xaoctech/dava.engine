@@ -408,7 +408,7 @@ void TestBed::OnUpdate(DAVA::float32 frameDelta)
 
 void TestBed::RunOnlyThisTest()
 {
-    runOnlyThisTest = "AnyPerformanceTest";
+    runOnlyThisTest = "";
 }
 
 void TestBed::OnError()

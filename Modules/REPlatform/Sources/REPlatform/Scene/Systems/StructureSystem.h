@@ -18,8 +18,11 @@ namespace DAVA
 {
 class RECommandNotificationObject;
 class SceneEditor2;
+
 class StructureSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(StructureSystem, SceneSystem);
+
 public:
     using InternalMapping = Map<Entity*, Entity*>;
 

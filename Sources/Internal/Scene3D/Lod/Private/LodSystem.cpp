@@ -17,9 +17,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(LodSystem)
 {
-    ReflectionRegistrator<LodSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<LodSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &LodSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 3.0f)]
+    .Method("Process", &LodSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 3.0f)]
     .End();
 }
 
@@ -35,6 +35,11 @@ LodSystem::LodSystem(Scene* scene)
 void LodSystem::Process(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_LOD_SYSTEM);
+
+    if (!Renderer::GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
+    {
+        return;
+    }
 
     const TransformSingleComponent* tsc = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
 

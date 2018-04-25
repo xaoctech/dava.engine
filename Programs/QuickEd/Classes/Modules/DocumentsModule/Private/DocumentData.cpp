@@ -300,9 +300,3 @@ DAVA::FastName DocumentData::selectionHashPropertyName{ "selectionHash" };
 DAVA::FastName DocumentData::selectedControlsPropertyName{ "selected controls" };
 DAVA::FastName DocumentData::displayedRootControlsPropertyName{ "displayed root controls" };
 DAVA::FastName DocumentData::guidesPropertyName{ "guides" };
-
-template <>
-bool DAVA::AnyCompare<PackageNode::Guides>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)
-{
-    return v1.Get<PackageNode::Guides>() == v2.Get<PackageNode::Guides>();
-}

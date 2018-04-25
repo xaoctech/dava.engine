@@ -21,14 +21,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(WASDControllerSystem)
 {
-    ReflectionRegistrator<WASDControllerSystem>::Begin()[M::Tags("base", "controller")]
+    ReflectionRegistrator<WASDControllerSystem>::Begin()[M::SystemTags("base", "controller")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &WASDControllerSystem::Process)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::NORMAL, 7.0f)]
+    .Method("Process", &WASDControllerSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, 7.0f)]
     .End();
 }
 
 WASDControllerSystem::WASDControllerSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<WASDControllerComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<CameraComponent, WASDControllerComponent>())
     , moveSpeed(1.f)
 {
 }

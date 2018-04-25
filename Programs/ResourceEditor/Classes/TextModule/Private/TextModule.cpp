@@ -71,10 +71,10 @@ void TextModule::PostInit()
         fieldDescr.fieldName = DAVA::FastName(TextModuleData::drawingEnabledPropertyName);
         fieldDescr.type = DAVA::ReflectedTypeDB::Get<TextModuleData>();
         action->SetStateUpdationFunction(QtAction::Checked, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            return value.Get<bool>(false);
+            return value.GetSafely<bool>(false);
         });
         action->SetStateUpdationFunction(QtAction::Text, fieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-            if (value.Get<bool>(false))
+            if (value.GetSafely<bool>(false))
                 return DAVA::String("Text Drawing Enabled");
             return DAVA::String("Text Drawing Disabled");
         });
@@ -110,12 +110,16 @@ void TextModule::OnContextCreated(DAVA::DataContext* context)
     using namespace DAVA;
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
+
     DVASSERT(scene != nullptr);
+    DVASSERT(scene->HasTags("resource_editor"));
+
+    scene->AddTags("text_editor");
 
     std::unique_ptr<TextModuleData> moduleData = std::make_unique<TextModuleData>();
-    moduleData->editorTextSystem.reset(new EditorTextSystem(scene));
+
+    moduleData->editorTextSystem = scene->GetSystem<EditorTextSystem>();
     moduleData->editorTextSystem->EnableSystem();
-    scene->AddSystem(moduleData->editorTextSystem.get());
 
     context->CreateData(std::move(moduleData));
 }
@@ -123,13 +127,11 @@ void TextModule::OnContextCreated(DAVA::DataContext* context)
 void TextModule::OnContextDeleted(DAVA::DataContext* context)
 {
     using namespace DAVA;
-    using namespace DAVA;
 
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
 
-    TextModuleData* moduleData = context->GetData<TextModuleData>();
-    scene->RemoveSystem(moduleData->editorTextSystem.get());
+    scene->RemoveTags("text_editor");
 }
 
 void TextModule::ChangeDrawingState()

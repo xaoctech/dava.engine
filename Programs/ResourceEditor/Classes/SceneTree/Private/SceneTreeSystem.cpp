@@ -12,6 +12,8 @@
 #include "Particles/ParticleEmitterInstance.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 
+#include <Reflection/ReflectionRegistrator.h>
+
 namespace SceneTreeSystemDetail
 {
 class ResetSolidFlagForSave : public DAVA::Command
@@ -149,6 +151,15 @@ DAVA::int32 CalcParticleElementsDepth(DAVA::ParticleEffectComponent* component, 
 }
 
 } // namespace SceneTreeSystemDetail
+
+DAVA_VIRTUAL_REFLECTION_IMPL(SceneTreeSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<SceneTreeSystem>::Begin()[M::SystemTags("resource_editor", "scene_tree")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &SceneTreeSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 19.0f)]
+    .End();
+}
 
 SceneTreeSystem::SceneTreeSystem(DAVA::Scene* scene)
     : SceneSystem(scene, DAVA::ComponentMask())

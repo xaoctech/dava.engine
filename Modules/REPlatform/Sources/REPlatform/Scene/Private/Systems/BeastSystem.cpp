@@ -1,6 +1,7 @@
 #include "REPlatform/Scene/Systems/BeastSystem.h"
 
 #include <FileSystem/KeyedArchive.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Entity.h>
@@ -8,6 +9,13 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(BeastSystem)
+{
+    ReflectionRegistrator<BeastSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .End();
+}
+
 float32 BeastSystem::DEFAULT_FALLOFFCUTOFF_VALUE = 1000.0f;
 
 BeastSystem::BeastSystem(Scene* scene)

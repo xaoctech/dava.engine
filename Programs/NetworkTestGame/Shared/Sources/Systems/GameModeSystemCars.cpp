@@ -39,10 +39,10 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(GameModeSystemCars)
 {
-    ReflectionRegistrator<GameModeSystemCars>::Begin()[M::Tags("gm_cars")]
+    ReflectionRegistrator<GameModeSystemCars>::Begin()[M::SystemTags("gm_cars")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &GameModeSystemCars::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 4.0f)]
-    .Method("ProcessFixed", &GameModeSystemCars::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 0.2f)]
+    .Method("Process", &GameModeSystemCars::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 4.0f)]
+    .Method("ProcessFixed", &GameModeSystemCars::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 0.2f)]
     .End();
 }
 

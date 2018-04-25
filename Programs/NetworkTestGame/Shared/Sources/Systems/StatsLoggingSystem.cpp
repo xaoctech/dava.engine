@@ -9,7 +9,7 @@
 
 DAVA_VIRTUAL_REFLECTION_IMPL(StatsLoggingSystem)
 {
-    ReflectionRegistrator<StatsLoggingSystem>::Begin()[M::Tags("log_game_stats")]
+    ReflectionRegistrator<StatsLoggingSystem>::Begin()[M::SystemTags("log_game_stats")]
     .ConstructorByPointer<Scene*>()
     .End();
 }

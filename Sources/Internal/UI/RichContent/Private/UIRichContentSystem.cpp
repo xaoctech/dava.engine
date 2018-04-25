@@ -12,6 +12,7 @@
 #include "UI/RichContent/UIRichContentComponent.h"
 #include "UI/Components/UIControlSourceComponent.h"
 #include "UI/UIControl.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

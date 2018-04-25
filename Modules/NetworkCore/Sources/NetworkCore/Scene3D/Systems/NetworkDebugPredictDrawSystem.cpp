@@ -25,16 +25,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDebugPredictDrawSystem)
 {
-    ReflectionRegistrator<NetworkDebugPredictDrawSystem>::Begin()[M::Tags("network", "debugdraw")]
+    ReflectionRegistrator<NetworkDebugPredictDrawSystem>::Begin()[M::SystemTags("network", "debugdraw")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &NetworkDebugPredictDrawSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 19.0f)]
+    .Method("Process", &NetworkDebugPredictDrawSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 19.0f)]
     .End();
 }
 
 NetworkDebugPredictDrawSystem::NetworkDebugPredictDrawSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPredictComponent>()
-                  | ComponentUtils::MakeMask<NetworkDebugDrawComponent>()
-                  | ComponentUtils::MakeMask<NetworkReplicationComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<NetworkPredictComponent, NetworkDebugDrawComponent, NetworkReplicationComponent>())
     , netTransCompId(ComponentUtils::GetRuntimeId<NetworkTransformComponent>())
 {
     tmpNetTransComp.reset(new NetworkTransformComponent);

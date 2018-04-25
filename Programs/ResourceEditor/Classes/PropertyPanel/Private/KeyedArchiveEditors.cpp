@@ -12,7 +12,6 @@
 #include <TArc/Controls/ReflectedButton.h>
 #include <TArc/Controls/Widget.h>
 #include <TArc/Core/ContextAccessor.h>
-#include <TArc/Qt/QtSize.h>
 #include <TArc/Utils/Utils.h>
 
 #include <Base/BaseTypes.h>
@@ -28,6 +27,7 @@
 #include <QtEvents>
 #include <QToolButton>
 #include <QWidget>
+#include <QSize>
 
 namespace PropertyPanel
 {

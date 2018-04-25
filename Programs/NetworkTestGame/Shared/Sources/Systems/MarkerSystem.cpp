@@ -22,9 +22,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(MarkerSystem)
 {
-    ReflectionRegistrator<MarkerSystem>::Begin()[M::Tags("marker", "server")]
+    ReflectionRegistrator<MarkerSystem>::Begin()[M::SystemTags("marker", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &MarkerSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 1000.0f)]
+    .Method("ProcessFixed", &MarkerSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 1000.0f)]
     .End();
 }
 
@@ -106,7 +106,7 @@ void MarkerSystem::ProcessFixed(DAVA::float32 timeElapsed)
 {
     for (Entity* tank : pendingEntities)
     {
-        ScopedPtr<Scene> model(new Scene(0));
+        ScopedPtr<Scene> model(new Scene());
         SceneFileV2::eError ret = model->LoadScene("~res:/3d/Objects/tst.sc2");
         DVASSERT(SceneFileV2::ERROR_NO_ERROR == ret);
         Entity* bar = model->GetEntityByID(1)->Clone();

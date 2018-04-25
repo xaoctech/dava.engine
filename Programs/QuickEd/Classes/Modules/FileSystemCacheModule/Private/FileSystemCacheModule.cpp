@@ -93,7 +93,7 @@ void FileSystemCacheModule::CreateActions()
     fieldDescr.type = DAVA::ReflectedTypeDB::Get<ProjectData>();
     fieldDescr.fieldName = DAVA::FastName(ProjectData::projectPathPropertyName);
     action->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const DAVA::Any& fieldValue) -> DAVA::Any {
-        return !fieldValue.Cast<FilePath>(FilePath()).IsEmpty();
+        return !fieldValue.CastSafely<FilePath>(FilePath()).IsEmpty();
     });
 
     ActionPlacementInfo placementInfo;

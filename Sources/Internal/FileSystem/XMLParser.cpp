@@ -2,6 +2,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/XMLParserDelegate.h"
 #include "Logger/Logger.h"
+#include "Utils/StringFormat.h"
 
 #include <libxml/parser.h>
 #include <libxml/xmlstring.h>

@@ -62,14 +62,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(PhysicsSystem)
 {
-    ReflectionRegistrator<PhysicsSystem>::Begin()[M::Tags("base", "physics")]
+    ReflectionRegistrator<PhysicsSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
     // Run simulation at the end of a frame, after gameplay code, so that user always works with the same physics state during a frame. It also gives opportunity to enable multithreaded simulation in the future
     // Fetch results at the beginning of the next frame, before network snapshot system captures results
     // Copy changed transforms to physics right after network replication system, so that every entity we received this frame had correct state in physics
-    .Method("ProcessFixedFetch", &PhysicsSystem::ProcessFixedFetch)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 4.0f)]
-    .Method("ProcessFixedUpdateTransforms", &PhysicsSystem::ProcessFixedUpdateTransforms)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 21.0f)]
-    .Method("ProcessFixedSimulate", &PhysicsSystem::ProcessFixedSimulate)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 1.0f)]
+    .Method("ProcessFixedFetch", &PhysicsSystem::ProcessFixedFetch)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 4.0f)]
+    .Method("ProcessFixedUpdateTransforms", &PhysicsSystem::ProcessFixedUpdateTransforms)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 21.0f)]
+    .Method("ProcessFixedSimulate", &PhysicsSystem::ProcessFixedSimulate)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 1.0f)]
     .End();
 }
 

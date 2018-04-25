@@ -71,10 +71,10 @@ inline physx::PxVec3 Vector3ToPxVec3(const Vector3& in)
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterVisibilitySystem)
 {
-    ReflectionRegistrator<ShooterVisibilitySystem>::Begin()[M::Tags("server", "gm_shooter")]
+    ReflectionRegistrator<ShooterVisibilitySystem>::Begin()[M::SystemTags("server", "gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterVisibilitySystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 999.3f)]
-    .Method("Process", &ShooterVisibilitySystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 999.f)]
+    .Method("ProcessFixed", &ShooterVisibilitySystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 999.3f)]
+    .Method("Process", &ShooterVisibilitySystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 999.f)]
     .End();
 }
 

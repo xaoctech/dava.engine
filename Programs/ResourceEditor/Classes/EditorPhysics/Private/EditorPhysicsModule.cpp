@@ -14,7 +14,6 @@
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Utils/ModuleCollection.h>
 #include <TArc/Utils/ReflectedPairsVector.h>
-#include <TArc/Qt/QtString.h>
 #include <TArc/Controls/PropertyPanel/BaseComponentValue.h>
 #include <TArc/Controls/PropertyPanel/PropertyModelExtensions.h>
 #include <TArc/Controls/ComboBox.h>
@@ -39,6 +38,8 @@
 
 #include <QAction>
 #include <QList>
+#include <QString>
+
 #include "Engine/Engine.h"
 #include "Engine/EngineContext.h"
 
@@ -158,11 +159,14 @@ EditorPhysicsModule::EditorPhysicsModule()
 void EditorPhysicsModule::OnContextCreated(DAVA::DataContext* context)
 {
     DAVA::SceneEditor2* scene = context->GetData<DAVA::SceneData>()->GetScene().Get();
+
     DVASSERT(scene != nullptr);
+    DVASSERT(scene->HasTags("resource_editor"));
+
+    scene->AddTags("physics_editor");
 
     std::unique_ptr<EditorPhysicsData> data(new EditorPhysicsData());
-    data->system = new EditorPhysicsSystem(scene);
-    scene->AddSystem(data->system);
+    data->system = scene->GetSystem<EditorPhysicsSystem>();
 
     context->CreateData(std::move(data));
 }
@@ -173,10 +177,12 @@ void EditorPhysicsModule::OnContextDeleted(DAVA::DataContext* context)
     DVASSERT(scene != nullptr);
 
     EditorPhysicsData* data = context->GetData<EditorPhysicsData>();
+
     DVASSERT(data != nullptr);
     DVASSERT(data->system != nullptr);
-    scene->RemoveSystem(data->system);
-    DAVA::SafeDelete(data->system);
+
+    scene->RemoveTags("physics_editor");
+
     context->DeleteData<EditorPhysicsData>();
 }
 

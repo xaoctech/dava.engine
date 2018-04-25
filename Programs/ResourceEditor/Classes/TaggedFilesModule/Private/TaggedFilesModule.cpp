@@ -13,13 +13,14 @@
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/WindowSubSystem/ActionUtils.h>
 #include <TArc/Utils/ModuleCollection.h>
-#include <TArc/Qt/QtString.h>
 
 #include <Engine/Engine.h>
 #include <FileSystem/FileSystem.h>
 #include <Render/Texture.h>
 #include <Scene3D/Scene.h>
 #include "REPlatform/Global/GlobalOperations.h"
+
+#include <QString>
 
 namespace TaggedFilesModuleDetails
 {

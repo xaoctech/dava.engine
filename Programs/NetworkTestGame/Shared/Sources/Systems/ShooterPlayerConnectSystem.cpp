@@ -19,9 +19,9 @@
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterPlayerConnectSystem)
 {
     using namespace DAVA;
-    ReflectionRegistrator<ShooterPlayerConnectSystem>::Begin()[M::Tags("gm_shooter", "server")]
+    ReflectionRegistrator<ShooterPlayerConnectSystem>::Begin()[M::SystemTags("gm_shooter", "server")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ShooterPlayerConnectSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 9.0f)]
+    .Method("ProcessFixed", &ShooterPlayerConnectSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 9.0f)]
     .End();
 }
 

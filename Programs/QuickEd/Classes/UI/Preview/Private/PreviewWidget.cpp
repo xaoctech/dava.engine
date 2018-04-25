@@ -95,7 +95,7 @@ void PreviewWidget::CreateActions()
     renderWidget->addAction(focusNextChildAction);
 
     focusNextChildAction->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-        return fieldValue.Cast<bool>(false) == false;
+        return fieldValue.CastSafely<bool>(false) == false;
     });
     connect(focusNextChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusNextChild, systemsManager));
 
@@ -104,7 +104,7 @@ void PreviewWidget::CreateActions()
     focusPreviousChildAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     renderWidget->addAction(focusPreviousChildAction);
     focusPreviousChildAction->SetStateUpdationFunction(QtAction::Enabled, fieldDescr, [](const Any& fieldValue) -> Any {
-        return fieldValue.Cast<bool>(false) == false;
+        return fieldValue.CastSafely<bool>(false) == false;
     });
     connect(focusPreviousChildAction, &QAction::triggered, std::bind(&EditorSystemsManager::FocusPreviousChild, systemsManager));
 }
@@ -349,12 +349,12 @@ void PreviewWidget::AddBgrColorMenuSection(QMenu* menu)
                                          {
                                              const Vector<Color>& colors = v.Cast<Vector<Color>>();
                                              Any color = colors[currentIndex];
-                                             return color.Cast<QIcon>(QIcon());
+                                             return color.CastSafely<QIcon>(QIcon());
                                          });
 
         action->SetStateUpdationFunction(QtAction::Checked, indexFieldDescr, [currentIndex](const Any& v)
                                          {
-                                             return v.Cast<DAVA::uint32>(-1) == currentIndex;
+                                             return v.CastSafely<DAVA::uint32>(-1) == currentIndex;
                                          });
         connections.AddConnection(action, &QAction::triggered, [this, currentIndex]()
                                   {

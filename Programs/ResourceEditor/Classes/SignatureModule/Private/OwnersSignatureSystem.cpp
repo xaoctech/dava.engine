@@ -3,6 +3,7 @@
 #include <REPlatform/Global/StringConstants.h>
 
 #include <FileSystem/KeyedArchive.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
@@ -11,10 +12,23 @@
 #include <Time/DateTime.h>
 #include <Utils/StringFormat.h>
 
-OwnersSignatureSystem::OwnersSignatureSystem(DAVA::Scene* scene, const DAVA::String& userName)
-    : SceneSystem(scene, DAVA::ComponentMask())
-    , currentUserName(userName)
+DAVA_VIRTUAL_REFLECTION_IMPL(OwnersSignatureSystem)
 {
+    using namespace DAVA;
+    ReflectionRegistrator<OwnersSignatureSystem>::Begin()[M::SystemTags("resource_editor", "signature")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &OwnersSignatureSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 20.0f)]
+    .End();
+}
+
+OwnersSignatureSystem::OwnersSignatureSystem(DAVA::Scene* scene)
+    : SceneSystem(scene, DAVA::ComponentMask())
+{
+}
+
+void OwnersSignatureSystem::SetUserName(const DAVA::String& userName)
+{
+    currentUserName = userName;
 }
 
 void OwnersSignatureSystem::AddEntity(DAVA::Entity* entity)

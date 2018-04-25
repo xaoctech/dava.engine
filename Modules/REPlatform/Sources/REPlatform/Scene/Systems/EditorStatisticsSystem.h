@@ -29,6 +29,8 @@ public:
 
 class EditorStatisticsSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(EditorStatisticsSystem, SceneSystem);
+
     enum eStatisticsSystemFlag : uint32
     {
         FLAG_TRIANGLES = 1 << 0,

@@ -20,7 +20,7 @@ struct Meta : public T
 class Type;
 class ReflectedMeta final
 {
-    friend class ReflectedTypeDB; // friend for stast calculation
+    friend class ReflectedTypeDB; // friend for stats calculation
 
 public:
     ReflectedMeta() = default;
@@ -51,7 +51,7 @@ ReflectedMeta operator, (Meta<T, IndexT> && metaa, Meta<IndexU>&& metab);
 template <typename T, typename IndexT>
 ReflectedMeta&& operator, (ReflectedMeta && rmeta, Meta<T, IndexT>&& meta);
 
-namespace SP = Metas::SystemProcess;
+class SystemProcessInfo;
 
 namespace M
 {
@@ -59,8 +59,9 @@ namespace M
     \defgroup metas Metas
 */
 
-using Tags = Meta<Metas::Tags>;
-using SystemProcess = Meta<SP::SystemProcess>;
+using SystemTags = Meta<Metas::SystemTags>;
+
+using SystemProcessInfo = Meta<DAVA::SystemProcessInfo>;
 
 /**
     \ingroup metas

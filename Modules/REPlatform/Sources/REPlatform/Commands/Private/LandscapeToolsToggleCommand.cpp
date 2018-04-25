@@ -39,7 +39,7 @@ bool TryEnableWithFunctions(SceneEditor2* editor, uint32 allowedTools,
     LandscapeEditorDrawSystem::eErrorType enablingError = enable();
     if (enablingError == LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS)
     {
-        editor->foliageSystem->SetFoliageVisible(false);
+        editor->GetSystem<FoliageSystem>()->SetFoliageVisible(false);
     }
     else
     {
@@ -61,7 +61,7 @@ bool TryDisableWithFunctions(SceneEditor2* editor, const String& error,
     {
         if (disable())
         {
-            editor->foliageSystem->SetFoliageVisible(true);
+            editor->GetSystem<FoliageSystem>()->SetFoliageVisible(true);
         }
         else
         {
@@ -193,7 +193,7 @@ EnableHeightmapEditorCommand::EnableHeightmapEditorCommand(SceneEditor2* forScen
 
 void EnableHeightmapEditorCommand::OnDisabled()
 {
-    sceneEditor->foliageSystem->SyncFoliageWithLandscape();
+    sceneEditor->GetSystem<FoliageSystem>()->SyncFoliageWithLandscape();
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(EnableHeightmapEditorCommand)

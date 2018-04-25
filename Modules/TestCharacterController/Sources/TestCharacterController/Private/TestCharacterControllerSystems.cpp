@@ -1,4 +1,5 @@
 #include "TestCharacterController/TestCharacterControllerSystems.h"
+#include "TestCharacterController/TestCharacterControllerModule.h"
 
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
@@ -8,6 +9,7 @@
 #include <Input/Keyboard.h>
 #include <Input/Mouse.h>
 
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/Camera.h>
 
 #include <Math/Transform.h>
@@ -27,6 +29,41 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(TestCharacterControllerSystem)
+{
+    ReflectionRegistrator<TestCharacterControllerSystem>::Begin()[M::SystemTags(TestCharacterControllerModule::systemsTag)]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &TestCharacterControllerSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, 2.9f)]
+    .Method("Input", &TestCharacterControllerSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 1.0f)]
+    .End();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(TestCharacterWeaponSystem)
+{
+    ReflectionRegistrator<TestCharacterWeaponSystem>::Begin()[M::SystemTags(TestCharacterControllerModule::systemsTag)]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &TestCharacterWeaponSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 1.0f)]
+    .End();
+}
+
+DAVA_VIRTUAL_REFLECTION_IMPL(TestCharacterCameraSystem)
+{
+    ReflectionRegistrator<TestCharacterCameraSystem>::Begin()[M::SystemTags(TestCharacterControllerModule::systemsTag)]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &TestCharacterCameraSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 2.0f)]
+    .End();
+}
+
+#if defined(__DAVAENGINE_PHYSICS_ENABLED__)
+DAVA_VIRTUAL_REFLECTION_IMPL(TestCharacterMoveSystem)
+{
+    ReflectionRegistrator<TestCharacterMoveSystem>::Begin()[M::SystemTags(TestCharacterControllerModule::systemsTag)]
+    .ConstructorByPointer<Scene*>()
+    .Method("ProcessFixed", &TestCharacterMoveSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 1.0f)]
+    .End();
+}
+#endif
+
 TestCharacterControllerSystem::TestCharacterControllerSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
@@ -41,7 +78,7 @@ TestCharacterControllerSystem::~TestCharacterControllerSystem()
     SafeRelease(characterEntity);
 }
 
-void TestCharacterControllerSystem::SetCharacterEntity(DAVA::Entity* entity)
+void TestCharacterControllerSystem::SetCharacterEntity(Entity* entity)
 {
     SafeRelease(characterEntity);
     characterMeshEntity = nullptr;
@@ -52,8 +89,8 @@ void TestCharacterControllerSystem::SetCharacterEntity(DAVA::Entity* entity)
     characterMotionComponent = nullptr;
     characterSkeleton = nullptr;
 
-    headJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
-    weaponPointJointIndex = DAVA::SkeletonComponent::INVALID_JOINT_INDEX;
+    headJointIndex = SkeletonComponent::INVALID_JOINT_INDEX;
+    weaponPointJointIndex = SkeletonComponent::INVALID_JOINT_INDEX;
 
     if (entity != nullptr)
     {
@@ -93,7 +130,9 @@ void TestCharacterControllerSystem::PrepareForRemove()
 void TestCharacterControllerSystem::Process(float32 timeElapsed)
 {
     if (characterMotionComponent == nullptr)
+    {
         return;
+    }
 
     timeElapsed *= characterMotionComponent->GetPlaybackRate();
 
@@ -286,7 +325,7 @@ bool TestCharacterControllerSystem::Input(UIEvent* uiEvent)
     return false;
 }
 
-void TestCharacterControllerSystem::SetJoypadDirection(const DAVA::Vector2& direction)
+void TestCharacterControllerSystem::SetJoypadDirection(const Vector2& direction)
 {
     inputJoypadDirection.x = Clamp(direction.x, -1.f, 1.f);
     inputJoypadDirection.y = Clamp(-direction.y, -1.f, 1.f);
@@ -294,7 +333,7 @@ void TestCharacterControllerSystem::SetJoypadDirection(const DAVA::Vector2& dire
 
 //////////////////////////////////////////////////////////////////////////
 
-TestCharacterMoveSystem::TestCharacterMoveSystem(DAVA::Scene* scene)
+TestCharacterMoveSystem::TestCharacterMoveSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
     controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
@@ -305,10 +344,12 @@ void TestCharacterMoveSystem::PrepareForRemove()
     controllerSystem = nullptr;
 }
 
-void TestCharacterMoveSystem::Process(DAVA::float32 timeElapsed)
+void TestCharacterMoveSystem::ProcessFixed(float32 timeElapsed)
 {
     if (controllerSystem->characterMotionComponent == nullptr)
+    {
         return;
+    }
 
 #if defined(__DAVAENGINE_PHYSICS_ENABLED__)
     const Vector3& characterForward = controllerSystem->characterForward;
@@ -322,7 +363,7 @@ void TestCharacterMoveSystem::Process(DAVA::float32 timeElapsed)
 
 //////////////////////////////////////////////////////////////////////////
 
-TestCharacterWeaponSystem::TestCharacterWeaponSystem(DAVA::Scene* scene)
+TestCharacterWeaponSystem::TestCharacterWeaponSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
     controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
@@ -333,7 +374,7 @@ void TestCharacterWeaponSystem::PrepareForRemove()
     controllerSystem = nullptr;
 }
 
-void TestCharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
+void TestCharacterWeaponSystem::Process(float32 timeElapsed)
 {
     if (controllerSystem->weaponEntity == nullptr)
         return;
@@ -351,7 +392,7 @@ void TestCharacterWeaponSystem::Process(DAVA::float32 timeElapsed)
 
 //////////////////////////////////////////////////////////////////////////
 
-TestCharacterCameraSystem::TestCharacterCameraSystem(DAVA::Scene* scene)
+TestCharacterCameraSystem::TestCharacterCameraSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
     controllerSystem = scene->GetSystem<TestCharacterControllerSystem>();
@@ -362,10 +403,12 @@ void TestCharacterCameraSystem::PrepareForRemove()
     controllerSystem = nullptr;
 }
 
-void TestCharacterCameraSystem::Process(DAVA::float32 timeElapsed)
+void TestCharacterCameraSystem::Process(float32 timeElapsed)
 {
     if (controllerSystem->characterSkeleton == nullptr || controllerSystem->characterMeshEntity == nullptr)
+    {
         return;
+    }
 
     const Vector3& cameraDirection = controllerSystem->cameraDirection;
     const Vector3& characterLeft = controllerSystem->characterLeft;

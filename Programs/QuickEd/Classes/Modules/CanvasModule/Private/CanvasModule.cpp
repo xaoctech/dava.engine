@@ -132,7 +132,7 @@ void CanvasModule::RecreateBgrColorActions()
                                              if (currentIndex < colors.size())
                                              {
                                                  Any color = colors[currentIndex];
-                                                 return color.Cast<QIcon>(QIcon());
+                                                 return color.CastSafely<QIcon>(QIcon());
                                              }
                                              else
                                              {
@@ -142,7 +142,7 @@ void CanvasModule::RecreateBgrColorActions()
 
         action->SetStateUpdationFunction(QtAction::Checked, indexFieldDescr, [currentIndex](const Any& v)
                                          {
-                                             return v.Cast<DAVA::uint32>(-1) == currentIndex;
+                                             return v.CastSafely<DAVA::uint32>(-1) == currentIndex;
                                          });
         connections.AddConnection(action, &QAction::triggered, [this, currentIndex]()
                                   {

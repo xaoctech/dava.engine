@@ -1,5 +1,5 @@
 #include "ReflectionDeclaration/ReflectionDeclaration.h"
-#include "ReflectionDeclaration/Private/AnyCasts.h"
+#include "ReflectionDeclaration/Private/AnyDetails.h"
 
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectionRegistrator.h"
@@ -533,6 +533,7 @@ void RegisterPermanentNames()
 void RegisterReflectionForBaseTypes()
 {
     RegisterAnyCasts();
+    RegisterAnyHashes();
 
     RegisterVector2();
     RegisterVector3();

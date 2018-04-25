@@ -17,7 +17,7 @@ public:
     void SetSnapToLandscape(bool newSnapToLandscape);
 
 private:
-    std::unique_ptr<ObjectPlacementSystem> objectPlacementSystem;
+    ObjectPlacementSystem* objectPlacementSystem = nullptr;
 
     DAVA_VIRTUAL_REFLECTION(ObjectPlacementData, DAVA::TArcDataNode);
 };

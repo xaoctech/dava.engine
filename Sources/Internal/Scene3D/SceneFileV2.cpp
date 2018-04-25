@@ -549,7 +549,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath& filename, Scene* scen
 
     if (GetError() == ERROR_NO_ERROR)
     {
-        scene->SceneDidLoaded();
+        scene->OnSceneLoaded();
         scene->OnSceneReady(scene);
     }
 

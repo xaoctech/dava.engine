@@ -19,13 +19,16 @@ class TestCharacterControllerModule : public IModule
 public:
     TestCharacterControllerModule(Engine* engine);
 
-    bool AddSceneSystems(DAVA::Scene* scene);
+    bool AddSceneSystems(Scene* scene);
+    void RemoveSceneSystems(Scene* scene);
     void Shutdown() override;
 
-    bool EnableController(DAVA::Scene* scene, const DAVA::Vector3& spawnPoint = DAVA::Vector3(0.f, 0.f, 100.f));
-    bool DisableController(DAVA::Scene* scene);
+    bool EnableController(Scene* scene, const Vector3& spawnPoint = Vector3(0.f, 0.f, 100.f));
+    bool DisableController(Scene* scene);
 
-    TestCharacterControllerSystem* GetCharacterControllerSystem(DAVA::Scene* scene) const;
+    TestCharacterControllerSystem* GetCharacterControllerSystem(Scene* scene) const;
+
+    static const FastName systemsTag;
 
 protected:
     struct SceneContext
@@ -35,13 +38,13 @@ protected:
         TestCharacterWeaponSystem* characterWeaponSystem = nullptr;
         TestCharacterCameraSystem* characterCameraSystem = nullptr;
 
-        DAVA::Entity* characterEntity = nullptr;
+        Entity* characterEntity = nullptr;
     };
 
     void CheckCharacterResources();
 
-    DAVA::Map<DAVA::Scene*, SceneContext> activeControllers;
-    DAVA::Entity* testCharacterEntity = nullptr;
+    Map<Scene*, SceneContext> activeControllers;
+    Entity* testCharacterEntity = nullptr;
 
     DAVA_VIRTUAL_REFLECTION(TestCharacterControllerModule, IModule);
 };

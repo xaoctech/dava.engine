@@ -23,6 +23,6 @@ private:
     bool isServer = false;
     uint32 playerOwnIdCounter = 0;
 
-    NetworkEntitiesSingleComponent* networkEntities;
+    NetworkEntitiesSingleComponent* networkEntities = nullptr;
 };
 } // namespace DAVA

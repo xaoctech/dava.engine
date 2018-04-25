@@ -19,10 +19,13 @@ void ObjectPlacementModule::OnContextCreated(DAVA::DataContext* context)
     DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
     DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
+    DVASSERT(scene && scene->HasTags("resource_editor"));
+
+    scene->AddTags("object_placement");
+
     std::unique_ptr<ObjectPlacementData> objectPlacementData = std::make_unique<ObjectPlacementData>();
 
-    objectPlacementData->objectPlacementSystem.reset(new ObjectPlacementSystem(scene));
-    scene->AddSystem(objectPlacementData->objectPlacementSystem.get());
+    objectPlacementData->objectPlacementSystem = scene->GetSystem<ObjectPlacementSystem>();
 
     context->CreateData(std::move(objectPlacementData));
 }
@@ -32,8 +35,9 @@ void ObjectPlacementModule::OnContextDeleted(DAVA::DataContext* context)
     DAVA::SceneData* sceneData = context->GetData<DAVA::SceneData>();
     DAVA::SceneEditor2* scene = sceneData->GetScene().Get();
 
-    ObjectPlacementData* objectPlacementData = context->GetData<ObjectPlacementData>();
-    scene->RemoveSystem(objectPlacementData->objectPlacementSystem.get());
+    DVASSERT(scene && scene->HasTags("object_placement"));
+
+    scene->RemoveTags("object_placement");
 }
 
 void ObjectPlacementModule::PostInit()
@@ -80,7 +84,7 @@ void ObjectPlacementModule::PostInit()
         QtAction* action = new QtAction(accessor, QIcon(":/QtIcons/modify_snaptoland.png"), "Enable snap to landscape");
         { // check/uncheck
             action->SetStateUpdationFunction(QtAction::Checked, landscapeSnapFieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-                return value.Get<bool>(false);
+                return value.GetSafely<bool>(false);
             });
         }
 
@@ -92,7 +96,7 @@ void ObjectPlacementModule::PostInit()
 
         { // tooltip text
             action->SetStateUpdationFunction(QtAction::Text, landscapeSnapFieldDescr, [](const DAVA::Any& value) -> DAVA::Any {
-                bool checked = value.Get<bool>(false);
+                bool checked = value.GetSafely<bool>(false);
                 if (checked)
                     return DAVA::String("Disable snap to landscape");
                 return DAVA::String("Enable snap to landscape");

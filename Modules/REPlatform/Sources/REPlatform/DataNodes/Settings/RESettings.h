@@ -1,7 +1,6 @@
 #pragma once
 
 #include <TArc/DataProcessing/SettingsNode.h>
-#include <TArc/Qt/QtByteArray.h>
 
 #include <AssetCache/AssetCacheConstants.h>
 #include <TextureCompression/TextureConverter.h>
@@ -11,6 +10,8 @@
 #include <Math/Color.h>
 #include <Reflection/Reflection.h>
 #include <Scene3D/Components/ActionComponent.h>
+
+#include <QByteArray>
 
 namespace DAVA
 {

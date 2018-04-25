@@ -28,13 +28,28 @@ void SignatureModule::PostInit()
 void SignatureModule::OnContextCreated(DAVA::DataContext* context)
 {
     using namespace DAVA;
+
     SceneData* sceneData = context->GetData<SceneData>();
     SceneEditor2* scene = sceneData->GetScene().Get();
-    DVASSERT(scene != nullptr);
 
-    OwnersSignatureSystem* ownerSystem = new OwnersSignatureSystem(scene, currentUserName);
-    scene->AddSystem(ownerSystem);
+    DVASSERT(scene != nullptr);
+    DVASSERT(scene->HasTags("resource_editor"));
+
+    scene->AddTags("signature");
+
+    OwnersSignatureSystem* ownerSystem = scene->GetSystem<OwnersSignatureSystem>();
+    ownerSystem->SetUserName(currentUserName);
     ownerSystem->EnableSystem();
+}
+
+void SignatureModule::OnContextDeleted(DAVA::DataContext* context)
+{
+    using namespace DAVA;
+
+    SceneData* sceneData = context->GetData<SceneData>();
+    SceneEditor2* scene = sceneData->GetScene().Get();
+
+    scene->RemoveTags("signature");
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(SignatureModule)

@@ -78,7 +78,7 @@ void PhysicsComponent::ScheduleUpdate()
         DVASSERT(entity != nullptr);
         Scene* scene = entity->GetScene();
         DVASSERT(scene != nullptr);
-        scene->physicsSystem->ScheduleUpdate(this);
+        scene->GetSystem<PhysicsSystem>()->ScheduleUpdate(this);
     }
 }
 

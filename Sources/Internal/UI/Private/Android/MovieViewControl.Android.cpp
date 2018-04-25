@@ -12,6 +12,8 @@
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Utils/Utils.h"
 
+#include "Render/2D/Systems/VirtualCoordinatesSystem.h"
+
 extern "C"
 {
 

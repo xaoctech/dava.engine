@@ -23,7 +23,7 @@ void LoadingTest::LoadJob::Excecute()
 
     uint64 time = SystemTimer::GetMs();
 
-    ScopedPtr<Scene> scene(new Scene());
+    ScopedPtr<Scene> scene(new Scene("base"));
     scene->LoadScene(scenePath);
 
     loadingTime = SystemTimer::GetMs() - time;

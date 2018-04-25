@@ -10,6 +10,8 @@ namespace DAVA
 class Landscape;
 class VisibilityCheckSystem : public SceneSystem, VisibilityCheckRendererDelegate, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(VisibilityCheckSystem, SceneSystem);
+
 public:
     static void ReleaseCubemapRenderTargets();
 

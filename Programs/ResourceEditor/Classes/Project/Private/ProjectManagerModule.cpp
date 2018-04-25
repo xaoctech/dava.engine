@@ -148,7 +148,7 @@ void ProjectManagerModule::CreateTagsActions()
     QtAction* actionTags = new QtAction(GetAccessor(), "Tags");
     Reflection model = Reflection::Create(ReflectedObject(this));
     actionTags->SetStateUpdationFunction(QtAction::Enabled, model, FastName("tagsEnabled"), [](const Any& fieldValue) -> Any {
-        return fieldValue.Get<bool>(false);
+        return fieldValue.GetSafely<bool>(false);
     });
     ActionPlacementInfo placementTags(CreateMenuPoint(MenuItems::menuView, InsertionParams(InsertionParams::eInsertionMethod::BeforeItem, "GPU")));
     GetUI()->AddAction(DAVA::mainWindowKey, placementTags, actionTags);
@@ -165,12 +165,12 @@ void ProjectManagerModule::CreateTagsActions()
         actionGroup->addAction(action);
 
         action->SetStateUpdationFunction(QtAction::Enabled, model, FastName("tagsEnabled"), [](const Any& fieldValue) -> Any {
-            return fieldValue.Get<bool>(false);
+            return fieldValue.GetSafely<bool>(false);
         });
 
         action->SetStateUpdationFunction(QtAction::Checked, tagFieldDescr, [tag](const Any& v)
                                          {
-                                             return v.Cast<DAVA::String>("") == tag;
+                                             return v.CastSafely<DAVA::String>("") == tag;
                                          });
         connections.AddConnection(action, &QAction::triggered, DAVA::Bind(&ProjectManagerModule::SetFilenamesTag, this, tag), Qt::QueuedConnection);
 

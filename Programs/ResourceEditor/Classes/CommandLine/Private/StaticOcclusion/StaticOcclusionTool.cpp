@@ -59,9 +59,9 @@ bool StaticOcclusionTool::PostInitInternal()
 
     if (commandAction == ACTION_BUILD)
     {
-        scene.reset(new Scene());
-        staticOcclusionBuildSystem = new StaticOcclusionBuildSystem(scene);
-        scene->AddSystem(staticOcclusionBuildSystem, scene->renderUpdateSystem);
+        scene.reset(new Scene("base"));
+
+        staticOcclusionBuildSystem = scene->GetSystem<StaticOcclusionBuildSystem>();
 
         if (scene->LoadScene(scenePathname) != SceneFileV2::eError::ERROR_NO_ERROR)
         {

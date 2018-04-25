@@ -25,9 +25,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ExplosionEffectSystem)
 {
-    ReflectionRegistrator<ExplosionEffectSystem>::Begin()[M::Tags("gm_shooter")]
+    ReflectionRegistrator<ExplosionEffectSystem>::Begin()[M::SystemTags("gm_shooter")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ExplosionEffectSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 30.f)]
+    .Method("ProcessFixed", &ExplosionEffectSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 30.f)]
     .End();
 }
 

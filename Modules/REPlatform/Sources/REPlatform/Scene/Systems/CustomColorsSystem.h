@@ -7,6 +7,8 @@ namespace DAVA
 {
 class CustomColorsSystem : public LandscapeEditorSystem
 {
+    DAVA_VIRTUAL_REFLECTION(CustomColorsSystem, SceneSystem);
+
 public:
     CustomColorsSystem(Scene* scene);
     ~CustomColorsSystem() override;

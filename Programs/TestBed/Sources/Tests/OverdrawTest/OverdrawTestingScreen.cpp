@@ -11,6 +11,7 @@
 #include "Base/TemplateHelpers.h"
 #include "Engine/Engine.h"
 #include "Entity/ComponentUtils.h"
+#include "Reflection/ReflectionRegistrator.h"
 #include "Render/2D/FTFont.h"
 #include "Render/2D/Systems/VirtualCoordinatesSystem.h"
 #include "Render/Highlevel/Camera.h"
@@ -63,11 +64,16 @@ const float32 OverdrawTestingScreen::frametimeIncreaseStep = 0.008f;
 OverdrawTestingScreen::OverdrawTestingScreen(TestBed& app_)
     : app(app_)
 {
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(OverdrawTesterSystem);
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(ChartPainterSystem);
+
+    DAVA::GetEngineContext()->systemManager->RegisterSystem<OverdrawTesterSystem>();
+    DAVA::GetEngineContext()->systemManager->RegisterSystem<ChartPainterSystem>();
 }
 
 void OverdrawTestingScreen::LoadResources()
 {
-    scene = new Scene();
+    scene = new Scene({ "base", "overdraw_test" }, true);
     scene->LoadScene(FilePath("~res:/TestBed/3d/Maps/overdraw_test/TestingScene.sc2"));
 
     if (font == nullptr)
@@ -76,17 +82,14 @@ void OverdrawTestingScreen::LoadResources()
         DVASSERT(font);
     }
 
-    testerSystem = new OverdrawTesterSystem(scene, OverdrawTestConfig::pixelFormat, OverdrawTestConfig::textureResolution,
-                                            [this](DAVA::Array<DAVA::Vector<FrameData>, 6>* performanceData)
-                                            {
-                                                chartPainterSystem->ProcessPerformanceData(performanceData);
-                                                AddButtons();
-                                            });
+    scene->GetSystem<OverdrawTesterSystem>()->SetParams(OverdrawTestConfig::pixelFormat, OverdrawTestConfig::textureResolution,
+                                                        [this](DAVA::Array<DAVA::Vector<FrameData>, 6>* performanceData)
+                                                        {
+                                                            scene->GetSystem<ChartPainterSystem>()->ProcessPerformanceData(performanceData);
+                                                            AddButtons();
+                                                        });
 
-    scene->AddSystem(testerSystem);
-
-    chartPainterSystem = new ChartPainterSystem(scene, OverdrawTestConfig::chartHeight);
-    scene->AddSystem(chartPainterSystem);
+    scene->GetSystem<ChartPainterSystem>()->SetMaxFrametime(OverdrawTestConfig::chartHeight);
 
     ScopedPtr<Camera> camera(new Camera());
 
@@ -136,12 +139,6 @@ void OverdrawTestingScreen::UnloadResources()
     RemoveAllControls();
     UIScreen::UnloadResources();
 
-    scene->RemoveSystem(chartPainterSystem);
-    SafeDelete(chartPainterSystem);
-
-    scene->RemoveSystem(testerSystem);
-    SafeDelete(testerSystem);
-
     SafeRelease(exitButton);
     SafeRelease(scene);
 
@@ -158,7 +155,7 @@ void OverdrawTestingScreen::OnChangeChartHeightButtonClick(BaseObject* sender, v
     UIButton* pickedButton = DAVA::DynamicTypeCheck<UIButton*>(sender);
 
     OverdrawTestConfig::chartHeight = DAVA::Max(minFrametimeThreshold, OverdrawTestConfig::chartHeight + pickedButton->GetTag() * frametimeIncreaseStep);
-    chartPainterSystem->SetMaxFrametime(OverdrawTestConfig::chartHeight);
+    scene->GetSystem<ChartPainterSystem>()->SetMaxFrametime(OverdrawTestConfig::chartHeight);
 }
 
 void OverdrawTestingScreen::AddButtons()

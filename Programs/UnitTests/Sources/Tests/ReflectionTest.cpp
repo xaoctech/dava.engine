@@ -724,10 +724,14 @@ DAVA_TESTCLASS (ReflectionTest)
 
         DAVA::Any value = r.GetField("e_simple").GetValue();
         TEST_VERIFY(value.CanCast<int>());
+        TEST_VERIFY(value.CanCast<char>());
+        TEST_VERIFY(!value.CanCast<float>());
         TEST_VERIFY(value.Cast<int>() == static_cast<int>(s.e_simple));
 
         value = r.GetField("e_class").GetValue();
         TEST_VERIFY(value.CanCast<int>());
+        TEST_VERIFY(value.CanCast<char>());
+        TEST_VERIFY(!value.CanCast<float>());
         TEST_VERIFY(value.Cast<int>() == static_cast<int>(s.e_class));
     }
 

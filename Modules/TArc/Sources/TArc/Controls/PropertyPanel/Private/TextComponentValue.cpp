@@ -188,7 +188,7 @@ const M::Validator* TextComponentValue::GetValidator() const
 M::ValidationResult TextComponentValue::Validate(const Any& value, const Any& prevValue) const
 {
     M::ValidationResult result;
-    accessor->Parse(value.Cast<String>(""), result);
+    accessor->Parse(value.CastSafely<String>(""), result);
     result.message.clear();
     return result;
 }

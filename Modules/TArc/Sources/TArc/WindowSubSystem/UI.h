@@ -2,7 +2,6 @@
 
 #include "TArc/DataProcessing/DataWrapper.h"
 #include "TArc/DataProcessing/Common.h"
-#include "TArc/Qt/QtString.h"
 
 #include <Functional/Function.h>
 #include <Base/Result.h>
@@ -14,6 +13,7 @@
 #include <QFlags>
 #include <QFileDialog>
 #include <QPointer>
+#include <QString>
 
 class QWidget;
 class QAction;

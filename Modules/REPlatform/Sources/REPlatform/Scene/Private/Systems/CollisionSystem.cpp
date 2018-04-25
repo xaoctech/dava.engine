@@ -51,6 +51,15 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(SceneCollisionSystem)
+{
+    ReflectionRegistrator<SceneCollisionSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &SceneCollisionSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 8.0f)]
+    .Method("Input", &SceneCollisionSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 3.0f)]
+    .End();
+}
+
 namespace SceneCollisionSystemDetail
 {
 using namespace physx;
@@ -769,7 +778,7 @@ void SceneCollisionSystem::ProcessCommand(const RECommandNotificationObject& com
         const Reflection::Field& field = cmd->GetField();
         DAVA::ReflectedObject obj = field.ref.GetDirectObject();
         bool isLandscape = obj.GetReflectedType() == DAVA::ReflectedTypeDB::Get<DAVA::Landscape>();
-        DAVA::FastName fieldKey = field.key.Cast<DAVA::FastName>(DAVA::FastName(""));
+        DAVA::FastName fieldKey = field.key.CastSafely<DAVA::FastName>(DAVA::FastName(""));
         if (isLandscape == true && (fieldKey == HEIGHTMAP_PATH || fieldKey == HEIGHTMAP_SIZE))
         {
             UpdateCollisionObject(Selectable(curLandscapeEntity), true);

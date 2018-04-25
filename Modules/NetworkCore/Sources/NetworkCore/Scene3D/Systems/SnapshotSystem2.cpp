@@ -11,9 +11,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(SnapshotSystem2)
 {
-    ReflectionRegistrator<SnapshotSystem2>::Begin()[M::Tags("network")]
+    ReflectionRegistrator<SnapshotSystem2>::Begin()[M::SystemTags("network")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &SnapshotSystem2::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 8.1f)]
+    .Method("ProcessFixed", &SnapshotSystem2::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 8.1f)]
     .End();
 }
 
@@ -126,7 +126,7 @@ SnapshotSystem2::SnapshotSystem2(Scene* scene)
         RegisterSingleComponent(sc.second);
     }
 
-    timeSingleComponent = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    timeSingleComponent = scene->GetSingleComponent<NetworkTimeSingleComponent>();
 }
 
 SnapshotSystem2::~SnapshotSystem2()

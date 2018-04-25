@@ -23,6 +23,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorStatisticsSystem)
+{
+    ReflectionRegistrator<EditorStatisticsSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &EditorStatisticsSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 100.0f)]
+    .End();
+}
+
 struct TrianglesData
 {
     Vector<uint32> storedTriangles;
@@ -158,7 +166,7 @@ EditorStatisticsSystem::EditorStatisticsSystem(Scene* scene)
         descr.type = ReflectedTypeDB::Get<RenderStatsSettings>();
         descr.fieldName = FastName("calculatePerFrame");
         binder->BindField(descr, [this](const Any& v) {
-            calculatePerFrame = v.Cast<bool>(true);
+            calculatePerFrame = v.CastSafely<bool>(true);
         });
     }
 

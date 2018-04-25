@@ -13,9 +13,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(GameShowSystem)
 {
-    ReflectionRegistrator<GameShowSystem>::Begin()[M::Tags("gameshow", "client")]
+    ReflectionRegistrator<GameShowSystem>::Begin()[M::SystemTags("gameshow", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &GameShowSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 1000.0f)]
+    .Method("Process", &GameShowSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 1000.0f)]
     .End();
 }
 

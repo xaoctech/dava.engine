@@ -13,9 +13,9 @@ using Channels = PacketParams::Channels;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ReplayServerSystem)
 {
-    ReflectionRegistrator<ReplayServerSystem>::Begin()[M::Tags("replay")]
+    ReflectionRegistrator<ReplayServerSystem>::Begin()[M::SystemTags("replay")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ReplayServerSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 0.9f)]
+    .Method("ProcessFixed", &ReplayServerSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 0.9f)]
     .End();
 }
 

@@ -1,6 +1,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Base/ObjectFactory.h"
 #include "Base/GlobalEnum.h"
+#include "Base/Any.h"
 #include "Debug/DVAssert.h"
 #include "Utils/Utils.h"
 #include "Utils/StringFormat.h"
@@ -73,12 +74,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(RenderObject)
     .Field("renderBatchArray", &RenderObject::renderBatchArray)[M::DisplayName("Render batches")]
     .Field("activeRenderBatchArray", &RenderObject::activeRenderBatchArray)[M::DisplayName("Active render batches"), M::ReadOnly()]
     .End();
-}
-
-template <>
-bool AnyCompare<RenderBatchWithOptions>::IsEqual(const DAVA::Any& v1, const DAVA::Any& v2)
-{
-    return v1.Get<RenderBatchWithOptions>() == v2.Get<RenderBatchWithOptions>();
 }
 
 RenderObject::RenderObject()

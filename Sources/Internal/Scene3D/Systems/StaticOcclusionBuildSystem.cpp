@@ -25,14 +25,14 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(StaticOcclusionBuildSystem)
 {
-    ReflectionRegistrator<StaticOcclusionBuildSystem>::Begin()
+    ReflectionRegistrator<StaticOcclusionBuildSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &StaticOcclusionBuildSystem::Process)
+    .Method("Process", &StaticOcclusionBuildSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 6.9f)]
     .End();
 }
 
 StaticOcclusionBuildSystem::StaticOcclusionBuildSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<StaticOcclusionComponent>() | ComponentUtils::MakeMask<TransformComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<StaticOcclusionComponent, TransformComponent>())
 {
     staticOcclusion = 0;
     activeIndex = -1;
@@ -73,7 +73,7 @@ void StaticOcclusionBuildSystem::ImmediateEvent(Component* _component, uint32 ev
 
 void StaticOcclusionBuildSystem::PrepareRenderObjects()
 {
-    GetScene()->staticOcclusionSystem->ClearOcclusionObjects();
+    GetScene()->GetSystem<StaticOcclusionSystem>()->ClearOcclusionObjects();
     landscape = nullptr;
 
     // Prepare render objects
@@ -117,7 +117,7 @@ void StaticOcclusionBuildSystem::Cancel()
     activeIndex = -1;
     SafeDelete(staticOcclusion);
 
-    GetScene()->staticOcclusionSystem->InvalidateOcclusion();
+    GetScene()->GetSystem<StaticOcclusionSystem>()->InvalidateOcclusion();
     SceneForceLod(LodComponent::INVALID_LOD_LAYER);
 }
 
@@ -228,7 +228,7 @@ void StaticOcclusionBuildSystem::FinishBuildOcclusion()
     SceneForceLod(LodComponent::INVALID_LOD_LAYER);
 
     Scene* scene = GetScene();
-    scene->staticOcclusionSystem->CollectOcclusionObjectsRecursively(scene);
+    scene->GetSystem<StaticOcclusionSystem>()->CollectOcclusionObjectsRecursively(scene);
 }
 
 bool StaticOcclusionBuildSystem::IsInBuild() const
@@ -268,9 +268,9 @@ void StaticOcclusionBuildSystem::SceneForceLod(int32 forceLodIndex)
     for (uint32 k = 0; k < size; ++k)
     {
         LodComponent* lodComponent = lodEntities[k]->GetComponent<LodComponent>();
-        GetScene()->lodSystem->SetForceLodLayer(lodComponent, forceLodIndex);
+        GetScene()->GetSystem<LodSystem>()->SetForceLodLayer(lodComponent, forceLodIndex);
     }
-    GetScene()->lodSystem->Process(0.0f);
+    GetScene()->GetSystem<LodSystem>()->Process(0.0f);
 }
 
 void StaticOcclusionBuildSystem::Process(float32 timeElapsed)

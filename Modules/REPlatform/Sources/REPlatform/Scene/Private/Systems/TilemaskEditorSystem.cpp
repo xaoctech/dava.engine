@@ -14,6 +14,7 @@
 #include <Engine/Engine.h>
 #include <Engine/EngineContext.h>
 #include <Input/Keyboard.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/DynamicBufferAllocator.h>
 #include <Render/Image/ImageConvert.h>
 #include <Render/Renderer.h>
@@ -21,6 +22,15 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(TilemaskEditorSystem)
+{
+    ReflectionRegistrator<TilemaskEditorSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &TilemaskEditorSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 6.0f)]
+    .Method("Input", &TilemaskEditorSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 7.0f)]
+    .End();
+}
+
 static Array<FastName, 4> TILECOLOR_PARAM_NAMES;
 
 static const FastName TILEMASK_EDITOR_FLAG_DRAW_TYPE("DRAW_TYPE");

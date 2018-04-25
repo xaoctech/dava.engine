@@ -15,6 +15,8 @@
 #include <Entity/ComponentUtils.h>
 #include <Input/Keyboard.h>
 #include <Math/AABBox3.h>
+#include <Reflection/ReflectionRegistrator.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/SingleComponents/TransformSingleComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
@@ -24,6 +26,15 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(WayEditSystem)
+{
+    ReflectionRegistrator<WayEditSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &WayEditSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 13.0f)]
+    .Method("Input", &WayEditSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 10.0f)]
+    .End();
+}
+
 namespace WayEditSystemDetail
 {
 struct AccessibleQueryParams
@@ -74,7 +85,7 @@ bool IsAccessible(const AccessibleQueryParams& params)
 } // namespace WayEditSystemDetail
 
 WayEditSystem::WayEditSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<WaypointComponent>() | ComponentUtils::MakeMask<TransformComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<WaypointComponent, TransformComponent>())
 {
 }
 

@@ -9,9 +9,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(TEMPLATESystem)
 {
-    ReflectionRegistrator<TEMPLATESystem>::Begin()[M::Tags("")]
+    ReflectionRegistrator<TEMPLATESystem>::Begin()[M::SystemTags("")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &TEMPLATESystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY_BEGIN, SP::Type::FIXED, 0.0f)]
+    .Method("ProcessFixed", &TEMPLATESystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 0.0f)]
     .End();
 }
 

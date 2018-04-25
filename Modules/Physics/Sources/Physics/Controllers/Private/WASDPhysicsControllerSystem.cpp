@@ -19,9 +19,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(WASDPhysicsControllerSystem)
 {
-    ReflectionRegistrator<WASDPhysicsControllerSystem>::Begin()[M::Tags("base", "physics")]
+    ReflectionRegistrator<WASDPhysicsControllerSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &WASDPhysicsControllerSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 2.0f)]
+    .Method("ProcessFixed", &WASDPhysicsControllerSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 2.0f)]
     .End();
 }
 

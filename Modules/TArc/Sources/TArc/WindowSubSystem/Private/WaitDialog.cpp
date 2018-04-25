@@ -1,7 +1,6 @@
 #include "WaitDialog.h"
 
 #include "TArc/Utils/RenderContextGuard.h"
-#include "TArc/Qt/QtString.h"
 
 #include <QLabel>
 #include <QPlainTextEdit>
@@ -12,6 +11,7 @@
 #include <QApplication>
 #include <QThread>
 #include <QMetaObject>
+#include <QString>
 
 namespace DAVA
 {

@@ -36,8 +36,8 @@ void UpdatableComponent::SetUpdatableObject(IUpdatable* _updatableObject)
 
     if (entity)
     {
-        entity->GetScene()->updatableSystem->RemoveEntity(entity);
-        entity->GetScene()->updatableSystem->AddEntity(entity);
+        entity->GetScene()->GetSystem<UpdateSystem>()->RemoveEntity(entity);
+        entity->GetScene()->GetSystem<UpdateSystem>()->AddEntity(entity);
     }
 }
 

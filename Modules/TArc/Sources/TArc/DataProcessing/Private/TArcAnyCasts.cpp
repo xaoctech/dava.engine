@@ -1,79 +1,80 @@
 #include "TArc/DataProcessing/TArcAnyCasts.h"
 #include "TArc/Utils/Utils.h"
-#include "TArc/Qt/QtString.h"
 #include "TArc/Qt/QtIcon.h"
 
 #include <Base/Any.h>
 #include <Base/FastName.h>
+#include <Utils/StringFormat.h>
 
 #include <Qt>
+#include <QString>
 
 namespace DAVA
 {
-QString StringToQString(const Any& value)
+Any StringToQString(const Any& value)
 {
     return QString::fromStdString(value.Get<String>());
 }
 
-String QStringToString(const Any& value)
+Any QStringToString(const Any& value)
 {
     return value.Get<QString>().toStdString();
 }
 
-QString FastNameToQString(const Any& value)
+Any FastNameToQString(const Any& value)
 {
     return QString(value.Get<FastName>().c_str());
 }
 
-FastName QStringToFastName(const Any& value)
+Any QStringToFastName(const Any& value)
 {
     return FastName(value.Get<QString>().toStdString());
 }
 
-QString CharPointerToQString(const Any& value)
+Any CharPointerToQString(const Any& value)
 {
     return QString(value.Get<const char*>());
 }
 
 template <typename T>
-QString IntegralToQString(const Any& value)
+Any IntegralToQString(const Any& value)
 {
     return QString::number(value.Get<T>());
 }
 
 // Don't create QString -> const char* cast function. It is impossible
 
-Qt::CheckState BoolToCheckState(const Any& value)
+Any BoolToCheckState(const Any& value)
 {
     return value.Get<bool>() ? Qt::Checked : Qt::Unchecked;
 }
 
-bool CheckStateToBool(const Any& value)
+Any CheckStateToBool(const Any& value)
 {
     return value.Get<Qt::CheckState>() == Qt::Checked;
 }
 
-Color QColorToColorAny(const Any& value)
+Any QColorToColorAny(const Any& value)
 {
     return QColorToColor(value.Get<QColor>());
 }
 
-QColor ColorToQColorAny(const Any& value)
+Any ColorToQColorAny(const Any& value)
 {
     return ColorToQColor(value.Get<Color>());
 }
 
-QIcon ColorToQIcon(const Any& value)
+Any ColorToQIcon(const Any& value)
 {
-    return CreateIconFromColor(ColorToQColorAny(value));
+    return QIcon(CreateIconFromColor(ColorToQColorAny(value).Get<QColor>()));
 }
 
-QIcon QColorToQIcon(const Any& value)
+Any QColorToQIcon(const Any& value)
 {
-    return CreateIconFromColor(value.Get<QColor>());
+    return QIcon(CreateIconFromColor(value.Get<QColor>()));
 }
 
-String ColorToString(const Any& value)
+Any ColorToString(const Any& value)
 {
     const Color& c = value.Get<Color>();
     return Format("%f, %f, %f, %f", c.r, c.g, c.b, c.a);

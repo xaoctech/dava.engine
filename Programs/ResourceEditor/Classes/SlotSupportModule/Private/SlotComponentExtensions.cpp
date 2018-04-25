@@ -49,7 +49,7 @@ protected:
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             std::shared_ptr<DAVA::PropertyNode> node = nodes[i];
-            DAVA::SlotComponent* component = node->cachedValue.Cast<DAVA::SlotComponent*>(nullptr);
+            DAVA::SlotComponent* component = node->cachedValue.CastSafely<DAVA::SlotComponent*>(nullptr);
             DVASSERT(component != nullptr);
             if (fn(component, i == 0) == false)
             {
@@ -483,7 +483,7 @@ private:
         else
         {
             DAVA::RefPtr<DAVA::SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<DAVA::SceneData>()->GetScene();
-            if (configPath.CanGet<DAVA::FilePath>() && scene->slotSystem->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
+            if (configPath.CanGet<DAVA::FilePath>() && scene->GetSystem<DAVA::SlotSystem>()->IsConfigParsed(configPath.Get<DAVA::FilePath>()) == false)
             {
                 RebuildItemsList();
             }
@@ -592,7 +592,7 @@ private:
             DAVA::FilePath path = configPath.Get<DAVA::FilePath>();
             DAVA::RefPtr<SceneEditor2> scene = GetAccessor()->GetActiveContext()->GetData<SceneData>()->GetScene();
 
-            Vector<DAVA::SlotSystem::ItemsCache::Item> items = scene->slotSystem->GetItems(path);
+            Vector<DAVA::SlotSystem::ItemsCache::Item> items = scene->GetSystem<DAVA::SlotSystem>()->GetItems(path);
             for (const DAVA::SlotSystem::ItemsCache::Item& item : items)
             {
                 if (filters.empty() == true || filters.count(item.type) > 0)
@@ -973,7 +973,7 @@ public:
             DAVA::FilePath path = value.Cast<DAVA::FilePath>();
             DAVA::SceneData* data = ctx->GetData<DAVA::SceneData>();
             DVASSERT(data != nullptr);
-            data->GetScene()->slotSystem->InvalidateConfig(path);
+            data->GetScene()->GetSystem<DAVA::SlotSystem>()->InvalidateConfig(path);
         }
         return nullptr;
     }

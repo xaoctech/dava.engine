@@ -8,9 +8,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(BotTaskSystem)
 {
-    ReflectionRegistrator<BotTaskSystem>::Begin()[M::Tags("bot", "taskbot")]
+    ReflectionRegistrator<BotTaskSystem>::Begin()[M::SystemTags("bot", "taskbot")]
     .ConstructorByPointer<Scene*>() // TODO: system out of place. Should be in gameplay group, or be a part of fw.
-    .Method("ProcessFixed", &BotTaskSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 16.0f)]
+    .Method("ProcessFixed", &BotTaskSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 16.0f)]
     .End();
 }
 

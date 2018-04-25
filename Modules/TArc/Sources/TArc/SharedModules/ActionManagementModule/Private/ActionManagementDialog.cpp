@@ -5,7 +5,6 @@
 #include "TArc/Controls/ComboBox.h"
 #include "TArc/Controls/LineEdit.h"
 #include "TArc/Controls/ReflectedButton.h"
-#include "TArc/Qt/QtSize.h"
 #include "TArc/Qt/QtIcon.h"
 
 #include <Reflection/ReflectionRegistrator.h>
@@ -20,6 +19,7 @@
 #include <QItemSelection>
 #include <QKeyEvent>
 #include <QKeySequenceEdit>
+#include <QSize>
 
 ENUM_DECLARE(Qt::ShortcutContext)
 {

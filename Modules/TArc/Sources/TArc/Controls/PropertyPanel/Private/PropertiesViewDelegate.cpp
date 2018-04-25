@@ -40,13 +40,13 @@ void InitStyleOptions(QStyleOptionViewItem& options, BaseComponentValue* compone
 
     if (style.bgColor.IsEmpty() == false)
     {
-        QPalette::ColorRole role = style.bgColor.Cast<QPalette::ColorRole>(QPalette::Base);
+        QPalette::ColorRole role = style.bgColor.CastSafely<QPalette::ColorRole>(QPalette::Base);
         options.backgroundBrush = options.palette.brush(role);
     }
 
     if (style.fontColor.IsEmpty() == false)
     {
-        QPalette::ColorRole role = style.fontColor.Cast<QPalette::ColorRole>(QPalette::Text);
+        QPalette::ColorRole role = style.fontColor.CastSafely<QPalette::ColorRole>(QPalette::Text);
         options.palette.setBrush(QPalette::Text, options.palette.brush(role));
     }
 }

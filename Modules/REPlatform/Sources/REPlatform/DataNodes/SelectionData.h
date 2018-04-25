@@ -47,7 +47,7 @@ public:
 private:
     friend class ::SelectionModule;
 
-    std::unique_ptr<SelectionSystem> selectionSystem;
+    SelectionSystem* selectionSystem = nullptr;
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(SelectionData, TArcDataNode)
     {
@@ -58,9 +58,4 @@ private:
         .End();
     }
 };
-
-template <>
-bool AnyCompare<SelectableGroup>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<SelectableGroup>;
-
 } // namespace DAVA

@@ -35,6 +35,15 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorSlotSystem)
+{
+    using namespace DAVA;
+    ReflectionRegistrator<EditorSlotSystem>::Begin()[M::SystemTags("resource_editor", "slot_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &EditorSlotSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, 4.9f)] // Should be right before SlotSystem process
+    .End();
+}
+
 const FastName EditorSlotSystem::emptyItemName = FastName("Empty");
 
 namespace EditorSlotSystemDetail
@@ -80,10 +89,14 @@ DAVA_VIRTUAL_REFLECTION_IMPL(LoadedSlotItemComponent)
     .End();
 }
 
-EditorSlotSystem::EditorSlotSystem(Scene* scene, ContextAccessor* accessor_)
+EditorSlotSystem::EditorSlotSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<SlotComponent>())
-    , accessor(accessor_)
 {
+}
+
+void EditorSlotSystem::SetContextAccessor(ContextAccessor* accessor_)
+{
+    accessor = accessor_;
 }
 
 void EditorSlotSystem::AddEntity(Entity* entity)
@@ -167,7 +180,7 @@ void EditorSlotSystem::Process(float32 timeElapsed)
 
     Scene* scene = GetScene();
     EntityModificationSystem* modifSystem = scene->GetSystem<EntityModificationSystem>();
-    SlotSystem* slotSystem = scene->slotSystem;
+    SlotSystem* slotSystem = scene->GetSystem<SlotSystem>();
 
     if (modifSystem->InCloneState() == false && modifSystem->InCloneDoneState() == false)
     {
@@ -206,19 +219,19 @@ void EditorSlotSystem::Process(float32 timeElapsed)
     const TransformSingleComponent* tsc = GetScene()->GetSingleComponentForRead<TransformSingleComponent>(this);
     for (Entity* entity : tsc->localTransformChanged)
     {
-        SlotComponent* slot = scene->slotSystem->LookUpSlot(entity);
+        SlotComponent* slot = slotSystem->LookUpSlot(entity);
         if (slot == nullptr)
         {
             continue;
         }
 
-        Matrix4 jointTranfsorm = scene->slotSystem->GetJointTransform(slot);
+        Matrix4 jointTranfsorm = slotSystem->GetJointTransform(slot);
         bool inverseSuccessed = jointTranfsorm.Inverse();
         DVASSERT(inverseSuccessed);
 
         TransformComponent* tc = entity->GetComponent<TransformComponent>();
         Matrix4 attachmentTransform = tc->GetLocalMatrix() * jointTranfsorm;
-        scene->slotSystem->SetAttachmentTransform(slot, attachmentTransform);
+        slotSystem->SetAttachmentTransform(slot, attachmentTransform);
     }
 
     for (Entity* entity : entities)
@@ -226,7 +239,7 @@ void EditorSlotSystem::Process(float32 timeElapsed)
         for (uint32 i = 0; i < entity->GetComponentCount<SlotComponent>(); ++i)
         {
             SlotComponent* component = entity->GetComponent<DAVA::SlotComponent>(i);
-            Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
+            Entity* loadedEntity = slotSystem->LookUpLoadedEntity(component);
             if (loadedEntity != nullptr)
             {
                 for (int32 j = 0; j < loadedEntity->GetChildrenCount(); ++j)
@@ -255,7 +268,7 @@ void EditorSlotSystem::WillClone(Entity* originalEntity)
                 AttachedItemInfo info;
                 info.component = entity->GetComponent<DAVA::SlotComponent>(i);
                 DVASSERT(info.component->GetEntity() != nullptr);
-                info.entity = RefPtr<Entity>::ConstructWithRetain(scene->slotSystem->LookUpLoadedEntity(info.component));
+                info.entity = RefPtr<Entity>::ConstructWithRetain(scene->GetSystem<SlotSystem>()->LookUpLoadedEntity(info.component));
                 info.itemName = info.component->GetLoadedItemName();
 
                 inClonedState[entity].push_back(info);
@@ -445,7 +458,7 @@ FastName EditorSlotSystem::GenerateUniqueSlotName(SlotComponent* component, Enti
 void EditorSlotSystem::DetachEntity(SlotComponent* component, Entity* entity)
 {
     Entity* slotEntity = component->GetEntity();
-    Entity* loadedEntity = GetScene()->slotSystem->LookUpLoadedEntity(component);
+    Entity* loadedEntity = GetScene()->GetSystem<SlotSystem>()->LookUpLoadedEntity(component);
     DVASSERT(loadedEntity == entity);
     DVASSERT(slotEntity == entity->GetParent());
 
@@ -465,7 +478,7 @@ void EditorSlotSystem::AttachEntity(SlotComponent* component, Entity* entity, Fa
 {
     Scene* scene = GetScene();
 
-    SlotSystem* slotSystem = GetScene()->slotSystem;
+    SlotSystem* slotSystem = GetScene()->GetSystem<SlotSystem>();
     scene->GetSystem<SelectionSystem>()->SetLocked(true);
     slotSystem->AttachEntityToSlot(component, entity, itemName);
     EditorSlotSystemDetail::InitChildEntity(entity, component);
@@ -480,7 +493,7 @@ RefPtr<Entity> EditorSlotSystem::AttachEntity(SlotComponent* component, FastName
         GetScene()->GetSystem<SelectionSystem>()->SetLocked(false);
     };
 
-    SlotSystem* slotSystem = GetScene()->slotSystem;
+    SlotSystem* slotSystem = GetScene()->GetSystem<SlotSystem>();
     if (itemName == emptyItemName)
     {
         RefPtr<Entity> newEntity(new Entity());
@@ -504,7 +517,7 @@ void EditorSlotSystem::AccumulateDependentCommands(REDependentCommandsHolder& ho
     {
         const Reflection::Field& field = cmd->GetField();
         ReflectedObject object = field.ref.GetDirectObject();
-        FastName fieldName = field.key.Cast<FastName>(FastName(""));
+        FastName fieldName = field.key.CastSafely<FastName>(FastName(""));
         const ReflectedType* type = object.GetReflectedType();
         if (type == ReflectedTypeDB::Get<SlotComponent>())
         {
@@ -636,14 +649,14 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
     {
         const Reflection::Field& field = cmd->GetField();
         ReflectedObject object = field.ref.GetDirectObject();
-        FastName fieldName = field.key.Cast<FastName>(FastName(""));
+        FastName fieldName = field.key.CastSafely<FastName>(FastName(""));
         const ReflectedType* type = object.GetReflectedType();
         if (type == ReflectedTypeDB::Get<SlotComponent>())
         {
             SlotComponent* component = object.GetPtr<SlotComponent>();
             if (fieldName == SlotComponent::SlotNameFieldName)
             {
-                Entity* entity = scene->slotSystem->LookUpLoadedEntity(component);
+                Entity* entity = scene->GetSystem<SlotSystem>()->LookUpLoadedEntity(component);
                 if (entity != nullptr)
                 {
                     entity->SetName(component->GetSlotName());
@@ -659,7 +672,7 @@ void EditorSlotSystem::ProcessCommand(const RECommandNotificationObject& command
         if (type == ReflectedTypeDB::Get<Entity>() && fieldName == Entity::EntityNameFieldName)
         {
             Entity* entity = object.GetPtr<Entity>();
-            SlotComponent* component = scene->slotSystem->LookUpSlot(entity);
+            SlotComponent* component = scene->GetSystem<SlotSystem>()->LookUpSlot(entity);
             if (component != nullptr)
             {
                 component->SetSlotName(entity->GetName());
@@ -674,7 +687,7 @@ FastName EditorSlotSystem::GetSuitableItemName(SlotComponent* component) const
 {
     FastName itemName;
 
-    Vector<SlotSystem::ItemsCache::Item> items = GetScene()->slotSystem->GetItems(component->GetConfigFilePath());
+    Vector<SlotSystem::ItemsCache::Item> items = GetScene()->GetSystem<SlotSystem>()->GetItems(component->GetConfigFilePath());
     FastName templateName = component->GetTemplateName();
     if (templateName.IsValid())
     {
@@ -717,7 +730,7 @@ void EditorSlotSystem::Draw()
                             t->boundingBoxSize.y - t->pivot.y,
                             t->boundingBoxSize.z - t->pivot.z);
                 AABBox3 box(min, max);
-                Entity* loadedEntity = scene->slotSystem->LookUpLoadedEntity(component);
+                Entity* loadedEntity = scene->GetSystem<SlotSystem>()->LookUpLoadedEntity(component);
                 if (loadedEntity != nullptr)
                 {
                     TransformComponent* tc = loadedEntity->GetComponent<TransformComponent>();
@@ -741,7 +754,7 @@ std::unique_ptr<Command> EditorSlotSystem::PrepareForSave(bool /*saveForGame*/)
     }
 
     SceneEditor2* sceneEditor = static_cast<SceneEditor2*>(GetScene());
-    SlotSystem* slotSystem = sceneEditor->slotSystem;
+    SlotSystem* slotSystem = sceneEditor->GetSystem<SlotSystem>();
 
     RECommandBatch* batchCommand = new RECommandBatch("Prepare for save", static_cast<uint32>(entities.size()));
     Map<int32, Vector<Entity*>, std::greater<int32>> depthEntityMap;

@@ -33,9 +33,9 @@
 DAVA_VIRTUAL_REFLECTION_IMPL(CubesEntityFillSystem)
 {
     using namespace DAVA;
-    ReflectionRegistrator<CubesEntityFillSystem>::Begin()[M::Tags("gm_cubes")]
+    ReflectionRegistrator<CubesEntityFillSystem>::Begin()[M::SystemTags("gm_cubes")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &CubesEntityFillSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 25.2f)]
+    .Method("ProcessFixed", &CubesEntityFillSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 25.2f)]
     .End();
 }
 

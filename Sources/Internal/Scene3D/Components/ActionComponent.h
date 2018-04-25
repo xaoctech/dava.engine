@@ -3,7 +3,6 @@
 #include "Entity/Component.h"
 #include "Reflection/Reflection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-#include "Base/Any.h"
 
 namespace DAVA
 {
@@ -145,12 +144,4 @@ private:
 
     DAVA_VIRTUAL_REFLECTION(ActionComponent, Component);
 };
-
-template <>
-bool AnyCompare<ActionComponent::ActionContainer>::IsEqual(const Any&, const Any&);
-extern template struct AnyCompare<ActionComponent::ActionContainer>;
-
-template <>
-bool AnyCompare<ActionComponent::Action>::IsEqual(const Any&, const Any&);
-extern template struct AnyCompare<ActionComponent::Action>;
 };

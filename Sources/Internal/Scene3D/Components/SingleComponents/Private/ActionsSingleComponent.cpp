@@ -21,6 +21,11 @@ void AddAvailableAction(const FastName& actionId, const I& item,
     if (findIt == index.end())
     {
         container.push_back(item);
+        std::sort(begin(container), end(container), [](const auto& l, const auto& r) {
+            const FastName& fl = l;
+            const FastName& fr = r;
+            return std::strcmp(fl.c_str(), fr.c_str()) < 0;
+        });
         index.insert(actionId);
     }
 }
@@ -33,6 +38,11 @@ bool IsAvaildableAction(const FastName& actionId, const UnorderedSet<FastName>& 
 bool ActionsSingleComponent::AnalogActionInfo::operator==(const AnalogActionInfo& info) const
 {
     return actionId == info.actionId;
+}
+
+ActionsSingleComponent::AnalogActionInfo::operator const FastName&() const
+{
+    return actionId;
 }
 
 ActionsSingleComponent::ActionsSingleComponent()

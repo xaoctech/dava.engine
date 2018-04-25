@@ -1,7 +1,5 @@
 #pragma once
 
-#include "TArc/Qt/QtString.h"
-
 #include <Engine/EngineTypes.h>
 #include <FileSystem/FilePath.h>
 #include <Debug/DVAssert.h>
@@ -11,6 +9,7 @@
 #include <QPixmap>
 #include <QColor>
 #include <QRegularExpression>
+#include <QString>
 
 namespace DAVA
 {

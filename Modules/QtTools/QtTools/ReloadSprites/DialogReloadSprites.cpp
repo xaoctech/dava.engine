@@ -7,10 +7,11 @@
 
 #include <TextureCompression/TextureConverter.h>
 #include <TArc/DataProcessing/PropertiesHolder.h>
-#include <TArc/Qt/QtByteArray.h>
 
 #include "ui_DialogReloadSprites.h"
+
 #include <QTimer>
+#include <QByteArray>
 
 DialogReloadSprites::DialogReloadSprites(DAVA::ContextAccessor* accessor_, SpritesPacker* packer, QWidget* parent)
     : QDialog(parent)

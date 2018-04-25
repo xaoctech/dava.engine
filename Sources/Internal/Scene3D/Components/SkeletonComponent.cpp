@@ -155,10 +155,4 @@ void SkeletonComponent::UpdateJointsMap()
         jointMap[jointUID] = j;
     }
 }
-
-template <>
-bool AnyCompare<SkeletonComponent::Joint>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<SkeletonComponent::Joint>() == v2.Get<SkeletonComponent::Joint>();
-}
 }

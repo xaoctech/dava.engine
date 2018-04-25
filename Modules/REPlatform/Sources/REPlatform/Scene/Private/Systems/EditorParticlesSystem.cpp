@@ -14,6 +14,7 @@
 #include <Math/Transform.h>
 #include <Particles/ParticleEmitter.h>
 #include <Particles/ParticleEmitterInstance.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
@@ -21,6 +22,13 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorParticlesSystem)
+{
+    ReflectionRegistrator<EditorParticlesSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .End();
+}
+
 namespace EditorParticlesSystemDetails
 {
 template <typename T>

@@ -34,20 +34,20 @@ public:
     template <typename T>
     using PointerT = std::add_pointer_t<std::decay_t<T>>;
 
-    using SeedCastOP = const Type::Seed* (*)(const void*);
+    using CompareOp = bool (*)(const void*, const void*);
+    using SeedCastOp = const Type::Seed* (*)(const void*);
 
     Type(Type&&) = delete;
     Type(const Type&) = delete;
     Type& operator=(const Type&) = delete;
 
+    const char* GetName() const;
+
     uint32_t GetSize() const;
     uint32_t GetArrayDimension() const;
 
-    const char* GetName() const;
-
-    std::type_index GetTypeIndex() const;
-    unsigned long GetTypeFlags() const;
-    SeedCastOP GetSeedCastOP() const;
+    CompareOp GetEqualCompareOp() const;
+    SeedCastOp GetSeedCastOp() const;
 
     const TypeInheritance* GetInheritance() const;
 
@@ -57,9 +57,12 @@ public:
     template <typename T>
     bool Is() const;
 
+    bool IsVoid() const;
     bool IsConst() const;
     bool IsPointer() const;
+    bool IsPointerToConst() const;
     bool IsReference() const;
+    bool IsReferenceToConst() const;
     bool IsFundamental() const;
     bool IsTrivial() const;
     bool IsTriviallyCopyable() const;
@@ -68,8 +71,10 @@ public:
     bool IsFloatingPoint() const;
     bool IsEnum() const;
     bool IsAbstract() const;
-    bool IsPOD() const;
+    bool IsPod() const;
     bool IsArray() const;
+
+    uint32_t GetTypeFlags() const;
 
     const Type* Decay() const;
     const Type* Deref() const;
@@ -84,6 +89,7 @@ public:
 private:
     enum eTypeFlag
     {
+        isVoid,
         isConst,
         isPointer,
         isPointerToConst,
@@ -97,34 +103,33 @@ private:
         isFloatingPoint,
         isEnum,
         isAbstract,
-        isPOD,
+        isPod,
         isArray
     };
 
     struct UserData
     {
-        using Deleter = void (*)(void*);
-
         void* data = nullptr;
-        Deleter deleter = nullptr;
+        void (*deleter)(void*) = nullptr;
     };
+
+    const char* name = nullptr;
 
     uint16_t size = 0;
     uint16_t arraySize = 0;
 
-    const char* name = nullptr;
-    const std::type_info* stdTypeInfo = &typeid(void);
-    SeedCastOP seedCastOP = nullptr;
+    CompareOp equalCompareOp = nullptr;
+    SeedCastOp seedCastOp = nullptr;
 
     Type* const* derefType = nullptr;
     Type* const* decayType = nullptr;
     Type* const* pointerType = nullptr;
     Type* const* arrayElementType = nullptr;
 
-    std::bitset<sizeof(int) * 8> flags;
+    std::bitset<sizeof(uint32_t) * 8> flags;
     std::unique_ptr<TypeInheritance, void (*)(TypeInheritance*)> inheritance;
 
-    static const size_t userDataStorageSize = 16;
+    static const size_t userDataStorageSize = 8;
     mutable std::array<UserData, userDataStorageSize> userDataStorage = {};
 
     Type();

@@ -28,6 +28,8 @@ class RECommandNotificationObject;
 
 class SceneCollisionSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(SceneCollisionSystem, SceneSystem);
+
     friend class SceneEditor2;
     friend class EntityModificationSystem;
 

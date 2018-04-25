@@ -12,19 +12,19 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkDebugResimulationDrawSystem)
 {
-    ReflectionRegistrator<NetworkDebugResimulationDrawSystem>::Begin()[M::Tags("network", "client")]
+    ReflectionRegistrator<NetworkDebugResimulationDrawSystem>::Begin()[M::SystemTags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkDebugResimulationDrawSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 13.4f)] // should be after NetworkResimulationSystem
-    .Method("Process", &NetworkDebugResimulationDrawSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 0.1f)]
+    .Method("ProcessFixed", &NetworkDebugResimulationDrawSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 13.4f)] // should be after NetworkResimulationSystem
+    .Method("Process", &NetworkDebugResimulationDrawSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 0.1f)]
     .End();
 }
 
 NetworkDebugResimulationDrawSystem::NetworkDebugResimulationDrawSystem(Scene* scene)
     : SceneSystem(scene, ComponentMask())
 {
-    networkResimulationSingleComponent = scene->GetSingleComponentForRead<NetworkResimulationSingleComponent>(this);
-    networkEntitiesSingleComponent = scene->GetSingleComponentForRead<NetworkEntitiesSingleComponent>(this);
-    networkTimeSingleComponent = scene->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
+    networkResimulationSingleComponent = scene->GetSingleComponent<NetworkResimulationSingleComponent>();
+    networkEntitiesSingleComponent = scene->GetSingleComponent<NetworkEntitiesSingleComponent>();
+    networkTimeSingleComponent = scene->GetSingleComponent<NetworkTimeSingleComponent>();
 }
 
 void NetworkDebugResimulationDrawSystem::Process(float32 timeElapsed)

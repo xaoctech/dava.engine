@@ -7,6 +7,8 @@
 
 class EditorTextSystem : public DAVA::SceneSystem, public DAVA::EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(EditorTextSystem, DAVA::SceneSystem);
+
 public:
     EditorTextSystem(DAVA::Scene* scene);
 

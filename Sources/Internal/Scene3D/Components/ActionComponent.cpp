@@ -39,18 +39,6 @@ DAVA_VIRTUAL_REFLECTION_IMPL(ActionComponent)
     .End();
 }
 
-template <>
-bool AnyCompare<ActionComponent::ActionContainer>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<ActionComponent::ActionContainer>() == v2.Get<ActionComponent::ActionContainer>();
-}
-
-template <>
-bool AnyCompare<ActionComponent::Action>::IsEqual(const Any& v1, const Any& v2)
-{
-    return v1.Get<ActionComponent::Action>() == v2.Get<ActionComponent::Action>();
-}
-
 bool ActionComponent::Action::operator==(const Action& other) const
 {
     return type == other.type &&
@@ -83,7 +71,7 @@ ActionComponent::~ActionComponent()
     if (entity &&
         entity->GetScene())
     {
-        entity->GetScene()->actionSystem->UnWatch(this);
+        entity->GetScene()->GetSystem<ActionUpdateSystem>()->UnWatch(this);
     }
 }
 
@@ -112,7 +100,7 @@ ActionComponent::Action ActionComponent::MakeAction(ActionComponent::Action::eTy
 
 void ActionComponent::StartSwitch(int32 switchIndex)
 {
-    if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_SWITCH_CHANGED))
+    if (entity->GetScene()->GetSystem<ActionUpdateSystem>()->IsBlockEvent(Action::EVENT_SWITCH_CHANGED))
         return;
 
     StopSwitch(switchIndex);
@@ -133,7 +121,7 @@ void ActionComponent::StartSwitch(int32 switchIndex)
     {
         if (!started)
         {
-            entity->GetScene()->actionSystem->Watch(this);
+            entity->GetScene()->GetSystem<ActionUpdateSystem>()->Watch(this);
         }
 
         started = true;
@@ -143,7 +131,7 @@ void ActionComponent::StartSwitch(int32 switchIndex)
 
 void ActionComponent::StartAdd()
 {
-    if (entity->GetScene()->actionSystem == nullptr || entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_ADDED_TO_SCENE))
+    if (entity->GetScene()->GetSystem<ActionUpdateSystem>() == nullptr || entity->GetScene()->GetSystem<ActionUpdateSystem>()->IsBlockEvent(Action::EVENT_ADDED_TO_SCENE))
         return;
 
     uint32 markedCount = 0;
@@ -163,7 +151,7 @@ void ActionComponent::StartAdd()
     {
         if (!started)
         {
-            entity->GetScene()->actionSystem->Watch(this);
+            entity->GetScene()->GetSystem<ActionUpdateSystem>()->Watch(this);
         }
 
         started = true;
@@ -173,7 +161,7 @@ void ActionComponent::StartAdd()
 
 void ActionComponent::StartUser(const FastName& name)
 {
-    if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_CUSTOM))
+    if (entity->GetScene()->GetSystem<ActionUpdateSystem>()->IsBlockEvent(Action::EVENT_CUSTOM))
         return;
 
     StopUser(name);
@@ -194,7 +182,7 @@ void ActionComponent::StartUser(const FastName& name)
     {
         if (!started)
         {
-            entity->GetScene()->actionSystem->Watch(this);
+            entity->GetScene()->GetSystem<ActionUpdateSystem>()->Watch(this);
         }
 
         started = true;
@@ -214,7 +202,7 @@ void ActionComponent::StopAll()
         started = false;
         allActionsActive = false;
 
-        entity->GetScene()->actionSystem->UnWatch(this);
+        entity->GetScene()->GetSystem<ActionUpdateSystem>()->UnWatch(this);
     }
 
     uint32 count = static_cast<uint32>(actions.size());
@@ -252,7 +240,7 @@ void ActionComponent::StopSwitch(int32 switchIndex)
         started = false;
         allActionsActive = false;
 
-        entity->GetScene()->actionSystem->UnWatch(this);
+        entity->GetScene()->GetSystem<ActionUpdateSystem>()->UnWatch(this);
     }
 }
 
@@ -282,7 +270,7 @@ void ActionComponent::StopUser(const FastName& name)
         started = false;
         allActionsActive = false;
 
-        entity->GetScene()->actionSystem->UnWatch(this);
+        entity->GetScene()->GetSystem<ActionUpdateSystem>()->UnWatch(this);
     }
 }
 
@@ -331,7 +319,7 @@ void ActionComponent::Remove(const ActionComponent::Action::eType type, const Fa
     //b. if after removing marked action it appears we have no marked actions anymore
     if ((!prevActionsActive && (allActionsActive != prevActionsActive)) || (wasMarked && !markedCount))
     {
-        entity->GetScene()->actionSystem->UnWatch(this);
+        entity->GetScene()->GetSystem<ActionUpdateSystem>()->UnWatch(this);
     }
 }
 
@@ -386,7 +374,7 @@ void ActionComponent::Update(float32 timeElapsed)
             allActionsActive != prevActionsActive)
         {
             started = false;
-            entity->GetScene()->actionSystem->UnWatch(this);
+            entity->GetScene()->GetSystem<ActionUpdateSystem>()->UnWatch(this);
         }
     }
 }

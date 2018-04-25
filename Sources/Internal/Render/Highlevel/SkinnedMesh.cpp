@@ -1,6 +1,7 @@
 #include "Scene3D/SkeletonAnimation/JointTransform.h"
 #include "Render/Highlevel/SkinnedMesh.h"
 #include "Render/Renderer.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {

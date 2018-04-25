@@ -3,6 +3,7 @@
 #include <Debug/DVAssert.h>
 #include <Entity/Component.h>
 #include <Entity/ComponentUtils.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Render/Highlevel/Vegetation/VegetationRenderObject.h>
 #include <Scene3D/Components/ComponentHelpers.h>
@@ -12,6 +13,13 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorVegetationSystem)
+{
+    ReflectionRegistrator<EditorVegetationSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .End();
+}
+
 EditorVegetationSystem::EditorVegetationSystem(Scene* scene)
     : SceneSystem(scene, ComponentUtils::MakeMask<RenderComponent>())
 {

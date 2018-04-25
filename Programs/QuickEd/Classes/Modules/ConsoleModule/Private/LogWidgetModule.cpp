@@ -8,7 +8,8 @@
 
 #include <TArc/WindowSubSystem/UI.h>
 #include <TArc/Utils/ModuleCollection.h>
-#include <TArc/Qt/QtByteArray.h>
+
+#include <QByteArray>
 
 DAVA_VIRTUAL_REFLECTION_IMPL(LogWidgetModule)
 {

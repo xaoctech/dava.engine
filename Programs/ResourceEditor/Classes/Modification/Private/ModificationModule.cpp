@@ -106,7 +106,7 @@ void ModificationModule::CreateActions()
 
     auto isTrue = [](const Any& value) -> Any
     {
-        return value.Get<bool>(false);
+        return value.GetSafely<bool>(false);
     };
 
     auto makeBindable = [](QtAction* action)

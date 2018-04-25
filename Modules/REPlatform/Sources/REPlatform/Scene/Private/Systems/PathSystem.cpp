@@ -14,6 +14,7 @@
 
 #include <FileSystem/KeyedArchive.h>
 #include <Math/Matrix4.h>
+#include <Reflection/ReflectionRegistrator.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Components/Waypoint/EdgeComponent.h>
@@ -24,6 +25,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(PathSystem)
+{
+    ReflectionRegistrator<PathSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &PathSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 14.0f)]
+    .End();
+}
+
 namespace PathSystemDetail
 {
 const Array<Color, 16> PathColorPallete =

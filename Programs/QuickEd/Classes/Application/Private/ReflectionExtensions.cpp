@@ -3,10 +3,11 @@
 
 #include <TArc/Core/ContextAccessor.h>
 #include <TArc/DataProcessing/DataContext.h>
-#include <TArc/Qt/QtString.h>
 #include <TArc/Utils/CommonFieldNames.h>
 
 #include <Reflection/ReflectionRegistrator.h>
+
+#include <QString>
 
 namespace ReflectionExtensionsDetail
 {

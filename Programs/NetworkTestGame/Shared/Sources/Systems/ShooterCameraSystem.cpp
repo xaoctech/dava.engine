@@ -19,9 +19,9 @@
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterCameraSystem)
 {
     using namespace DAVA;
-    ReflectionRegistrator<ShooterCameraSystem>::Begin()[M::Tags("gm_shooter", "client")]
+    ReflectionRegistrator<ShooterCameraSystem>::Begin()[M::SystemTags("gm_shooter", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &ShooterCameraSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 2.1f)] // We do not have a group after transform and between renderer, so use engine end for now
+    .Method("Process", &ShooterCameraSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Normal, 2.1f)] // We do not have a group after transform and between renderer, so use engine end for now
     .End();
 }
 

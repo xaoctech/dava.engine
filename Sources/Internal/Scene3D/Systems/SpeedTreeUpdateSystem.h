@@ -27,7 +27,7 @@ public:
 
     void HandleEvent(Observable* observable) override;
 
-    void SceneDidLoaded() override;
+    void OnSceneLoaded() override;
 
 protected:
     void UpdateAnimationFlag(Entity* entity);

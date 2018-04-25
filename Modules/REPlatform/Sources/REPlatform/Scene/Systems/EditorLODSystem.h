@@ -79,8 +79,11 @@ protected:
 };
 
 class EditorLODSystemUIDelegate;
+
 class EditorLODSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(EditorLODSystem, SceneSystem);
+
     friend class SceneEditor2;
 
     enum eLODSystemFlag : uint32
@@ -109,7 +112,7 @@ public:
 
     void Process(float32 timeElapsed) override;
 
-    void SceneDidLoaded() override;
+    void OnSceneLoaded() override;
 
     eEditorMode GetMode() const;
     void SetMode(eEditorMode mode);

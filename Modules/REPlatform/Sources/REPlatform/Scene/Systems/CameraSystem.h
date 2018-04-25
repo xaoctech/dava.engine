@@ -18,6 +18,8 @@ class ContextAccessor;
 
 class SceneCameraSystem : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(SceneCameraSystem, SceneSystem);
+
     friend class SceneEditor2;
     friend class EditorLightSystem;
 

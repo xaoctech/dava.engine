@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include "Base/BaseTypes.h"
-#include "Base/Any.h"
 #include "Math/MathConstants.h"
 
 namespace DAVA
@@ -257,11 +256,11 @@ Vector3 Reflect(const Vector3& v, const Vector3& n);
 float32 Distance(const Vector3& v1, const Vector3& v2);
 float32 DistanceSquared(const Vector3& v1, const Vector3& v2);
 Vector3 PerpendicularVector(const Vector3& normal);
-inline Vector3 Floor(const Vector3& v);
-inline Vector3 Frac(const Vector3& v);
-inline Vector3 Fmod(const Vector3& v, const Vector3& m);
-inline Vector3 Max(const Vector3& v1, const Vector3& v2);
-inline Vector3 Min(const Vector3& v1, const Vector3& v2);
+Vector3 Floor(const Vector3& v);
+Vector3 Frac(const Vector3& v);
+Vector3 Fmod(const Vector3& v, const Vector3& m);
+Vector3 Max(const Vector3& v1, const Vector3& v2);
+Vector3 Min(const Vector3& v1, const Vector3& v2);
 
 /**	
     \ingroup math
@@ -319,9 +318,9 @@ public:
     const Vector4& operator-=(const Vector4& _v);
     const Vector4& operator*=(float32 f);
     const Vector4& operator/=(float32 f);
+    const Vector4& operator*=(const Vector4& _v);
+    const Vector4& operator/=(const Vector4& _v);
     Vector4 operator-() const;
-    inline const Vector4& operator*=(const Vector4& _v);
-    inline const Vector4& operator/=(const Vector4& _v);
 
     //! Comparison operators
     bool operator==(const Vector4& _v) const;
@@ -334,9 +333,8 @@ public:
 //! operators
 Vector4 operator-(const Vector4& _v1, const Vector4& _v2);
 Vector4 operator+(const Vector4& _v1, const Vector4& _v2);
-
-inline Vector4 operator*(Vector4 _v1, const Vector4& _v2);
-inline Vector4 operator/(Vector4 _v1, const Vector4& _v2);
+Vector4 operator*(Vector4 _v1, const Vector4& _v2);
+Vector4 operator/(Vector4 _v1, const Vector4& _v2);
 
 //! with scalar
 Vector4 operator+(const Vector4& _v, float32 _f);
@@ -356,12 +354,12 @@ Vector4 Normalize(const Vector4& v);
 Vector4 CrossProduct(const Vector4& v1, const Vector4& v2);
 float32 DotProduct(const Vector4& v1, const Vector4& v2);
 Vector4 Lerp(const Vector4& _v1, const Vector4& _v2, float32 t);
-inline Vector4 Floor(const Vector4& v);
-inline Vector4 Frac(const Vector4& v);
-inline Vector4 Fmod(const Vector4& v, const Vector4& m);
-inline Vector4 Abs(const Vector4& v);
-inline Vector4 Max(const Vector4& v1, const Vector4& v2);
-inline Vector4 Min(const Vector4& v1, const Vector4& v2);
+Vector4 Floor(const Vector4& v);
+Vector4 Frac(const Vector4& v);
+Vector4 Fmod(const Vector4& v, const Vector4& m);
+Vector4 Abs(const Vector4& v);
+Vector4 Max(const Vector4& v1, const Vector4& v2);
+Vector4 Min(const Vector4& v1, const Vector4& v2);
 // Vector2 Implementation
 
 inline Vector2::Vector2()
@@ -1306,16 +1304,4 @@ inline Vector4 Normalize(const Vector4& v)
     res.Normalize();
     return res;
 }
-
-template <>
-bool AnyCompare<Vector2>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<Vector2>;
-
-template <>
-bool AnyCompare<Vector3>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<Vector3>;
-
-template <>
-bool AnyCompare<Vector4>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<Vector4>;
 };

@@ -3,9 +3,9 @@
 #include "TArc/Controls/ControlProxy.h"
 #include "TArc/Controls/CommonStrings.h"
 #include "TArc/Utils/QtConnections.h"
-#include "TArc/Qt/QtString.h"
 
 #include <QProgressBar>
+#include <QString>
 
 namespace DAVA
 {

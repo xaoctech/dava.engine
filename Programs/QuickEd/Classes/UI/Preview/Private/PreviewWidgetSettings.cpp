@@ -141,7 +141,7 @@ void PreviewWidgetSettings::Load(const DAVA::PropertiesItem& settingsItem)
         Any value = versionItem.Get(versionFieldName, versionDefaultValue, versionRef.GetValueType());
         if (value.CanCast<uint32>())
         {
-            version = value.Cast<uint32>(0);
+            version = value.CastSafely<uint32>(0);
         }
     }
 

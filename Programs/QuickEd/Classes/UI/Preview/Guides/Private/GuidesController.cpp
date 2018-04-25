@@ -420,7 +420,7 @@ bool GuidesController::IsEnabled() const
 {
     if (documentDataWrapper.HasData())
     {
-        SortedControlNodeSet displayedRootControls = documentDataWrapper.GetFieldValue(DocumentData::displayedRootControlsPropertyName).Cast<SortedControlNodeSet>(SortedControlNodeSet());
+        SortedControlNodeSet displayedRootControls = documentDataWrapper.GetFieldValue(DocumentData::displayedRootControlsPropertyName).CastSafely<SortedControlNodeSet>(SortedControlNodeSet());
         if (displayedRootControls.size() == 1)
         {
             return true;
@@ -431,7 +431,7 @@ bool GuidesController::IsEnabled() const
 
 PackageNode::AxisGuides GuidesController::GetValues() const
 {
-    PackageNode::Guides guides = documentDataWrapper.GetFieldValue(DocumentData::guidesPropertyName).Cast<PackageNode::Guides>(PackageNode::Guides());
+    PackageNode::Guides guides = documentDataWrapper.GetFieldValue(DocumentData::guidesPropertyName).CastSafely<PackageNode::Guides>(PackageNode::Guides());
     return guides[orientation];
 }
 
@@ -510,7 +510,7 @@ void GuidesController::RemoveAllGuides()
 
 bool GuidesController::IsGuidesEnabled() const
 {
-    return preferencesDataWrapper.GetFieldValue(PreferencesData::guidesEnabledPropertyName).Cast<bool>(true);
+    return preferencesDataWrapper.GetFieldValue(PreferencesData::guidesEnabledPropertyName).CastSafely<bool>(true);
 }
 
 void GuidesController::SetGuidesEnabled(bool enabled)
@@ -525,7 +525,7 @@ void GuidesController::SetGuidesEnabled(bool enabled)
 
 void GuidesController::OnGuidesColorChanged(const DAVA::Any& c)
 {
-    DAVA::Color color = c.Cast<DAVA::Color>(DAVA::Color(DAVA::Color::Transparent));
+    DAVA::Color color = c.CastSafely<DAVA::Color>(DAVA::Color(DAVA::Color::Transparent));
     for (Guide& guide : guides)
     {
         SetGuideColor(guide.line, color);
@@ -534,7 +534,7 @@ void GuidesController::OnGuidesColorChanged(const DAVA::Any& c)
 
 void GuidesController::OnPreviewGuideColorChanged(const DAVA::Any& c)
 {
-    DAVA::Color color = c.Cast<DAVA::Color>(DAVA::Color(DAVA::Color::Transparent));
+    DAVA::Color color = c.CastSafely<DAVA::Color>(DAVA::Color(DAVA::Color::Transparent));
     SetGuideColor(previewGuide.line, color);
 }
 

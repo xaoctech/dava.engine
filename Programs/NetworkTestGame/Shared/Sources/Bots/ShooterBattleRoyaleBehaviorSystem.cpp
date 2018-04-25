@@ -22,9 +22,9 @@ static const Vector2 CENTER(0.f, 0.f);
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ShooterBattleRoyaleBehaviorSystem)
 {
-    ReflectionRegistrator<ShooterBattleRoyaleBehaviorSystem>::Begin()[M::Tags("bot", "shooterbot")]
+    ReflectionRegistrator<ShooterBattleRoyaleBehaviorSystem>::Begin()[M::SystemTags("bot", "shooterbot")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &BehaviorSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 15.2f)]
+    .Method("ProcessFixed", &BehaviorSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 15.2f)]
     .End();
 }
 

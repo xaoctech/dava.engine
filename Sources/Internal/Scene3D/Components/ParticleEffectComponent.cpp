@@ -55,7 +55,7 @@ ParticleEffectComponent::~ParticleEffectComponent()
         Entity* e = GetEntity();
         if (e && e->GetScene())
         {
-            e->GetScene()->particleEffectSystem->RemoveFromActive(this);
+            e->GetScene()->GetSystem<ParticleEffectSystem>()->RemoveFromActive(this);
         }
     }
     SafeRelease(effectRenderObject);
@@ -127,7 +127,7 @@ bool ParticleEffectComponent::IsPaused()
 
 void ParticleEffectComponent::Step(float32 delta)
 {
-    GetEntity()->GetScene()->particleEffectSystem->UpdateEffect(this, delta, delta);
+    GetEntity()->GetScene()->GetSystem<ParticleEffectSystem>()->UpdateEffect(this, delta, delta);
 }
 
 void ParticleEffectComponent::Restart(bool isDeleteAllParticles)

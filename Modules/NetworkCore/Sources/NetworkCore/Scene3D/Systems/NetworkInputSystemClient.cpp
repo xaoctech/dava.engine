@@ -28,10 +28,10 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(NetworkInputSystem)
 {
-    ReflectionRegistrator<NetworkInputSystem>::Begin()[M::Tags("network", "input")]
+    ReflectionRegistrator<NetworkInputSystem>::Begin()[M::SystemTags("network", "input")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &NetworkInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::FIXED, 4.0f)]
-    .Method("ProcessFixedClientBegin", &NetworkInputSystem::ProcessFixedClientBegin)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 18.0f)]
+    .Method("ProcessFixed", &NetworkInputSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 4.0f)]
+    .Method("ProcessFixedClientBegin", &NetworkInputSystem::ProcessFixedClientBegin)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 18.0f)]
     .End();
 }
 
@@ -135,8 +135,8 @@ void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
     }
 
     /*
-        On client here we assign client frames to actions.
-     */
+    On client here we assign client frames to actions.
+    */
 
     for (Entity* entity : entities)
     {

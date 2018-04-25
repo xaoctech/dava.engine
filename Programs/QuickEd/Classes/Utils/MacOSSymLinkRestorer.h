@@ -1,7 +1,6 @@
 #pragma once
 
-#include <TArc/Qt/QtString.h>
-
+#include <QString>
 #include <QVector>
 
 class MacOSSymLinkRestorer

@@ -23,9 +23,9 @@ const FastName& GetToken(Entity* entity)
 
 DAVA_VIRTUAL_REFLECTION_IMPL(PlayerStatsMonitoringSystem)
 {
-    ReflectionRegistrator<PlayerStatsMonitoringSystem>::Begin()[M::Tags("monitor_game_stats")]
+    ReflectionRegistrator<PlayerStatsMonitoringSystem>::Begin()[M::SystemTags("monitor_game_stats")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &PlayerStatsMonitoringSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 9.0f)]
+    .Method("Process", &PlayerStatsMonitoringSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 9.0f)]
     .End();
 }
 

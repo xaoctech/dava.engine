@@ -126,17 +126,4 @@ private:
 
     DAVA_REFLECTION(ContentFilter);
 };
-
-template <>
-bool AnyCompare<ContentFilter::AvailableFilter>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<ContentFilter::AvailableFilter>;
-
-template <>
-bool AnyCompare<ContentFilter::SeparatorTag>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<ContentFilter::SeparatorTag>;
-
-template <>
-bool AnyCompare<ContentFilter::AvailableFiltersGroup>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<ContentFilter::AvailableFiltersGroup>;
-
 } // namespace DAVA

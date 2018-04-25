@@ -3,6 +3,7 @@
 #include "Base/Any.h"
 #include "Base/BaseTypes.h"
 #include "Base/FastName.h"
+#include "Base/FastTags.h"
 #include "Base/EnumMap.h"
 #include "Base/GlobalEnum.h"
 
@@ -469,6 +470,12 @@ struct Int64CompressParam
     const uint64 deltaRange;
 };
 
+class SystemTags : public FastTags
+{
+public:
+    using FastTags::FastTags;
+};
+
 class Tags
 {
 public:
@@ -480,33 +487,6 @@ public:
 
     Vector<FastName> tags;
 };
-
-namespace SystemProcess
-{
-enum class Type
-{
-    NORMAL = 0, //!< normal process type. If process should be executed once per frame, choose this group. `Process` should override `SceneSystem::Process`.
-    FIXED //!< fixed process type. If process should be executed once per fixed update time, choose this group. `ProcessFixed` should override `SceneSystem::ProcessFixed`.
-};
-
-enum class Group
-{
-    ENGINE_BEGIN = 0, //!< first part of base engine processes/fixed processes. Do not use this group for gameplay processes/fixed processes.
-    GAMEPLAY, //!< gameplay processes/fixed processes.
-    ENGINE_END //!< last part of base engine processes/fixed processes. Do not use this group for gameplay processes/fixed processes.
-};
-
-class SystemProcess
-{
-public:
-    SystemProcess(Group group, Type type, float32 order);
-
-    Group group;
-    Type type;
-    float32 order;
-};
-
-} // namespace SystemProcess
 
 } // namespace Metas
 } // namespace DAVA

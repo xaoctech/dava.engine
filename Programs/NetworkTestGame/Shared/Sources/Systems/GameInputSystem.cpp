@@ -28,9 +28,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(GameInputSystem)
 {
-    ReflectionRegistrator<GameInputSystem>::Begin()[M::Tags("gameinput")]
+    ReflectionRegistrator<GameInputSystem>::Begin()[M::SystemTags("gameinput")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &GameInputSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 5.0f)]
+    .Method("ProcessFixed", &GameInputSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 5.0f)]
     .End();
 }
 

@@ -2,6 +2,7 @@
 
 #include "Entity/SceneSystem.h"
 #include "FileSystem/FilePath.h"
+#include "FileSystem/KeyedArchive.h"
 #include "Functional/Function.h"
 #include "Base/RefPtr.h"
 #include "Base/FastName.h"

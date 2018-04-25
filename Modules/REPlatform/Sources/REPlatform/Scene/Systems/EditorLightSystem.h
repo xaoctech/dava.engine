@@ -10,6 +10,8 @@ namespace DAVA
 class Entity;
 class EditorLightSystem final : public SceneSystem, public EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(EditorLightSystem, SceneSystem);
+
     friend class SceneEditor2;
     friend class EditorScene;
 
@@ -21,7 +23,7 @@ public:
     void RemoveEntity(Entity* entity) override;
     void PrepareForRemove() override;
 
-    void SceneDidLoaded() override;
+    void OnSceneLoaded() override;
 
     void Process(float32 timeElapsed) override;
 

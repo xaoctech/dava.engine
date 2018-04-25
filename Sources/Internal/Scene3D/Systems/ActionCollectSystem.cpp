@@ -13,9 +13,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(ActionCollectSystem)
 {
-    ReflectionRegistrator<ActionCollectSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<ActionCollectSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &ActionCollectSystem::ProcessFixed)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::FIXED, 1.0f)]
+    .Method("ProcessFixed", &ActionCollectSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Fixed, 1.0f)]
     .End();
 }
 

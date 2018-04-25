@@ -158,7 +158,9 @@ bool MitsubaExporterDetail::Exporter::Export(DAVA::Scene* scene, const DAVA::Fil
         {
             mitsuba::scope integrator("integrator", mitsuba::kType, DAVA::String("volpath"));
         }
-        DAVA::Size2i vpSize(scene->GetMainPassConfig().viewport.width, scene->GetMainPassConfig().viewport.height);
+
+        rhi::RenderPassConfig& mainPassConfig = scene->renderSystem->GetMainPassConfig();
+        DAVA::Size2i vpSize(mainPassConfig.viewport.width, mainPassConfig.viewport.height);
         ExportCamera(scene->GetCurrentCamera(), vpSize);
 
         for (const auto& tex : texturesToExport)

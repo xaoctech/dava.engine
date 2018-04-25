@@ -20,20 +20,21 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(RotationControllerSystem)
 {
-    ReflectionRegistrator<RotationControllerSystem>::Begin()[M::Tags("base", "controller")]
+    ReflectionRegistrator<RotationControllerSystem>::Begin()[M::SystemTags("base", "controller")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &RotationControllerSystem::Process)[M::SystemProcess(SP::Group::ENGINE_BEGIN, SP::Type::NORMAL, 6.0f)]
+    .Method("Process", &RotationControllerSystem::Process)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Normal, 6.0f)]
+    .Method("Input", &RotationControllerSystem::Input)[M::SystemProcessInfo(SPI::Group::EngineBegin, SPI::Type::Input, 1.0f)]
     .End();
 }
 
 const float32 RotationControllerSystem::maxViewAngle = 89.0f;
 
 RotationControllerSystem::RotationControllerSystem(Scene* scene)
-    : SceneSystem(scene, ComponentUtils::MakeMask<CameraComponent>() | ComponentUtils::MakeMask<RotationControllerComponent>())
+    : SceneSystem(scene, ComponentUtils::MakeMask<CameraComponent, RotationControllerComponent>())
     , curViewAngleZ(0)
     , curViewAngleY(0)
     , rotationSpeed(0.15f)
-    , oldCamera(NULL)
+    , oldCamera(nullptr)
 {
 }
 
@@ -41,7 +42,7 @@ RotationControllerSystem::~RotationControllerSystem() = default;
 
 void RotationControllerSystem::AddEntity(Entity* entity)
 {
-    DVASSERT(GetCamera(entity) != NULL && "Right now system works with camera only");
+    DVASSERT(GetCamera(entity) != nullptr && "Right now system works with camera only");
 
     entities.push_back(entity);
 }

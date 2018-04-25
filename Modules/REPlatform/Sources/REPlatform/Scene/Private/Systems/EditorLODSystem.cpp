@@ -31,6 +31,14 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(EditorLODSystem)
+{
+    ReflectionRegistrator<EditorLODSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &EditorLODSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 15.0f)]
+    .End();
+}
+
 namespace LODComponentHolderDetail
 {
 const float32 LOD_DISTANCE_EPSILON = 0.009f; //because we have only 2 sign after point in SpinBox (100.00f)
@@ -150,6 +158,7 @@ bool LODComponentHolder::CopyLod(int32 from, int32 to)
 
 void LODComponentHolder::ApplyForce(const ForceValues& force)
 {
+    LodSystem* const lodSystem = scene->GetSystem<LodSystem>();
     for (LodComponent* lc : lodComponents)
     {
         if (force.flag & ForceValues::APPLY_LAYER)
@@ -157,17 +166,17 @@ void LODComponentHolder::ApplyForce(const ForceValues& force)
             if (force.layer == EditorLODSystem::LAST_LOD_LAYER)
             {
                 int32 lastLayer = Max(0, static_cast<int32>(GetLodLayersCount(lc)) - 1);
-                scene->lodSystem->SetForceLodLayer(lc, lastLayer);
+                lodSystem->SetForceLodLayer(lc, lastLayer);
             }
             else
             {
-                scene->lodSystem->SetForceLodLayer(lc, force.layer);
+                lodSystem->SetForceLodLayer(lc, force.layer);
             }
         }
 
         if (force.flag & ForceValues::APPLY_DISTANCE)
         {
-            scene->lodSystem->SetForceLodDistance(lc, force.distance);
+            lodSystem->SetForceLodDistance(lc, force.distance);
         }
     }
 }
@@ -332,7 +341,7 @@ void EditorLODSystem::PrepareForRemove()
     componentsToAdd.clear();
 }
 
-void EditorLODSystem::SceneDidLoaded()
+void EditorLODSystem::OnSceneLoaded()
 {
     pendingSummarizeValues[eEditorMode::MODE_ALL_SCENE] = true;
     if (mode == eEditorMode::MODE_ALL_SCENE)

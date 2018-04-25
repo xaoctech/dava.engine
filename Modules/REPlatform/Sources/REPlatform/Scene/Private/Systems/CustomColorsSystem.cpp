@@ -24,6 +24,15 @@
 
 namespace DAVA
 {
+DAVA_VIRTUAL_REFLECTION_IMPL(CustomColorsSystem)
+{
+    ReflectionRegistrator<CustomColorsSystem>::Begin()[M::SystemTags("resource_editor")]
+    .ConstructorByPointer<Scene*>()
+    .Method("Process", &CustomColorsSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 10.0f)]
+    .Method("Input", &CustomColorsSystem::Input)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Input, 8.0f)]
+    .End();
+}
+
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
     : LandscapeEditorSystem(scene, DefaultCursorPath())
 {

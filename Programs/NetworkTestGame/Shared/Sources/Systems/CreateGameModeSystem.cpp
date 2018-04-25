@@ -30,9 +30,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CreateGameModeSystem)
 {
-    ReflectionRegistrator<CreateGameModeSystem>::Begin()[M::Tags("network", "client")]
+    ReflectionRegistrator<CreateGameModeSystem>::Begin()[M::SystemTags("network", "client")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &CreateGameModeSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 2.0f)]
+    .Method("Process", &CreateGameModeSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 2.0f)]
     .End();
 }
 
@@ -55,19 +55,19 @@ void CreateGameModeSystem::Process(DAVA::float32 timeElapsed)
 
             if (optionsComp->isEnemyPredicted)
             {
-                GetScene()->AddTag(FastName("enemy_predict"));
+                GetScene()->AddTags("enemy_predict");
             }
 
             if (!optionsComp->options.gameStatsLogPath.empty())
             {
-                GetScene()->AddTag(FastName("log_game_stats"));
+                GetScene()->AddTags("log_game_stats");
             }
 
             isInit = true;
         }
     }
 
-    if (GetScene()->HasTag(FastName("input")) && nullptr == remoteInputSystem)
+    if (GetScene()->HasTags("input") && nullptr == remoteInputSystem)
     {
         remoteInputSystem = GetScene()->GetSystem<NetworkRemoteInputSystem>();
         if (remoteInputSystem)
@@ -125,16 +125,10 @@ void CreateGameModeSystem::CreateGameSystems(GameMode::Id gameModeId)
 
     if (isCubesGm)
     {
-        for (const char* tag : { "gm_cubes", "input", "gameshow" })
-        {
-            GetScene()->AddTag(FastName(tag));
-        }
+        GetScene()->AddTags({ "gm_cubes", "input", "gameshow" });
     }
     else
     {
-        for (auto& tag : tags)
-        {
-            GetScene()->AddTag(tag);
-        }
+        GetScene()->AddTags(tags);
     }
 }

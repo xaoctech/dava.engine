@@ -37,9 +37,9 @@ using namespace DAVA;
 
 DAVA_VIRTUAL_REFLECTION_IMPL(InvaderEntityFillSystem)
 {
-    ReflectionRegistrator<InvaderEntityFillSystem>::Begin()[M::Tags("gm_invaders")]
+    ReflectionRegistrator<InvaderEntityFillSystem>::Begin()[M::SystemTags("gm_invaders")]
     .ConstructorByPointer<Scene*>()
-    .Method("ProcessFixed", &InvaderEntityFillSystem::ProcessFixed)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::FIXED, 0.31f)]
+    .Method("ProcessFixed", &InvaderEntityFillSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Fixed, 0.31f)]
     .End();
 }
 

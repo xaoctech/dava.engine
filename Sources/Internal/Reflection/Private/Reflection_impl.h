@@ -48,6 +48,7 @@ inline bool Reflection::SetValueWithCast(const Any& value) const
 {
     return valueWrapper->SetValueWithCast(object, value);
 }
+
 inline bool Reflection::IsValid() const
 {
     return (nullptr != valueWrapper && object.IsValid());
@@ -71,37 +72,4 @@ Reflection Reflection::Create(T* objectPtr, const ReflectedMeta* objectMeta)
     return Reflection();
 }
 
-template <>
-struct AnyCompare<Reflection>
-{
-    static bool IsEqual(const Any& v1, const Any& v2)
-    {
-        const Reflection r1 = v1.Get<Reflection>();
-        const Reflection r2 = v2.Get<Reflection>();
-        return r1.GetValueObject() == r2.GetValueObject();
-    }
-};
-
-template <>
-struct AnyCompare<Vector<Reflection>>
-{
-    static bool IsEqual(const Any& v1, const Any& v2)
-    {
-        const Vector<Reflection> r1 = v1.Get<Vector<Reflection>>();
-        const Vector<Reflection> r2 = v2.Get<Vector<Reflection>>();
-        if (r1.size() != r2.size())
-        {
-            return false;
-        }
-
-        for (size_t i = 0; i < r1.size(); ++i)
-        {
-            if (AnyCompare<Reflection>::IsEqual(r1[i], r2[i]) == false)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-};
 } // namespace DAVA

@@ -80,7 +80,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(EMSystem, SceneSystem)
     {
-        ReflectionRegistrator<EMSystem>::Begin()[M::Tags("EntitiesManagerTest")]
+        ReflectionRegistrator<EMSystem>::Begin()[M::SystemTags("EntitiesManagerTest")]
         .ConstructorByPointer<Scene*>()
         .End();
     }
@@ -153,7 +153,7 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(EMSystemAB, SceneSystem)
     {
-        ReflectionRegistrator<EMSystemAB>::Begin()[M::Tags("EMSystemAB")]
+        ReflectionRegistrator<EMSystemAB>::Begin()[M::SystemTags("EMSystemAB")]
         .ConstructorByPointer<Scene*>()
         .End();
     }
@@ -180,9 +180,9 @@ public:
 
     DAVA_VIRTUAL_REFLECTION_IN_PLACE(EMPendingClearSystem, SceneSystem)
     {
-        ReflectionRegistrator<EMPendingClearSystem>::Begin()[M::Tags("EntitiesManagerDetachTest")]
+        ReflectionRegistrator<EMPendingClearSystem>::Begin()[M::SystemTags("EntitiesManagerDetachTest")]
         .ConstructorByPointer<Scene*>()
-        .Method("Process", &EMPendingClearSystem::Process)[M::SystemProcess(SP::Group::GAMEPLAY, SP::Type::NORMAL, 1337.42f)]
+        .Method("Process", &EMPendingClearSystem::Process)[M::SystemProcessInfo(SPI::Group::Gameplay, SPI::Type::Normal, 1337.42f)]
         .End();
     }
 
@@ -196,7 +196,8 @@ DAVA_TESTCLASS (EntitiesManagerTest)
     {
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMSystem);
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMPendingClearSystem);
-        GetEngineContext()->systemManager->RegisterAllDerivedSceneSystemsRecursively();
+        GetEngineContext()->systemManager->RegisterSystem<EMSystem>();
+        GetEngineContext()->systemManager->RegisterSystem<EMPendingClearSystem>();
 
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMEntityComponent);
         GetEngineContext()->componentManager->RegisterComponent<EMEntityComponent>();
@@ -209,7 +210,7 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMComponentB);
         GetEngineContext()->componentManager->RegisterComponent<EMComponentB>();
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(EMSystemAB);
-        GetEngineContext()->systemManager->RegisterAllDerivedSceneSystemsRecursively();
+        GetEngineContext()->systemManager->RegisterSystem<EMSystemAB>();
     }
 
     DAVA_TEST (EntityGroupSignals)
@@ -218,10 +219,9 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         entityRemoveCount = 0;
         entityDestroyCount = 0;
 
-        Scene* scene = new Scene({ FastName("EntitiesManagerTest") });
-        scene->CreateSystemsByTags();
+        Scene* scene = new Scene("EntitiesManagerTest");
 
-        Entity* e = new Entity;
+        Entity* e = new Entity();
         scene->AddNode(e);
 
         e->AddComponent(new EMEntityComponent);
@@ -239,7 +239,10 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         TEST_VERIFY(entityAddCount == 1);
         TEST_VERIFY(entityRemoveCount == 1);
 
-        scene->AddNode(e);
+        Entity* f = new Entity();
+        f->AddComponent(new EMEntityComponent);
+
+        scene->AddNode(f);
         TEST_VERIFY(entityAddCount == 2);
         TEST_VERIFY(entityRemoveCount == 1);
         scene->Update(0.1f);
@@ -248,7 +251,7 @@ DAVA_TESTCLASS (EntitiesManagerTest)
 
         e->Release(); //scene still holds strong reference to 'e'
 
-        scene->RemoveNode(e);
+        scene->RemoveNode(f);
         TEST_VERIFY(entityAddCount == 2);
         TEST_VERIFY(entityRemoveCount == 2);
         TEST_VERIFY(entityDestroyCount == 1);
@@ -256,6 +259,8 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         TEST_VERIFY(entityAddCount == 2);
         TEST_VERIFY(entityRemoveCount == 2);
         TEST_VERIFY(entityDestroyCount == 1);
+
+        f->Release();
 
         SafeRelease(scene);
     }
@@ -266,8 +271,7 @@ DAVA_TESTCLASS (EntitiesManagerTest)
         componentRemoveCount = 0;
         componentDestroyCount = 0;
 
-        Scene* scene = new Scene({ FastName("EntitiesManagerTest") });
-        scene->CreateSystemsByTags();
+        Scene* scene = new Scene("EntitiesManagerTest");
 
         Entity* e = new Entity;
         scene->AddNode(e);
@@ -284,8 +288,7 @@ DAVA_TESTCLASS (EntitiesManagerTest)
 
     DAVA_TEST (ComponentGroupABA)
     {
-        Scene* scene = new Scene({ FastName("EMSystemAB") });
-        scene->CreateSystemsByTags();
+        Scene* scene = new Scene("EMSystemAB");
         EMSystemAB* system = scene->GetSystem<EMSystemAB>();
 
         Entity* e = new Entity;
@@ -374,8 +377,7 @@ DAVA_TESTCLASS (EntitiesManagerTest)
 
     DAVA_TEST (DetachedState)
     {
-        Scene* scene = new Scene({ FastName("EntitiesManagerDetachTest") });
-        scene->CreateSystemsByTags();
+        Scene* scene = new Scene("EntitiesManagerDetachTest");
 
         EntitiesManager* em = scene->GetEntitiesManager();
         EMPendingClearSystem* system = scene->GetSystem<EMPendingClearSystem>();

@@ -163,9 +163,4 @@ inline void SkeletonComponent::SetJointUpdated(uint32 jointIndex)
     jointInfo[jointIndex] |= FLAG_MARKED_FOR_UPDATED;
     startJoint = Min(startJoint, jointIndex);
 }
-
-template <>
-bool AnyCompare<SkeletonComponent::Joint>::IsEqual(const Any& v1, const Any& v2);
-extern template struct AnyCompare<SkeletonComponent::Joint>;
-
 } //ns

@@ -16,9 +16,13 @@ class FilePath;
 
 class UserNodeSystem : public DAVA::SceneSystem, public DAVA::EditorSceneSystem
 {
+    DAVA_VIRTUAL_REFLECTION(UserNodeSystem, DAVA::SceneSystem);
+
 public:
-    UserNodeSystem(DAVA::Scene* scene, const DAVA::FilePath& scenePath);
+    UserNodeSystem(DAVA::Scene* scene);
     ~UserNodeSystem() override;
+
+    void SetScenePath(const DAVA::FilePath& scenePath);
 
     void Process(DAVA::float32 timeElapsed) override;
 

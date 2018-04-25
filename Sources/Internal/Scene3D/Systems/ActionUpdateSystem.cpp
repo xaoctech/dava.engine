@@ -12,9 +12,9 @@ namespace DAVA
 {
 DAVA_VIRTUAL_REFLECTION_IMPL(ActionUpdateSystem)
 {
-    ReflectionRegistrator<ActionUpdateSystem>::Begin()[M::Tags("base")]
+    ReflectionRegistrator<ActionUpdateSystem>::Begin()[M::SystemTags("base")]
     .ConstructorByPointer<Scene*>()
-    .Method("Process", &ActionUpdateSystem::Process)[M::SystemProcess(SP::Group::ENGINE_END, SP::Type::NORMAL, 9.0f)]
+    .Method("ProcessFixed", &ActionUpdateSystem::ProcessFixed)[M::SystemProcessInfo(SPI::Group::EngineEnd, SPI::Type::Fixed, 1.01f)]
     .End();
 }
 
@@ -69,7 +69,7 @@ void ActionUpdateSystem::PrepareForRemove()
     deleteActions.clear();
 }
 
-void ActionUpdateSystem::Process(float32 timeElapsed)
+void ActionUpdateSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE(ProfilerCPUMarkerName::SCENE_ACTION_UPDATE_SYSTEM);
 

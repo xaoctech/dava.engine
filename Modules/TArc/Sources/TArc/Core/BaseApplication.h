@@ -1,10 +1,10 @@
 #pragma once
 
-#include "TArc/Qt/QtString.h"
-
 #include <Engine/EngineTypes.h>
 #include <FileSystem/KeyedArchive.h>
 #include <Base/RefPtr.h>
+
+#include <QString>
 
 namespace DAVA
 {
@@ -30,6 +30,7 @@ protected:
     // Method init has been written only for backward compatibility. Try not using it
     virtual void Init(const EngineContext* engineContext);
     virtual void Init(Core* tarcCore);
+    virtual void RegisterUserTypes();
     virtual void RegisterEditorAnyCasts();
     virtual void RegisterReflectionExtensions();
     virtual void Cleanup();
