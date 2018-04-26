@@ -494,7 +494,7 @@ bool SceneExporter::ExportSceneObject(const ExportedObject& sceneObject)
 
     { //has no scene in cache or using of cache is disabled. Export scene directly
         sceneExported = ExportSceneFileInternal(scenePathname, outScenePathname, externalLinks);
-        sceneExported = copyScene() && sceneExported;
+        sceneExported = sceneExported && copyScene();
 
         //add links to whole list of files
         for (int32 i = 0; i < eExportedObjectType::OBJECT_COUNT; ++i)
@@ -503,7 +503,7 @@ bool SceneExporter::ExportSceneObject(const ExportedObject& sceneObject)
         }
     }
 
-    if (cacheClient != nullptr && cacheClient->IsConnected())
+    if (sceneExported && cacheClient != nullptr && cacheClient->IsConnected())
     { //place exported scene into cache
         SceneExporterDetails::SaveExportedObjects(linksPathname, externalLinks);
 

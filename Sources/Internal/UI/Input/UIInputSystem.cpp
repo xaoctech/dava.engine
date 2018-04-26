@@ -318,12 +318,14 @@ bool UIInputSystem::HandleTouchEvent(UIEvent* event)
     }
     else
     {
-        it->timestamp = event->timestamp;
-        it->physPoint = event->physPoint;
         it->point = event->point;
-        it->tapCount = event->tapCount;
+        it->physPoint = event->physPoint;
+        it->isRelative = event->isRelative;
+        it->timestamp = event->timestamp;
         it->phase = event->phase;
+        it->tapCount = event->tapCount;
         it->inputHandledType = event->inputHandledType;
+        it->modifiers = event->modifiers;
 
         eventToHandle = &(*it);
     }
