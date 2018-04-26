@@ -25,6 +25,9 @@ fragment_in
 {
     float3 direction : TEXCOORD0;
     float2 normalizedCoordinates : TEXCOORD1;
+#if (DIRECTIONAL_LIGHT)
+    float lightSolidAngle : TEXCOORD2;
+#endif
 };
 
 fragment_out
@@ -52,6 +55,12 @@ fragment_out fp_main(fragment_in input)
 {
     float3 normalizedDir = normalize(input.direction);
 
+    /*
+    float phi = input.normalizedCoordinates.x * _PI;
+    float theta = -input.normalizedCoordinates.y * _PI / 2.0;
+    normalizedDir = float3(cos(phi) * cos(theta), sin(phi) * cos(theta), sin(theta));
+    // */
+
 #if (ATMOSPHERE)
 
     float3 sunLuminance = dot(lightColor0.xyz, float3(0.2126, 0.7152, 0.0722)) / GLOBAL_LUMINANCE_SCALE;
@@ -77,8 +86,13 @@ fragment_out fp_main(fragment_in input)
 
 #elif (DIRECTIONAL_LIGHT)
 
+    float2 sampleCoords;
+    sampleCoords.x = LightAngleToTexCoord(normalizedDir.z);
+    sampleCoords.y = HeightAboveGroundToTexCoord(DEFAULT_HEIGHT_ABOVE_GROUND);
+    float3 transmittance = tex2D(precomputedTransmittance, sampleCoords).xyz;
+
     float r = smoothstep(1.0, 0.85, length(input.normalizedCoordinates));
-    float3 value = environmentColor.xyz / GLOBAL_LUMINANCE_SCALE * r;
+    float3 value = transmittance * ((r * DEFAULT_SUN_INTENSITY) / (input.lightSolidAngle * GLOBAL_LUMINANCE_SCALE * 4.0 * _PI));
 
 #else
 

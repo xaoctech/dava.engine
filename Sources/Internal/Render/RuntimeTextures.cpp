@@ -211,7 +211,7 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
     {
     case TEXTURE_ATMOSPHERE_TRANSMITTANCE:
     {
-        runtimeTextureSizes[semantic] = Size2i(256, 256);
+        runtimeTextureSizes[semantic] = Size2i(128, 256);
         runtimeTextures[semantic] = ServiceTextures::GenerateAtmosphericTransmittanceTexture(runtimeTextureSizes[semantic].dx, runtimeTextureSizes[semantic].dy);
 
         samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
@@ -225,8 +225,13 @@ void RuntimeTextures::InitRuntimeTexture(eRuntimeTextureSemantic semantic)
     };
     case TEXTURE_ATMOSPHERE_SCATTERING:
     {
-        runtimeTextureSizes[semantic] = Size2i(32, 32);
-        runtimeTextures[semantic] = ServiceTextures::GenerateAtmosphericScatteringTexture(runtimeTextureSizes[semantic].dx, runtimeTextureSizes[semantic].dy, 32);
+        DVASSERT(runtimeTextures[TEXTURE_ATMOSPHERE_TRANSMITTANCE].IsValid());
+
+        int width = 64;
+        int height = 64;
+        int depth = 1;
+        runtimeTextureSizes[semantic] = Size2i(width * depth, height);
+        runtimeTextures[semantic] = ServiceTextures::GenerateAtmosphericScatteringTexture(width, height, depth, runtimeTextures[TEXTURE_ATMOSPHERE_TRANSMITTANCE]);
 
         samplerDescriptors[semantic].addrU = rhi::TEXADDR_CLAMP;
         samplerDescriptors[semantic].addrV = rhi::TEXADDR_CLAMP;

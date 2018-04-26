@@ -113,15 +113,13 @@ float3 ResolveFinalColor(ResolveInputValues input, SurfaceValues surfaceParamete
     
 #if (ATMOSPHERE_SCATTERING_SAMPLES)
     {
-        float3 viewDirection = -input.v;
-        float3 lightDirection = input.directionalLightDirection;
-        float3 origin = float3(0.0, 0.0, EARTH_RADIUS);
-        float2 ph = ScatteringPhaseFunctions(viewDirection, lightDirection, fogParameters.z);
-        float3 target = origin + viewDirection * input.vLength * fogParameters.x;
-        float3 sunLuminance = dot(input.directionalLightColor, float3(0.2126, 0.7152, 0.0722));
-        float3 inScattering = InScattering(origin, target, lightDirection, ph, fogParameters.y);
-        float3 extinction = Extinction(target, origin, lightDirection, ph, fogParameters.y);
-        result = result * extinction + sunLuminance * inScattering;
+        float3 a_origin = float3(0.0, 0.0, EARTH_RADIUS + DEFAULT_HEIGHT_ABOVE_GROUND);
+        float3 a_target = a_origin - input.v * input.vLength * fogParameters.x;
+
+        float3 inScattering = InScattering(a_origin, a_target, input.directionalLightDirection, fogParameters.z);
+        float3 extinction = Extinction(a_origin, a_target);
+
+        result = result * extinction + inScattering;
     }
 #endif
     

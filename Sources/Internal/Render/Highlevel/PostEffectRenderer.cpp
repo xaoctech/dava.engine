@@ -808,6 +808,35 @@ void PostEffectRenderer::Debug()
 
     Size2i drawOffset = debugRenderer.debugRectOffset;
 
+    /*
+    QuadRenderer::Options options;
+    options.renderPassName = passName;
+    options.dstTextures[0] = rhi::HTexture(frameContext.destination);
+    options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
+    options.material = materials[MaterialType::DEBUG];
+    options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_ATMOSPHERE_TRANSMITTANCE);
+    options.srcRect = Rect2f(0.0f, 0.0f, 256.0f, 256.0f);
+    options.dstRect = Rect2f(float32(drawOffset.dx), float32(drawOffset.dy), float32(debugRenderer.debugRectSize), float32(debugRenderer.debugRectSize));
+    options.srcTexSize = Vector2(256.0f, 256.0f);
+    options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
+    options.renderPassPriority = -1;
+    quadRenderer.Render(options);
+
+    Size2i texSize = Renderer::GetRuntimeTextures().GetRuntimeTextureSize(RuntimeTextures::TEXTURE_ATMOSPHERE_SCATTERING);
+
+    options.renderPassName = passName;
+    options.dstTextures[0] = rhi::HTexture(frameContext.destination);
+    options.dstLoadActions[0] = rhi::LoadAction::LOADACTION_LOAD;
+    options.material = materials[MaterialType::DEBUG];
+    options.srcTexture = Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_ATMOSPHERE_SCATTERING);
+    options.srcRect = Rect2f(0.0f, 0.0f, float(texSize.dx), float(texSize.dy));
+    options.dstRect = Rect2f(float32(drawOffset.dx), float32(2 * drawOffset.dy + debugRenderer.debugRectSize), float32(texSize.dx), float32(texSize.dy));
+    options.srcTexSize = Vector2(float(texSize.dx), float(texSize.dy));
+    options.dstTexSize = Vector2(float32(Renderer::GetFramebufferWidth()), float32(Renderer::GetFramebufferHeight()));
+    options.renderPassPriority = -1;
+    quadRenderer.Render(options);
+    // */
+
     if (debugRenderer.drawHDRTarget)
     {
         QuadRenderer::Options options;

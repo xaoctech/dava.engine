@@ -70,6 +70,13 @@ void ShadersModule::ReloadShaders()
     ShaderDescriptorCache::ReloadShaders();
     NMaterialManager::Instance().InvalidateMaterials(); //GFX_COMPLETE
 
+    {
+        Renderer::GetRuntimeTextures().InvalidateTexture(RuntimeTextures::TEXTURE_ATMOSPHERE_TRANSMITTANCE);
+        Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_ATMOSPHERE_TRANSMITTANCE);
+        Renderer::GetRuntimeTextures().InvalidateTexture(RuntimeTextures::TEXTURE_ATMOSPHERE_SCATTERING);
+        Renderer::GetRuntimeTextures().GetRuntimeTexture(RuntimeTextures::TEXTURE_ATMOSPHERE_SCATTERING);
+    }
+
     GetAccessor()->ForEachContext([](DAVA::DataContext& ctx) {
         SceneData* sceneData = ctx.GetData<SceneData>();
         DAVA::RefPtr<SceneEditor2> sceneEditor = sceneData->GetScene();

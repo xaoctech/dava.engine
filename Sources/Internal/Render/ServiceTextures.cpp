@@ -155,23 +155,34 @@ rhi::HTexture ServiceTextures::GenerateAtmosphericTransmittanceTexture(uint32 wi
 
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetFXName(FastName("~res:/Materials2/AtmospherePrecomputeTransmittance.material"));
-    material->PreBuildMaterial(FastName("PrecomputeTransmittance"));
 
-    QuadRenderer().Render("PrecomputeTransmittance", material, rhi::Viewport(0, 0, width, height), result, rhi::TextureFace::TEXTURE_FACE_NONE, 0, rhi::LOADACTION_CLEAR, +50);
+    QuadRenderer::Options options;
+    options.dstTexSize = Vector2(float(width), float(height));
+    options.dstLoadActions[0] = rhi::LOADACTION_CLEAR;
+    options.dstRect = Rect2f(0.0f, 0.0f, options.dstTexSize.dx, options.dstTexSize.dy);
+    options.dstTextures[0] = result;
+    options.material = material;
+    options.renderPassName = "PrecomputeTransmittance";
+    options.renderPassPriority = 50;
+    options.srcRect = options.dstRect;
+    options.srcTexSize = options.dstTexSize;
+    QuadRenderer().Render(options);
 
+    //*
     Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [result, width, height](rhi::HSyncObject obj) {
         void* data = rhi::MapTexture(result);
         {
             ScopedPtr<Image> img(Image::CreateFromData(width, height, PixelFormat::FORMAT_RGBA32F, reinterpret_cast<uint8*>(data)));
-            ImageSystem::Save("~doc:/transmittance.pvr", img, PixelFormat::FORMAT_RGBA32F);
+            ImageSystem::Save("~doc:/transmittance.dds", img, PixelFormat::FORMAT_RGBA32F);
         }
         rhi::UnmapTexture(result);
     });
+    // */
 
     return result;
 }
 
-rhi::HTexture ServiceTextures::GenerateAtmosphericScatteringTexture(uint32 width, uint32 height, uint32 depth)
+rhi::HTexture ServiceTextures::GenerateAtmosphericScatteringTexture(uint32 width, uint32 height, uint32 depth, rhi::HTexture transmittance)
 {
     uint32 totalWidth = width * depth;
 
@@ -189,15 +200,25 @@ rhi::HTexture ServiceTextures::GenerateAtmosphericScatteringTexture(uint32 width
     ScopedPtr<NMaterial> material(new NMaterial());
     material->SetFXName(FastName("~res:/Materials2/AtmospherePrecomputeScattering.material"));
     material->AddProperty(FastName("layersCount"), floatDepth, rhi::ShaderProp::TYPE_FLOAT1, 1);
-    material->PreBuildMaterial(FastName("PrecomputeScattering"));
 
-    QuadRenderer().Render("PrecomputeScattering", material, rhi::Viewport(0, 0, totalWidth, height), result, rhi::TextureFace::TEXTURE_FACE_NONE, 0, rhi::LOADACTION_CLEAR, +50);
+    QuadRenderer::Options options;
+    options.dstTexSize = Vector2(float(totalWidth), float(height));
+    options.dstLoadActions[0] = rhi::LOADACTION_CLEAR;
+    options.dstRect = Rect2f(0.0f, 0.0f, options.dstTexSize.dx, options.dstTexSize.dy);
+    options.dstTextures[0] = result;
+    options.material = material;
+    options.renderPassName = "PrecomputeTransmittance";
+    options.renderPassPriority = 50;
+    options.srcRect = options.dstRect;
+    options.srcTexSize = options.dstTexSize;
+    options.textureSet = RhiUtils::FragmentTextureSet({ transmittance });
+    QuadRenderer().Render(options);
 
     Renderer::RegisterSyncCallback(rhi::GetCurrentFrameSyncObject(), [result, totalWidth, height](rhi::HSyncObject obj) {
         void* data = rhi::MapTexture(result);
         {
             ScopedPtr<Image> img(Image::CreateFromData(totalWidth, height, PixelFormat::FORMAT_RGBA32F, reinterpret_cast<uint8*>(data)));
-            ImageSystem::Save("~doc:/scattering.pvr", img, PixelFormat::FORMAT_RGBA32F);
+            ImageSystem::Save("~doc:/scattering.dds", img, PixelFormat::FORMAT_RGBA32F);
         }
         rhi::UnmapTexture(result);
     });

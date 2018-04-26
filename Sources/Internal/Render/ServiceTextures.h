@@ -13,6 +13,6 @@ Texture* GenerateNoiseTexture(uint32 width, uint32 height);
 
 rhi::HTexture GeneratePointLightLookupTexture(uint32 faceSize);
 rhi::HTexture GenerateAtmosphericTransmittanceTexture(uint32 width, uint32 height);
-rhi::HTexture GenerateAtmosphericScatteringTexture(uint32 width, uint32 height, uint32 depth);
+rhi::HTexture GenerateAtmosphericScatteringTexture(uint32 width, uint32 height, uint32 depth, rhi::HTexture transmittance);
 };
 }
