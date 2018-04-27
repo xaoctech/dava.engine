@@ -651,7 +651,7 @@ void ParticleLayer::LoadFromYaml(const FilePath& configPath, const YamlNode* nod
     const YamlNode* lodsNode = node->Get("activeLODS");
     if (lodsNode)
     {
-        const Vector<YamlNode*>& vec = lodsNode->AsVector();
+        const auto& vec = lodsNode->AsVector();
         for (size_t i = 0; i < vec.size(); ++i)
             SetLodActive(static_cast<int32>(i), (vec[i]->AsInt()) != 0); //as AddToArray has no override for bool, flags are stored as int
     }
@@ -1503,7 +1503,7 @@ void ParticleLayer::FillSizeOverlifeXY(RefPtr<PropertyLine<float32>> sizeOverLif
     Vector<PropValue<float32>> wrappedPropertyValues = PropLineWrapper<float32>(sizeOverLife).GetProps();
     if (wrappedPropertyValues.empty())
     {
-        this->sizeOverLifeXY = NULL;
+        this->sizeOverLifeXY = nullptr;
         return;
     }
     else if (wrappedPropertyValues.size() == 1)

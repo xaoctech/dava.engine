@@ -65,21 +65,21 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
                 SwitchEntityCreator creator;
                 for(Entity* e: entities)
                 {
-                    TEST_VERIFY(creator.HasRenderObjectsRecursive(e) == true);
+                    TEST_VERIFY(creator.HasMeshRenderObjectsRecursive(e) == true);
                     TEST_VERIFY(creator.HasSwitchComponentsRecursive(e) == false);
                 }
 
-                ScopedPtr<Entity> switchEntity(creator.CreateSwitchEntity(entities));
-                TEST_VERIFY(creator.HasSwitchComponentsRecursive(switchEntity) == true);
-                builder.scene->AddNode(switchEntity);
+                RefPtr<Entity> switchEntity(creator.CreateSwitchEntity(entities));
+                TEST_VERIFY(creator.HasSwitchComponentsRecursive(switchEntity.Get()) == true);
+                builder.scene->AddNode(switchEntity.Get());
 
-                KeyedArchive *archiveSwitch = GetCustomPropertiesArchieve(switchEntity);
+                KeyedArchive *archiveSwitch = GetCustomPropertiesArchieve(switchEntity.Get());
                 TEST_VERIFY(archiveSwitch != nullptr)
 
                 TEST_VERIFY(archiveSwitch->GetInt32("CollisionType", 0) == 1);
                 TEST_VERIFY(archiveSwitch->GetInt32("CollisionTypeCrashed", 0) == 2);
 
-                SwitchComponent* sw = GetSwitchComponent(switchEntity);
+                SwitchComponent* sw = GetSwitchComponent(switchEntity.Get());
                 sw->SetSwitchIndex(1);
             }
 
@@ -101,21 +101,21 @@ DAVA_TARC_TESTCLASS(AddSwitchTest)
                 SwitchEntityCreator creator;
                 for(Entity* e: entities)
                 {
-                    TEST_VERIFY(creator.HasRenderObjectsRecursive(e) == true);
+                    TEST_VERIFY(creator.HasMeshRenderObjectsRecursive(e) == true);
                     TEST_VERIFY(creator.HasSwitchComponentsRecursive(e) == false);
                 }
 
-                ScopedPtr<Entity> switchEntity(creator.CreateSwitchEntity(entities));
-                TEST_VERIFY(creator.HasSwitchComponentsRecursive(switchEntity) == true);
-                builder.scene->AddNode(switchEntity);
+                RefPtr<Entity> switchEntity(creator.CreateSwitchEntity(entities));
+                TEST_VERIFY(creator.HasSwitchComponentsRecursive(switchEntity.Get()) == true);
+                builder.scene->AddNode(switchEntity.Get());
                 switchEntity->SetName("switchWithoutChildren");
 
-                KeyedArchive *archiveSwitch = GetCustomPropertiesArchieve(switchEntity);
+                KeyedArchive *archiveSwitch = GetCustomPropertiesArchieve(switchEntity.Get());
                 TEST_VERIFY(archiveSwitch != nullptr)
 
                 TEST_VERIFY(archiveSwitch->GetInt32("CollisionType", 0) == 1);
 
-                SwitchComponent* sw = GetSwitchComponent(switchEntity);
+                SwitchComponent* sw = GetSwitchComponent(switchEntity.Get());
                 sw->SetSwitchIndex(0);
             }
         }

@@ -2,14 +2,16 @@
 
 #include <REPlatform/DataNodes/SelectableGroup.h>
 #include <REPlatform/Global/StringConstants.h>
+#include "Math/Transform.h"
 
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Render/Material/NMaterial.h>
-#include <Scene3D/SceneFileV2.h>
-#include <Scene3D/Scene.h>
-#include <Scene3D/Systems/StaticOcclusionSystem.h>
 #include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Scene.h>
+#include <Scene3D/SceneFileV2.h>
+#include <Scene3D/Systems/StaticOcclusionSystem.h>
 
 class ElegantSceneGuard final
 {
@@ -86,7 +88,9 @@ void SaveEntityAsAction::Run()
         {
             container.reset(firstEntity->Clone());
             RemoveReferenceToOwner(container);
-            container->SetLocalTransform(Matrix4::IDENTITY);
+
+            TransformComponent* tc = container->GetComponent<TransformComponent>();
+            tc->SetLocalTransform(Transform());
         }
         else // saving of group of objects
         {
@@ -96,11 +100,10 @@ void SaveEntityAsAction::Run()
             for (auto entity : entities->ObjectsOfType<DAVA::Entity>())
             {
                 ScopedPtr<Entity> clone(entity->Clone());
+                TransformComponent* tc = clone->GetComponent<TransformComponent>();
 
-                const Vector3 offset = clone->GetLocalTransform().GetTranslationVector() - oldZero;
-                Matrix4 newLocalTransform = clone->GetLocalTransform();
-                newLocalTransform.SetTranslationVector(offset);
-                clone->SetLocalTransform(newLocalTransform);
+                const Vector3 offset = tc->GetLocalTransform().GetTranslation() - oldZero;
+                tc->SetLocalTranslation(offset);
 
                 container->AddNode(clone);
                 RemoveReferenceToOwner(clone);

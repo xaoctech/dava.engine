@@ -45,7 +45,6 @@ public:
 
     void ProcessProperty(const DAVA::ReflectedStructure::Field& field, const DAVA::Any& value) override;
     void ProcessDataBinding(const DAVA::String& fieldName, const DAVA::String& expression, DAVA::int32 bindingMode) override;
-    DAVA::Any GetPropertyValue(const DAVA::ReflectedStructure::Field& field) override;
 
     std::shared_ptr<StaticPackageInformation> GetPackage() const;
 

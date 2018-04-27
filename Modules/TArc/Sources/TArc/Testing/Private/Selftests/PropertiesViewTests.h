@@ -122,7 +122,7 @@ DAVA_TARC_TESTCLASS(PropertiesViewTests)
     {
         using namespace DAVA;
         ReflectionPathTree tree(FastName("Root"));
-        tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("Regular Tree"), FastName("child1"), FastName("value") });
+        tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("Regular Tree"), FastName("child1"), FastName("valueint32") });
         tree.AddLeaf(List<FastName>{ FastName("SelfRoot"), FastName("Regular Tree"), FastName("child2") });
 
         const EngineContext* ctx = GetEngineContext();

@@ -13,9 +13,9 @@
 #include <TArc/Controls/LineEdit.h>
 #include <TArc/Controls/QtBoxLayouts.h>
 #include <TArc/Controls/ReflectedButton.h>
-#include <TArc/Controls/ReflectedWidget.h>
 #include <TArc/Utils/Utils.h>
 #include <TArc/WindowSubSystem/UI.h>
+#include <TArc/Core/FieldBinder.h>
 
 #include <VisualScript/VisualScriptPin.h>
 
@@ -42,6 +42,7 @@ struct VisualScriptNodeModel::PinWidgetDescriptor
     QWidget* additionalWidget = nullptr;
     bool isSquare = false;
     bool customPlaceholder = false;
+    std::unique_ptr<DAVA::FieldBinder> visibleFieldBinder;
 
     Any GetDefaultValue() const
     {
@@ -107,6 +108,7 @@ struct VisualScriptNodeModel::PinWidgetDescriptor
         .Method("resetDefaultValue", &VisualScriptNodeModel::PinWidgetDescriptor::ResetDefaultValue)
         .Field("resetDefaultValueIcon", []() { return SharedIcon(":/VisualScriptEditor/Icons/delete.png"); }, nullptr)
         .Field("resetDefaultValueEnabled", &VisualScriptNodeModel::PinWidgetDescriptor::IsDefaultValueNotEmpty, nullptr)
+        .Field("defaultValueVisible", []() { return true; }, nullptr)
         .End();
     }
 };
@@ -136,8 +138,35 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
             VisualScriptPin* pin = GetPin(qnPortType, qnPortIndex);
             DVASSERT(pin != nullptr);
 
-            Reflection inReflection = Reflection::Create(ReflectedObject(&portWidgetDescriptors[portType][portIndex]));
-            QtHBoxLayout* layout = nullptr;
+            PinWidgetDescriptor& portWidgetDescriptor = portWidgetDescriptors[portType][portIndex];
+            Reflection inReflection = Reflection::Create(ReflectedObject(&portWidgetDescriptor));
+
+            auto SetPortDesriptorControl = [&](auto contol) {
+                DVASSERT(portWidgetDescriptor.widget == nullptr);
+
+                Widget* placeHolder = new Widget(nullptr);
+                QtHBoxLayout* layout = new QtHBoxLayout();
+                layout->setSpacing(0);
+                layout->setMargin(0);
+                placeHolder->SetLayout(layout);
+                placeHolder->AddControl(contol);
+
+                ReflectedButton::Params btnParams(accessor, ui, DAVA::mainWindowKey);
+                btnParams.fields[ReflectedButton::Fields::Clicked] = "resetDefaultValue";
+                btnParams.fields[ReflectedButton::Fields::Icon] = "resetDefaultValueIcon";
+                btnParams.fields[ReflectedButton::Fields::Enabled] = "resetDefaultValueEnabled";
+                ReflectedButton* resetButton = new ReflectedButton(btnParams, accessor, inReflection, nullptr);
+                placeHolder->AddControl(resetButton);
+
+                QWidget* widget = placeHolder->ToWidgetCast();
+                portWidgetDescriptor.additionalWidget = resetButton->ToWidgetCast();
+                portWidgetDescriptor.widget = widget;
+                portWidgetDescriptor.pin = pin;
+                portWidgetDescriptor.visibleFieldBinder.reset(new FieldBinder(accessor));
+                // Hide control if pin connected
+                portWidgetDescriptor.visibleFieldBinder->BindField(inReflection, FastName("isWidgetVisible"),
+                                                                   [widget](const Any& value) { widget->setVisible(value.Get<bool>()); });
+            };
 
             const Type* pinType = pin->GetType();
             if ((qnPortType == QtNodes::PortType::In) && (pinType != nullptr && pin->HasDefaultValue()))
@@ -151,10 +180,9 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                     params.fields[CheckBox::Fields::IsVisible] = "defaultValueVisible";
                     CheckBox* checkBox = new CheckBox(params, accessor, inReflection, nullptr);
 
-                    layout = new QtHBoxLayout();
-                    layout->AddControl(checkBox);
+                    SetPortDesriptorControl(checkBox);
 
-                    portWidgetDescriptors[portType][portIndex].isSquare = true;
+                    portWidgetDescriptor.isSquare = true;
                 }
                 else if (valueType == Type::Instance<String>()
                          || valueType == Type::Instance<WideString>()
@@ -165,8 +193,7 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                     params.fields[LineEdit::Fields::PlaceHolder] = "placeHolderString";
                     LineEdit* lineEdit = new LineEdit(params, accessor, inReflection, nullptr);
 
-                    layout = new QtHBoxLayout();
-                    layout->AddControl(lineEdit);
+                    SetPortDesriptorControl(lineEdit);
                 }
                 else if (valueType == Type::Instance<int8>()
                          || valueType == Type::Instance<uint8>()
@@ -179,10 +206,9 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                     params.fields[IntSpinBox::Fields::Value] = "defaultValue";
                     IntSpinBox* spinBox = new IntSpinBox(params, accessor, inReflection, nullptr);
 
-                    layout = new QtHBoxLayout();
-                    layout->AddControl(spinBox);
+                    SetPortDesriptorControl(spinBox);
 
-                    portWidgetDescriptors[portType][portIndex].customPlaceholder = true;
+                    portWidgetDescriptor.customPlaceholder = true;
                 }
                 else if (valueType == Type::Instance<float32>()
                          || valueType == Type::Instance<float64>())
@@ -191,10 +217,9 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                     params.fields[DoubleSpinBox::Fields::Value] = "defaultValue";
                     DoubleSpinBox* spinBox = new DoubleSpinBox(params, accessor, inReflection, nullptr);
 
-                    layout = new QtHBoxLayout();
-                    layout->AddControl(spinBox);
+                    SetPortDesriptorControl(spinBox);
 
-                    portWidgetDescriptors[portType][portIndex].customPlaceholder = true;
+                    portWidgetDescriptor.customPlaceholder = true;
                 }
                 else
                 {
@@ -212,36 +237,13 @@ VisualScriptNodeModel::VisualScriptNodeModel(ContextAccessor* accessor_, UI* ui_
                     params.fields[ImageView::Fields::Image] = "pinValue";
                     ImageView* imageView = new ImageView(params, accessor, outReflection, nullptr);
 
-                    portWidgetDescriptors[portType][portIndex].isSquare = true;
-                    portWidgetDescriptors[portType][portIndex].widget = imageView->ToWidgetCast();
-                    portWidgetDescriptors[portType][portIndex].pin = pin;
+                    portWidgetDescriptor.isSquare = true;
+                    portWidgetDescriptor.widget = imageView->ToWidgetCast();
+                    portWidgetDescriptor.pin = pin;
                 }
             }
 
-            if (layout != nullptr)
-            {
-                ReflectedButton::Params btnParams(accessor, ui, DAVA::mainWindowKey);
-                btnParams.fields[ReflectedButton::Fields::Clicked] = "resetDefaultValue";
-                btnParams.fields[ReflectedButton::Fields::Icon] = "resetDefaultValueIcon";
-                btnParams.fields[ReflectedButton::Fields::Enabled] = "resetDefaultValueEnabled";
-                ReflectedButton* resetButton = new ReflectedButton(btnParams, accessor, inReflection, nullptr);
-                layout->AddControl(resetButton);
-                portWidgetDescriptors[portType][portIndex].additionalWidget = resetButton->ToWidgetCast();
-
-                ReflectedWidget::Params phParams(accessor, ui, DAVA::mainWindowKey);
-                phParams.fields[ReflectedWidget::Fields::Visible] = "isWidgetVisible";
-
-                ReflectedWidget* placeHolder = new ReflectedWidget(phParams, accessor, inReflection, nullptr);
-                portWidgetDescriptors[portType][portIndex].widget = placeHolder->ToWidgetCast();
-                portWidgetDescriptors[portType][portIndex].widget->setLayout(layout);
-
-                portWidgetDescriptors[portType][portIndex].pin = pin;
-
-                layout->setSpacing(0);
-                layout->setMargin(0);
-            }
-
-            hasWidgets[portType] = hasWidgets[portType] || (portWidgetDescriptors[portType][portIndex].widget != nullptr);
+            hasWidgets[portType] = hasWidgets[portType] || (portWidgetDescriptor.widget != nullptr);
         }
     }
 

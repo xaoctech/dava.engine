@@ -48,7 +48,7 @@ void SlotTemplatesData::ParseConfig(const FilePath& configPath)
         return;
     }
 
-    ScopedPtr<YamlParser> parser(YamlParser::Create(configPath));
+    RefPtr<YamlParser> parser(YamlParser::Create(configPath));
     if (!parser)
     {
         Logger::Error("Couldn't parse slot templates: %s", configPath.GetAbsolutePathname().c_str());
@@ -72,9 +72,9 @@ void SlotTemplatesData::ParseConfig(const FilePath& configPath)
     String sizeKey("size");
     String pivotKey("pivot");
 
-    const Vector<YamlNode*>& yamlNodes = rootNode->AsVector();
+    const auto& yamlNodes = rootNode->AsVector();
     size_t propertiesCount = yamlNodes.size();
-    for (YamlNode* currentNode : yamlNodes)
+    for (const auto& currentNode : yamlNodes)
     {
         uint32 fieldsCount = currentNode->GetCount();
 

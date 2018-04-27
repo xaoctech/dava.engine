@@ -46,22 +46,40 @@ UIRenderSystem::~UIRenderSystem() = default;
 
 void UIRenderSystem::OnControlVisible(UIControl* control)
 {
-    uint32 cmpCount = control->GetComponentCount<UISceneComponent>();
-    ui3DViewCount += cmpCount;
+    if (control->GetComponentCount<UISceneComponent>() != 0)
+    {
+        ui3DViews.insert(control);
+    }
 }
 
 void UIRenderSystem::OnControlInvisible(UIControl* control)
 {
-    uint32 cmpCount = control->GetComponentCount<UISceneComponent>();
-    ui3DViewCount -= cmpCount;
+    if (control->GetComponentCount<UISceneComponent>() != 0)
+    {
+        ui3DViews.erase(control);
+    }
+}
 
-    DVASSERT(ui3DViewCount >= 0);
+void UIRenderSystem::RegisterComponent(UIControl* control, UIComponent* component)
+{
+    if (component->GetType() == Type::Instance<UISceneComponent>() && control->IsVisible())
+    {
+        ui3DViews.insert(control);
+    }
+}
+
+void UIRenderSystem::UnregisterComponent(UIControl* control, UIComponent* component)
+{
+    if (component->GetType() == Type::Instance<UISceneComponent>() && control->IsVisible())
+    {
+        ui3DViews.erase(control);
+    }
 }
 
 void UIRenderSystem::Process(float32 elapsedTime)
 {
     RenderSystem2D::RenderTargetPassDescriptor newDescr = renderSystem2D->GetMainTargetDescriptor();
-    newDescr.clearTarget = ui3DViewCount == 0 && needClearMainPass;
+    newDescr.clearTarget = ui3DViews.empty() && needClearMainPass;
     renderSystem2D->SetMainTargetDescriptor(newDescr);
 }
 
@@ -101,7 +119,7 @@ UIScreenshoter* UIRenderSystem::GetScreenshoter() const
 
 int32 UIRenderSystem::GetUI3DViewCount() const
 {
-    return ui3DViewCount;
+    return static_cast<int32>(ui3DViews.size());
 }
 
 RenderSystem2D* UIRenderSystem::GetRenderSystem2D() const

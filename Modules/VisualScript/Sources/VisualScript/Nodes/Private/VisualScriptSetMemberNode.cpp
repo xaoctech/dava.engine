@@ -80,6 +80,7 @@ void VisualScriptSetMemberNode::InitPins()
         SetName(FastName(nodeName));
 
         const ReflectedType* type = ReflectedTypeDB::GetByPermanentName(className.c_str());
+        DVASSERT(type);
         const ReflectedStructure* rs = type->GetStructure();
         const ValueWrapper* vw = nullptr;
         for (auto& field : rs->fields)
@@ -99,9 +100,11 @@ void VisualScriptSetMemberNode::InitPins()
             RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("exit"), nullptr));
 
             const Type* classType = ReflectedTypeDB::GetByPermanentName(className.c_str())->GetType();
+            DVASSERT(classType);
             RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("object"), classType));
 
             const Type* memberType = valueWrapper->GetType(ReflectedObject());
+            DVASSERT(memberType);
             RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("set"), memberType, VisualScriptPin::DefaultParam::DEFAULT_PARAM));
             RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_OUT, FastName("get"), memberType));
         }

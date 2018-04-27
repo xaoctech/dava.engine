@@ -27,8 +27,9 @@
 #include <QEvent>
 #include <QMenu>
 
-ModernPropertyContext::ModernPropertyContext(RootProperty* root_, DAVA::ContextAccessor* accessor_, QWidget* parent_)
+ModernPropertyContext::ModernPropertyContext(RootProperty* root_, DAVA::ContextAccessor* accessor_, DAVA::OperationInvoker* invoker_, QWidget* parent_)
     : accessor(accessor_)
+    , invoker(invoker_)
     , parent(parent_)
 {
     root = root_;
@@ -46,6 +47,11 @@ RootProperty* ModernPropertyContext::GetRoot() const
 DAVA::ContextAccessor* ModernPropertyContext::GetAccessor() const
 {
     return accessor;
+}
+
+DAVA::OperationInvoker* ModernPropertyContext::GetInvoker() const
+{
+    return invoker;
 }
 
 QWidget* ModernPropertyContext::GetParent() const
@@ -153,6 +159,11 @@ RootProperty* ModernPropertyEditor::GetRootProperty() const
 DAVA::ContextAccessor* ModernPropertyEditor::GetAccessor() const
 {
     return context->GetAccessor();
+}
+
+DAVA::OperationInvoker* ModernPropertyEditor::GetInvoker() const
+{
+    return context->GetInvoker();
 }
 
 QWidget* ModernPropertyEditor::GetParentWidget() const

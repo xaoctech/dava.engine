@@ -101,7 +101,7 @@ void EntityCache::Preload(const FilePath& path)
             if (1 == child->GetComponentCount())
             {
                 TransformComponent* tr = srcRootEntity->GetComponent<TransformComponent>();
-                if (nullptr != tr && tr->GetLocalTransform() == Matrix4::IDENTITY)
+                if (nullptr != tr && tr->GetLocalMatrix() == Matrix4::IDENTITY)
                 {
                     srcRootEntity = child;
                 }

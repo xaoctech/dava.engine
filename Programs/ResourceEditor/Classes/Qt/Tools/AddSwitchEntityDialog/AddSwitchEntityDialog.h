@@ -15,17 +15,16 @@ class AddSwitchEntityDialog : public BaseAddEntityDialog
     Q_OBJECT
 
 public:
-    AddSwitchEntityDialog(QWidget* parent = 0);
+    AddSwitchEntityDialog(QWidget* parent = nullptr);
     ~AddSwitchEntityDialog();
 
     void accept() override;
     void reject() override;
 
-protected:
-    void GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, DAVA::SceneEditor2* editor);
-    void FillPropertyEditorWithContent() override;
-
 private:
+    DAVA::Vector<DAVA::RefPtr<DAVA::Entity>> GetPathEntities();
+
+    void OnPathChanged();
     void CleanupPathWidgets();
 
     DAVA::Vector<SelectEntityPathWidget*> pathWidgets;

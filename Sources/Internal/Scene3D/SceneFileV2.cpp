@@ -1077,7 +1077,8 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity* currentNode)
             return false;
         }
 
-        if (currentNode->GetLocalTransform() == Matrix4::IDENTITY)
+        TransformComponent* transform = currentNode->GetComponent<TransformComponent>();
+        if (transform->GetLocalMatrix() == Matrix4::IDENTITY)
         {
             Entity* parent = currentNode->GetParent();
 

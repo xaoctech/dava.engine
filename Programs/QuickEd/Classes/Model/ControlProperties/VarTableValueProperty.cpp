@@ -1,7 +1,6 @@
 #include "VarTableValueProperty.h"
 
 #include <UI/UIControl.h>
-#include <UI/Properties/VarTable.h>
 
 using namespace DAVA;
 
@@ -52,7 +51,7 @@ void VarTableValueProperty::ResetLocalValue(const String& propertyName_)
         Any prototypePropertyValue = vtPrototype->GetLocalValue(propertyName_);
 
         varTable.SetPropertyValue(propertyName, prototypePropertyValue);
-        varTable.SetPropertyOverridden(propertyName, false);
+        SetPropertyOverridden(propertyName, false);
         SetValue(Any(varTable));
     }
     else if (varTable.HasDefaultValues())
@@ -60,7 +59,7 @@ void VarTableValueProperty::ResetLocalValue(const String& propertyName_)
         if (varTable.HasDefaultValue(propertyName))
         {
             varTable.SetPropertyValue(propertyName, varTable.GetDefaultValue(propertyName));
-            varTable.SetPropertyOverridden(propertyName, false);
+            SetPropertyOverridden(propertyName, false);
             SetValue(Any(varTable));
         }
     }
@@ -84,19 +83,15 @@ void VarTableValueProperty::SetLocalValue(const String& propertyName_, const Any
     FastName propertyName(propertyName_);
     VarTable varTable = vt.Get<VarTable>();
     varTable.SetPropertyValue(propertyName, value);
-    varTable.SetPropertyOverridden(propertyName, true);
-    vt = Any(varTable);
-    SetValue(vt);
+    SetPropertyOverridden(propertyName, true);
+    SetValue(Any(varTable));
 
     UpdateRealProperties();
 }
 
 bool VarTableValueProperty::IsOverriddenLocally(const String& propertyName_)
 {
-    Any vt = GetValue();
-    DVASSERT(vt.CanGet<VarTable>());
-    VarTable varTable = vt.Get<VarTable>();
-    return varTable.IsPropertyOverridden(FastName(propertyName_));
+    return IsSubPropertyOverridden(FastName(propertyName_));
 }
 
 void VarTableValueProperty::UpdateRealProperties()
@@ -106,7 +101,7 @@ void VarTableValueProperty::UpdateRealProperties()
     DVASSERT(vt.CanGet<VarTable>());
 
     VarTable varTable = vt.Get<VarTable>();
-    hasOverriden = varTable.HasAnyPropertyOverridden();
+    hasOverriden = HasAnySubPropertyOverridden();
 
     if (hasOverriden == false && GetPrototypeProperty() != nullptr)
     {
@@ -118,7 +113,7 @@ void VarTableValueProperty::UpdateRealProperties()
     }
 }
 
-void VarTableValueProperty::SetValue(const Any& newValue)
+inline void VarTableValueProperty::SetValue(const DAVA::Any& newValue)
 {
     DVASSERT(newValue.CanGet<VarTable>());
     VarTable varTable = newValue.Get<VarTable>();
@@ -129,19 +124,23 @@ void VarTableValueProperty::SetValue(const Any& newValue)
         DVASSERT(valueDefault.CanGet<VarTable>());
         VarTable varTableDefault = valueDefault.Get<VarTable>();
 
-        varTable.SetOverriddenIfNotEqual(varTableDefault);
+        SetSubOverriddenIfNotEqual(varTable, varTableDefault);
         ValueProperty::SetValue(Any(varTable));
-        SetOverridden(varTable.HasAnyPropertyOverridden());
+        SetOverridden(HasAnySubPropertyOverridden());
     }
     else if (varTable.HasDefaultValues())
     {
-        varTable.SetOverriddenIfNotEqualDefaultValues();
+        SetSubOverriddenIfNotEqualDefaultValues(varTable);
         ValueProperty::SetValue(Any(varTable));
-        SetOverridden(varTable.HasAnyPropertyOverridden());
+        SetOverridden(HasAnySubPropertyOverridden());
     }
     else
     {
-        varTable.SetFlag(VarTable::OVERRIDDEN, true);
+        propertyOverridden.clear();
+        varTable.ForEachProperty([&](const FastName& name, const Any& value) {
+            propertyOverridden.insert(name);
+        });
+
         ValueProperty::SetValue(Any(varTable));
     }
 }
@@ -150,7 +149,6 @@ void VarTableValueProperty::SetDefaultValue(const Any& newValue)
 {
     DVASSERT(newValue.CanGet<VarTable>());
     VarTable varTable = newValue.Get<VarTable>();
-    varTable.ClearFlags();
     ValueProperty::SetDefaultValue(Any(varTable));
 }
 
@@ -159,21 +157,103 @@ void VarTableValueProperty::ResetValue()
     Any value = GetValue();
     DVASSERT(value.CanGet<VarTable>());
     VarTable varTable = value.Get<VarTable>();
+    propertyOverridden.clear();
 
     if (GetPrototypeProperty() != nullptr)
     {
         SetDefaultValue(GetPrototypeProperty()->GetValue());
-        IntrospectionProperty::ResetValue();
     }
     else if (varTable.HasDefaultValues())
     {
-        varTable.ResetAllPropertiesToDefaultValues();
+        varTable.ResetToDefaultValues();
         SetDefaultValue(Any(varTable));
-        IntrospectionProperty::ResetValue();
     }
     else
     {
         SetDefaultValue(Any(VarTable()));
-        IntrospectionProperty::ResetValue();
     }
+    IntrospectionProperty::ResetValue();
+}
+
+bool VarTableValueProperty::HasAnySubPropertyOverridden() const
+{
+    return !propertyOverridden.empty();
+}
+
+bool VarTableValueProperty::IsSubPropertyOverridden(const FastName& name) const
+{
+    return propertyOverridden.find(name) != propertyOverridden.end();
+}
+
+void VarTableValueProperty::SetPropertyOverridden(const FastName& name, bool value)
+{
+    if (value)
+    {
+        propertyOverridden.insert(name);
+    }
+    else
+    {
+        propertyOverridden.erase(name);
+    }
+}
+
+void VarTableValueProperty::SetSubOverriddenIfNotEqual(VarTable& varTable, VarTable& varTableDefault)
+{
+    propertyOverridden.clear();
+    varTable.ForEachProperty([&](const FastName& name, const Any& value) {
+        if ((!varTableDefault.HasProperty(name)) || !varTable.CheckAndUpdateProperty(name, varTableDefault.GetPropertyValue(name)))
+        {
+            propertyOverridden.insert(name);
+        }
+    });
+}
+
+void VarTableValueProperty::SetSubOverriddenIfNotEqualDefaultValues(VarTable& varTable)
+{
+    propertyOverridden.clear();
+    varTable.ForEachProperty([&](const FastName& name, const Any& value) {
+        propertyOverridden.insert(name);
+    });
+    varTable.ForEachDefaultValue([&](const FastName& name, const Any& value) {
+        if (varTable.CheckAndUpdateProperty(name, value))
+        {
+            propertyOverridden.erase(name);
+        }
+    });
+}
+
+void VarTableValueProperty::OverrideSubProperties(const VarTable& other)
+{
+    Any vt = GetValue();
+    DVASSERT(vt.CanGet<VarTable>());
+    VarTable varTable = vt.Get<VarTable>();
+
+    other.ForEachProperty([&](const FastName& name, const Any& value) {
+        propertyOverridden.insert(name);
+        varTable.SetPropertyValue(name, value);
+    });
+    SetValue(varTable);
+    SetForceOverride(true);
+}
+
+String VarTableValueProperty::GetNamesString(const String& sep) const
+{
+    Any vt = GetValue();
+    DVASSERT(vt.CanGet<VarTable>());
+    VarTable varTable = vt.Get<VarTable>();
+
+    String str;
+    varTable.ForEachProperty([&](const FastName& name, const Any& value) {
+        if (str.empty() == false)
+        {
+            str += sep;
+        }
+        if (IsSubPropertyOverridden(name))
+        {
+            str += "*";
+        }
+        DVASSERT(!name.empty());
+        str += name.c_str();
+    });
+    return str;
 }

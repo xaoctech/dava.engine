@@ -48,6 +48,8 @@ public:
 
     QWidget* GetWindow(const WindowKey& wndKey) const;
     QList<QWidget*> LookupWidget(const WindowKey& wndKey, const QString& objectName) const;
+    QWidget* GetRenderWidgetTestTarget();
+    void SelectByMouseRect(QWidget* widget, QPoint startPoint, QPoint endPoint);
 
     template <typename T>
     T* LookupSingleWidget(const WindowKey& wndKey, const QString& objectName) const

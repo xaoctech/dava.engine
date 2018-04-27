@@ -16,6 +16,7 @@ Widget::~Widget()
 
 void Widget::SetLayout(QLayout* layout)
 {
+    DVASSERT(controls.size() == 0);
     setLayout(layout);
 }
 

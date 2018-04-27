@@ -323,7 +323,7 @@ eColladaErrorCodes ColladaImporter::BuildSceneAsCollada(Entity* root, ColladaSce
     ImportAnimation(colladaNode, nodeEntity);
 
     auto* transformComponent = GetTransformComponent(nodeEntity);
-    transformComponent->SetLocalTransform(&colladaNode->localTransform);
+    transformComponent->SetLocalTransform(Transform(colladaNode->localTransform));
 
     root->AddNode(nodeEntity);
 

@@ -442,8 +442,8 @@ ReflectionRegistrator<C>& ReflectionRegistrator<C>::Field(const char* name, T* f
 }
 
 template <typename C>
-template <typename T>
-ReflectionRegistrator<C>& ReflectionRegistrator<C>::Field(const char* name, T C::*field)
+template <typename T, typename U, typename R>
+ReflectionRegistrator<C>& ReflectionRegistrator<C>::Field(const char* name, T U::*field)
 {
     ReflectedStructure::Field* f = new ReflectedStructure::Field();
     f->valueWrapper.reset(new ValueWrapperClass<C, T>(field));

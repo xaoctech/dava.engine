@@ -96,7 +96,7 @@ const FXDescriptor& LoadOldTempalte(const FastName& fxName, const FastName& qual
     }
 
     FilePath fxPath(fxName.c_str());
-    ScopedPtr<YamlParser> parser(YamlParser::Create(fxPath));
+    RefPtr<YamlParser> parser(YamlParser::Create(fxPath));
     YamlNode* rootNode = nullptr;
     if (parser)
     {
@@ -131,7 +131,7 @@ const FXDescriptor& LoadOldTempalte(const FastName& fxName, const FastName& qual
             }
             qualityNode = materialTemplateNode->Get(materialTemplateNode->GetCount() - 1);
         }
-        ScopedPtr<YamlParser> parserTechnique(YamlParser::Create(qualityNode->AsString()));
+        RefPtr<YamlParser> parserTechnique(YamlParser::Create(qualityNode->AsString()));
         if (parserTechnique)
         {
             renderTechniqueNode = parserTechnique->GetRootNode();

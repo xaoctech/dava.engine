@@ -2,7 +2,6 @@
 
 #include "Engine/Private/EngineBackend.h"
 #include "Engine/Private/Dispatcher/MainDispatcher.h"
-#include "Reflection/ReflectionRegistrator.h"
 
 namespace DAVA
 {

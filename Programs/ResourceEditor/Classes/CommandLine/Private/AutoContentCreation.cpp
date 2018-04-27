@@ -17,6 +17,8 @@
 #include <Scene3D/Scene.h>
 #include <Scene3D/SceneFileV2.h>
 #include <Utils/StringFormat.h>
+#include <Math/Transform.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 DuplicateObjectTool::DuplicateObjectTool(const DAVA::Vector<DAVA::String>& commandLine)
     : CommandLineModule(commandLine, "-duplicate")
@@ -228,7 +230,8 @@ DAVA::ConsoleModule::eFrameResult RandomPlaceHingedEquipment::OnFrameInternal()
         }
 
         DAVA::Entity* rootEntity = scene->GetChild(0);
-        DAVA::Matrix4 invertParentTranfsorm = rootEntity->GetWorldTransform();
+        DAVA::TransformComponent* rootTC = rootEntity->GetComponent<DAVA::TransformComponent>();
+        DAVA::Matrix4 invertParentTranfsorm = rootTC->GetWorldMatrix();
         invertParentTranfsorm.Inverse();
         DAVA::AABBox3 bbox = rootEntity->GetWTMaximumBoundingBoxSlow();
 
@@ -271,10 +274,12 @@ DAVA::ConsoleModule::eFrameResult RandomPlaceHingedEquipment::OnFrameInternal()
                     DAVA::Vector3 hingedSize = hingedBox.GetSize();
 
                     DAVA::Vector3 position = DAVA::Vector3(currentX, currentY, zCoord);
-                    DAVA::Matrix4 hingedTransform;
-                    hingedTransform.SetTranslationVector(position);
-                    hingedTransform = invertParentTranfsorm * hingedTransform;
-                    hingedEntity->SetLocalTransform(hingedTransform);
+                    DAVA::Transform hingedTransform;
+                    hingedTransform.SetTranslation(position);
+                    hingedTransform = DAVA::Transform(invertParentTranfsorm) * hingedTransform;
+
+                    DAVA::TransformComponent* hingedTC = hingedEntity->GetComponent<DAVA::TransformComponent>();
+                    hingedTC->SetLocalTransform(hingedTransform);
                     rootEntity->AddNode(hingedEntity);
 
                     currentX += hingedSize.x;

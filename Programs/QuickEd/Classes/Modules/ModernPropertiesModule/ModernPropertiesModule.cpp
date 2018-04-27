@@ -122,7 +122,7 @@ void ModernPropertiesModule::PostInit()
     }
 
     // Add control properties
-    widget->addTab(new ModernPropertiesTab(GetAccessor(), GetUI(), Vector<const Type*>()), "General");
+    widget->addTab(new ModernPropertiesTab(GetAccessor(), GetInvoker(), GetUI(), Vector<const Type*>()), "General");
 
     // Add priority component group properties
     Vector<String> priorityGroups = { "Content", "Layout", "Input", "Data" };
@@ -131,7 +131,7 @@ void ModernPropertiesModule::PostInit()
         auto it = components.find(priorityGroup);
         if (it != components.end())
         {
-            widget->addTab(new ModernPropertiesTab(GetAccessor(), GetUI(), it->second), it->first.c_str());
+            widget->addTab(new ModernPropertiesTab(GetAccessor(), GetInvoker(), GetUI(), it->second), it->first.c_str());
         }
     }
 
@@ -140,7 +140,7 @@ void ModernPropertiesModule::PostInit()
     {
         if (std::find(priorityGroups.begin(), priorityGroups.end(), it.first) == priorityGroups.end())
         {
-            widget->addTab(new ModernPropertiesTab(GetAccessor(), GetUI(), it.second), it.first.c_str());
+            widget->addTab(new ModernPropertiesTab(GetAccessor(), GetInvoker(), GetUI(), it.second), it.first.c_str());
         }
     }
 }

@@ -10,10 +10,13 @@
 #include <VisualScript/Nodes/VisualScriptFunctionNode.h>
 #include <VisualScript/Nodes/VisualScriptGetVarNode.h>
 #include <VisualScript/Nodes/VisualScriptSetVarNode.h>
+#include <VisualScript/Nodes/VisualScriptGetMemberNode.h>
+#include <VisualScript/Nodes/VisualScriptSetMemberNode.h>
 #include <VisualScript/VisualScript.h>
 #include <VisualScript/VisualScriptExecutor.h>
 #include <VisualScript/VisualScriptNode.h>
 #include <VisualScript/VisualScriptPin.h>
+#include <VisualScript/VisualScriptEvents.h>
 
 using namespace DAVA;
 
@@ -45,9 +48,9 @@ public:
 DAVA_REFLECTION_IMPL(TestObject)
 {
     ReflectionRegistrator<TestObject>::Begin()
-    .Method("SetPositionVal", &TestObject::SetPositionVal)
-    .Method("SetPositionConstVal", &TestObject::SetPositionConstVal)
-    .Method("SetPositionConstValRef", &TestObject::SetPositionConstValRef)
+    .Method("SetPositionVal", &TestObject::SetPositionVal)[M::ArgNames("a")]
+    .Method("SetPositionConstVal", &TestObject::SetPositionConstVal)[M::ArgNames("a")]
+    .Method("SetPositionConstValRef", &TestObject::SetPositionConstValRef)[M::ArgNames("a")]
     .End();
 };
 
@@ -95,10 +98,29 @@ DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptTestData)
     .Field("val", &VisualScriptTestData::intVal)
     .Field("conditionValue", &VisualScriptTestData::conditionValue)
     .Field("testObject", &VisualScriptTestData::testObject)
-    .Method("sum", &VisualScriptTestData::sum)
-    .Method("mul", &VisualScriptTestData::mul)
+    .Method("sum", &VisualScriptTestData::sum)[M::ArgNames("a", "b")]
+    .Method("mul", &VisualScriptTestData::mul)[M::ArgNames("a", "b")]
     .End();
 };
+
+class VisualScriptTestDataEvent : public VisualScriptEvent
+{
+public:
+    DAVA_VIRTUAL_REFLECTION(VisualScriptTestDataEvent, VisualScriptEvent);
+    VisualScriptTestDataEvent() = default;
+
+    VisualScriptTestData* data = nullptr;
+    static const FastName NAME;
+};
+
+DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptTestDataEvent)
+{
+    ReflectionRegistrator<VisualScriptTestDataEvent>::Begin()
+    .ConstructorByPointer()
+    .Field("data", &VisualScriptTestDataEvent::data)
+    .End();
+}
+const FastName VisualScriptTestDataEvent::NAME = FastName("VisualScriptTestDataEvent");
 
 DAVA_TESTCLASS (VisualScriptTest)
 {
@@ -138,10 +160,13 @@ DAVA_TESTCLASS (VisualScriptTest)
             VisualScriptSetVarNode* varOut = new VisualScriptSetVarNode(ref, FastName("outputValue"));
             function->GetDataOutputPin(0)->Connect(varOut->GetDataInputPin(0));
 
+            TEST_VERIFY(VisualScriptPin::IsConnected(function->GetDataOutputPin(0), varOut->GetDataInputPin(0)));
+            TEST_VERIFY(VisualScriptPin::IsConnected(varOut->GetDataInputPin(0), function->GetDataOutputPin(0)));
+
             VisualScriptExecutor executor;
             executor.Execute(varOut->GetExecInputPin(0));
 
-            DVASSERT(data.outputValue == data.inputValue0 + data.inputValue1);
+            TEST_VERIFY(data.outputValue == data.inputValue0 + data.inputValue1);
 
             SafeDelete(varIn1);
             SafeDelete(varIn2);
@@ -218,8 +243,6 @@ DAVA_TESTCLASS (VisualScriptTest)
         Reflection ref = DAVA::Reflection::Create(&data);
         try
         {
-            VisualScript* script = new VisualScript();
-
             VisualScriptGetVarNode* getCondition = new VisualScriptGetVarNode(ref, FastName("conditionValue"));
             VisualScriptBranchNode* branchNode = new VisualScriptBranchNode();
 
@@ -257,7 +280,6 @@ DAVA_TESTCLASS (VisualScriptTest)
             SafeDelete(getTestVector2);
             SafeDelete(setPositionNodeTrue);
             SafeDelete(setPositionNodeFalse);
-            SafeDelete(script);
         }
         catch (Exception& exception)
         {
@@ -269,55 +291,69 @@ DAVA_TESTCLASS (VisualScriptTest)
     DAVA_TEST (VisualScriptSaveLoadTest)
     {
         DAVA_REFLECTION_REGISTER_PERMANENT_NAME(TestObject);
+        DAVA_REFLECTION_REGISTER_PERMANENT_NAME(VisualScriptTestDataEvent);
         VisualScriptTestData data;
 
-        Reflection ref = DAVA::Reflection::Create(&data);
         try
         {
-            std::unique_ptr<VisualScript> script = std::make_unique<VisualScript>();
+            std::shared_ptr<VisualScript> script = std::make_shared<VisualScript>();
 
-            auto getCondition = script->CreateNode<VisualScriptGetVarNode>(ref, FastName("conditionValue"));
+            auto getCondition = script->CreateNode<VisualScriptGetMemberNode>(FastName("VisualScriptTestData"), FastName("conditionValue"));
             auto branchNode = script->CreateNode<VisualScriptBranchNode>();
 
-            auto eventNode = script->CreateNode<VisualScriptEventNode>(FastName("OnCollision"));
-            auto getNode = script->CreateNode<VisualScriptGetVarNode>(ref, FastName("testObject"));
-            auto getTestVector = script->CreateNode<VisualScriptGetVarNode>(ref, FastName("testVector"));
-            auto getTestVector2 = script->CreateNode<VisualScriptGetVarNode>(ref, FastName("testVector2"));
+            auto eventNode = script->CreateNode<VisualScriptEventNode>(FastName("VisualScriptTestDataEvent"));
+            auto getNode = script->CreateNode<VisualScriptGetMemberNode>(FastName("VisualScriptTestData"), FastName("testObject"));
+            auto getTestVector = script->CreateNode<VisualScriptGetMemberNode>(FastName("VisualScriptTestData"), FastName("testVector"));
+            auto getTestVector2 = script->CreateNode<VisualScriptGetMemberNode>(FastName("VisualScriptTestData"), FastName("testVector2"));
             auto setPositionNodeTrue = script->CreateNode<VisualScriptFunctionNode>(FastName("TestObject"), FastName("SetPositionVal"));
             auto setPositionNodeFalse = script->CreateNode<VisualScriptFunctionNode>(FastName("TestObject"), FastName("SetPositionVal"));
 
             TEST_VERIFY(eventNode->GetExecOutputPin(0)->Connect(branchNode->GetExecInputPin(0)) == true);
+            TEST_VERIFY(eventNode->GetDataOutputPin(0)->Connect(getNode->GetDataInputPin(0)) == true);
+            TEST_VERIFY(eventNode->GetDataOutputPin(0)->Connect(getCondition->GetDataInputPin(0)) == true);
+
             TEST_VERIFY(branchNode->GetExecOutputPin(0)->Connect(setPositionNodeTrue->GetExecInputPin(0)) == true);
             TEST_VERIFY(branchNode->GetExecOutputPin(1)->Connect(setPositionNodeFalse->GetExecInputPin(0)) == true);
 
             TEST_VERIFY(getNode->GetDataOutputPin(0)->Connect(setPositionNodeTrue->GetDataInputPin(0)) == true);
             TEST_VERIFY(getTestVector->GetDataOutputPin(0)->Connect(setPositionNodeTrue->GetDataInputPin(1)) == true);
+            TEST_VERIFY(eventNode->GetDataOutputPin(0)->Connect(getTestVector->GetDataInputPin(0)) == true);
 
             TEST_VERIFY(getNode->GetDataOutputPin(0)->Connect(setPositionNodeFalse->GetDataInputPin(0)) == true);
             TEST_VERIFY(getTestVector2->GetDataOutputPin(0)->Connect(setPositionNodeFalse->GetDataInputPin(1)) == true);
+            TEST_VERIFY(eventNode->GetDataOutputPin(0)->Connect(getTestVector2->GetDataInputPin(0)) == true);
 
             TEST_VERIFY(getCondition->GetDataOutputPin(0)->Connect(branchNode->GetDataInputPin(0)) == true);
 
             script->Compile();
-            DVASSERT(data.testObject->vec != data.testVector);
+
+            auto Execute = [&](std::shared_ptr<VisualScript>& script, VisualScriptTestData& data) {
+                VisualScriptTestDataEvent event;
+                event.data = &data;
+                script->Execute(VisualScriptTestDataEvent::NAME, Reflection::Create(&event));
+            };
+
+            TEST_VERIFY(data.testVector != data.testVector2);
+
             data.conditionValue = true;
-            script->Execute(FastName("OnCollision"), Reflection());
-            DVASSERT(data.testObject->vec == data.testVector);
+            Execute(script, data);
+            TEST_VERIFY(data.testObject->vec == data.testVector);
 
             data.conditionValue = false;
-            script->Execute(FastName("OnCollision"), Reflection());
-            DVASSERT(data.testObject->vec == data.testVector2);
+            Execute(script, data);
+            TEST_VERIFY(data.testObject->vec == data.testVector2);
             script->Save("~doc:/test.nodegraph");
 
             std::shared_ptr<VisualScript> scriptLoad = std::make_shared<VisualScript>();
             scriptLoad->Load("~doc:/test.nodegraph");
-            scriptLoad->Compile();
 
             data.conditionValue = true;
-            scriptLoad->Execute(FastName("OnCollision"), Reflection());
+            Execute(scriptLoad, data);
+            TEST_VERIFY(data.testObject->vec == data.testVector);
+
             data.conditionValue = false;
-            scriptLoad->Execute(FastName("OnCollision"), Reflection());
-            DVASSERT(data.testObject->vec == data.testVector2);
+            Execute(scriptLoad, data);
+            TEST_VERIFY(data.testObject->vec == data.testVector2);
         }
         catch (Exception& exception)
         {

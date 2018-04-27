@@ -30,7 +30,7 @@ nodes:
         node:
             functionName: "Mul"
             position: [1484.697632, 327.628815]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptFunctionNode2:
@@ -63,7 +63,7 @@ nodes:
         node:
             functionName: "Lerp"
             position: [1935.429077, 186.388977]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptBranchNode1:
@@ -126,7 +126,7 @@ nodes:
         node:
             functionName: "Div"
             position: [-713.318420, 271.641602]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptSetMemberNode1:
@@ -305,7 +305,7 @@ nodes:
         node:
             functionName: "And"
             position: [370.799988, 163.199997]
-            className: "ConditionsBool"
+            className: "bool"
             defaults:
                 b: ["bool", false]
         type: "VisualScriptFunctionNode"
@@ -412,7 +412,7 @@ nodes:
         node:
             functionName: "Sum"
             position: [-998.045898, 116.007645]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptEventNode1:
@@ -458,7 +458,7 @@ nodes:
         node:
             functionName: ">="
             position: [-293.760010, 226.022415]
-            className: "ConditionsFloat"
+            className: "float32"
             defaults:
                 b: ["float32", 3.000000]
         type: "VisualScriptFunctionNode"
@@ -642,7 +642,7 @@ nodes:
         node:
             functionName: ">="
             position: [-291.698578, 95.831718]
-            className: "ConditionsFloat"
+            className: "float32"
             defaults:
                 b: ["float32", 2.000000]
         type: "VisualScriptFunctionNode"

@@ -43,8 +43,6 @@ protected slots:
     virtual void CommandExecuted(DAVA::SceneEditor2* scene, const DAVA::RECommandNotificationObject& commandNotification);
 
 protected:
-    virtual void FillPropertyEditorWithContent() = 0;
-
     virtual QtPropertyData* AddInspMemberToEditor(void* object, const DAVA::InspMember*);
     virtual QtPropertyData* AddKeyedArchiveMember(DAVA::KeyedArchive* archive, const DAVA::String& key, const DAVA::String& rowName);
     virtual QtPropertyData* AddMetaObject(void* object, const DAVA::MetaInfo* meta, const DAVA::String& rowName);

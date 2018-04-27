@@ -75,7 +75,8 @@ UserNodeSystem::UserNodeSystem(DAVA::Scene* scene, const DAVA::FilePath& scenePa
         using namespace DAVA;
 
         Vector3 size = sourceObject->GetBoundingBox().GetSize();
-        nodeMatrix = Matrix4::MakeRotation(Vector3::UnitZ, DAVA::PI) * Matrix4::MakeScale(Vector3(6.f / size.x, 13.f / size.y, 6.f / size.z));
+        //TODO::CODEREVIEW:: i_radkevich: is it problem to use non uniform scale?
+        nodeMatrix = Matrix4::MakeRotation(Vector3::UnitZ, -DAVA::PI) * Matrix4::MakeScale(Vector3(6.f / size.x, 13.f / size.y, 6.f / size.z));
     }
 }
 
@@ -140,7 +141,7 @@ void UserNodeSystem::Process(DAVA::float32 timeElapsed)
         description.ro = sourceObject->Clone(nullptr);
         spawnNodes[entity] = description;
 
-        TransformObject(&spawnNodes[entity], *GetWorldTransformPtr(entity));
+        TransformObject(&spawnNodes[entity], *GetWorldMatrixPtr(entity));
 
         renderSystem->RenderPermanent(description.ro);
     }
@@ -163,7 +164,8 @@ void UserNodeSystem::Draw()
             AABBox3 worldBox = editorScene->GetSystem<DAVA::SceneCollisionSystem>()->GetUntransformedBoundingBox(entity);
             DVASSERT(!worldBox.IsEmpty());
 
-            const Matrix4& worldTransform = entity->GetWorldTransform();
+            TransformComponent* tc = entity->GetComponent<TransformComponent>();
+            const Matrix4& worldTransform = tc->GetWorldMatrix();
             drawer->DrawAABoxTransformed(worldBox, worldTransform, Color(0.5f, 0.5f, 1.0f, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
             drawer->DrawAABoxTransformed(worldBox, worldTransform, Color(0.2f, 0.2f, 0.8f, 1.0f), RenderHelper::DRAW_WIRE_DEPTH);
 
@@ -222,10 +224,10 @@ const DAVA::Color& UserNodeSystem::GetSpawnColor(DAVA::Entity* entity) const
     return Color::White;
 }
 
-DAVA::Matrix4* UserNodeSystem::GetWorldTransformPtr(DAVA::Entity* entity) const
+DAVA::Matrix4* UserNodeSystem::GetWorldMatrixPtr(DAVA::Entity* entity) const
 {
     using namespace DAVA;
-    return entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
+    return entity->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
 }
 
 void UserNodeSystem::RemoveOldSpawns()
@@ -310,7 +312,7 @@ void UserNodeSystem::UpdateTransformedEntities()
                     auto it = spawnNodes.find(entity);
                     if (it != spawnNodes.end())
                     {
-                        TransformObject(&it->second, *GetWorldTransformPtr(entity));
+                        TransformObject(&it->second, *GetWorldMatrixPtr(entity));
                     }
                 }
             }
@@ -321,7 +323,7 @@ void UserNodeSystem::UpdateTransformedEntities()
 void UserNodeSystem::TransformObject(UserNodeSystem::NodeDescription* description, const DAVA::Matrix4& entityTransform)
 {
     description->transform = nodeMatrix * entityTransform;
-    description->ro->SetWorldTransformPtr(&description->transform);
+    description->ro->SetWorldMatrixPtr(&description->transform);
     GetScene()->GetRenderSystem()->MarkForUpdate(description->ro);
 }
 

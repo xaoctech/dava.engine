@@ -1,10 +1,13 @@
 #include "REPlatform/Scene/Systems/PathSystem.h"
 #include "REPlatform/Scene/Systems/SelectionSystem.h"
+#include "REPlatform/Scene/SceneEditor2.h"
 
 #include "REPlatform/DataNodes/Settings/GlobalSceneSettings.h"
 
 #include "REPlatform/Commands/RECommandNotificationObject.h"
 #include "REPlatform/Commands/InspMemberModifyCommand.h"
+#include "REPlatform/Commands/SetFieldValueCommand.h"
+#include "REPlatform/Commands/TransformCommand.h"
 #include "REPlatform/Commands/WayEditCommands.h"
 
 #include <TArc/Core/Deprecated.h>
@@ -242,6 +245,35 @@ void PathSystem::OnEdgeDeleted(PathComponent* path, PathComponent::Waypoint* way
     }
 }
 
+void PathSystem::BakeWaypoints()
+{
+    SceneEditor2* scene = static_cast<SceneEditor2*>(GetScene());
+    scene->BeginBatch("Bake waypoints");
+
+    for (Entity* path : pathes)
+    {
+        TransformComponent* pathTC = path->GetComponent<TransformComponent>();
+        const Transform& worldTransform = pathTC->GetWorldTransform();
+
+        PathComponent* component = path->GetComponent<PathComponent>();
+        for (PathComponent::Waypoint* point : component->GetPoints())
+        {
+            Vector3 newPosition = point->position * worldTransform;
+            Reflection::Field field;
+            field.ref = Reflection::Create(point).GetField("waypointPosition");
+            scene->Exec(std::make_unique<SetFieldValueCommand>(field, newPosition));
+        }
+
+        for (Entity* parentEntity = path; parentEntity != nullptr && parentEntity != scene; parentEntity = parentEntity->GetParent())
+        {
+            TransformComponent* parentTC = parentEntity->GetComponent<TransformComponent>();
+            scene->Exec(std::make_unique<TransformCommand>(Selectable(Any(parentEntity)), parentTC->GetLocalTransform(), Transform()));
+        }
+    }
+
+    scene->EndBatch();
+}
+
 void PathSystem::Draw()
 {
     const uint32 count = static_cast<uint32>(pathes.size());
@@ -276,7 +308,8 @@ void PathSystem::DrawInEditableMode()
             const uint32 edgesCount = waypoint->GetComponentCount<EdgeComponent>();
             if (edgesCount)
             {
-                Vector3 startPosition = GetTransformComponent(waypoint)->GetWorldTransform().GetTranslationVector();
+                TransformComponent* wayTC = waypoint->GetComponent<TransformComponent>();
+                Vector3 startPosition = wayTC->GetWorldTransform().GetTranslation();
                 startPosition.z += WAYPOINTS_DRAW_LIFTING;
                 for (uint32 e = 0; e < edgesCount; ++e)
                 {
@@ -284,7 +317,9 @@ void PathSystem::DrawInEditableMode()
                     Entity* nextEntity = edge->GetNextEntity();
                     if (nextEntity && nextEntity->GetParent())
                     {
-                        Vector3 finishPosition = GetTransformComponent(nextEntity)->GetWorldTransform().GetTranslationVector();
+                        TransformComponent* nextTC = nextEntity->GetComponent<TransformComponent>();
+
+                        Vector3 finishPosition = nextTC->GetWorldTransform().GetTranslation();
                         finishPosition.z += WAYPOINTS_DRAW_LIFTING;
                         DrawArrow(startPosition, finishPosition, pc->GetColor());
                     }
@@ -315,7 +350,9 @@ void PathSystem::DrawInViewOnlyMode()
         {
             Vector3 startPosition = waypoint->position;
             const AABBox3 wpBoundingBox(startPosition, boxScale);
-            const auto& transform = entity->GetWorldTransform();
+
+            TransformComponent* tc = entity->GetComponent<TransformComponent>();
+            const Matrix4& transform = tc->GetWorldMatrix();
             bool isStarting = waypoint->IsStarting();
 
             scene->GetRenderSystem()->GetDebugDrawer()->DrawAABoxTransformed(wpBoundingBox, transform, Color(0.3f, 0.3f, isStarting ? 1.0f : 0.0f, 0.3f), RenderHelper::DRAW_SOLID_DEPTH);
@@ -514,9 +551,8 @@ void PathSystem::ExpandPathEntity(Entity* pathEntity)
                 entityCache.emplace(waypoint, value.entity);
             }
 
-            Matrix4 m;
-            m.SetTranslationVector(waypoint->position);
-            value.entity->SetLocalTransform(m);
+            TransformComponent* tc = value.entity->GetComponent<TransformComponent>();
+            tc->SetLocalTranslation(waypoint->position);
             pathEntity->AddNode(value.entity.Get());
         }
 

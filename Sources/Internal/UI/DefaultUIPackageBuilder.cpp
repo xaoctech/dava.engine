@@ -14,6 +14,7 @@
 #include "FileSystem/LocalizationSystem.h"
 #include "UI/UIPackagesCache.h"
 #include "UI/Styles/UIStyleSheet.h"
+#include "UI/Properties/VarTable.h"
 #include "Styles/UIStyleSheetSystem.h"
 
 #include "Logger/Logger.h"
@@ -354,12 +355,23 @@ void DefaultUIPackageBuilder::EndComponentPropertiesSection()
     currentObject = ReflectedObject();
 }
 
-void DefaultUIPackageBuilder::ProcessProperty(const ReflectedStructure::Field& field, const Any& value)
+void DefaultUIPackageBuilder::ProcessProperty(const ReflectedStructure::Field& field, const Any& value_)
 {
     DVASSERT(currentObject.IsValid());
+    Any value = value_;
 
     if (currentObject.IsValid() && !value.IsEmpty())
     {
+        if (field.meta != nullptr && field.meta->GetMeta<M::MergeableField>() != nullptr)
+        {
+            DVASSERT(value.CanGet<VarTable>());
+            Any currentValue = field.valueWrapper->GetValue(currentObject);
+            DVASSERT(currentValue.CanGet<VarTable>());
+            VarTable mergedVarTable = currentValue.Get<VarTable>();
+            mergedVarTable.Insert(value.Get<VarTable>(), true);
+            value = mergedVarTable;
+        }
+
         FastName name(field.name);
         int32 propertyIndex = UIStyleSheetPropertyDataBase::Instance()->FindStyleSheetProperty(currentComponentType, name);
         if (propertyIndex >= 0)
@@ -387,12 +399,6 @@ void DefaultUIPackageBuilder::ProcessDataBinding(const DAVA::String& fieldName, 
     component->SetBindingExpression(expression);
     component->SetUpdateMode(static_cast<UIDataBindingComponent::UpdateMode>(bindingMode));
     control->AddComponent(component.Get());
-}
-
-Any DefaultUIPackageBuilder::GetPropertyValue(const ReflectedStructure::Field& field)
-{
-    DVASSERT(currentObject.IsValid());
-    return field.valueWrapper->GetValue(currentObject);
 }
 
 void DefaultUIPackageBuilder::SetEditorMode(bool editorMode_)

@@ -193,7 +193,7 @@ void GenerateArc(float32 startRad, float32 endRad, float32 radius, const Vector3
     float32 currentAngle = startRad;
     while (currentAngle < endRad + 0.01)
     {
-        rotationMx.BuildRotation(direction, currentAngle);
+        rotationMx.BuildRotation(direction, -currentAngle);
         uint16 vertexIndex = static_cast<uint16>(vertices.size());
         vertices.push_back(center + ((ortho * radius) * rotationMx) * localPose);
 
@@ -526,8 +526,8 @@ void MarkRenderObjectsForUpdateRecursively(Scene* scene, Entity* root, const Uno
     auto roIter = entityToRoMap.find(root);
     if (roIter != entityToRoMap.end() && roIter->second != nullptr)
     {
-        Matrix4* worldTransformPointer = root->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-        roIter->second->SetWorldTransformPtr(worldTransformPointer);
+        Matrix4* worldTransformPointer = root->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
+        roIter->second->SetWorldMatrixPtr(worldTransformPointer);
         scene->renderSystem->MarkForUpdate(roIter->second);
     }
 
@@ -651,8 +651,8 @@ void PhysicsDebugDrawSystem::Process(float32 timeElapsed)
             if (ro != nullptr)
             {
                 Entity* entity = (*iter)->GetEntity();
-                Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-                ro->SetWorldTransformPtr(worldTransformPointer);
+                Matrix4* worldTransformPointer = entity->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
+                ro->SetWorldMatrixPtr(worldTransformPointer);
                 GetScene()->GetRenderSystem()->RenderPermanent(ro);
             }
 

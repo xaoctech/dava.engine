@@ -11,6 +11,48 @@
 
 namespace DAVA
 {
+
+#if defined(__DAVAENGINE_WIN32__)
+// Windows GUI application (those linked with /SUBSYSTEM:WINDOWS flag) should be
+// explicitly attached to console to allow stdout output to be visible to user when
+// application started from command prompt.
+// https://stackoverflow.com/a/30102947
+// https://docs.microsoft.com/en-us/windows/console/attachconsole
+//
+// Also note when cmd.exe starts GUI application it does not wait application termination.
+// User can run another program, e.g. `dir`, and its output will mess with GUI console output.
+void Win32AttachStdoutToConsole(bool attach)
+{
+// CONSOLE and _CONSOLE definitions usually are defined when application is linked with /SUBSYSTEM:CONSOLE flag
+// and stdout already attached to existing or system created console.
+#if !defined(CONSOLE) && !defined(_CONSOLE)
+    static FILE* reopenedStdout = nullptr;
+    if (attach)
+    {
+        if (reopenedStdout == nullptr)
+        {
+            // Attach stdout to console only if it is not associated with some file or pipe
+            // to allow such constructions as `app.exe | findstr blabla` or `app.exe | sort`
+            if (::GetStdHandle(STD_OUTPUT_HANDLE) == nullptr)
+            {
+                if (::AttachConsole(ATTACH_PARENT_PROCESS) || ::GetLastError() == ERROR_ACCESS_DENIED)
+                {
+                    reopenedStdout = freopen("CONOUT$", "w", stdout);
+                }
+            }
+        }
+    }
+    else
+    {
+        if (reopenedStdout != nullptr)
+        {
+            fclose(reopenedStdout);
+        }
+    }
+#endif
+}
+#endif
+
 void Logger::PlatformLog(eLogLevel ll, const char8* text)
 {
     ::OutputDebugStringA(text);

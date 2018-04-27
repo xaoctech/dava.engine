@@ -166,11 +166,11 @@ protected:
 
             if (isFavotire)
             {
-                SharedIcon(":/QtIcons/star.png").paint(painter, iconRect);
+                SharedIcon(":/TArc/Resources/star.png").paint(painter, iconRect);
             }
             else if (propertiesModel->IsInFavoriteHierarchy(index) == false)
             {
-                SharedIcon(":/QtIcons/star_empty.png").paint(painter, iconRect);
+                SharedIcon(":/TArc/Resources/star_empty.png").paint(painter, iconRect);
             }
         }
     }
@@ -179,15 +179,13 @@ protected:
     {
         { // detect is clicked column draggable
             QPoint normalizedEventPos = event->pos();
-            int testedColumn = 0;
             if (isInFavoritesEdit)
             {
                 normalizedEventPos.rx() += -headerView->offset();
-                testedColumn = 1;
             }
 
             QModelIndex index = indexAt(normalizedEventPos);
-            isDraggableColumnPressed = (index.isValid() && (index.column() == testedColumn) && (isFirstColumnSpanned(index.row(), index.parent()) == false));
+            isDraggableColumnPressed = (index.isValid() && (index.column() == 0) && (isFirstColumnSpanned(index.row(), index.parent()) == false));
         }
 
         QTreeView::mousePressEvent(event);
@@ -361,9 +359,7 @@ void PropertiesView::SetupUI()
         // Toolbar setup
         QAction* favoriteModeAction = new QAction(toolBar);
         favoriteModeAction->setCheckable(true);
-        QIcon icon;
-        icon.addFile(QStringLiteral(":/QtIcons/star.png"), QSize(), QIcon::Normal, QIcon::Off);
-        favoriteModeAction->setIcon(icon);
+        favoriteModeAction->setIcon(SharedIcon(":/TArc/Resources/star.png"));
         toolBar->addAction(favoriteModeAction);
         connections.AddConnection(favoriteModeAction, &QAction::toggled, MakeFunction(this, &PropertiesView::OnFavoritesEditChanged));
 

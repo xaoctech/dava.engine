@@ -36,6 +36,7 @@ void VisualScriptFunctionNode::InitPins()
         SetName(FastName(nodeName));
 
         const ReflectedType* type = ReflectedTypeDB::GetByPermanentName(className.c_str());
+        DVASSERT(type);
         const ReflectedStructure::Method* method = nullptr;
         for (auto& m : type->GetStructure()->methods)
         {
@@ -64,7 +65,7 @@ void VisualScriptFunctionNode::InitPins()
                 {
                     paramName = FastName("self");
                 }
-                else if (paramsMeta && paramsMeta->argNames.size() > index) // Give name to argument from meta
+                else if (paramsMeta && static_cast<int32>(paramsMeta->argNames.size()) > index) // Give name to argument from meta
                 {
                     paramName = FastName(paramsMeta->argNames[index]);
                 }

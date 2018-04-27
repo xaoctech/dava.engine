@@ -10,6 +10,7 @@
 #include "Model/ControlProperties/StyleSheetProperty.h"
 #include "Model/ControlProperties/SubValueProperty.h"
 #include "Model/ControlProperties/ValueProperty.h"
+#include "Model/ControlProperties/VarTableValueProperty.h"
 #include "Model/PackageHierarchy/ControlNode.h"
 #include "Model/PackageHierarchy/StyleSheetNode.h"
 #include "Utils/QtDavaConvertion.h"
@@ -791,8 +792,8 @@ QString PropertiesModel::makeQVariant(const AbstractProperty* property) const
 
     if (val.CanGet<VarTable>())
     {
-        const VarTable& varTable = val.Get<DAVA::VarTable>();
-        return StringToQString("[" + varTable.GetNamesString() + "]");
+        const VarTableValueProperty* varTableProperty = DynamicTypeCheck<const VarTableValueProperty*>(property);
+        return StringToQString("[" + varTableProperty->GetNamesString() + "]");
     }
 
     if (val.CanGet<RefPtr<UIControl>>())

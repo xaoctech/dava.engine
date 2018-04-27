@@ -18,19 +18,15 @@ class SelectEntityPathWidget : public SelectPathWidgetBase
     Q_OBJECT
 
 public:
-    explicit SelectEntityPathWidget(QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "");
+    explicit SelectEntityPathWidget(QWidget* parent, DAVA::Scene* scene, DAVA::String openDialogDefaultPath = "", DAVA::String relativePath = "");
 
-    ~SelectEntityPathWidget();
+    DAVA::RefPtr<DAVA::Entity> GetOutputEntity();
 
-    DAVA::Entity* GetOutputEntity(DAVA::SceneEditor2*);
+private:
+    void dragEnterEvent(QDragEnterEvent* event) override;
 
-protected:
-    void dragEnterEvent(QDragEnterEvent* event);
+    DAVA::RefPtr<DAVA::Entity> ConvertQMimeDataFromFilePath();
+    DAVA::RefPtr<DAVA::Entity> ConvertFromMimeData();
 
-    DAVA::Entity* ConvertQMimeDataFromFilePath(DAVA::SceneEditor2* sceneEditor = NULL);
-    DAVA::Entity* ConvertFromMimeData(DAVA::SceneEditor2* sceneEditor);
-
-    void SetEntities(DAVA::Entity* entity, bool perfromRetain);
-
-    DAVA::List<DAVA::Entity*> entitiesToHold;
+    DAVA::Scene* scene = nullptr;
 };

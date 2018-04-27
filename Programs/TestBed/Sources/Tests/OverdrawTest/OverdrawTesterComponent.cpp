@@ -23,7 +23,7 @@ OverdrawTesterComponent::OverdrawTesterComponent(uint16 textureResolution_, uint
     , stepsCount(overdrawScreenCount * 100 / addOverdrawPercent)
 {
     renderObject = new OverdrawTesterRenderObject(addOverdrawPercent, stepsCount, textureResolution);
-    renderObject->SetWorldTransformPtr(&DAVA::Matrix4::IDENTITY);
+    renderObject->SetWorldMatrixPtr(&DAVA::Matrix4::IDENTITY);
 }
 
 OverdrawTesterComponent::~OverdrawTesterComponent()

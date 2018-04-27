@@ -38,7 +38,7 @@ nodes:
         node:
             functionName: "<"
             position: [-2450.303955, -532.223999]
-            className: "ConditionsFloat"
+            className: "float32"
             defaults:
                 b: ["float32", 0.000000]
         type: "VisualScriptFunctionNode"
@@ -146,9 +146,9 @@ nodes:
                 pin: "value"
         name: "VisualScriptFunctionNode2"
         node:
-            functionName: "Equal"
+            functionName: "=="
             position: [-1399.680054, -381.600006]
-            className: "ConditionsFloat"
+            className: "float32"
             defaults:
                 a: ["float32", 0.500000]
         type: "VisualScriptFunctionNode"
@@ -341,7 +341,7 @@ nodes:
         node:
             functionName: "Lerp"
             position: [1935.429077, 186.388977]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptFunctionNode5:
@@ -548,7 +548,7 @@ nodes:
         node:
             functionName: "Div"
             position: [-1486.598511, 193.593597]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptGetVarNode9:
@@ -588,7 +588,7 @@ nodes:
         node:
             functionName: "Mul"
             position: [1484.697632, 327.628815]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptSetVarNode4:
@@ -779,7 +779,7 @@ nodes:
         node:
             functionName: ">="
             position: [-1073.088745, 117.224365]
-            className: "ConditionsFloat"
+            className: "float32"
             defaults:
                 b: ["float32", 1.000000]
         type: "VisualScriptFunctionNode"
@@ -974,6 +974,6 @@ nodes:
         node:
             functionName: "Sum"
             position: [-1715.165894, 22.407644]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"

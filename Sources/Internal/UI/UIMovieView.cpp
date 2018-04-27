@@ -147,7 +147,18 @@ void UIMovieView::Update(float32 timeElapsed)
         UIMovieEventComponent* events = GetComponent<UIMovieEventComponent>();
         if (events)
         {
-            FastName event = lastPlayingState == eMoviePlayingState::stateStopped ? events->GetStopEvent() : events->GetStartEvent();
+            FastName event;
+            switch (currentState)
+            {
+            case eMoviePlayingState::stateStopped:
+                event = events->GetStopEvent();
+                break;
+            case eMoviePlayingState::statePlaying:
+                event = events->GetStartEvent();
+                break;
+            default:
+                break;
+            }
             if (event.IsValid())
             {
                 if (GetScene())

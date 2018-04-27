@@ -4,6 +4,7 @@
 #include <Functional/Function.h>
 
 #include <TArc/Core/ContextAccessor.h>
+#include <TArc/Core/OperationInvoker.h>
 #include <TArc/WindowSubSystem/UI.h>
 
 #include <QWidget>
@@ -31,7 +32,7 @@ class ModernSectionWidget : public QWidget
 {
     Q_OBJECT
 public:
-    ModernSectionWidget(DAVA::ContextAccessor* accessor, DAVA::UI* ui, ControlNode* controlNode);
+    ModernSectionWidget(DAVA::ContextAccessor* accessor, DAVA::OperationInvoker* invoker, DAVA::UI* ui, ControlNode* controlNode);
     ~ModernSectionWidget() override;
 
     ModernPropertyEditor* FindEditorForProperty(AbstractProperty* property);
@@ -59,6 +60,7 @@ protected:
     void AddSubsection(const QString& title, int row);
 
     DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::OperationInvoker* invoker = nullptr;
     DAVA::UI* ui = nullptr;
     ControlNode* controlNode = nullptr;
 

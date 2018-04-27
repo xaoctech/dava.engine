@@ -1,0 +1,14 @@
+Header:
+    version: "21"
+Prototypes:
+-   class: "UIControl"
+    name: "UIControl"
+    size: [32.000000, 32.000000]
+    components:
+        UIUserPropertiesComponent:
+            properties:
+                variable1: ["String", "123"]
+                variable2: ["String", "abc"]
+Controls:
+-   prototype: "UIControl"
+    name: "UIControl_1"

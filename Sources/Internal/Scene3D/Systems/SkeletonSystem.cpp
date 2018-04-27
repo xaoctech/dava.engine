@@ -105,7 +105,7 @@ void SkeletonSystem::DrawSkeletons(RenderHelper* drawer)
         SkeletonComponent* component = GetSkeletonComponent(entity);
         if (component->drawSkeleton)
         {
-            const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldTransform();
+            const Matrix4& worldTransform = GetTransformComponent(entity)->GetWorldMatrix();
 
             Vector<Vector3> positions(component->GetJointsCount());
             for (uint32 i = 0; i < component->GetJointsCount(); ++i)

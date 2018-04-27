@@ -4,6 +4,8 @@
 
 #include <bullet/btBulletCollisionCommon.h>
 #include <Base/Any.h>
+#include <Math/Transform.h>
+#include <Math/TransformUtils.h>
 
 namespace DAVA
 {
@@ -75,7 +77,7 @@ inline CollisionBaseObject::ClassifyPlaneResult CollisionBaseObject::ClassifyBou
 
 inline Plane CollisionBaseObject::TransformPlaneToLocalSpace(const Plane& plane) const
 {
-    Matrix4 transform = object.GetWorldTransform();
+    Matrix4 transform = TransformUtils::ToMatrix(object.GetWorldTransform());
     transform.Transpose();
     return Plane(Vector4(plane.n.x, plane.n.y, plane.n.z, plane.d) * transform);
 }

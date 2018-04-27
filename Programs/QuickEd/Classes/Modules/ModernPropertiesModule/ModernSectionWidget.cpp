@@ -38,8 +38,9 @@
 #include <QHBoxLayout>
 #include <QMoveEvent>
 
-ModernSectionWidget::ModernSectionWidget(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_, ControlNode* controlNode_)
+ModernSectionWidget::ModernSectionWidget(DAVA::ContextAccessor* accessor_, DAVA::OperationInvoker* invoker_, DAVA::UI* ui_, ControlNode* controlNode_)
     : accessor(accessor_)
+    , invoker(invoker_)
     , ui(ui_)
     , controlNode(controlNode_)
 {
@@ -70,7 +71,7 @@ ModernSectionWidget::ModernSectionWidget(DAVA::ContextAccessor* accessor_, DAVA:
     sectionLayout->addWidget(container);
     setLayout(sectionLayout);
 
-    context = std::make_shared<ModernPropertyContext>(controlNode->GetRootProperty(), accessor, this);
+    context = std::make_shared<ModernPropertyContext>(controlNode->GetRootProperty(), accessor, invoker, this);
 }
 
 ModernSectionWidget::~ModernSectionWidget()
@@ -201,7 +202,15 @@ ModernPropertyEditor* ModernSectionWidget::CreateDefaultPropertyEditor(ValueProp
 void ModernSectionWidget::AddPropertyEditor(ValueProperty* property, int row, int col, int colSpan)
 {
     createdProperties.insert(property->GetName());
-    ModernPropertyEditor* w = CreateDefaultPropertyEditor(property);
+    ModernPropertyEditor* w = nullptr;
+    if (property->IsBound())
+    {
+        w = new ModernPropertyBindingEditor(context, property);
+    }
+    else
+    {
+        w = CreateDefaultPropertyEditor(property);
+    }
     if (w)
     {
         w->AddToGrid(containerLayout, row, col, colSpan);

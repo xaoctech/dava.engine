@@ -1,5 +1,6 @@
 #include "Scene3D/Components/SlotComponent.h"
 
+#include "Math/TransformUtils.h"
 #include "Scene3D/Entity.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
@@ -41,7 +42,7 @@ void SlotComponent::Serialize(KeyedArchive* archive, SerializationContext* seria
     if (archive != nullptr)
     {
         archive->SetFastName("sc.slotName", slotName);
-        archive->SetMatrix4("sc.attachmentTransform", attachmentTransform);
+        archive->SetMatrix4("sc.attachmentTransform", TransformUtils::ToMatrix(attachmentTransform));
         if (attachementToJoint.IsValid())
         {
             archive->SetFastName("sc.attachmentToBone", attachementToJoint);
@@ -93,12 +94,12 @@ void SlotComponent::SetSlotName(FastName name)
     slotName = name;
 }
 
-const Matrix4& SlotComponent::GetAttachmentTransform() const
+const Transform& SlotComponent::GetAttachmentTransform() const
 {
     return attachmentTransform;
 }
 
-void SlotComponent::SetAttachmentTransform(const Matrix4& transform)
+void SlotComponent::SetAttachmentTransform(const Transform& transform)
 {
     attachmentTransform = transform;
 }

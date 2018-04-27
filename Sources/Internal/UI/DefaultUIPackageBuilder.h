@@ -41,7 +41,6 @@ public:
 
     void ProcessProperty(const ReflectedStructure::Field& field, const Any& value) override;
     void ProcessDataBinding(const DAVA::String& fieldName, const DAVA::String& expression, DAVA::int32 bindingMode) override;
-    virtual Any GetPropertyValue(const ReflectedStructure::Field& field) override;
 
     void SetEditorMode(bool editorMode);
 

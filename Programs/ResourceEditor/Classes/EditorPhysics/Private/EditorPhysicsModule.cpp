@@ -30,10 +30,12 @@
 
 #include <Scene3D/Scene.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Render/Highlevel/RenderObject.h>
 #include <Reflection/ReflectionRegistrator.h>
 #include <Reflection/ReflectedTypeDB.h>
 #include <Base/Type.h>
+#include <Math/Transform.h>
 
 #include <QAction>
 #include <QList>
@@ -241,9 +243,8 @@ DAVA::Entity* CreateVehicleWheelEntity(DAVA::String name, DAVA::float32 radius, 
     RenderComponent* wheel1Rendercomponent = new RenderComponent(CreateVehicleWheelRenderObject(radius, width));
     wheel->AddComponent(wheel1Rendercomponent);
 
-    Matrix4 localTransform;
-    localTransform.SetTranslationVector(localTranslation);
-    wheel->SetLocalTransform(localTransform);
+    TransformComponent* tc = wheel->GetComponent<TransformComponent>();
+    tc->SetLocalTranslation(localTranslation);
 
     return wheel;
 }

@@ -79,10 +79,10 @@ void VisualScript::RemoveNode(VisualScriptNode* node)
 
 void VisualScript::Save(const FilePath& filepath)
 {
-    ScopedPtr<YamlNode> rootNode(YamlNode::CreateMapNode());
+    RefPtr<YamlNode> rootNode(YamlNode::CreateMapNode());
 
     // Store nodes and connections
-    YamlNode* yAllNodes = YamlNode::CreateMapNode();
+    RefPtr<YamlNode> yAllNodes = YamlNode::CreateMapNode();
     rootNode->Add("nodes", yAllNodes);
     if (!nodes.empty())
     {
@@ -115,7 +115,7 @@ void VisualScript::Save(const FilePath& filepath)
             const String demangledName = DAVA::Debug::DemangleFrameSymbol(type->GetName());
             VSLogger_Debug("uname:%s type: %s pname: %s", uniqueNames[node].c_str(), demangledName.c_str(), reflectedType->GetPermanentName().c_str());
 
-            YamlNode* yNode = YamlNode::CreateMapNode();
+            RefPtr<YamlNode> yNode = YamlNode::CreateMapNode();
             yAllNodes->Add(uniqueNames[node].c_str(), yNode);
 
             yNode->Add("name", uniqueNames[node].c_str());
@@ -125,8 +125,8 @@ void VisualScript::Save(const FilePath& filepath)
 
             yNode->Add("type", reflectedType->GetPermanentName().c_str());
 
-            YamlNode* yNodeInternal = YamlNode::CreateMapNode();
-            node->Save(yNodeInternal);
+            RefPtr<YamlNode> yNodeInternal = YamlNode::CreateMapNode();
+            node->Save(yNodeInternal.Get());
             yNode->Add("node", yNodeInternal);
 
             auto yConnectionsNode = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
@@ -136,6 +136,9 @@ void VisualScript::Save(const FilePath& filepath)
                 VisualScriptPin* pinIn = connection.first;
                 VisualScriptPin* pinOut = connection.second;
                 VisualScriptNode* otherNode = pinOut->GetSerializationOwner();
+
+                DVASSERT(pinIn->GetName().IsValid());
+                DVASSERT(pinOut->GetName().IsValid());
 
                 VSLogger_Debug("%s.%s -> %s.%s", uniqueNames[node].c_str(),
                                pinIn->GetName().c_str(),
@@ -158,7 +161,7 @@ void VisualScript::Save(const FilePath& filepath)
     }
 
     // Store variables
-    YamlNode* variablesNode = YamlNode::CreateMapNode();
+    RefPtr<YamlNode> variablesNode = YamlNode::CreateMapNode();
     rootNode->Add("variables", variablesNode);
     for (auto it : dataRegistry)
     {
@@ -168,15 +171,15 @@ void VisualScript::Save(const FilePath& filepath)
         const ReflectedType* reflType = ReflectedTypeDB::GetByType(type);
         DVASSERT(reflType->GetPermanentName() != "");
 
-        YamlNode* varNode = YamlNode::CreateArrayNode();
-        YamlNode* varDataNode = YamlNode::CreateNodeFromAny(value);
+        RefPtr<YamlNode> varNode = YamlNode::CreateArrayNode();
+        RefPtr<YamlNode> varDataNode = YamlNode::CreateNodeFromAny(value);
 
         varNode->Add(reflType->GetPermanentName());
         varNode->Add(varDataNode);
         variablesNode->Add(name.c_str(), varNode);
     }
 
-    YamlEmitter::SaveToYamlFile(filepath, rootNode);
+    YamlEmitter::SaveToYamlFile(filepath, rootNode.Get());
 }
 
 void VisualScript::PrepareDataForReload(const FilePath& filepath)
@@ -217,7 +220,7 @@ void VisualScript::LoadContext::MoveToScript(VisualScript* script)
 void VisualScript::LoadContext::Load(VisualScript* script, const FilePath& filepath)
 {
     VSLogger_Debug("VisualScript::Load(%s)", filepath.GetStringValue().c_str());
-    ScopedPtr<YamlParser> parser(YamlParser::Create(filepath));
+    RefPtr<YamlParser> parser(YamlParser::Create(filepath));
 
     // Create nodes
     YamlNode* rootNode = parser->GetRootNode();
@@ -231,6 +234,7 @@ void VisualScript::LoadContext::Load(VisualScript* script, const FilePath& filep
         const YamlNode* nodeType = node->Get("type");
 
         const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(nodeType->AsString());
+        DVASSERT(reflectedType);
         VisualScriptNode* createdNode = script->CreateNodeWithoutAdd(reflectedType);
         this->nodes.push_back(createdNode);
 
@@ -278,6 +282,7 @@ void VisualScript::LoadContext::Load(VisualScript* script, const FilePath& filep
         const String typeName = var->Get(0)->AsString();
         DVASSERT(typeName != "");
         const Type* type = ReflectedTypeDB::GetByPermanentName(typeName)->GetType();
+        DVASSERT(type);
         Any value = var->Get(1)->AsAny(type);
         dataRegistry.emplace(varName, value);
     }
@@ -419,6 +424,11 @@ void VisualScript::Execute(const FastName& eventNodeName, const Reflection& even
     executor.Execute(entryPin);
 
     VSLogger_Debug("VisualScript::Execute finished");
+}
+
+bool VisualScript::HasEventNode(const FastName& eventNodeName) const
+{
+    return eventNodes.find(eventNodeName) != eventNodes.end();
 }
 
 const Vector<VisualScriptNode*>& VisualScript::GetNodes() const

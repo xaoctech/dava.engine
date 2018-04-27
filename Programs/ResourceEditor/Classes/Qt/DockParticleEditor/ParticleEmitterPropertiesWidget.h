@@ -36,6 +36,10 @@ public:
     {
         return emitterRadius;
     };
+    TimeLineWidget* GetEmitterInnerRadiusTimeline()
+    {
+        return emitterInnerRadius;
+    };
     TimeLineWidget* GetEmitterAngleTimeline()
     {
         return emitterAngle;
@@ -77,6 +81,7 @@ private:
     TimeLineWidget* emitterEmissionVector = nullptr;
     TimeLineWidget* emissionVelocityVector = nullptr;
     TimeLineWidget* emitterRadius = nullptr;
+    TimeLineWidget* emitterInnerRadius = nullptr;
     TimeLineWidget* emitterSize = nullptr;
     TimeLineWidget* emitterAngle = nullptr;
     EventFilterDoubleSpinBox* emitterLife = nullptr;

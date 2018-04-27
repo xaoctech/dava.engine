@@ -322,4 +322,9 @@ Reflection DataWrapper::GetData() const
     DVASSERT(HasData());
     return impl->dataAccessor(impl->activeContext);
 }
+
+void DataWrapper::ClearCache()
+{
+    impl->cachedValues.clear();
+}
 } // namespace DAVA

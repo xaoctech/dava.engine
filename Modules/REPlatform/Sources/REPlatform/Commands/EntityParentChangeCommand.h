@@ -3,7 +3,7 @@
 #include "REPlatform/Commands/RECommand.h"
 
 #include <Reflection/Reflection.h>
-#include <Math/Matrix4.h>
+#include <Math/Transform.h>
 
 namespace DAVA
 {
@@ -25,8 +25,8 @@ public:
     Entity* newBefore;
     bool saveEntityPosition;
 
-    Matrix4 oldTransform;
-    Matrix4 newTransform;
+    Transform oldTransform;
+    Transform newTransform;
 
 private:
     DAVA_VIRTUAL_REFLECTION(EntityParentChangeCommand, RECommand);

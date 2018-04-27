@@ -1300,6 +1300,8 @@ void PackageModule::OnRunUIViewerFast()
                 args << "-isFlow";
             }
 
+            Logger::Info("Launch UIViewer with arguments: %s", args.join(" ").toStdString().c_str());
+
             bool state = ProcessHelper::OpenApplication(QString::fromStdString(appPath.GetAbsolutePathname()), args);
             if (state == false)
             {

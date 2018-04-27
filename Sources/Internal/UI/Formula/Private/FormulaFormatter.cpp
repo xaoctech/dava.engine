@@ -63,6 +63,10 @@ String FormulaFormatter::AnyToString(const Any& val)
     {
         return DAVA::Format("%f", val.Get<float32>());
     }
+    else if (val.CanGet<float64>())
+    {
+        return DAVA::Format("%lf", val.Get<float64>());
+    }
     else if (val.CanGet<String>())
     {
         return val.Get<String>();
@@ -119,6 +123,10 @@ String FormulaFormatter::AnyTypeToString(const Any& val)
     else if (val.CanGet<float32>())
     {
         return "float32";
+    }
+    else if (val.CanGet<float64>())
+    {
+        return "float64";
     }
     else if (val.CanGet<String>())
     {

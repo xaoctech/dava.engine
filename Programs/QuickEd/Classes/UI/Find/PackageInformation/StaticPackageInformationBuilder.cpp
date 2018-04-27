@@ -274,11 +274,6 @@ void StaticPackageInformationBuilder::ProcessDataBinding(const DAVA::String& fie
 {
 }
 
-DAVA::Any StaticPackageInformationBuilder::GetPropertyValue(const DAVA::ReflectedStructure::Field& field)
-{
-    return DAVA::Any();
-}
-
 std::shared_ptr<StaticPackageInformation> StaticPackageInformationBuilder::GetPackage() const
 {
     return packageInformation;

@@ -32,6 +32,7 @@ public:
     bool IsConst() const;
 
     const Params& GetInvokeParams() const;
+    bool IsMatching(const Params& params) const;
 
     template <typename... Args>
     Any Invoke(const Args&... args) const;
@@ -60,8 +61,6 @@ public:
 
         const Type* retType;
         Vector<const Type*> argsType;
-
-        bool IsMatching(const Params& params) const;
     };
 
 private:

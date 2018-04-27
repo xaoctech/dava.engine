@@ -48,7 +48,7 @@ nodes:
         node:
             functionName: "Sin"
             position: [1456.462158, -12.153596]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptFunctionNode2:
@@ -75,7 +75,7 @@ nodes:
         node:
             functionName: "Sum"
             position: [1846.091553, -13.109764]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptForNode1:
@@ -229,6 +229,6 @@ nodes:
         node:
             functionName: "Sum"
             position: [442.795227, -35.103451]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"

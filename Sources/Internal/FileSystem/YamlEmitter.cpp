@@ -318,13 +318,13 @@ bool YamlEmitter::EmitUnorderedMap(yaml_emitter_t* emitter, const YamlNode* mapN
 
 bool YamlEmitter::EmitOrderedMap(yaml_emitter_t* emitter, const YamlNode* mapNode)
 {
-    const UnorderedMap<String, YamlNode*>& map = mapNode->AsMap();
+    const auto& map = mapNode->AsMap();
     auto iter = map.begin(), end = map.end();
     for (; iter != end; ++iter)
     {
         if (!EmitScalar(emitter, iter->first, GetYamlScalarStyle(mapNode->GetMapKeyRepresentation())))
             return false;
-        if (!EmitYamlNode(emitter, iter->second))
+        if (!EmitYamlNode(emitter, iter->second.Get()))
             return false;
     }
     return true;

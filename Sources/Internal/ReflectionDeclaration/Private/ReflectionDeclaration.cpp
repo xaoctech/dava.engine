@@ -57,9 +57,11 @@
 #include "Render/Material/NMaterial.h"
 #include "Render/Image/Image.h"
 #include "Math/Vector.h"
+#include "Math/Quaternion.h"
 #include "Math/Rect.h"
 #include "Math/AABBox3.h"
 #include "Math/Color.h"
+#include "Math/Transform.h"
 #include "UI/Script/UIScriptComponent.h"
 #include "UI/Script/UIScriptComponentController.h"
 #include "UI/Script/Private/UILuaScriptComponentController.h"
@@ -292,6 +294,18 @@ void RegisterMatrix4()
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Matrix4);
 }
 
+void RegisterQuaternion()
+{
+    ReflectionRegistrator<Quaternion>::Begin()
+    .Field("X", &Quaternion::x)[M::SubProperty()]
+    .Field("Y", &Quaternion::y)[M::SubProperty()]
+    .Field("Z", &Quaternion::z)[M::SubProperty()]
+    .Field("W", &Quaternion::w)[M::SubProperty()]
+    .End();
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Quaternion);
+}
+
 void RegisterRect()
 {
     ReflectionRegistrator<Rect>::Begin()
@@ -367,30 +381,14 @@ bool CompareFuncGEqual(const T& a, const T& b)
     return a >= b;
 }
 
-/* Need template wrapper structures because ReflectionRegistrator can't register basic types. */
 template <typename T>
-struct IntegerMath
+void RegisterIntegerMath()
 {
-};
-template <typename T>
-struct FloatMath
-{
-};
-template <typename T>
-struct BoolMath
-{
-};
-
-template <typename T>
-void RegisterIntegerMath(const char* permanentName)
-{
-    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(IntegerMath<T>, permanentName);
-
-    ReflectionRegistrator<IntegerMath<T>>::Begin()
+    ReflectionRegistrator<T>::Begin()
     .Method("Inc", [](T a) { return ++a; })[M::ArgNames("a")]
     .Method("Dec", [](T a) { return --a; })[M::ArgNames("a")]
     .Method("Sign", [](T a) { return (a == 0 ? 0 : (a > 0 ? 1 : -1)); })[M::ArgNames("a")]
-    .Method("Abs", [](T a) { return DAVA::Abs(static_cast<std::make_signed<T>::type>(a)); })[M::ArgNames("a")]
+    .Method("Abs", [](T a) { return DAVA::Abs(static_cast<typename std::make_signed<T>::type>(a)); })[M::ArgNames("a")]
     .Method("Min", [](T a, T b) { return DAVA::Min(a, b); })[M::ArgNames("a", "b")]
     .Method("Max", [](T a, T b) { return DAVA::Max(a, b); })[M::ArgNames("a", "b")]
     .Method("Sum", [](T a, T b) { return a + b; })[M::ArgNames("a", "b")]
@@ -416,11 +414,9 @@ void RegisterIntegerMath(const char* permanentName)
 }
 
 template <typename T>
-void RegisterFloatMath(const char* permanentName)
+void RegisterFloatMath()
 {
-    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(FloatMath<T>, permanentName);
-
-    ReflectionRegistrator<FloatMath<T>>::Begin()
+    ReflectionRegistrator<T>::Begin()
     .Method("Sign", [](T a) { return static_cast<T>(a == static_cast<T>(0) ? 0 : (a > static_cast<T>(0) ? 1 : -1)); })[M::ArgNames("a")]
     .Method("Abs", [](T a) { return DAVA::Abs(a); })[M::ArgNames("a")]
     .Method("Sin", [](T a) { return std::sin(a); })[M::ArgNames("a")]
@@ -443,8 +439,11 @@ void RegisterFloatMath(const char* permanentName)
     .Method("Clamp", [](T val, T a, T b) { return DAVA::Clamp(val, a, b); })[M::ArgNames("val", "a", "b")]
     .Method("Lerp", [](T a, T b, T t) { return a + (b - a) * DAVA::Clamp(t, static_cast<T>(0), static_cast<T>(1)); })[M::ArgNames("a", "b", "t")]
 
-    .Method("==", &CompareFuncEqual<T>)[M::ArgNames("a", "b")]
-    .Method("!=", &CompareFuncNEqual<T>)[M::ArgNames("a", "b")]
+    .Method("==", [](T a, T b) { return static_cast<bool>(FLOAT_EQUAL(a, b)); })[M::ArgNames("a", "b")]
+    .Method("!=", [](T a, T b) { return !static_cast<bool>(FLOAT_EQUAL(a, b)); })[M::ArgNames("a", "b")]
+    .Method("EqualEpsilon", [](T a, T b, T c) { return static_cast<bool>(FLOAT_EQUAL_EPS(a, b, c)); })[M::ArgNames("a", "b", "c")]
+    .Method("NotEqualEpsilon", [](T a, T b, T c) { return !static_cast<bool>(FLOAT_EQUAL_EPS(a, b, c)); })[M::ArgNames("a", "b", "c")]
+
     .Method("<", &CompareFuncLess<T>)[M::ArgNames("a", "b")]
     .Method("<=", &CompareFuncLEqual<T>)[M::ArgNames("a", "b")]
     .Method(">", &CompareFuncGreater<T>)[M::ArgNames("a", "b")]
@@ -454,11 +453,9 @@ void RegisterFloatMath(const char* permanentName)
 }
 
 template <typename T>
-void RegisterBoolMath(const char* permanentName)
+void RegisterBoolMath()
 {
-    DAVA_REFLECTION_REGISTER_CUSTOM_PERMANENT_NAME(BoolMath<T>, permanentName);
-
-    ReflectionRegistrator<BoolMath<T>>::Begin()
+    ReflectionRegistrator<T>::Begin()
     .Method("==", [](T a, T b) { return a == b; })[M::ArgNames("a", "b")]
     .Method("!=", [](T a, T b) { return a != b; })[M::ArgNames("a", "b")]
     .Method("And", [](T a, T b) { return a && b; })[M::ArgNames("a", "b")]
@@ -485,6 +482,17 @@ void RegisterRandom()
     .End();
 
     DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Random);
+}
+
+void RegisterTransform()
+{
+    ReflectionRegistrator<Transform>::Begin()
+    .Field("translation", &Transform::GetTranslation, nullptr)
+    .Field("scale", &Transform::GetScale, nullptr)
+    .Field("rotation", &Transform::GetRotation, nullptr)
+    .End();
+
+    DAVA_REFLECTION_REGISTER_PERMANENT_NAME(Transform);
 }
 
 void RegisterPermanentNames()
@@ -661,21 +669,24 @@ void RegisterReflectionForBaseTypes()
     RegisterVector3();
     RegisterVector4();
     RegisterMatrix4();
+    RegisterQuaternion();
     RegisterRect();
     RegisterAABBox3();
     RegisterColor();
+    RegisterTransform();
 
-    RegisterIntegerMath<int8>("Int8Math");
-    RegisterIntegerMath<int16>("Int16Math");
-    RegisterIntegerMath<int32>("Int32Math");
-    RegisterIntegerMath<int64>("Int64Math");
-    RegisterIntegerMath<uint8>("UInt8Math");
-    RegisterIntegerMath<uint16>("UInt16Math");
-    RegisterIntegerMath<uint32>("UInt32Math");
-    RegisterIntegerMath<uint64>("UInt64Math");
-    RegisterFloatMath<float32>("Float32Math");
-    RegisterFloatMath<float64>("Float64Math");
-    RegisterBoolMath<bool>("BoolMath");
+    RegisterIntegerMath<int8>();
+    RegisterIntegerMath<int16>();
+    RegisterIntegerMath<int32>();
+    RegisterIntegerMath<int64>();
+    RegisterIntegerMath<uint8>();
+    RegisterIntegerMath<uint16>();
+    RegisterIntegerMath<uint32>();
+    RegisterIntegerMath<uint64>();
+    RegisterFloatMath<float32>();
+    RegisterFloatMath<float64>();
+    RegisterBoolMath<bool>();
+
     RegisterRandom();
 
     RegisterPermanentNames();

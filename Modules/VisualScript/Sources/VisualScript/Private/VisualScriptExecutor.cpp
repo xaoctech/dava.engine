@@ -463,7 +463,6 @@ void VisualScriptExecutor::CompileNode(VisualScriptNode* node)
 void VisualScriptExecutor::ExecuteSubTree(VisualScriptNode* node, VisualScriptPin* entryPin)
 {
     const Vector<VisualScriptNode*>& executionOrder = node->compiledExecOrder;
-    DVASSERT(executionOrder.size() != 0);
     size_t size = executionOrder.size();
     DVASSERT(size != 0);
 
@@ -540,6 +539,12 @@ void VisualScriptExecutor::PushInstruction(VisualScriptPin* activationPin)
 
 void VisualScriptExecutor::Execute(VisualScriptPin* entryPin)
 {
+    DVASSERT(entryPin);
+    DVASSERT(entryPin->GetExecutionOwner());
+    if (entryPin->GetExecutionOwner()->compiledExecOrder.size() == 0)
+    {
+        Compile(entryPin);
+    }
     DVASSERT(instructionStack.empty() == true);
     PushInstruction(entryPin);
     while (instructionStack.size() > 0)

@@ -42,7 +42,7 @@ void VarTablePropertyDelegate::setEditorData(QWidget* rawEditor, const QModelInd
     if (any.CanGet<DAVA::VarTable>())
     {
         VarTable varTable = any.Get<DAVA::VarTable>();
-        stringValue = StringToQString("[" + varTable.GetNamesString() + "]");
+        stringValue = StringToQString("[...]");
     }
     else
     {

@@ -44,13 +44,14 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 
     emissionVelocityVector.Set(nullptr);
 
-    emissionAngle = NULL;
-    emissionAngleVariation = NULL;
-    emissionRange.Set(NULL);
+    emissionAngle = nullptr;
+    emissionAngleVariation = nullptr;
+    emissionRange = nullptr;
     emissionRange = RefPtr<PropertyLineValue<float32>>(new PropertyLineValue<float32>(0.0f));
-    size = RefPtr<PropertyLineValue<Vector3>>(0);
-    colorOverLife = 0;
-    radius = 0;
+    size = nullptr;
+    colorOverLife = nullptr;
+    radius = nullptr;
+    innerRadius = nullptr;
     name = FastName("Particle Emitter");
 
     if (needCleanupLayers)
@@ -108,6 +109,11 @@ ParticleEmitter* ParticleEmitter::Clone()
     {
         clonedEmitter->radius = this->radius->Clone();
         clonedEmitter->radius->Release();
+    }
+    if (this->innerRadius)
+    {
+        clonedEmitter->innerRadius = this->innerRadius->Clone();
+        clonedEmitter->innerRadius->Release();
     }
     if (this->colorOverLife)
     {
@@ -279,7 +285,7 @@ bool ParticleEmitter::LoadFromYaml(const FilePath& filename, bool preserveInheri
 {
     Cleanup(true);
 
-    ScopedPtr<YamlParser> parser(YamlParser::Create(filename));
+    RefPtr<YamlParser> parser(YamlParser::Create(filename));
     if (!parser)
     {
         Logger::Error("ParticleEmitter::LoadFromYaml failed (%s)", filename.GetStringValue().c_str());
@@ -336,6 +342,8 @@ bool ParticleEmitter::LoadFromYaml(const FilePath& filename, bool preserveInheri
             colorOverLife = PropertyLineYamlReader::CreatePropertyLine<Color>(emitterNode->Get("colorOverLife"));
         if (emitterNode->Get("radius"))
             radius = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("radius"));
+        if (emitterNode->Get("innerRadius"))
+            innerRadius = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("innerRadius"));
 
         const YamlNode* shortEffectNode = emitterNode->Get("shortEffect");
         if (shortEffectNode)
@@ -366,7 +374,7 @@ bool ParticleEmitter::LoadFromYaml(const FilePath& filename, bool preserveInheri
 
         size = PropertyLineYamlReader::CreatePropertyLine<Vector3>(emitterNode->Get("size"));
 
-        if (size == 0)
+        if (size == nullptr)
         {
             Vector3 _size(0, 0, 0);
             const YamlNode* widthNode = emitterNode->Get("width");
@@ -406,7 +414,7 @@ void ParticleEmitter::SaveToYaml(const FilePath& filename)
 {
     configPath = filename;
 
-    YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
+    RefPtr<YamlNode> rootYamlNode = YamlNode::CreateMapNode(false);
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
 
@@ -426,6 +434,7 @@ void ParticleEmitter::SaveToYaml(const FilePath& filename)
     PropertyLineYamlWriter::WritePropertyValueToYamlNode<bool>(emitterYamlNode, "emissionVectorInverted", true);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "radius", this->radius);
+    PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "innerRadius", this->innerRadius);
 
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<Color>(emitterYamlNode, "colorOverLife", this->colorOverLife);
 
@@ -435,10 +444,10 @@ void ParticleEmitter::SaveToYaml(const FilePath& filename)
     int32 layersCount = static_cast<int32>(layers.size());
     for (int32 i = 0; i < layersCount; i++)
     {
-        this->layers[i]->SaveToYamlNode(configPath, rootYamlNode, i);
+        this->layers[i]->SaveToYamlNode(configPath, rootYamlNode.Get(), i);
     }
 
-    YamlEmitter::SaveToYamlFile(filename, rootYamlNode);
+    YamlEmitter::SaveToYamlFile(filename, rootYamlNode.Get());
 }
 
 void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables)
@@ -447,6 +456,7 @@ void ParticleEmitter::GetModifableLines(List<ModifiablePropertyLineBase*>& modif
     PropertyLineHelper::AddIfModifiable(emissionVelocityVector.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(emissionRange.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(radius.Get(), modifiables);
+    PropertyLineHelper::AddIfModifiable(innerRadius.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(size.Get(), modifiables);
     PropertyLineHelper::AddIfModifiable(colorOverLife.Get(), modifiables);
     int32 layersCount = static_cast<int32>(layers.size());

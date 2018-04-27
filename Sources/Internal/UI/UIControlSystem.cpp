@@ -57,7 +57,6 @@ UIControlSystem::UIControlSystem()
     vcs->virtualSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
     vcs->physicalSizeChanged.Connect(this, [](const Size2i&) { TextBlock::ScreenResolutionChanged(); });
 
-    AddSystem(std::make_unique<UIDataBindingSystem>());
     AddSystem(std::make_unique<UIInputSystem>());
     AddSystem(std::make_unique<UIEventsSystem>());
     AddSystem(std::make_unique<UIFlowStateSystem>());
@@ -65,6 +64,7 @@ UIControlSystem::UIControlSystem()
     AddSystem(std::make_unique<UIFlowControllerSystem>());
     AddSystem(std::make_unique<UIScriptSystem>());
     AddSystem(std::make_unique<UIUpdateSystem>());
+    AddSystem(std::make_unique<UIDataBindingSystem>());
     AddSystem(std::make_unique<UIRichContentSystem>());
     AddSystem(std::make_unique<UIEntityMarkerSystem>());
     AddSystem(std::make_unique<UIStyleSheetSystem>());

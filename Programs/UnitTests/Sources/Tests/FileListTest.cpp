@@ -456,7 +456,7 @@ DAVA_TESTCLASS (FileListTest)
         Vector<uint8> binaryFileContents(binaryFileSize);
         for (uint32 i = 0; i < binaryFileSize; i++)
         {
-            binaryFileContents[binaryFileSize] = static_cast<uint8>(i % 256U);
+            binaryFileContents[i] = static_cast<uint8>(i % 256U);
         }
         binaryFile->Write(binaryFileContents.data(), binaryFileSize);
         binaryFile = nullptr;

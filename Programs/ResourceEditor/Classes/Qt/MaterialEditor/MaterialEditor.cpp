@@ -146,8 +146,8 @@ struct InvalidTexturesCollector
 
 bool LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const DAVA::FilePath& path)
 {
-    DAVA::ScopedPtr<DAVA::YamlParser> parser(DAVA::YamlParser::Create(path));
-    if (parser.get() == nullptr)
+    DAVA::RefPtr<DAVA::YamlParser> parser(DAVA::YamlParser::Create(path));
+    if (parser.Get() == nullptr)
     {
         return false;
     }
@@ -195,8 +195,8 @@ bool LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const 
             DAVA::RefPtr<DAVA::KeyedArchive> groupArchive(new DAVA::KeyedArchive());
 
             const DAVA::YamlNode* groupNode = groupNodes[i];
-            const DAVA::Vector<DAVA::YamlNode*>& hiddenProps = groupNode->AsVector();
-            for (const DAVA::YamlNode* prop : hiddenProps)
+            const auto& hiddenProps = groupNode->AsVector();
+            for (const auto& prop : hiddenProps)
             {
                 if (prop->GetType() != DAVA::YamlNode::TYPE_STRING)
                 {
@@ -211,8 +211,8 @@ bool LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const 
             templateNameArchive->SetArchive(fields[i].first, groupArchive.Get());
         }
 
-        const DAVA::Vector<DAVA::YamlNode*>& templates = groupNodes[0]->AsVector();
-        for (const DAVA::YamlNode* t : templates)
+        const auto& templates = groupNodes[0]->AsVector();
+        for (const auto& t : templates)
         {
             if (t->GetType() != DAVA::YamlNode::TYPE_STRING)
             {
@@ -232,10 +232,10 @@ bool LoadHiddenFieldsConfig(DAVA::RefPtr<DAVA::KeyedArchive> rootArchive, const 
         return false;
     }
 
-    const DAVA::Vector<DAVA::YamlNode*>& nodes = rootNode->AsVector();
-    for (const DAVA::YamlNode* node : nodes)
+    const auto& nodes = rootNode->AsVector();
+    for (const auto& node : nodes)
     {
-        parseFn(node);
+        parseFn(node.Get());
     }
 
     return true;

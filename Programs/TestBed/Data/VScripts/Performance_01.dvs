@@ -40,7 +40,7 @@ nodes:
         node:
             functionName: "Sum"
             position: [348.156128, 21.713190]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptSetMemberNode1:
@@ -101,7 +101,7 @@ nodes:
         node:
             functionName: "Mul"
             position: [1207.260132, 323.537170]
-            className: "FloatMath"
+            className: "float32"
             defaults:
                 b: ["float32", 30.000000]
         type: "VisualScriptFunctionNode"
@@ -136,7 +136,7 @@ nodes:
         node:
             functionName: "Sin"
             position: [810.432007, 324.864014]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptSetVarNode1:
@@ -250,7 +250,7 @@ nodes:
         node:
             functionName: "Sum"
             position: [1582.581787, 322.753815]
-            className: "FloatMath"
+            className: "float32"
             defaults:
                 a: ["float32", 10.000000]
                 b: ["float32", 10.000000]

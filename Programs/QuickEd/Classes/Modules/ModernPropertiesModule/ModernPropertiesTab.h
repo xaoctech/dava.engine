@@ -1,7 +1,5 @@
 #pragma once
 
-#include <TArc/Core/ContextAccessor.h>
-#include <TArc/WindowSubSystem/UI.h>
 #include <TArc/DataProcessing/DataWrapper.h>
 #include <TArc/DataProcessing/DataListener.h>
 
@@ -19,12 +17,19 @@ class ModernComponentSectionWidget;
 class ModernControlSectionWidget;
 class ModernPropertyEditorFactory;
 
+namespace DAVA
+{
+class ContextAccessor;
+class OperationInvoker;
+class UI;
+}
+
 class ModernPropertiesTab : public QWidget, private DAVA::DataListener
 {
     Q_OBJECT
 
 public:
-    ModernPropertiesTab(DAVA::ContextAccessor* accessor, DAVA::UI* ui, const DAVA::Vector<const DAVA::Type*>& componentTypes);
+    ModernPropertiesTab(DAVA::ContextAccessor* accessor, DAVA::OperationInvoker* invoker, DAVA::UI* ui, const DAVA::Vector<const DAVA::Type*>& componentTypes);
     ~ModernPropertiesTab() override;
 
 private:
@@ -36,6 +41,7 @@ private:
     void ComponentPropertiesWasRemoved(RootProperty* root, ComponentPropertiesSection* section, int index);
 
     DAVA::ContextAccessor* accessor = nullptr;
+    DAVA::OperationInvoker* invoker = nullptr;
     DAVA::UI* ui = nullptr;
     DAVA::DataWrapper documentDataWrapper;
 

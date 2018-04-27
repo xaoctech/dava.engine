@@ -1,13 +1,14 @@
-#include "Scene3D/Systems/TransformSystem.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/AnimationComponent.h"
-#include "Scene3D/Entity.h"
 #include "Debug/DVAssert.h"
-#include "Scene3D/Scene.h"
-#include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Debug/ProfilerCPU.h"
 #include "Debug/ProfilerMarkerNames.h"
+#include "Scene3D/Components/AnimationComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Math/Transform.h"
+#include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Systems/TransformSystem.h"
 
 namespace DAVA
 {
@@ -97,20 +98,21 @@ void TransformSystem::TransformAllChildEntities(Entity* entity)
         Entity* entity = stack[--stackPosition];
 
         TransformComponent* transform = entity->GetComponent<TransformComponent>();
-        if (transform->parentMatrix)
+
+        if (transform->parentTransform)
         {
             AnimationComponent* animComp = GetAnimationComponent(entity);
             localMultiplied++;
             if (animComp)
             {
-                transform->worldMatrix = animComp->animationTransform * transform->localMatrix * *(transform->parentMatrix);
+                transform->worldTransform = Transform(animComp->animationTransform) * transform->localTransform * *(transform->parentTransform);
             }
             else
             {
-                transform->worldMatrix = transform->localMatrix * *(transform->parentMatrix);
+                transform->worldTransform = transform->localTransform * *(transform->parentTransform);
             }
-            TransformSingleComponent* tsc = GetScene()->transformSingleComponent;
-            tsc->worldTransformChanged.Push(entity);
+
+            transform->MarkWorldChanged();
         }
 
         entity->RemoveFlag(Entity::TRANSFORM_NEED_UPDATE | Entity::TRANSFORM_DIRTY);

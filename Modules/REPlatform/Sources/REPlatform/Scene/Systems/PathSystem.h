@@ -44,6 +44,8 @@ public:
     void OnWaypointDeleted(PathComponent* path, PathComponent::Waypoint* waypoint);
     void OnEdgeDeleted(PathComponent* path, PathComponent::Waypoint* waypoint, PathComponent::Edge* edge);
 
+    void BakeWaypoints();
+
 protected:
     void Draw() override;
 

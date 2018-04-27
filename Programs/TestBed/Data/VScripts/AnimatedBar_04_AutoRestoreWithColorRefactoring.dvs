@@ -57,9 +57,9 @@ nodes:
                 pin: "condition"
         name: "VisualScriptFunctionNode3"
         node:
-            functionName: "Equal"
+            functionName: "=="
             position: [-1312.588867, -288.287994]
-            className: "ConditionsFloat"
+            className: "float32"
             defaults:
                 a: ["float32", 0.500000]
         type: "VisualScriptFunctionNode"
@@ -217,7 +217,7 @@ nodes:
         node:
             functionName: "Lerp"
             position: [455.546326, 150.900452]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptSetVarNode1:
@@ -444,7 +444,7 @@ nodes:
         node:
             functionName: "Div"
             position: [-1419.552124, -51.782398]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptSetMemberNode4:
@@ -530,7 +530,7 @@ nodes:
         node:
             functionName: ">="
             position: [-1027.123901, -132.298828]
-            className: "ConditionsFloat"
+            className: "float32"
             defaults:
                 b: ["float32", 1.000000]
         type: "VisualScriptFunctionNode"
@@ -725,7 +725,7 @@ nodes:
         node:
             functionName: "Sum"
             position: [-1937.870483, -392.312347]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptSetVarNode4:

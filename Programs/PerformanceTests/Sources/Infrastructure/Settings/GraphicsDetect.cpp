@@ -46,7 +46,7 @@ void GraphicsDetect::Init()
                 for (auto arrIt = array.begin(); arrIt != array.end(); ++arrIt)
                     group.devices.insert((*arrIt)->AsString());
             }
-            group.level = new GraphicsLevel(group.base, i->second);
+            group.level = new GraphicsLevel(group.base, i->second.Get());
             groupsMap[i->first] = group;
         }
     }

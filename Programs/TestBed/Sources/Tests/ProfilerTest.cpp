@@ -213,7 +213,7 @@ void ProfilerTest::TestFunction2()
     DAVA_PROFILER_CPU_SCOPE_CUSTOM(PROFILER_TEST_FUNC2_MARKER, customCPUProfiler);
 
     volatile Matrix4 mat1 = Matrix4::IDENTITY;
-    volatile Matrix4 mat2 = Matrix4::MakeRotation(Vector3(1.f, 1.f, 1.f), 1.f);
+    volatile Matrix4 mat2 = Matrix4::MakeRotation(Vector3(1.f, 1.f, 1.f), -1.f);
 
     for (int32 i = 0; i < 10000; ++i)
         const_cast<Matrix4&>(mat1) = const_cast<Matrix4&>(mat1) * const_cast<Matrix4&>(mat2);

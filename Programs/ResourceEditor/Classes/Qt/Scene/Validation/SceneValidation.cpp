@@ -13,6 +13,7 @@
 #include <Scene3D/Components/CustomPropertiesComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
 #include <Scene3D/Components/SoundComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Scene3D/Systems/QualitySettingsSystem.h>
@@ -417,8 +418,10 @@ void SceneValidation::ValidateMatrices(DAVA::Scene* scene, ValidationProgress& v
 
         if (sourceScene->GetChildrenCount() == 1)
         {
-            const Matrix4& localMatrix = sourceScene->GetChild(0)->GetLocalTransform();
-            const Matrix4& worldMatrix = sourceScene->GetChild(0)->GetWorldTransform();
+            TransformComponent* tc = sourceScene->GetChild(0)->GetComponent<TransformComponent>();
+
+            const Matrix4& localMatrix = tc->GetLocalMatrix();
+            const Matrix4& worldMatrix = tc->GetWorldMatrix();
 
             if (localMatrix != Matrix4::IDENTITY)
             {

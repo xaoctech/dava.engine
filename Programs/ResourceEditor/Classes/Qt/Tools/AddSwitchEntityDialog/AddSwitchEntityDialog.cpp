@@ -2,10 +2,10 @@
 #include "Classes/Qt/Tools/AddSwitchEntityDialog/SwitchEntityCreator.h"
 #include "Classes/Qt/Tools/SelectPathWidget/SelectEntityPathWidget.h"
 
-#include <REPlatform/DataNodes/ProjectManagerData.h>
-#include <REPlatform/DataNodes/SceneData.h>
 #include <REPlatform/Commands/EntityAddCommand.h>
 #include <REPlatform/Commands/EntityRemoveCommand.h>
+#include <REPlatform/DataNodes/ProjectManagerData.h>
+#include <REPlatform/DataNodes/SceneData.h>
 
 #include "ui_BaseAddEntityDialog.h"
 
@@ -14,8 +14,10 @@
 #include <TArc/Core/Deprecated.h>
 #include <TArc/DataProcessing/DataContext.h>
 
-#include <QLabel>
-#include "REPlatform/Global/StringConstants.h"
+#include <Scene3D/Components/MotionComponent.h>
+#include <Scene3D/Components/SkeletonComponent.h>
+
+#include <QPushButton>
 
 namespace AddSwitchEntityDialogDetails
 {
@@ -42,16 +44,20 @@ AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
     DAVA::SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
     if (scene != nullptr)
     {
-        DAVA::FilePath scenePath = scene->GetScenePath();
+        const DAVA::FilePath& scenePath = scene->GetScenePath();
         if (scenePath.Exists())
         {
             defaultPath = scenePath.GetDirectory();
         }
     }
 
-    SelectEntityPathWidget* firstWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(), "");
-    SelectEntityPathWidget* secondWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(), "");
-    SelectEntityPathWidget* thirdWidget = new SelectEntityPathWidget(parent, defaultPath.GetAbsolutePathname(), "");
+    SelectEntityPathWidget* firstWidget = new SelectEntityPathWidget(parent, scene, defaultPath.GetAbsolutePathname(), "");
+    SelectEntityPathWidget* secondWidget = new SelectEntityPathWidget(parent, scene, defaultPath.GetAbsolutePathname(), "");
+    SelectEntityPathWidget* thirdWidget = new SelectEntityPathWidget(parent, scene, defaultPath.GetAbsolutePathname(), "");
+
+    connect(firstWidget, &SelectEntityPathWidget::PathSelected, this, &AddSwitchEntityDialog::OnPathChanged);
+    connect(secondWidget, &SelectEntityPathWidget::PathSelected, this, &AddSwitchEntityDialog::OnPathChanged);
+    connect(thirdWidget, &SelectEntityPathWidget::PathSelected, this, &AddSwitchEntityDialog::OnPathChanged);
 
     AddControlToUserContainer(firstWidget, "First Entity:");
     AddControlToUserContainer(secondWidget, "Second Entity:");
@@ -64,102 +70,133 @@ AddSwitchEntityDialog::AddSwitchEntityDialog(QWidget* parent)
     propEditor->setVisible(false);
     propEditor->setMinimumHeight(0);
     propEditor->setMaximumSize(propEditor->maximumWidth(), 0);
+
+    OnPathChanged();
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
 {
     RemoveAllControlsFromUserContainer();
-    Q_FOREACH (SelectEntityPathWidget* widget, pathWidgets)
-    {
-        delete widget;
-    }
+}
+
+void AddSwitchEntityDialog::OnPathChanged()
+{
+    QPushButton* okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
+    DVASSERT(okButton != nullptr);
+    bool hasAtLeastOnePathSet = std::any_of(pathWidgets.begin(), pathWidgets.end(), [](SelectEntityPathWidget* w) { return w->getText().empty() == false; });
+    okButton->setEnabled(hasAtLeastOnePathSet);
 }
 
 void AddSwitchEntityDialog::CleanupPathWidgets()
 {
-    Q_FOREACH (SelectEntityPathWidget* widget, pathWidgets)
+    for (SelectEntityPathWidget* widget : pathWidgets)
     {
         widget->EraseWidget();
     }
 }
 
-void AddSwitchEntityDialog::GetPathEntities(DAVA::Vector<DAVA::Entity*>& entities, DAVA::SceneEditor2* editor)
+DAVA::Vector<DAVA::RefPtr<DAVA::Entity>> AddSwitchEntityDialog::GetPathEntities()
 {
-    Q_FOREACH (SelectEntityPathWidget* widget, pathWidgets)
+    DAVA::Vector<DAVA::RefPtr<DAVA::Entity>> entities;
+    for (SelectEntityPathWidget* widget : pathWidgets)
     {
-        DAVA::Entity* entity = widget->GetOutputEntity(editor);
+        DAVA::RefPtr<DAVA::Entity> entity = widget->GetOutputEntity();
         if (entity)
         {
             entities.push_back(entity);
         }
     }
+    return entities;
 }
 
 void AddSwitchEntityDialog::accept()
 {
-    DAVA::SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
+    using namespace DAVA;
+
+    SceneEditor2* scene = AddSwitchEntityDialogDetails::GetActiveScene();
     if (scene == nullptr)
     {
         CleanupPathWidgets();
         return;
     }
 
-    DAVA::Vector<DAVA::Entity*> vector;
-    GetPathEntities(vector, scene);
-
-    if (vector.empty())
-    {
-        DAVA::Logger::Error(DAVA::ResourceEditor::ADD_SWITCH_NODE_DIALOG_NO_CHILDREN.c_str());
-        return;
-    }
+    Vector<RefPtr<Entity>> pathEntities = GetPathEntities();
+    Vector<Entity*> sourceEntities(pathEntities.size());
+    std::transform(pathEntities.begin(), pathEntities.end(), sourceEntities.begin(), [](const RefPtr<Entity>& r) { return r.Get(); });
 
     CleanupPathWidgets();
 
     SwitchEntityCreator creator;
 
-    bool canCreateSwitch = true;
+    bool simpleSwitchMode = true; // simple switch mode is when each source entity contains exact one render object
+    size_t simpleSkinnedMeshObjectsCount = 0;
+    size_t simpleSkeletonComponentsCount = 0;
+    size_t simpleMotionComponentsCount = 0;
 
-    DAVA::uint32 switchCount = (DAVA::uint32)vector.size();
-    for (DAVA::uint32 i = 0; i < switchCount; ++i)
+    for (Entity* sourceEntity : sourceEntities)
     {
-        if (creator.HasSwitchComponentsRecursive(vector[i]))
+        if (creator.HasSwitchComponentsRecursive(sourceEntity))
         {
-            canCreateSwitch = false;
-            DAVA::Logger::Error("Can't create switch in switch: %s%s", vector[i]->GetName().c_str(),
-                                PointerSerializer::FromPointer(vector[i]).c_str());
-            DAVA::Logger::Error(DAVA::ResourceEditor::ADD_SWITCH_NODE_DIALOG_DENY_SRC_SWITCH.c_str());
+            Logger::Error("Can't create switch over switch: %s", sourceEntity->GetName().c_str());
             return;
         }
-        if (!creator.HasRenderObjectsRecursive(vector[i]))
+
+        size_t meshesCount = creator.GetRenderObjectsCountRecursive(sourceEntity, RenderObject::TYPE_MESH);
+        size_t skinnedMeshesCount = creator.GetRenderObjectsCountRecursive(sourceEntity, RenderObject::TYPE_SKINNED_MESH);
+        size_t overallMeshesCount = meshesCount + skinnedMeshesCount;
+
+        if (overallMeshesCount == 0)
         {
-            canCreateSwitch = false;
-            DAVA::Logger::Error("Entity '%s' hasn't mesh render objects%s", vector[i]->GetName().c_str(),
-                                PointerSerializer::FromPointer(vector[i]).c_str());
-            DAVA::Logger::Error(DAVA::ResourceEditor::ADD_SWITCH_NODE_DIALOG_NO_RENDER_OBJECTS.c_str());
+            Logger::Error("Entity '%s' hasn't mesh / skinned mesh render objects", sourceEntity->GetName().c_str());
+            return;
+        }
+
+        if (overallMeshesCount > 1)
+        {
+            simpleSwitchMode = false;
+        }
+
+        if (simpleSwitchMode)
+        {
+            if (skinnedMeshesCount > 0)
+            {
+                DVASSERT(skinnedMeshesCount == 1);
+                ++simpleSkinnedMeshObjectsCount;
+            }
+            simpleSkeletonComponentsCount += sourceEntity->GetComponentCount<SkeletonComponent>();
+            simpleMotionComponentsCount += sourceEntity->GetComponentCount<MotionComponent>();
+        }
+    }
+
+    if (simpleSwitchMode)
+    {
+        if (simpleSkinnedMeshObjectsCount > 1)
+        {
+            Logger::Error("Can't create switch with multiple skinned mesh render objects");
+            return;
+        }
+        else if (simpleSkeletonComponentsCount > 1)
+        {
+            Logger::Error("Can't create switch with skinned mesh and multiple skeleton components");
+            return;
+        }
+        else if (simpleMotionComponentsCount > 1)
+        {
+            Logger::Error("Can't create switch with skinned mesh and multiple motion components");
             return;
         }
     }
 
-    if (canCreateSwitch)
+    scene->BeginBatch("Unite entities into switch entity", static_cast<uint32>(sourceEntities.size()) + 1u);
+
+    for (Entity* sourceEntity : sourceEntities)
     {
-        scene->BeginBatch("Unite entities into switch entity.", switchCount + 1);
-        for (DAVA::uint32 i = 0; i < switchCount; ++i)
-        {
-            vector[i]->Retain();
-            scene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityRemoveCommand(vector[i])));
-        }
-
-        DAVA::Entity* switchEntity = creator.CreateSwitchEntity(vector);
-        scene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(switchEntity, scene)));
-
-        for (DAVA::uint32 i = 0; i < switchCount; ++i)
-        {
-            vector[i]->Release();
-        }
-
-        scene->EndBatch();
-        DAVA::SafeRelease(switchEntity);
+        scene->Exec(std::unique_ptr<Command>(new EntityRemoveCommand(sourceEntity)));
     }
+    RefPtr<Entity> switchEntity = creator.CreateSwitchEntity(sourceEntities);
+    scene->Exec(std::unique_ptr<DAVA::Command>(new DAVA::EntityAddCommand(switchEntity.Get(), scene)));
+
+    scene->EndBatch();
 
     BaseAddEntityDialog::accept();
 }
@@ -168,8 +205,4 @@ void AddSwitchEntityDialog::reject()
 {
     CleanupPathWidgets();
     BaseAddEntityDialog::reject();
-}
-
-void AddSwitchEntityDialog::FillPropertyEditorWithContent()
-{
 }

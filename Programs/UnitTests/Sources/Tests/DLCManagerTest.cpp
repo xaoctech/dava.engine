@@ -110,17 +110,15 @@ DAVA_TESTCLASS (DLCManagerTest)
 
     void Update(DAVA::float32 timeElapsed, const DAVA::String& testName) override
     {
+        using namespace DAVA;
         if (testName == "TestDownloadOfVirtualPack")
         {
-            DAVA::DLCManager& dlcManager = *DAVA::GetEngineContext()->dlcManager;
             if (downloader.IsInitialized())
             {
                 if (downloader.IsDownloaded())
                 {
                     downloadOfVirtualPack = true;
                     TEST_VERIFY(true);
-                    DAVA::StopEmbeddedWebServer();
-                    dlcManager.Deinitialize();
                 }
             }
             if (!downloadOfVirtualPack)
@@ -133,10 +131,28 @@ DAVA_TESTCLASS (DLCManagerTest)
                     DAVA::Logger::Info("can't download pack with DLCManager");
                     TEST_VERIFY(false);
                     downloadOfVirtualPack = true; // just go to next test
-                    DAVA::StopEmbeddedWebServer();
-                    dlcManager.Deinitialize();
                 }
             }
+        }
+    }
+
+    void SetUp(const DAVA::String& testName) override
+    {
+    }
+
+    void TearDown(const DAVA::String& testName) override
+    {
+        using namespace DAVA;
+        if (testName == "TestDownloadOfVirtualPack")
+        {
+            DAVA::StopEmbeddedWebServer();
+            DLCManager& dlcManager = *DAVA::GetEngineContext()->dlcManager;
+            dlcManager.Deinitialize();
+
+            FilePath downloadedPacksDir("~doc:/UnitTests/DLCManagerTest/packs/");
+            FileSystem* fs = GetEngineContext()->fileSystem;
+            // every time clear directory to download once again
+            fs->DeleteDirectory(downloadedPacksDir);
         }
     }
 

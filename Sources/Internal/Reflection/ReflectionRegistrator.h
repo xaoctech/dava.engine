@@ -44,8 +44,8 @@ public:
     template <typename T>
     ReflectionRegistrator& Field(const char* name, T* field);
 
-    template <typename T>
-    ReflectionRegistrator& Field(const char* name, T C::*field);
+    template <typename T, typename U, typename R = typename std::enable_if<std::is_same<C, U>::value, ReflectionRegistrator&>::type>
+    ReflectionRegistrator& Field(const char* name, T U::*field);
 
     template <typename GetF, typename SetF>
     ReflectionRegistrator& Field(const char* name, GetF getter, SetF setter = nullptr);

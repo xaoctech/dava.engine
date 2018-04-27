@@ -315,6 +315,7 @@ StringType CapitalizeWords(const StringType& string,
         else if (needUpper)
         {
             ch = std::toupper(ch, locale);
+            needUpper = false;
         }
     }
     return result;

@@ -33,6 +33,7 @@ public:
 
 protected:
     bool event(QEvent* e) override;
+    void stepBy(int steps) override;
     void UpdateControl(const ControlDescriptor& changedFields) override;
     void SetupSpinBoxBase();
     void UpdateRange();

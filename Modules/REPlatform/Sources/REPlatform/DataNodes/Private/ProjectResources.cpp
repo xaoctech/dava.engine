@@ -18,7 +18,7 @@ namespace ProjectResourcesDetails
 Vector<String> LoadMaterialQualities(FilePath fxPath)
 {
     Vector<String> qualities;
-    ScopedPtr<YamlParser> parser(YamlParser::Create(fxPath));
+    RefPtr<YamlParser> parser(YamlParser::Create(fxPath));
     if (parser)
     {
         YamlNode* rootNode = parser->GetRootNode();
@@ -51,7 +51,7 @@ void LoadMaterialTemplatesInfo(Vector<MaterialTemplateInfo>& templates)
 
     if (FileSystem::Instance()->Exists(PATH_TO_ASSIGNABLE_YAML))
     {
-        ScopedPtr<YamlParser> parser(YamlParser::Create(PATH_TO_ASSIGNABLE_YAML));
+        RefPtr<YamlParser> parser(YamlParser::Create(PATH_TO_ASSIGNABLE_YAML));
         YamlNode* rootNode = parser->GetRootNode();
 
         if (nullptr != rootNode)

@@ -3,12 +3,15 @@
 #include "Physics/CharacterControllerComponent.h"
 #include "Physics/PhysicsUtils.h"
 
+#include <DeviceManager/DeviceManager.h>
 #include <Engine/Engine.h>
 #include <Input/Keyboard.h>
-#include <DeviceManager/DeviceManager.h>
-#include <Scene3D/Entity.h>
-#include <Scene3D/Components/CameraComponent.h>
+#include <Math/Transform.h>
 #include <Render/Highlevel/Camera.h>
+#include <Scene3D/Components/CameraComponent.h>
+#include <Scene3D/Components/ComponentHelpers.h>
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Entity.h>
 
 namespace DAVA
 {
@@ -93,7 +96,8 @@ void WASDPhysicsControllerSystem::Process(float32 timeElapsed)
             right = -cameraComponent->GetCamera()->GetLeft();
 
             const Vector3 direction = cameraComponent->GetCamera()->GetDirection();
-            cameraComponent->GetCamera()->SetPosition(entity->GetLocalTransform().GetTranslationVector());
+            TransformComponent* transform = entity->GetComponent<TransformComponent>();
+            cameraComponent->GetCamera()->SetPosition(transform->GetLocalTransform().GetTranslation());
             cameraComponent->GetCamera()->SetDirection(direction);
         }
 

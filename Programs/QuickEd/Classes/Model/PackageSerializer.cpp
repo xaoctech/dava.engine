@@ -556,11 +556,12 @@ void PackageSerializer::PutValueProperty(const DAVA::String& name, ValueProperty
     }
     else if (value.CanGet<VarTable>())
     {
+        VarTableValueProperty* varTableProperty = DynamicTypeCheck<VarTableValueProperty*>(property);
         BeginMap(name);
         const VarTable& varTable = value.Get<VarTable>();
         const bool hasDefaults = (property->GetPrototypeProperty() != nullptr || varTable.HasDefaultValues());
         varTable.ForEachProperty([&](const FastName& name, const Any& value) {
-            if ((!hasDefaults) || varTable.IsPropertyOverridden(name))
+            if ((!hasDefaults) || varTableProperty->IsSubPropertyOverridden(name))
             {
                 const Type* type = value.GetType();
                 const ReflectedType* reflType = ReflectedTypeDB::GetByType(type);

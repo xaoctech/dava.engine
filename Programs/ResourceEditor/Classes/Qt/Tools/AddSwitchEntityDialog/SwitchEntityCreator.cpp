@@ -3,47 +3,53 @@
 #include <REPlatform/Global/StringConstants.h>
 
 #include <FileSystem/KeyedArchive.h>
+#include <Logger/Logger.h>
 #include <Math/Matrix4.h>
 #include <Render/3D/PolygonGroup.h>
 #include <Render/Highlevel/Mesh.h>
 #include <Render/Highlevel/RenderBatch.h>
 #include <Render/Highlevel/RenderObject.h>
+#include <Render/Highlevel/SkinnedMesh.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/CustomPropertiesComponent.h>
-#include <Scene3D/Components/SwitchComponent.h>
+#include <Scene3D/Components/MotionComponent.h>
 #include <Scene3D/Components/RenderComponent.h>
+#include <Scene3D/Components/SkeletonComponent.h>
 #include <Scene3D/Components/SwitchComponent.h>
 #include <Scene3D/Components/TransformComponent.h>
 #include <Scene3D/Entity.h>
 #include <Scene3D/Lod/LodComponent.h>
 
-DAVA::Entity* SwitchEntityCreator::CreateSwitchEntity(const DAVA::Vector<DAVA::Entity*>& fromEntities)
+DAVA::RefPtr<DAVA::Entity> SwitchEntityCreator::CreateSwitchEntity(const DAVA::Vector<DAVA::Entity*>& sourceEntities)
 {
-    DAVA::Entity* switchEntity = new DAVA::Entity();
+    using namespace DAVA;
+
+    RefPtr<Entity> switchEntity(new Entity);
+
     switchEntity->AddComponent(new DAVA::SwitchComponent());
     switchEntity->SetName(DAVA::FastName(DAVA::ResourceEditor::SWITCH_NODE_NAME));
     switchEntity->SetSolid(false);
 
-    DAVA::uint32 count = static_cast<DAVA::uint32>(fromEntities.size());
-    DVASSERT(count <= MAX_SWITCH_COUNT);
+    size_t switchCount = sourceEntities.size();
+    DVASSERT(switchCount <= MAX_SWITCH_COUNT);
 
-    clonedEntities.reserve(count);
+    clonedEntities.reserve(switchCount);
     bool singleMode = true;
-    for (DAVA::uint32 i = 0; i < count; ++i)
+    for (DAVA::uint32 switchIndex = 0; switchIndex < switchCount; ++switchIndex)
     {
-        clonedEntities.push_back(fromEntities[i]->Clone());
+        clonedEntities.push_back(sourceEntities[switchIndex]->Clone());
 
-        FindRenderObjectsRecursive(clonedEntities[i], renderPairs[i]);
-        if (renderPairs[i].size() > 1)
+        FindRenderObjectsRecursive(clonedEntities[switchIndex], renderPairs[switchIndex]);
+        if (renderPairs[switchIndex].size() > 1)
         {
             singleMode = false;
         }
 
-        DAVA::KeyedArchive* childProps = GetCustomPropertiesArchieve(clonedEntities[i]);
-        if (childProps && childProps->IsKeyExists("CollisionType"))
+        DAVA::KeyedArchive* childProps = GetCustomPropertiesArchieve(clonedEntities[switchIndex]);
+        if (childProps != nullptr && childProps->IsKeyExists("CollisionType"))
         {
-            DAVA::KeyedArchive* customProperties = GetOrCreateCustomProperties(switchEntity)->GetArchive();
-            if (0 == i)
+            DAVA::KeyedArchive* customProperties = GetOrCreateCustomProperties(switchEntity.Get())->GetArchive();
+            if (0 == switchIndex)
             {
                 customProperties->SetInt32("CollisionType", childProps->GetInt32("CollisionType", 0));
             }
@@ -56,37 +62,39 @@ DAVA::Entity* SwitchEntityCreator::CreateSwitchEntity(const DAVA::Vector<DAVA::E
 
     if (singleMode)
     {
-        CreateSingleObjectData(switchEntity);
+        CreateSingleObjectData(switchEntity.Get());
     }
     else
     {
         CreateMultipleObjectsData();
     }
 
-    count = (DAVA::uint32)clonedEntities.size();
-    for (DAVA::uint32 i = 0; i < count; ++i)
+    for (DAVA::uint32 switchIndex = 0; switchIndex < switchCount; ++switchIndex)
     {
-        SafeRelease(clonedEntities[i]);
+        SafeRelease(clonedEntities[switchIndex]);
     }
     clonedEntities.clear();
 
-    count = (DAVA::uint32)realChildren.size();
-    for (DAVA::uint32 i = 0; i < count; ++i)
+    for (DAVA::Entity* realChild : realChildren)
     {
-        switchEntity->AddNode(realChildren[i]);
-        realChildren[i]->Release();
+        switchEntity->AddNode(realChild);
+        realChild->Release();
     }
     realChildren.clear();
 
     return switchEntity;
 }
 
-void SwitchEntityCreator::FindRenderObjectsRecursive(DAVA::Entity* fromEntity, DAVA::Vector<RENDER_PAIR>& entityAndObjectPairs)
+void SwitchEntityCreator::FindRenderObjectsRecursive(DAVA::Entity* fromEntity, DAVA::Vector<RenderPair>& entityAndObjectPairs)
 {
     DAVA::RenderObject* ro = GetRenderObject(fromEntity);
-    if (ro && ro->GetType() == DAVA::RenderObject::TYPE_MESH)
+    if (ro != nullptr && (ro->GetType() == DAVA::RenderObject::TYPE_MESH || ro->GetType() == DAVA::RenderObject::TYPE_SKINNED_MESH))
     {
-        entityAndObjectPairs.push_back(std::make_pair(fromEntity, ro));
+        if (ro->GetType() == DAVA::RenderObject::TYPE_SKINNED_MESH)
+        {
+            hasSkinnedMesh = true;
+        }
+        entityAndObjectPairs.emplace_back(fromEntity, ro);
     }
 
     DAVA::int32 size = fromEntity->GetChildrenCount();
@@ -97,7 +105,7 @@ void SwitchEntityCreator::FindRenderObjectsRecursive(DAVA::Entity* fromEntity, D
     }
 }
 
-bool SwitchEntityCreator::HasRenderObjectsRecursive(DAVA::Entity* fromEntity)
+bool SwitchEntityCreator::HasMeshRenderObjectsRecursive(DAVA::Entity* fromEntity)
 {
     DAVA::RenderObject* ro = GetRenderObject(fromEntity);
     if (ro && ro->GetType() == DAVA::RenderObject::TYPE_MESH)
@@ -109,11 +117,30 @@ bool SwitchEntityCreator::HasRenderObjectsRecursive(DAVA::Entity* fromEntity)
     for (DAVA::int32 i = 0; i < size; ++i)
     {
         DAVA::Entity* child = fromEntity->GetChild(i);
-        if (HasRenderObjectsRecursive(child))
+        if (HasMeshRenderObjectsRecursive(child))
             return true;
     }
 
     return false;
+}
+
+size_t SwitchEntityCreator::GetRenderObjectsCountRecursive(DAVA::Entity* entity, DAVA::RenderObject::eType objectType)
+{
+    size_t count = 0u;
+
+    DAVA::RenderObject* ro = GetRenderObject(entity);
+    if (ro != nullptr && ro->GetType() == objectType)
+    {
+        ++count;
+    }
+
+    DAVA::int32 size = entity->GetChildrenCount();
+    for (DAVA::int32 i = 0; i < size; ++i)
+    {
+        count += GetRenderObjectsCountRecursive(entity->GetChild(i), objectType);
+    }
+
+    return count;
 }
 
 bool SwitchEntityCreator::HasSwitchComponentsRecursive(DAVA::Entity* fromEntity)
@@ -135,54 +162,86 @@ bool SwitchEntityCreator::HasSwitchComponentsRecursive(DAVA::Entity* fromEntity)
 
 void SwitchEntityCreator::CreateSingleObjectData(DAVA::Entity* switchEntity)
 {
-    DAVA::RenderObject* singleRenderObject = new DAVA::Mesh();
+    DAVA::RenderObject* singleRenderObject = nullptr;
+    DAVA::SkinnedMesh* singleSkinnedMeshObject = nullptr;
+    if (hasSkinnedMesh)
+    {
+        singleSkinnedMeshObject = new DAVA::SkinnedMesh;
+        singleRenderObject = singleSkinnedMeshObject;
+    }
+    else
+    {
+        singleRenderObject = new DAVA::Mesh;
+    }
+
     singleRenderObject->SetAABBox(DAVA::AABBox3(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, 0)));
     switchEntity->AddComponent(new DAVA::RenderComponent(singleRenderObject));
 
     DAVA::Set<DAVA::PolygonGroup*> bakedPolygonGroups;
-    DAVA::uint32 count = (DAVA::uint32)clonedEntities.size();
-    for (DAVA::uint32 i = 0; i < count; ++i)
+    size_t switchCount = clonedEntities.size();
+    for (size_t switchIndex = 0; switchIndex < switchCount; ++switchIndex)
     {
-        DAVA::Entity* sourceEntity = clonedEntities[i];
+        DAVA::Entity* sourceEntity = clonedEntities[switchIndex];
 
-        DAVA::RenderObject* sourceRenderObject = renderPairs[i][0].second;
+        DAVA::RenderObject* sourceRenderObject = renderPairs[switchIndex][0].second;
         if (sourceRenderObject)
         {
             DAVA::TransformComponent* sourceTransform = GetTransformComponent(sourceEntity);
             if (sourceTransform->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
             {
-                DAVA::PolygonGroup* pg = sourceRenderObject->GetRenderBatchCount() > 0 ? sourceRenderObject->GetRenderBatch(0)->GetPolygonGroup() : 0;
-                if (pg && bakedPolygonGroups.end() == bakedPolygonGroups.find(pg))
+                DAVA::PolygonGroup* pg = sourceRenderObject->GetRenderBatchCount() > 0 ? sourceRenderObject->GetRenderBatch(0)->GetPolygonGroup() : nullptr;
+                if (pg != nullptr && bakedPolygonGroups.end() == bakedPolygonGroups.find(pg))
                 {
-                    sourceRenderObject->BakeGeometry(sourceTransform->GetLocalTransform());
+                    sourceRenderObject->BakeGeometry(sourceTransform->GetLocalMatrix());
                     bakedPolygonGroups.insert(pg);
+                }
+
+                if (sourceRenderObject->GetType() == DAVA::RenderObject::TYPE_SKINNED_MESH)
+                {
+                    DAVA::Logger::Error("Not-identity transform is not supported for skinned mesh objects");
                 }
             }
 
-            DAVA::uint32 sourceSize = sourceRenderObject->GetRenderBatchCount();
-            while (sourceSize)
+            DAVA::uint32 renderBatchesRemaining = sourceRenderObject->GetRenderBatchCount();
+            while (renderBatchesRemaining > 0)
             {
-                DAVA::int32 lodIndex, switchIndex;
-                DAVA::RenderBatch* sourceRenderBatch = sourceRenderObject->GetRenderBatch(0, lodIndex, switchIndex);
-                sourceRenderBatch->Retain();
-                sourceRenderObject->RemoveRenderBatch(sourceRenderBatch);
-                singleRenderObject->AddRenderBatch(sourceRenderBatch, lodIndex, i);
-                sourceRenderBatch->Release();
-                sourceSize--;
+                DAVA::int32 batchLodIndex = -1;
+                DAVA::int32 batchSwitchIndex = -1;
+                DAVA::RefPtr<DAVA::RenderBatch> sourceRenderBatch = DAVA::RefPtr<DAVA::RenderBatch>::ConstructWithRetain(sourceRenderObject->GetRenderBatch(0, batchLodIndex, batchSwitchIndex));
+                sourceRenderObject->RemoveRenderBatch(sourceRenderBatch.Get());
+                singleRenderObject->AddRenderBatch(sourceRenderBatch.Get(), batchLodIndex, static_cast<DAVA::int32>(switchIndex));
+                --renderBatchesRemaining;
+
+                if (hasSkinnedMesh && sourceRenderObject->GetType() == DAVA::RenderObject::TYPE_SKINNED_MESH)
+                {
+                    DAVA::SkinnedMesh* sourceSkinnedMesh = dynamic_cast<DAVA::SkinnedMesh*>(sourceRenderObject);
+                    auto jointTargets = sourceSkinnedMesh->GetJointTargets(sourceRenderBatch.Get());
+                    singleSkinnedMeshObject->SetJointTargets(sourceRenderBatch.Get(), jointTargets);
+                }
             }
         }
 
-        DAVA::LodComponent* lc = GetLodComponent(sourceEntity);
-        if ((0 != lc) && (0 == GetLodComponent(switchEntity)))
+        auto copyComponent = [&](const DAVA::Type* componentType)
         {
-            switchEntity->AddComponent(lc->Clone(switchEntity));
+            DAVA::Component* c = sourceEntity->GetComponent(componentType, 0);
+            if (c != nullptr && switchEntity->GetComponent(componentType, 0) == nullptr)
+            {
+                switchEntity->AddComponent(c->Clone(switchEntity));
+            }
+        };
+
+        copyComponent(DAVA::Type::Instance<DAVA::LodComponent>());
+        if (hasSkinnedMesh)
+        {
+            copyComponent(DAVA::Type::Instance<DAVA::SkeletonComponent>());
+            copyComponent(DAVA::Type::Instance<DAVA::MotionComponent>());
         }
 
-        renderPairs[i][0].first->RemoveComponent(DAVA::Type::Instance<DAVA::RenderComponent>());
-        renderPairs[i][0].first->RemoveComponent(DAVA::Type::Instance<DAVA::LodComponent>());
+        renderPairs[switchIndex][0].first->RemoveComponent(DAVA::Type::Instance<DAVA::RenderComponent>());
+        renderPairs[switchIndex][0].first->RemoveComponent(DAVA::Type::Instance<DAVA::LodComponent>());
 
-        DAVA::uint32 childrenCount = sourceEntity->GetChildrenCount();
-        while (childrenCount)
+        DAVA::uint32 childrenRemaining = sourceEntity->GetChildrenCount();
+        while (childrenRemaining)
         {
             DAVA::Entity* child = sourceEntity->GetChild(0);
             child->Retain();
@@ -190,7 +249,7 @@ void SwitchEntityCreator::CreateSingleObjectData(DAVA::Entity* switchEntity)
             sourceEntity->RemoveNode(child);
             realChildren.push_back(child);
 
-            --childrenCount;
+            --childrenRemaining;
         }
     }
 }

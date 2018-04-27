@@ -5,7 +5,6 @@
 #endif
 
 #include "Base/Vector.h"
-#include "Debug/Backtrace.h"
 
 namespace DAVA
 {

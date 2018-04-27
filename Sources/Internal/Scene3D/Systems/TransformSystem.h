@@ -10,6 +10,8 @@ namespace DAVA
 {
 class Entity;
 class Transform;
+class TransformComponent;
+class Transform;
 
 class TransformSystem : public SceneSystem
 {

@@ -29,8 +29,6 @@
     <file>QtIcons/3d.png</file>
     <file>QtIcons/sphere.png</file>
     <file>QtIcons/all.png</file>
-    <file>QtIcons/star.png</file>
-    <file>QtIcons/star_empty.png</file>
     <file>QtIcons/gizmo.png</file>
     <file>QtIcons/object_select.png</file>
     <file>QtIcons/switch.png</file>

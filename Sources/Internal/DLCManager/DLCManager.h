@@ -39,6 +39,17 @@ class FilePath;
 class DLCManager
 {
 public:
+    /** You can create DLCManager yourself and you have to manage it too,
+        remember to destroy it with `DLCManager::Destroy(DLCManager*)`.
+        Default DLCManager GetEngineContext()->dlcManager automaticaly creating and destroying.
+
+        Tip: you can use one DLCDownloader instance with several instances of DLCManager
+        just set hints.downloader property in `Initialize(...)`
+    */
+    static DLCManager* Create();
+
+    static void Destroy(DLCManager*);
+
     virtual ~DLCManager();
 
     /**
@@ -59,6 +70,8 @@ public:
         virtual uint64 GetDownloadedSize() const = 0;
         /** return true when all files loaded and ready */
         virtual bool IsDownloaded() const = 0;
+        /** return DLCManager for this request. Usefull if using multiple DLCManager instances */
+        virtual DLCManager& GetDLCManager() const;
     };
 
     /**
@@ -119,7 +132,7 @@ public:
 	*/
     struct Hints
     {
-        String logFilePath = "~doc:/dlc_manager.log"; //!< path for separate log file
+        String logFilePath = ""; //!< path for separate log file
         String preloadedPacks = ""; //!< (DEPRECATED use localPacksDB) list of preloaded pack names already exist separated with new line char (example: "base_pack1\ntutorial\nsounds")
         String localPacksDB = ""; //!< path to sqlite3 DB with files and packs tables to generate local meta data
         int64 limitRequestUpdateIterationUs = 500; //!< max time to update requestManager in microseconds
@@ -220,6 +233,26 @@ public:
     };
     /** Check if manager is initialized and return info */
     virtual Info GetInfo() const = 0;
+
+    /** Debug functionality to collect all data for interesting file in DLC */
+    struct FileInfo
+    {
+        String relativePathInMeta;
+        String packName;
+        uint32 indexOfFileInMeta = 0;
+        uint32 indexOfPackInMeta = 0;
+        uint32 hashCompressedInMeta = 0;
+        uint32 hashUncompressedInMeta = 0;
+        uint32 sizeCompressedInMeta = 0;
+        uint32 sizeUncompressedInMeta = 0;
+        bool isKnownFile = false;
+        bool isLocalFile = false;
+        bool isRemoteFile = false;
+        bool isDlcMngThinkFileReady = false;
+    };
+
+    /** very slow method for debugging only */
+    virtual FileInfo GetFileInfo(const FilePath& path) const;
 };
 
 } // end namespace DAVA

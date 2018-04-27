@@ -10,6 +10,7 @@
 #include <Scene3D/Entity.h>
 #include <Scene3D/Scene.h>
 #include <Entity/Component.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 #include <physx/PxRigidDynamic.h>
 
@@ -24,11 +25,12 @@ void EditorPhysicsSystem::RegisterEntity(DAVA::Entity* entity)
 {
     using namespace DAVA;
 
+    TransformComponent* tc = entity->GetComponent<TransformComponent>();
     if (entity->GetComponentCount<DynamicBodyComponent>() > 0 ||
         entity->GetComponentCount<StaticBodyComponent>() > 0)
     {
         EntityInfo& info = transformMap[entity];
-        info.originalTransform = entity->GetWorldTransform();
+        info.originalTransform = tc->GetWorldMatrix();
         info.isLocked = entity->GetLocked();
         info.restoreLocalTransform = false;
     }
@@ -44,10 +46,9 @@ void EditorPhysicsSystem::RegisterEntity(DAVA::Entity* entity)
             if (shapesCount > 0)
             {
                 EntityInfo& info = transformMap[entity];
-                info.originalTransform = entity->GetLocalTransform();
+                info.originalTransform = tc->GetLocalMatrix();
                 info.isLocked = entity->GetLocked();
                 info.restoreLocalTransform = true;
-
                 break;
             }
         }
@@ -152,13 +153,14 @@ void EditorPhysicsSystem::StoreActualTransform()
 {
     for (auto& node : transformMap)
     {
+        DAVA::TransformComponent* tc = node.first->GetComponent<DAVA::TransformComponent>();
         if (node.second.restoreLocalTransform)
         {
-            node.second.originalTransform = node.first->GetLocalTransform();
+            node.second.originalTransform = tc->GetLocalMatrix();
         }
         else
         {
-            node.second.originalTransform = node.first->GetWorldTransform();
+            node.second.originalTransform = tc->GetWorldMatrix();
         }
 
         node.second.isLocked = node.first->GetLocked();
@@ -169,13 +171,14 @@ void EditorPhysicsSystem::RestoreTransform()
 {
     for (auto& node : transformMap)
     {
+        DAVA::TransformComponent* tc = node.first->GetComponent<DAVA::TransformComponent>();
         if (node.second.restoreLocalTransform)
         {
-            node.first->SetLocalTransform(node.second.originalTransform);
+            tc->SetLocalMatrix(node.second.originalTransform);
         }
         else
         {
-            node.first->SetWorldTransform(node.second.originalTransform);
+            tc->SetWorldMatrix(node.second.originalTransform);
         }
 
         node.first->SetLocked(node.second.isLocked);

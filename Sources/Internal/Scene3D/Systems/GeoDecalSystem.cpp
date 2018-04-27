@@ -3,6 +3,7 @@
 #include "Scene3D/Systems/SkeletonSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SingleComponents/TransformSingleComponent.h"
 #include "Scene3D/Scene.h"
 #include "Render/Highlevel/GeometryOctTree.h"
@@ -83,7 +84,7 @@ void GeoDecalSystem::Process(float32 timeElapsed)
     for (auto& decal : decals)
     {
         GeoDecalComponent* geoDecalComponent = static_cast<GeoDecalComponent*>(decal.first);
-        DAVA::Matrix4 transform = decal.first->GetEntity()->GetWorldTransform();
+        DAVA::Matrix4 transform = decal.first->GetEntity()->GetComponent<TransformComponent>()->GetWorldMatrix();
 
         DAVA::RenderHelper::eDrawType dt = DAVA::RenderHelper::eDrawType::DRAW_WIRE_DEPTH;
         DAVA::Color baseColor(1.0f, 0.5f, 0.25f, 1.0f);
@@ -199,7 +200,8 @@ void GeoDecalSystem::RemoveCreatedDecals(Entity* entity, GeoDecalComponent* comp
 void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* component)
 {
     AABBox3 worldSpaceBox;
-    component->GetBoundingBox().GetTransformedBox(entityWithDecal->GetWorldTransform(), worldSpaceBox);
+    TransformComponent* transformComponent = entityWithDecal->GetComponent<TransformComponent>();
+    component->GetBoundingBox().GetTransformedBox(transformComponent->GetWorldMatrix(), worldSpaceBox);
 
     Vector<RenderableEntity> entities;
     GatherRenderableEntitiesInBox(entityWithDecal->GetScene(), worldSpaceBox, entities);
@@ -219,7 +221,7 @@ void GeoDecalSystem::BuildDecal(Entity* entityWithDecal, GeoDecalComponent* comp
             scene->skeletonSystem->UpdateSkinnedMesh(skeletonComponent, mesh);
         }
 
-        GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), entityWithDecal->GetWorldTransform(), e.renderObject);
+        GeoDecalManager::Decal decal = manager->BuildDecal(component->GetConfig(), transformComponent->GetWorldMatrix(), e.renderObject);
         decals[component].decals.emplace_back(e.entity, decal);
     }
 }

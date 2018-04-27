@@ -20,6 +20,13 @@ class UIEventsSystem : public UISystem
 public:
     const static DAVA::FastName ACTION_COMPONENT_SELF_ENTITY_NAME;
 
+    class UIEventProcessorDelegate
+    {
+    public:
+        virtual ~UIEventProcessorDelegate() = default;
+        virtual bool ProcessEvent(UIControl* target, const FastName& event) = 0;
+    };
+
     UIEventsSystem();
     ~UIEventsSystem() override;
 

@@ -83,7 +83,7 @@ nodes:
         node:
             functionName: "Mul"
             position: [653.184021, 131.328003]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptSetMemberNode1:
@@ -137,7 +137,7 @@ nodes:
         node:
             functionName: "Sum"
             position: [943.487976, 60.480000]
-            className: "FloatMath"
+            className: "float32"
             defaults: {}
         type: "VisualScriptFunctionNode"
     VisualScriptGetMemberNode2:

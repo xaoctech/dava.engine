@@ -11,24 +11,10 @@ namespace DAVA
 class VarTable
 {
 public:
-    using FlagsType = Bitset<8>;
-    enum Flags
-    {
-        OVERRIDDEN = 0,
-    };
-    struct VarMeta
-    {
-        FlagsType flags = 0;
-        Any defaultValue;
-    };
-
-    using VarMap = Map<FastName, Any>;
-    using MetaMap = Map<FastName, VarMeta>;
+    void ForEachProperty(const Function<void(const FastName& name, const Any& value)>& f) const;
+    void ForEachDefaultValue(const Function<void(const FastName& name, const Any& value)>& f) const;
 
     void ClearProperties();
-
-    void ForEachProperty(const Function<void(const FastName& name, const Any& value)>& f) const;
-
     bool HasProperty(const FastName& name) const;
     Any GetPropertyValue(const FastName& name) const;
     void SetPropertyValue(const FastName& name, const Any& value);
@@ -40,24 +26,11 @@ public:
     void SetDefaultValue(const FastName& name, const Any& value);
     void RemoveDefaultValue(const FastName& name);
     void ClearDefaultValues();
+    void ResetToDefaultValues();
 
-    void ResetAllPropertiesToDefaultValues();
+    void Insert(const VarTable& other, bool overwriteValues = true);
+    bool CheckAndUpdateProperty(const FastName& propertyName, const Any& otherValue);
 
-    void ClearFlags();
-    void SetFlag(Flags flag, bool value);
-    void SetPropertyFlag(const FastName& name, Flags flag, bool value);
-    bool GetPropertyFlag(const FastName& name, Flags flag, bool defaultValue = false) const;
-
-    bool HasAnyPropertyOverridden() const;
-    bool IsPropertyOverridden(const FastName& name) const;
-    void SetPropertyOverridden(const FastName& name, bool value);
-
-    void AddPropertiesIfNotExists(const VarTable& other);
-    void SetOverriddenIfNotEqual(const VarTable& other);
-    void SetOverriddenIfNotEqualDefaultValues();
-    void SetPropertyOverriddenFlagIfNotEqual(const FastName& propertyName, const Any& otherValue);
-
-    String GetNamesString(const String& sep = ", ") const;
     bool operator==(const VarTable& other) const;
 
     static Any ParseString(const Type* type, const String& str);
@@ -66,7 +39,9 @@ public:
     static const Vector<const Type*> SUPPORTED_TYPES;
 
 private:
-    MetaMap metaMap;
+    using VarMap = Map<FastName, Any>;
+
+    VarMap defaultValues;
     VarMap properties;
 };
 

@@ -40,6 +40,17 @@ void VarTable::ForEachProperty(const Function<void(const FastName& name, const A
     }
 }
 
+void VarTable::ForEachDefaultValue(const Function<void(const FastName& name, const Any& value)>& f) const
+{
+    for (auto& p : defaultValues)
+    {
+        if (!p.second.IsEmpty())
+        {
+            f(p.first, p.second);
+        }
+    }
+}
+
 Any VarTable::GetPropertyValue(const FastName& name) const
 {
     auto it = properties.find(name);
@@ -55,7 +66,7 @@ void VarTable::SetPropertyValue(const FastName& name, const Any& value)
 void VarTable::RemoveProperty(const FastName& name)
 {
     properties.erase(name);
-    metaMap.erase(name);
+    defaultValues.erase(name);
 }
 
 bool VarTable::HasProperty(const FastName& name) const
@@ -63,181 +74,82 @@ bool VarTable::HasProperty(const FastName& name) const
     return properties.find(name) != properties.end();
 }
 
-void VarTable::ResetAllPropertiesToDefaultValues()
+void VarTable::ResetToDefaultValues()
 {
     properties.clear();
-    for (auto& p : metaMap)
-    {
-        if (!p.second.defaultValue.IsEmpty())
-        {
-            SetPropertyValue(p.first, p.second.defaultValue);
-        }
-    }
+    ForEachDefaultValue([&](const FastName& name, const Any& value) {
+        SetPropertyValue(name, value);
+    });
 }
 
 void VarTable::ClearDefaultValues()
 {
-    for (auto& p : metaMap)
-    {
-        p.second.defaultValue = Any();
-    }
+    defaultValues.clear();
 }
 
 bool VarTable::HasDefaultValues() const
 {
-    return metaMap.end() != std::find_if(metaMap.begin(), metaMap.end(), [](const auto& pair) { return !pair.second.defaultValue.IsEmpty(); });
+    return defaultValues.end() != std::find_if(defaultValues.begin(), defaultValues.end(), [](const auto& pair) { return !pair.second.IsEmpty(); });
 }
 
 bool VarTable::HasDefaultValue(const FastName& name) const
 {
-    auto it = metaMap.find(name);
-    return it != metaMap.end() && !it->second.defaultValue.IsEmpty();
+    auto it = defaultValues.find(name);
+    return it != defaultValues.end() && !it->second.IsEmpty();
 }
 
 void VarTable::SetDefaultValue(const FastName& name, const Any& value)
 {
-    metaMap[name].defaultValue = value;
+    defaultValues[name] = value;
 }
 
 Any VarTable::GetDefaultValue(const FastName& name) const
 {
-    auto it = metaMap.find(name);
-    if (it == metaMap.end())
+    auto it = defaultValues.find(name);
+    if (it == defaultValues.end())
     {
-        DVASSERT(it != metaMap.end(), "Property not found!");
+        DVASSERT(it != defaultValues.end(), "Property not found!");
     }
-    return it != metaMap.end() ? it->second.defaultValue : Any();
+    return it != defaultValues.end() ? it->second : Any();
 }
 
 void VarTable::RemoveDefaultValue(const FastName& name)
 {
-    auto it = metaMap.find(name);
-    if (it != metaMap.end())
-    {
-        it->second.defaultValue = Any();
-    }
+    defaultValues.erase(name);
 }
 
-bool VarTable::HasAnyPropertyOverridden() const
+void VarTable::Insert(const VarTable& other, bool overwriteValues)
 {
-    return metaMap.end() != std::find_if(metaMap.begin(), metaMap.end(), [](const auto& pair) { return pair.second.flags[Flags::OVERRIDDEN]; });
-}
-
-bool VarTable::IsPropertyOverridden(const FastName& name) const
-{
-    return GetPropertyFlag(name, Flags::OVERRIDDEN);
-}
-
-void VarTable::SetPropertyOverridden(const FastName& name, bool value)
-{
-    SetPropertyFlag(name, Flags::OVERRIDDEN, value);
-}
-
-void VarTable::SetPropertyFlag(const FastName& name, Flags flag, bool value)
-{
-    metaMap[name].flags[flag] = value;
-}
-
-bool VarTable::GetPropertyFlag(const FastName& name, Flags flag, bool defaultValue) const
-{
-    auto it = metaMap.find(name);
-    if (it != metaMap.end())
-    {
-        return it->second.flags[flag];
-    }
-    return defaultValue;
-}
-
-String VarTable::GetNamesString(const String& sep) const
-{
-    String str;
-    for (auto& v : properties)
-    {
-        if (str.empty() == false)
+    other.ForEachProperty([&](const FastName& name, const Any& value) {
+        if (overwriteValues || !HasProperty(name))
         {
-            str += sep;
+            SetPropertyValue(name, value);
         }
-        if (IsPropertyOverridden(v.first))
-        {
-            str += "*";
-        }
-        DVASSERT(!v.first.empty());
-        str += v.first.c_str();
-    }
-    return str;
+    });
 }
 
-void VarTable::ClearFlags()
-{
-    for (auto& p : metaMap)
-    {
-        p.second.flags = 0;
-    }
-}
-
-void VarTable::SetFlag(Flags flag, bool value)
-{
-    for (auto& p : metaMap)
-    {
-        p.second.flags[flag] = value;
-    }
-}
-
-void VarTable::AddPropertiesIfNotExists(const VarTable& varTablePrototype)
-{
-    for (auto& p : varTablePrototype.properties)
-    {
-        const FastName& propertyName = p.first;
-        const Any& otherValue = p.second;
-        if (HasProperty(propertyName))
-        {
-            SetPropertyValue(propertyName, otherValue);
-        }
-    }
-}
-
-void VarTable::SetPropertyOverriddenFlagIfNotEqual(const FastName& propertyName, const Any& otherValue)
+bool VarTable::CheckAndUpdateProperty(const FastName& propertyName, const Any& referenceValue)
 {
     if (!HasProperty(propertyName))
     {
-        SetPropertyValue(propertyName, otherValue);
-        SetPropertyOverridden(propertyName, false);
+        SetPropertyValue(propertyName, referenceValue);
+        return true;
     }
     else
     {
         const Any& value = GetPropertyValue(propertyName);
-        if (value.GetType() != otherValue.GetType())
+        if (value.GetType() != referenceValue.GetType())
         {
-            SetPropertyValue(propertyName, otherValue);
-            SetPropertyOverridden(propertyName, false);
+            SetPropertyValue(propertyName, referenceValue);
+            return true;
         }
-        else if (value == otherValue)
+        else if (value == referenceValue)
         {
-            SetPropertyOverridden(propertyName, false);
+            return true;
         }
         else
         {
-            SetPropertyOverridden(propertyName, true);
-        }
-    }
-}
-
-void VarTable::SetOverriddenIfNotEqual(const VarTable& varTablePrototype)
-{
-    SetFlag(Flags::OVERRIDDEN, true);
-    ForEachProperty([&](const FastName& name, const Any& value) {
-        SetPropertyOverriddenFlagIfNotEqual(name, value);
-    });
-}
-
-void VarTable::SetOverriddenIfNotEqualDefaultValues()
-{
-    SetFlag(Flags::OVERRIDDEN, true);
-    for (auto& p : metaMap)
-    {
-        if (!p.second.defaultValue.IsEmpty())
-        {
-            SetPropertyOverriddenFlagIfNotEqual(p.first, p.second.defaultValue);
+            return false;
         }
     }
 }

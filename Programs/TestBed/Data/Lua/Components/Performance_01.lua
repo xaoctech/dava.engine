@@ -18,7 +18,6 @@ function process(controlRef, componentRef, frameDelta)
 
     for i = 1,500,1 
     do 
-        -- controlRef.position = Vector2.Make(10 + 30 * FloatMath.sin(time), 0) 
         local x = 10 + 30 * math.sin(time) 
         local y = 0  
         controlRef.position.x = x

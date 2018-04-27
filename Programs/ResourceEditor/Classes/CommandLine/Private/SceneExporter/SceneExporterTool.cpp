@@ -123,7 +123,7 @@ bool ReadOutputsFromFile(const DAVA::FilePath& yamlConfig, DAVA::Vector<DAVA::Sc
 {
     using namespace DAVA;
 
-    ScopedPtr<YamlParser> parser(YamlParser::Create(yamlConfig));
+    RefPtr<YamlParser> parser(YamlParser::Create(yamlConfig));
     if (parser)
     {
         YamlNode* rootNode = parser->GetRootNode();
@@ -131,8 +131,8 @@ bool ReadOutputsFromFile(const DAVA::FilePath& yamlConfig, DAVA::Vector<DAVA::Sc
         {
             bool fileIsCorrect = true;
 
-            const Vector<YamlNode*>& yamlNodes = rootNode->AsVector();
-            for (YamlNode* propertyNode : yamlNodes)
+            const auto& yamlNodes = rootNode->AsVector();
+            for (const auto& propertyNode : yamlNodes)
             {
                 bool outputIsCorrect = true;
 
@@ -153,8 +153,8 @@ bool ReadOutputsFromFile(const DAVA::FilePath& yamlConfig, DAVA::Vector<DAVA::Sc
                 const YamlNode* gpuListNode = propertyNode->Get("gpu");
                 if (gpuListNode != nullptr)
                 {
-                    const Vector<YamlNode*>& gpuNodes = gpuListNode->AsVector();
-                    for (const YamlNode* gpuNode : gpuNodes)
+                    const auto& gpuNodes = gpuListNode->AsVector();
+                    for (const auto& gpuNode : gpuNodes)
                     {
                         String gpuName = gpuNode->AsString();
                         eGPUFamily gpu = GPUFamilyDescriptor::GetGPUByName(gpuName);

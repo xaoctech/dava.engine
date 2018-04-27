@@ -394,6 +394,7 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionTileMapEditor, SIGNAL(triggered()), this, SLOT(OnTilemaskEditor()));
     QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
     QObject::connect(ui->actionWayEditor, SIGNAL(triggered()), this, SLOT(OnWayEditor()));
+    QObject::connect(ui->actionBakeWaypoints, SIGNAL(triggered()), this, SLOT(OnBakeWaypoints()));
 
     QObject::connect(ui->actionSaveHeightmapToPNG, SIGNAL(triggered()), this, SLOT(OnSaveHeightmapToImage()));
     QObject::connect(ui->actionSaveTiledTexture, SIGNAL(triggered()), this, SLOT(OnSaveTiledTexture()));
@@ -527,11 +528,13 @@ void QtMainWindow::UpdateWayEditor(const DAVA::RECommandNotificationObject& comm
     {
         DVASSERT(commandNotification.MatchCommandTypes<DAVA::DisableWayEditCommand>() == false);
         SetActionCheckedSilently(ui->actionWayEditor, commandNotification.IsRedo());
+        ui->actionBakeWaypoints->setEnabled(commandNotification.IsRedo() == false);
     }
     else if (commandNotification.MatchCommandTypes<DAVA::DisableWayEditCommand>())
     {
         DVASSERT(commandNotification.MatchCommandTypes<DAVA::EnableWayEditCommand>() == false);
         SetActionCheckedSilently(ui->actionWayEditor, !commandNotification.IsRedo());
+        ui->actionBakeWaypoints->setEnabled(commandNotification.IsRedo() == true);
     }
 }
 
@@ -1090,6 +1093,11 @@ void QtMainWindow::OnWayEditor()
             sceneEditor->Exec(std::make_unique<DAVA::EnableWayEditCommand>(sceneEditor.Get()));
         }
     }
+}
+
+void QtMainWindow::OnBakeWaypoints()
+{
+    MainWindowDetails::GetCurrentScene()->GetSystem<DAVA::PathSystem>()->BakeWaypoints();
 }
 
 void QtMainWindow::OnBuildStaticOcclusion()

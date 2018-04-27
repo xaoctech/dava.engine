@@ -20,7 +20,6 @@ class SceneNodeAnimationKey;
 class SceneFileV2;
 class DataNode;
 class RenderComponent;
-class TransformComponent;
 
 /**
     \brief Base class of 3D scene hierarchy. All nodes in our scene graph is inherited from this node.
@@ -149,14 +148,8 @@ public:
 
     Entity* GetParent();
 
-    //transform
-    const Matrix4& GetLocalTransform();
-    void SetLocalTransform(const Matrix4& newMatrix);
-    const Matrix4& GetWorldTransform() const;
-    void SetWorldTransform(const Matrix4& newMatrix);
-
-    Matrix4 AccamulateLocalTransform(Entity* fromParent);
-    Matrix4 AccamulateTransformUptoFarParent(Entity* farParent);
+    Matrix4 AccamulateLocalTransform(Entity* fromParent); //TODO: delete it
+    Matrix4 AccamulateTransformUptoFarParent(Entity* farParent); //TODO: delete it
     /*
     \brief Go down by hierarchy and bake all transforms.
     Function can be used to bake transforms to minimize amount of matrix multiplications.
@@ -213,7 +206,7 @@ public:
         \brief function returns maximum bounding box of scene in world coordinates.
         \returns bounding box
      */
-    virtual AABBox3 GetWTMaximumBoundingBoxSlow();
+    virtual AABBox3 GetWTMaximumBoundingBoxSlow(); //TODO: delete it
 
     /**
         \brief virtual function to save node to KeyedArchive

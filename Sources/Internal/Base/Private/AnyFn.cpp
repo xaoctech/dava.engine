@@ -19,14 +19,15 @@ bool AnyFn::Params::operator==(const AnyFn::Params& p) const
     return (0 == std::memcmp(argsType.data(), p.argsType.data(), sizeof(void*) * sz));
 }
 
-bool AnyFn::Params::IsMatching(const AnyFn::Params& params) const
+bool AnyFn::IsMatching(const AnyFn::Params& params) const
 {
-    if (retType != params.retType)
+    const AnyFn::Params& myParams = GetInvokeParams();
+    if (myParams.retType != params.retType)
     {
         return false;
     }
 
-    size_t sz = argsType.size();
+    size_t sz = myParams.argsType.size();
 
     if (sz != params.argsType.size())
     {
@@ -35,7 +36,7 @@ bool AnyFn::Params::IsMatching(const AnyFn::Params& params) const
 
     for (size_t i = 0; i < sz; ++i)
     {
-        if ((argsType[i] != params.argsType[i]) && (argsType[i]->Decay() != params.argsType[i]))
+        if ((myParams.argsType[i] != params.argsType[i]) && (myParams.argsType[i]->Decay() != params.argsType[i]))
             return false;
     }
     return true;

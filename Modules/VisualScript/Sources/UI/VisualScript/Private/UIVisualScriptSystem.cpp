@@ -29,6 +29,16 @@ void UIVisualScriptSystem::RegisterSystem()
     }
 }
 
+void UIVisualScriptSystem::UnregisterSystem()
+{
+    if (GetScene())
+    {
+        UIEventsSystem* eSys = GetScene()->GetSystem<UIEventsSystem>();
+        DVASSERT(eSys); // Depends on UIEventsSystem
+        eSys->RemoveProcessor(this);
+    }
+}
+
 void UIVisualScriptSystem::RegisterControl(UIControl* control)
 {
     UIVisualScriptComponent* component = control->GetComponent<UIVisualScriptComponent>();
@@ -209,7 +219,14 @@ void UIVisualScriptSystem::UpdateVariables(UIVisualScriptComponent* component, L
     bool updateDefaults = !varTable.HasDefaultValues();
     for (auto& pair : link.script->dataRegistry)
     {
-        FastName propertyName = pair.first;
+        const FastName& propertyName = pair.first;
+        DVASSERT(propertyName.IsValid());
+        if (propertyName.c_str()[0] == '_')
+        {
+            // Ignore private variables
+            continue;
+        }
+
         Any value = pair.second;
         if (updateDefaults)
         {

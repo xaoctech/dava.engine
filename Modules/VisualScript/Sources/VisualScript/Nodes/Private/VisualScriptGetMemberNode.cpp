@@ -77,8 +77,9 @@ void VisualScriptGetMemberNode::InitPins()
         String nodeName = Format("%s::Get%s", className.c_str(), StringUtils::CapitalizeFirst(fieldName.c_str()).c_str());
         SetName(FastName(nodeName));
 
-        const ReflectedType* type = ReflectedTypeDB::GetByPermanentName(className.c_str());
-        const ReflectedStructure* rs = type->GetStructure();
+        const ReflectedType* reflectedType = ReflectedTypeDB::GetByPermanentName(className.c_str());
+        DVASSERT(reflectedType);
+        const ReflectedStructure* rs = reflectedType->GetStructure();
         const ValueWrapper* vw = nullptr;
         for (auto& field : rs->fields)
         {
@@ -92,7 +93,8 @@ void VisualScriptGetMemberNode::InitPins()
         {
             valueWrapper = vw;
 
-            const Type* classType = ReflectedTypeDB::GetByPermanentName(className.c_str())->GetType();
+            const Type* classType = reflectedType->GetType();
+            DVASSERT(classType);
             RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::ATTR_IN, FastName("object"), classType));
 
             const Type* memberType = valueWrapper->GetType(ReflectedObject());

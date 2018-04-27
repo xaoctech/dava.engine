@@ -165,7 +165,7 @@ void VisualScriptNode::SaveDefaults(YamlNode* node) const
 {
     if (!GetDataInputPins().empty())
     {
-        YamlNode* defsNode = YamlNode::CreateMapNode();
+        RefPtr<YamlNode> defsNode = YamlNode::CreateMapNode();
         for (VisualScriptPin* inPin : GetDataInputPins())
         {
             if (!inPin->GetDefaultValue().IsEmpty())
@@ -189,7 +189,7 @@ void VisualScriptNode::SaveDefaults(YamlNode* node) const
                 const ReflectedType* refType = ReflectedTypeDB::GetByType(type);
                 DVASSERT(refType->GetPermanentName() != "");
 
-                YamlNode* valNode = YamlNode::CreateArrayNode();
+                RefPtr<YamlNode> valNode = YamlNode::CreateArrayNode();
                 valNode->Add(refType->GetPermanentName());
                 valNode->Add(YamlNode::CreateNodeFromAny(value));
 

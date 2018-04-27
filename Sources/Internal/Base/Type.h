@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Base/String.h"
-
 #include <memory>
 #include <typeindex>
 #include <type_traits>

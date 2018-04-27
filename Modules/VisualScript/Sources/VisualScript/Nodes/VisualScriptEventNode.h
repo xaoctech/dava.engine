@@ -12,6 +12,7 @@ class VisualScriptEventNode : public VisualScriptNode
 
 public:
     VisualScriptEventNode();
+    VisualScriptEventNode(const FastName& eventName_);
     ~VisualScriptEventNode() override = default;
 
     void SetEventName(const FastName& eventName);

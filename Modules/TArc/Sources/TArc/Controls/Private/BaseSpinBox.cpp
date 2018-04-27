@@ -45,6 +45,13 @@ bool BaseSpinBox<TBase, TEditableType>::event(QEvent* e)
 }
 
 template <typename TBase, typename TEditableType>
+void BaseSpinBox<TBase, TEditableType>::stepBy(int steps)
+{
+    TBase::stepBy(steps);
+    EditingFinished();
+}
+
+template <typename TBase, typename TEditableType>
 void BaseSpinBox<TBase, TEditableType>::UpdateRange()
 {
     using namespace BaseSpinBoxDetail;

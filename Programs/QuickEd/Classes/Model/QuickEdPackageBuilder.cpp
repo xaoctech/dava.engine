@@ -6,6 +6,7 @@
 #include "Classes/Model/ControlProperties/NameProperty.h"
 #include "Classes/Model/ControlProperties/RootProperty.h"
 #include "Classes/Model/ControlProperties/ValueProperty.h"
+#include "Classes/Model/ControlProperties/VarTableValueProperty.h"
 #include "Classes/Model/PackageHierarchy/ControlNode.h"
 #include "Classes/Model/PackageHierarchy/ImportedPackagesNode.h"
 #include "Classes/Model/PackageHierarchy/PackageControlsNode.h"
@@ -368,8 +369,17 @@ void QuickEdPackageBuilder::ProcessProperty(const ReflectedStructure::Field& fie
             if (property->GetStylePropertyIndex() != -1)
                 controlsStack.back().node->GetControl()->SetPropertyLocalFlag(property->GetStylePropertyIndex(), true);
 
-            property->SetForceOverride(true);
-            property->SetValue(value);
+            if (field.meta != nullptr && field.meta->GetMeta<M::MergeableField>() != nullptr)
+            {
+                DVASSERT(value.CanGet<VarTable>());
+                VarTableValueProperty* varTableProperty = DynamicTypeCheck<VarTableValueProperty*>(property);
+                varTableProperty->OverrideSubProperties(value.Get<VarTable>());
+            }
+            else
+            {
+                property->SetForceOverride(true);
+                property->SetValue(value);
+            }
         }
     }
     else
@@ -416,12 +426,6 @@ void QuickEdPackageBuilder::ProcessDataBinding(const DAVA::String& fieldName, co
     }
 }
 
-DAVA::Any QuickEdPackageBuilder::GetPropertyValue(const DAVA::ReflectedStructure::Field& field)
-{
-    DVASSERT(currentObject != nullptr && currentSection != nullptr);
-    return field.valueWrapper->GetValue(currentObject);
-}
-
 void QuickEdPackageBuilder::ProcessCustomData(const YamlNode* customDataNode)
 {
     DVASSERT(customDataNode != nullptr);
@@ -436,11 +440,11 @@ void QuickEdPackageBuilder::ProcessCustomData(const YamlNode* customDataNode)
 
 void QuickEdPackageBuilder::ProcessGuides(const DAVA::YamlNode* guidesNode)
 {
-    const UnorderedMap<String, YamlNode*>& controlsMap = guidesNode->AsMap();
+    const auto& controlsMap = guidesNode->AsMap();
     for (const auto& controlsMapItem : controlsMap)
     {
         const String& controlName = controlsMapItem.first;
-        YamlNode* allGuidesNode = controlsMapItem.second;
+        YamlNode* allGuidesNode = controlsMapItem.second.Get();
         PackageNode::Guides& guides = allGuides[controlName];
 
         Vector<QuickEdPackageBuilderDetails::GuidesOrientation> orientations = { { "Vertical", &guides[Vector2::AXIS_X] }, { "Horizontal", &guides[Vector2::AXIS_Y] } };
@@ -449,7 +453,7 @@ void QuickEdPackageBuilder::ProcessGuides(const DAVA::YamlNode* guidesNode)
             const YamlNode* guideValuesNode = allGuidesNode->Get(orientation.type);
             if (guideValuesNode != nullptr)
             {
-                const Vector<YamlNode*>& valuesNodes = guideValuesNode->AsVector();
+                const auto& valuesNodes = guideValuesNode->AsVector();
                 PackageNode::AxisGuides* values = orientation.values;
                 if (values->empty() == false)
                 {
@@ -459,7 +463,7 @@ void QuickEdPackageBuilder::ProcessGuides(const DAVA::YamlNode* guidesNode)
                 std::transform(valuesNodes.begin(),
                                valuesNodes.end(),
                                std::back_inserter(*values),
-                               [](YamlNode* node) {
+                               [](const RefPtr<YamlNode>& node) {
                                    return node->AsFloat();
                                });
             }

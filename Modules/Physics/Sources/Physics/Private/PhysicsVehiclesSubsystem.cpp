@@ -11,7 +11,10 @@
 #include "Physics/VehicleChassisComponent.h"
 #include "Physics/VehicleWheelComponent.h"
 #include "Physics/Private/PhysicsMath.h"
+#include "Math/Transform.h"
 
+#include <Scene3D/Components/TransformComponent.h>
+#include <Scene3D/Components/ComponentHelpers.h>
 #include <Engine/Engine.h>
 #include <Input/Keyboard.h>
 #include <Input/InputSystem.h>
@@ -801,8 +804,9 @@ physx::PxVehicleWheelsSimData** outWheelsSimulationData)
         wheelShape->SetTypeMask(WHEEL_TYPE);
         wheelShape->SetTypeMaskToCollideWith(WHEEL_TYPES_TO_COLLIDE_WITH);
 
-        Matrix4 wheelLocalTransform = wheelShape->GetEntity()->GetLocalTransform();
-        wheelCenterActorOffsets[i] = PhysicsMath::Vector3ToPxVec3(wheelLocalTransform.GetTranslationVector());
+        TransformComponent* transformComponent = wheelShape->GetEntity()->GetComponent<TransformComponent>();
+        Transform wheelLocalTransform = transformComponent->GetLocalTransform();
+        wheelCenterActorOffsets[i] = PhysicsMath::Vector3ToPxVec3(wheelLocalTransform.GetTranslation());
 
         wheelsData[i].mMass = wheelShape->GetMass();
         wheelsData[i].mMOI = 0.5f * (wheel->GetRadius() * wheel->GetRadius()) * wheelsData[i].mMass; // Moment of inertia for a cylinder

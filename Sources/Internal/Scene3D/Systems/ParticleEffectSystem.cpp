@@ -297,8 +297,8 @@ void ParticleEffectSystem::AddToActive(ParticleEffectComponent* effect)
         Scene* scene = GetScene();
         if (scene)
         {
-            Matrix4* worldTransformPointer = effect->GetEntity()->GetComponent<TransformComponent>()->GetWorldTransformPtr();
-            effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);
+            Matrix4* worldTransformPointer = effect->GetEntity()->GetComponent<TransformComponent>()->GetWorldMatrixPtr();
+            effect->effectRenderObject->SetWorldMatrixPtr(worldTransformPointer);
             Vector3 pos = worldTransformPointer->GetTranslationVector();
             effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
             scene->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);
@@ -517,10 +517,10 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent* effect, float32
     {
         TransformComponent* tr = GetTransformComponent(effect->GetEntity());
         DVASSERT(tr);
-        worldTransformPtr = tr->GetWorldTransformPtr();
+        worldTransformPtr = tr->GetWorldMatrixPtr();
     }
     else
-        worldTransformPtr = effect->effectRenderObject->GetWorldTransformPtr();
+        worldTransformPtr = effect->effectRenderObject->GetWorldMatrixPtr();
 
     effect->effectData.infoSources[0].position = worldTransformPtr->GetTranslationVector();
 
@@ -1044,7 +1044,7 @@ void ParticleEffectSystem::ApplyGlobalForces(Particle* particle, float32 dt, flo
     {
         ParticleEffectComponent* effect = forcePair.first;
         TransformComponent* tr = GetTransformComponent(effect->GetEntity());
-        Matrix4* worldTransformPtr = tr->GetWorldTransformPtr();
+        Matrix4* worldTransformPtr = tr->GetWorldMatrixPtr();
 
         for (ParticleForce* force : forcePair.second.worldAlignForces)
         {
@@ -1112,8 +1112,15 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
     {
         float32 curRadius = 1.0f;
+        float32 innerRadius = 0.0f;
         if (group.emitter->radius)
             curRadius = group.emitter->radius->GetValue(group.time);
+
+        if (group.emitter->innerRadius)
+        {
+            innerRadius = group.emitter->innerRadius->GetValue(group.time);
+            innerRadius = Min(innerRadius, curRadius);
+        }
 
         float32 angleBase = 0;
         float32 angleVariation = PI_2;
@@ -1124,7 +1131,10 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
 
         float32 curAngle = angleBase + angleVariation * ParticlesRandom::VanDerCorputRnd(ind, 3);
         if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
-            curRadius *= std::sqrt(static_cast<float32>(GetEngineContext()->random->RandFloat())); // Better distribution on circle.
+        {
+            float32 rndRadiusNorm = std::sqrt(static_cast<float32>(GetEngineContext()->random->RandFloat())); // Better distribution on circle.
+            curRadius = Lerp(innerRadius, curRadius, rndRadiusNorm);
+        }
         float32 sinAngle = 0.0f;
         float32 cosAngle = 0.0f;
         SinCosFast(curAngle, sinAngle, cosAngle);

@@ -175,6 +175,7 @@
     <addaction name="actionRulerTool"/>
     <addaction name="actionCustomColorsEditor"/>
     <addaction name="actionWayEditor"/>
+    <addaction name="actionBakeWaypoints"/>
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
@@ -970,6 +971,14 @@
   <action name="actionCreateTestHardSkinnedObject">
    <property name="text">
     <string>Create Test Hard Skinned Object</string>
+   </property>
+  </action>
+  <action name="actionBakeWaypoints">
+   <property name="text">
+    <string>Bake waypoints</string>
+   </property>
+   <property name="toolTip">
+    <string>convert waypoints coordinates to global</string>
    </property>
   </action>
  </widget>

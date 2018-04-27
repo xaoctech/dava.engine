@@ -9,6 +9,7 @@
 #include "Logger/Logger.h"
 #include "Base/Exception.h"
 #include "Time/SystemTimer.h"
+#include "Time/DateTime.h"
 #include "Engine/Engine.h"
 #include "Debug/Private/ImGui.h"
 #include "Platform/DeviceInfo.h"
@@ -27,6 +28,38 @@ namespace DAVA
 {
 DLCManager::~DLCManager() = default;
 DLCManager::IRequest::~IRequest() = default;
+
+DLCManager* DLCManager::Create()
+{
+    using namespace DAVA;
+    // just need DAVA::Engine reference
+    const EngineContext* context = GetEngineContext();
+    if (!context)
+    {
+        Logger::Error("%s(%d) error: context not created yet.", __FUNCTION__, __LINE__);
+        return nullptr;
+    }
+    DLCManagerImpl* impl = dynamic_cast<DLCManagerImpl*>(context->dlcManager);
+    if (!impl)
+    {
+        Logger::Error("%s(%d) error: no default DLCManager.", __FUNCTION__, __LINE__);
+        return nullptr;
+    }
+
+    Engine* engine = Engine::Instance();
+    if (!engine)
+    {
+        Logger::Error("%s(%d) error: engine is nullptr.", __FUNCTION__, __LINE__);
+        return nullptr;
+    }
+
+    return new DLCManagerImpl(engine);
+}
+
+void DLCManager::Destroy(DLCManager* dlcManager)
+{
+    delete dlcManager;
+}
 
 const String& DLCManagerImpl::ToString(InitState state)
 {
@@ -111,8 +144,11 @@ bool DLCManagerImpl::IsProfilingEnabled() const
     return value.Get<bool>(false);
 }
 
+uint32 DLCManagerImpl::lastCreatedIndexId = 0;
+
 DLCManagerImpl::DLCManagerImpl(Engine* engine_)
-    : profiler(1024 * 16)
+    : instanceIndex(lastCreatedIndexId++)
+    , profiler(1024 * 16)
     , engine(*engine_)
 {
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
@@ -161,41 +197,40 @@ DLCManagerImpl::DLCManagerImpl(Engine* engine_)
             // TODO move it later to common ImGui setting system
             if (ImGui::IsInitialized())
             {
+                ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
+                ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);
+
+                bool isImWindowOpened = true;
+                String dlcWindowName = "DLC Mng " + std::to_string(instanceIndex);
+                ImGui::Begin(dlcWindowName.c_str(), &isImWindowOpened);
+
+                if (isImWindowOpened)
                 {
-                    ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiSetCond_FirstUseEver);
-                    ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiSetCond_FirstUseEver);
-
-                    bool isImWindowOpened = true;
-                    ImGui::Begin("DLC Profiling Window", &isImWindowOpened);
-
-                    if (isImWindowOpened)
+                    if (ImGui::Button("start dlc profiler"))
                     {
-                        if (ImGui::Button("start dlc profiler"))
-                        {
-                            profiler.Start();
-                            profilerState = "started";
-                        }
-
-                        if (ImGui::Button("stop dlc profiler"))
-                        {
-                            profiler.Stop();
-                            profilerState = "stopped";
-                        }
-
-                        if (ImGui::Button("dump to"))
-                        {
-                            profilerState = "dumpped: (" + DumpToJsonProfilerTrace() + ")";
-                        }
-
-                        ImGui::Text("profiler state: %s", profilerState.c_str());
+                        profiler.Start();
+                        profilerState = "started";
                     }
-                    else
+
+                    if (ImGui::Button("stop dlc profiler"))
                     {
                         profiler.Stop();
-                        GetPrimaryWindow()->draw.Disconnect(this);
+                        profilerState = "stopped";
                     }
-                    ImGui::End();
+
+                    if (ImGui::Button("dump to"))
+                    {
+                        profilerState = "dumpped: (" + DumpToJsonProfilerTrace() + ")";
+                    }
+
+                    ImGui::Text("profiler state: %s", profilerState.c_str());
                 }
+                else
+                {
+                    profiler.Stop();
+                    GetPrimaryWindow()->draw.Disconnect(this);
+                }
+                ImGui::End();
             }
         });
     });
@@ -274,6 +309,10 @@ void DLCManagerImpl::ClearResouces()
         metaRemoteDataLoadedSem.~Semaphore();
         new (&metaRemoteDataLoadedSem) Semaphore();
     }
+    else
+    {
+        scanState = ScanState::Wait;
+    }
 
     for (auto request : requests)
     {
@@ -313,6 +352,12 @@ void DLCManagerImpl::ClearResouces()
 
     timeWaitingNextInitializationAttempt = 0;
     retryCount = 0;
+
+    scanFileReady.clear();
+
+    lastProgress.alreadyDownloaded = 0;
+    lastProgress.inQueue = 0;
+    lastProgress.isRequestingEnabled = false;
 }
 
 DLCManagerImpl::~DLCManagerImpl()
@@ -350,22 +395,30 @@ void DLCManagerImpl::TestPackDirectoryExist() const
     }
 }
 
+static FilePath GetTmpFilePath()
+{
+    std::stringstream ss;
+    DAVA::DateTime dateTime = DAVA::DateTime::Now();
+    ss << "~doc:/dlc_manager_log_" << dateTime.GetDay() << '_' << dateTime.GetHour() << '_' << dateTime.GetMinute() << ".log";
+    return FilePath(ss.str());
+}
+
 void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const String& urlToServerSuperpack, const Hints& hints_)
 {
     if (!log.is_open())
     {
-        FilePath p(hints_.logFilePath);
+        FilePath p = hints_.logFilePath.empty() ? GetTmpFilePath() : FilePath(hints_.logFilePath);
         String fullLogPath = p.GetAbsolutePathname();
 
         log.open(fullLogPath.c_str(), std::ios::trunc);
         if (!log)
         {
             const char* err = strerror(errno);
-            Logger::Error("can't create dlc_manager.log error: %s", err);
+            Logger::Error("can't create \"%s\" error: %s", fullLogPath.c_str(), err);
             DAVA_THROW(DAVA::Exception, err);
         }
 
-        Logger::Info("DLCManager log file: %s", fullLogPath.c_str());
+        Logger::Info("DLCManager(%d) log file: %s", instanceIndex, fullLogPath.c_str());
 
         String preloaded = hints_.preloadedPacks;
         transform(begin(preloaded), end(preloaded), begin(preloaded), [](char c)
@@ -373,7 +426,7 @@ void DLCManagerImpl::DumpInitialParams(const FilePath& dirToDownloadPacks, const
                       return c == '\n' ? ' ' : c;
                   });
 
-        log << "DLCManager::Initialize" << '\n'
+        log << "DLCManager(" << instanceIndex << ")::Initialize" << '\n'
             << "(\n"
             << "    dirToDownloadPacks: " << dirToDownloadPacks.GetAbsolutePathname() << '\n'
             << "    urlToServerSuperpack: " << urlToServerSuperpack << '\n'
@@ -718,8 +771,6 @@ PackRequest* DLCManagerImpl::CreateNewRemoteRequest(const String& requestedPackN
 {
     DVASSERT(nullptr == FindRequest(requestedPackName));
 
-    log << " requested: " << requestedPackName << std::endl;
-
     PackRequest* request = PrepareNewRemoteRequest(requestedPackName);
 
     // we have to do it recursively becouse order of dependency metter
@@ -735,6 +786,8 @@ PackRequest* DLCManagerImpl::CreateNewRemoteRequest(const String& requestedPackN
             CreateNewRemoteRequest(depPackName);
         }
     }
+
+    log << "requested: " << requestedPackName << std::endl;
 
     AddRequest(request);
 
@@ -1566,7 +1619,7 @@ void DLCManagerImpl::SetRequestPriority(const IRequest* request)
 
     if (request != nullptr)
     {
-        log << __FUNCTION__ << " request: " << request->GetRequestedPackName() << std::endl;
+        log << "set_request_priority: " << request->GetRequestedPackName() << std::endl;
 
         PackRequest* req = CastToPackRequest(request);
 
@@ -1593,12 +1646,14 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
     // now we can work without CDN, so always wait for initialization is done
     if (!IsInitialized())
     {
+        log << "error: can't remove pack: " << requestedPackName << " initialization not finished yet." << std::endl;
         return;
     }
 
     if (HasLocalMeta() && GetLocalMeta().HasPack(requestedPackName))
     {
-        Logger::Error("local pack: %s can't be removed", requestedPackName.c_str());
+        log << "error: pack " << requestedPackName << " is local and can't be removed" << std::endl;
+        DVASSERT(false);
         return;
     }
 
@@ -1607,19 +1662,34 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
     {
         PackRequest* packRequest = CastToPackRequest(request);
 
-        const Vector<uint32>& directDependencies = packRequest->GetDirectDependencies();
-
-        for (uint32 dependent : directDependencies)
-        {
-            const String& depPackName = metaRemote->GetPackInfo(dependent).packName;
-            PackRequest* depRequest = FindRequest(depPackName);
-            if (nullptr != depRequest)
+        // check requestedPackName itself is not dependency from other pack in queue
+        // WARNING you may delete packs ONLY without external dependency
+        auto CheckOtherParentPackInQueue = [&]() {
+            if (!metaRemote)
             {
-                // make copy name to prevent UB, after deleting pack
-                const String packToRemove = depRequest->GetRequestedPackName();
-                RemovePack(packToRemove);
+                return false;
             }
-        }
+            const Vector<PackRequest*>& inQueueRequests = requestManager->GetRequests();
+
+            auto IsParentDependency = [&](const PackRequest* parentPack) {
+                const String& parentPackName = parentPack->GetRequestedPackName();
+                uint32 parentIndex = metaRemote->GetPackIndex(parentPackName);
+                uint32 childIndex = metaRemote->GetPackIndex(requestedPackName);
+                if (parentIndex != childIndex && metaRemote->HasDependency(parentIndex, childIndex))
+                {
+                    log << "error: try remove pack: " << requestedPackName << " but this pack is dependency from: " << parentPackName << " currently in request queue." << std::endl;
+                    return true;
+                }
+                return false;
+            };
+
+            bool parentDependencyExists = std::any_of(begin(inQueueRequests), end(inQueueRequests), IsParentDependency);
+            return parentDependencyExists;
+        };
+
+        DVASSERT(CheckOtherParentPackInQueue() == false); // only for debug
+
+        const Vector<uint32>& directDependencies = packRequest->GetDirectDependencies();
 
         requestManager->Remove(packRequest);
 
@@ -1628,6 +1698,8 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
         {
             requests.erase(it);
         }
+
+        log << "removing: " << requestedPackName << std::endl;
 
         delete request;
 
@@ -1661,6 +1733,24 @@ void DLCManagerImpl::RemovePack(const String& requestedPackName)
                 Logger::Error("can't delete files: %s", errMsg.c_str());
             }
         }
+
+        // now remove dependencies
+        // we have to remove packs in reverse order for debug purpeses see: CheckOtherParentPackInQueue
+        for (uint32 dependent : directDependencies)
+        {
+            const String& depPackName = metaRemote->GetPackInfo(dependent).packName;
+            PackRequest* depRequest = FindRequest(depPackName);
+            if (nullptr != depRequest)
+            {
+                // make copy name to prevent UB, after deleting pack
+                const String packToRemove = depRequest->GetRequestedPackName();
+                RemovePack(packToRemove);
+            }
+        }
+    }
+    else
+    {
+        log << "error: can't remove not found pack: " << requestedPackName << std::endl;
     }
 }
 
@@ -1674,6 +1764,7 @@ void DLCManagerImpl::ResetQueue()
 
     if (IsInitialized() && requestManager)
     {
+        log << "reset_queue" << std::endl;
         // do NOT use reference
         const Vector<PackRequest*> requests = requestManager->GetRequests();
 
@@ -1684,6 +1775,10 @@ void DLCManagerImpl::ResetQueue()
             RemoveRemoteRequest(r);
             delete r;
         }
+    }
+    else
+    {
+        log << "error: can't reset_queue - initialization not finished yet.";
     }
 }
 
@@ -1811,6 +1906,71 @@ DLCManager::Info DLCManagerImpl::GetInfo() const
     return info;
 }
 
+DLCManager::FileInfo DLCManager::GetFileInfo(const FilePath& /*path*/) const
+{
+    return FileInfo{};
+}
+
+DLCManager::FileInfo DLCManagerImpl::GetFileInfo(const FilePath& path) const
+{
+    FileInfo fileInfo;
+
+    if (!IsInitialized())
+    {
+        return fileInfo;
+    }
+
+    if (HasLocalMeta())
+    {
+        // no information for local(static files in APK) files
+        const PackMetaData& meta = GetLocalMeta();
+        const FileNamesTree& tree = meta.GetFileNamesTree();
+        if (tree.Find(fileInfo.relativePathInMeta))
+        {
+            fileInfo.isLocalFile = true;
+            fileInfo.isKnownFile = true;
+        }
+    }
+
+    if (HasRemoteMeta())
+    {
+        const PackMetaData& meta = GetRemoteMeta();
+        const FileNamesTree& remoteFilesTree = meta.GetFileNamesTree();
+
+        fileInfo.relativePathInMeta = path.StartsWith("~res:/") ? path.GetRelativePathname("~res:/") : path.GetRelativePathname();
+
+        if (remoteFilesTree.Find(fileInfo.relativePathInMeta))
+        {
+            fileInfo.isRemoteFile = true;
+            fileInfo.isKnownFile = true;
+
+            const auto it = mapFileData.find(fileInfo.relativePathInMeta);
+            if (it != end(mapFileData))
+            {
+                const PackFormat::FileTableEntry* entry = it->second;
+
+                fileInfo.indexOfPackInMeta = entry->metaIndex;
+                const PackMetaData::PackInfo& packInfo = meta.GetPackInfo(entry->metaIndex);
+                fileInfo.packName = packInfo.packName;
+
+                const size_t indexInString = uncompressedFileNames.find(fileInfo.relativePathInMeta);
+                DVASSERT(indexInString != String::npos);
+                const String& str = uncompressedFileNames;
+                const size_t numOfNullChars = std::count(begin(str), begin(str) + indexInString + 1, '\0');
+                const uint32 fileIndex = static_cast<uint32>(numOfNullChars); // will match index of string and index of file in filesTable
+
+                fileInfo.indexOfFileInMeta = fileIndex;
+                fileInfo.hashCompressedInMeta = entry->compressedCrc32;
+                fileInfo.hashUncompressedInMeta = entry->originalCrc32;
+                fileInfo.sizeCompressedInMeta = entry->compressedSize;
+                fileInfo.sizeUncompressedInMeta = entry->originalSize;
+                fileInfo.isDlcMngThinkFileReady = IsFileReady(fileIndex);
+            }
+        }
+    }
+    return fileInfo;
+}
+
 bool DLCManagerImpl::IsRequestingEnabled() const
 {
     DVASSERT(Thread::IsMainThread());
@@ -1820,6 +1980,8 @@ bool DLCManagerImpl::IsRequestingEnabled() const
 void DLCManagerImpl::SetRequestingEnabled(bool value)
 {
     DVASSERT(Thread::IsMainThread());
+
+    log << "requesting_enabled: " << std::boolalpha << value << std::noboolalpha << std::endl;
 
     if (value)
     {
@@ -1964,7 +2126,8 @@ void DLCManagerImpl::StartScanDownloadedFiles()
         {
             scanState = ScanState::Starting;
             scanThread = Thread::Create(MakeFunction(this, &DLCManagerImpl::ThreadScanFunc));
-            scanThread->SetName("DLC::ThreadScanFunc");
+            String name = String("DLC(") + std::to_string(instanceIndex) + ")::ThreadScan";
+            scanThread->SetName(name);
             scanThread->Start();
         }
     }

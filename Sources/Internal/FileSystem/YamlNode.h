@@ -18,7 +18,8 @@ class VariantType;
     \ingroup yaml
     \brief this class is base yaml node that is used for everything connected with yaml
 */
-class YamlNode : public BaseObject
+class YamlNode final
+: public BaseObject
 {
 public:
     enum eType
@@ -51,9 +52,9 @@ protected:
 
 public:
     YamlNode(eType type);
-    static YamlNode* CreateStringNode();
-    static YamlNode* CreateArrayNode(eArrayRepresentation representation = AR_FLOW_REPRESENTATION);
-    static YamlNode* CreateMapNode(bool orderedSave = true, eMapRepresentation valRepresentation = MR_BLOCK_REPRESENTATION, eStringRepresentation keyRepresentation = SR_PLAIN_REPRESENTATION);
+    static RefPtr<YamlNode> CreateStringNode();
+    static RefPtr<YamlNode> CreateArrayNode(eArrayRepresentation representation = AR_FLOW_REPRESENTATION);
+    static RefPtr<YamlNode> CreateMapNode(bool orderedSave = true, eMapRepresentation valRepresentation = MR_BLOCK_REPRESENTATION, eStringRepresentation keyRepresentation = SR_PLAIN_REPRESENTATION);
 
     eType GetType() const
     {
@@ -73,7 +74,7 @@ public:
     WideString AsWString() const;
 
     //These functions work only if type of node is array
-    const Vector<YamlNode*>& AsVector() const;
+    const Vector<RefPtr<YamlNode>>& AsVector() const;
     Vector2 AsPoint() const; //Dizz: this one exists cause of Boroda
     Vector2 AsVector2() const;
     Vector3 AsVector3() const;
@@ -83,7 +84,7 @@ public:
     VarTable AsVarTable() const;
 
     //These functions work only if type of node is map
-    const UnorderedMap<String, YamlNode*>& AsMap() const;
+    const UnorderedMap<String, RefPtr<YamlNode>>& AsMap() const;
     VariantType AsVariantType() const;
 
     VariantType AsVariantType(const InspMember* insp) const;
@@ -119,7 +120,8 @@ public:
     inline void Add(const Vector3& value);
     inline void Add(const Vector4& value);
     inline void Add(const VariantType& value);
-    inline void Add(YamlNode* value);
+    DAVA_DEPRECATED(inline void Add(YamlNode* value));
+    inline void Add(const RefPtr<YamlNode>& value);
 
     // "Adders". These methods ADD node to the map, even in case the node with the same name is added.
     inline void Add(const String& name, bool value);
@@ -134,7 +136,8 @@ public:
     inline void Add(const String& name, const Color& value);
     inline void Add(const String& name, const VariantType& value);
     inline void Add(const String& name, VariantType* varType);
-    inline void Add(const String& name, YamlNode* value);
+    DAVA_DEPRECATED(inline void Add(const String& name, YamlNode* value));
+    inline void Add(const String& name, const RefPtr<YamlNode>& value);
 
     // "Setters". These methods REPLACE node in the map in case the node with the same name exists.
     inline void Set(const String& name, bool value);
@@ -148,14 +151,18 @@ public:
     inline void Set(const String& name, const Vector4& value);
     inline void Set(const String& name, const VariantType& value);
     inline void Set(const String& name, VariantType* varType);
-    inline void Set(const String& name, YamlNode* value);
+    DAVA_DEPRECATED(inline void Set(const String& name, YamlNode* value));
+    inline void Set(const String& name, const RefPtr<YamlNode>& value);
 
     // Specific adder for the whole node.
-    inline void AddNodeToMap(const String& name, YamlNode* value);
+    DAVA_DEPRECATED(inline void AddNodeToMap(const String& name, YamlNode* value));
+    inline void AddNodeToMap(const String& name, const RefPtr<YamlNode>& value);
     // Specific setter for the whole node.
-    inline void SetNodeToMap(const String& name, YamlNode* value);
+    DAVA_DEPRECATED(inline void SetNodeToMap(const String& name, YamlNode* value));
+    inline void SetNodeToMap(const String& name, const RefPtr<YamlNode>& value);
     // Setters for Map/Array nodes.
-    inline void AddNodeToArray(YamlNode* value);
+    DAVA_DEPRECATED(inline void AddNodeToArray(YamlNode* value));
+    inline void AddNodeToArray(const RefPtr<YamlNode>& value);
 
     // Remove node value from map
     void RemoveNodeFromMap(const String& name);
@@ -166,7 +173,7 @@ public:
     eStringRepresentation GetMapKeyRepresentation() const;
     bool GetMapOrderRepresentation() const;
 
-    static YamlNode* CreateNodeFromAny(const Any& any);
+    static RefPtr<YamlNode> CreateNodeFromAny(const Any& any);
 
 protected:
     static eType TypeToYamlNodeType(const Type* type);
@@ -174,7 +181,7 @@ protected:
     bool InitArrayFromAny(const Any& any);
     bool InitMapFromAny(const Any& any);
 
-    static YamlNode* CreateNodeFromVariantType(const VariantType& varType);
+    static RefPtr<YamlNode> CreateNodeFromVariantType(const VariantType& varType);
 
     static eType VariantTypeToYamlNodeType(VariantType::eVariantType variantType);
 
@@ -190,8 +197,8 @@ protected:
     void InternalAddToArray(const VariantType& value);
     void InternalAddToArray(const String& value);
 
-    void InternalAddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue);
-    void InternalAddNodeToArray(YamlNode* node);
+    void InternalAddNodeToMap(const String& name, const RefPtr<YamlNode>& node, bool rewritePreviousValue);
+    void InternalAddNodeToArray(const RefPtr<YamlNode>& node);
 
     void InternalSetString(const String& value, eStringRepresentation style);
     void InternalSetMatrix(const float32* array, uint32 dimension);
@@ -209,14 +216,14 @@ private:
 
     struct ObjectArray
     {
-        Vector<YamlNode*> array;
+        Vector<RefPtr<YamlNode>> array;
         eArrayRepresentation style;
     };
 
     struct ObjectMap
     {
-        UnorderedMap<String, YamlNode*> ordered;
-        Vector<std::pair<String, YamlNode*>> unordered;
+        UnorderedMap<String, RefPtr<YamlNode>> ordered;
+        Vector<std::pair<String, RefPtr<YamlNode>>> unordered;
         eMapRepresentation style;
         eStringRepresentation keyStyle;
         bool orderedSave;
@@ -297,11 +304,17 @@ inline void YamlNode::Add(const Vector4& value)
 inline void YamlNode::Add(const VariantType& value)
 {
     InternalAddToArray(value);
-};
+}
+
 inline void YamlNode::Add(YamlNode* value)
 {
+    InternalAddNodeToArray(RefPtr<YamlNode>(value));
+}
+
+inline void YamlNode::Add(const RefPtr<YamlNode>& value)
+{
     InternalAddNodeToArray(value);
-};
+}
 
 inline void YamlNode::Add(const String& name, bool value)
 {
@@ -357,6 +370,11 @@ inline void YamlNode::Add(const String& name, VariantType* varType)
 
 inline void YamlNode::Add(const String& name, YamlNode* value)
 {
+    InternalAddNodeToMap(name, RefPtr<YamlNode>(value), false);
+}
+
+inline void YamlNode::Add(const String& name, const RefPtr<YamlNode>& value)
+{
     InternalAddNodeToMap(name, value, false);
 }
 
@@ -410,6 +428,11 @@ inline void YamlNode::Set(const String& name, VariantType* varType)
 
 inline void YamlNode::Set(const String& name, YamlNode* value)
 {
+    InternalAddNodeToMap(name, RefPtr<YamlNode>(value), true);
+}
+
+inline void YamlNode::Set(const String& name, const RefPtr<YamlNode>& value)
+{
     InternalAddNodeToMap(name, value, true);
 }
 
@@ -417,11 +440,28 @@ inline void YamlNode::AddNodeToMap(const String& name, YamlNode* value)
 {
     Add(name, value);
 }
+
+inline void YamlNode::AddNodeToMap(const String& name, const RefPtr<YamlNode>& value)
+{
+    Add(name, value);
+}
+
 inline void YamlNode::SetNodeToMap(const String& name, YamlNode* value)
 {
     Set(name, value);
 }
+
+inline void YamlNode::SetNodeToMap(const String& name, const RefPtr<YamlNode>& value)
+{
+    Set(name, value);
+}
+
 inline void YamlNode::AddNodeToArray(YamlNode* value)
+{
+    Add(value);
+}
+
+inline void YamlNode::AddNodeToArray(const RefPtr<YamlNode>& value)
 {
     Add(value);
 }

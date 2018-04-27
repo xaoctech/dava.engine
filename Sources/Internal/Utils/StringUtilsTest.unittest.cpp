@@ -1,5 +1,5 @@
 #include "Utils/StringUtils.h"
-
+#include "Utils/UTF8Utils.h"
 #include <UnitTests/UnitTests.h>
 
 using namespace DAVA;
@@ -151,5 +151,57 @@ DAVA_TESTCLASS (StringUtilsTest)
         TEST_VERIFY(StringUtils::ToLowerCase(String("\t\nABC\n\t")) == "\t\nabc\n\t");
         TEST_VERIFY(StringUtils::ToLowerCase(String("    ")) == "    ");
         TEST_VERIFY(StringUtils::ToLowerCase(String("\t \t")) == "\t \t");
+    }
+
+    DAVA_TEST (ReplaceAllCase)
+    {
+        WideString str{ L"ABBAAABAAD" };
+        StringUtils::ReplaceAll(str, WideString(L"AA"), WideString(L"C"));
+
+        TEST_VERIFY(str == WideString(L"ABBCABCD"));
+    }
+
+    // Utils::CapitalizeFirst
+    DAVA_TEST (CapitalizeFirst)
+    {
+        TEST_VERIFY(StringUtils::CapitalizeFirst(String(" abc def")) == " abc def");
+        TEST_VERIFY(StringUtils::CapitalizeFirst(String("abc def")) == "Abc def");
+        TEST_VERIFY(StringUtils::CapitalizeFirst(String("Abc def")) == "Abc def");
+        TEST_VERIFY(StringUtils::CapitalizeFirst(String("123abc def")) == "123abc def");
+
+        TEST_VERIFY(StringUtils::CapitalizeFirst(WideString(L" abc def")) == WideString(L" abc def"));
+        TEST_VERIFY(StringUtils::CapitalizeFirst(WideString(L"abc def")) == WideString(L"Abc def"));
+        TEST_VERIFY(StringUtils::CapitalizeFirst(WideString(L"Abc def")) == WideString(L"Abc def"));
+        TEST_VERIFY(StringUtils::CapitalizeFirst(WideString(L"123abc def")) == WideString(L"123abc def"));
+
+        TEST_VERIFY(StringUtils::CapitalizeFirst("abc def") == String("Abc def"));
+        TEST_VERIFY(StringUtils::CapitalizeFirst("Abc def") == String("Abc def"));
+        TEST_VERIFY(StringUtils::CapitalizeFirst("123abc def") == String("123abc def"));
+
+        TEST_VERIFY(StringUtils::CapitalizeFirst(L"abc def") == WideString(L"Abc def"));
+        TEST_VERIFY(StringUtils::CapitalizeFirst(L"Abc def") == WideString(L"Abc def"));
+        TEST_VERIFY(StringUtils::CapitalizeFirst(L"123abc def") == WideString(L"123abc def"));
+    }
+
+    // Utils::CapitalizeWords
+    DAVA_TEST (CapitalizeWords)
+    {
+        TEST_VERIFY(StringUtils::CapitalizeWords(String(" abc def")) == " Abc Def");
+        TEST_VERIFY(StringUtils::CapitalizeWords(String("abc def")) == "Abc Def");
+        TEST_VERIFY(StringUtils::CapitalizeWords(String("Abc def")) == "Abc Def");
+        TEST_VERIFY(StringUtils::CapitalizeWords(String("123abc def")) == "123abc Def");
+
+        TEST_VERIFY(StringUtils::CapitalizeWords(WideString(L" abc def")) == WideString(L" Abc Def"));
+        TEST_VERIFY(StringUtils::CapitalizeWords(WideString(L"abc def")) == WideString(L"Abc Def"));
+        TEST_VERIFY(StringUtils::CapitalizeWords(WideString(L"Abc def")) == WideString(L"Abc Def"));
+        TEST_VERIFY(StringUtils::CapitalizeWords(WideString(L"123abc def")) == WideString(L"123abc Def"));
+
+        TEST_VERIFY(StringUtils::CapitalizeWords("abc def") == String("Abc Def"));
+        TEST_VERIFY(StringUtils::CapitalizeWords("Abc def") == String("Abc Def"));
+        TEST_VERIFY(StringUtils::CapitalizeWords("123abc def") == String("123abc Def"));
+
+        TEST_VERIFY(StringUtils::CapitalizeWords(L"abc def") == WideString(L"Abc Def"));
+        TEST_VERIFY(StringUtils::CapitalizeWords(L"Abc def") == WideString(L"Abc Def"));
+        TEST_VERIFY(StringUtils::CapitalizeWords(L"123abc def") == WideString(L"123abc Def"));
     }
 };

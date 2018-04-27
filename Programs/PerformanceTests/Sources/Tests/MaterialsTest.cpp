@@ -1,5 +1,7 @@
 #include "MaterialsTest.h"
 
+#include <Scene3D/Components/TransformComponent.h>
+
 const FastName MaterialsTest::LIGHT_ENTITY = FastName("Light");
 const FastName MaterialsTest::CAMERA_ENTITY = FastName("OrthoCamera");
 const FastName MaterialsTest::PLANE_ENTITY = FastName("plane");
@@ -44,8 +46,9 @@ void MaterialsTest::LoadResources()
     for (int32 i = 0; i < 11; i++)
     {
         Entity* clone = planeEntity->Clone();
-        Matrix4 cloneMatrix = planeEntity->GetLocalTransform() * Matrix4::MakeTranslation(Vector3(0.0f + i * 10.0f, 0.0f, 0.0f));
-        clone->SetLocalTransform(cloneMatrix);
+        TransformComponent* tc = clone->GetComponent<TransformComponent>();
+
+        tc->SetLocalTranslation(tc->GetLocalTransform().GetTranslation() + Vector3(0.0f + i * 10.0f, 0.0f, 0.0f));
         GetScene()->AddNode(clone);
 
         planes.push_back(clone);

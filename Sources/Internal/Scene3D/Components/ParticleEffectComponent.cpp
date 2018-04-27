@@ -1,5 +1,6 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Lod/LodComponent.h"
@@ -10,6 +11,7 @@
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Reflection/ReflectionRegistrator.h"
 #include "Reflection/ReflectedMeta.h"
+#include <Math/Transform.h>
 
 namespace DAVA
 {
@@ -36,7 +38,7 @@ ParticleEffectComponent::ParticleEffectComponent()
     // world transform doesn't effect particle render object drawing
     // instead particles are generated in corresponding world position
     effectRenderObject = new ParticleRenderObject(&effectData);
-    effectRenderObject->SetWorldTransformPtr(&Matrix4::IDENTITY);
+    effectRenderObject->SetWorldMatrixPtr(&Matrix4::IDENTITY);
 
     if (QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_LOD0_EFFECTS))
     {
@@ -363,7 +365,8 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext* serializat
     Entity* currEntity = entity;
     while (currEntity)
     {
-        effectScale *= currEntity->GetLocalTransform().GetScaleVector();
+        TransformComponent* transform = currEntity->GetComponent<TransformComponent>();
+        effectScale *= transform->GetLocalMatrix().GetScaleVector();
         currEntity = currEntity->GetParent();
     }
     for (int32 i = 0, sz = entity->GetChildrenCount(); i < sz; ++i)
@@ -397,7 +400,9 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext* serializat
             instance->SetEmitter(new ParticleEmitter());
         }
         instance->GetEmitter()->name = child->GetName();
-        instance->SetSpawnPosition(child->GetLocalTransform().GetTranslationVector() * effectScale);
+
+        TransformComponent* transform = child->GetComponent<TransformComponent>();
+        instance->SetSpawnPosition(transform->GetLocalTransform().GetTranslation() * effectScale);
         emitterInstances.emplace_back(instance);
 
         if (!lodDefined)

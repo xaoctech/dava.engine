@@ -25,6 +25,7 @@
 #include <Render/TextureDescriptor.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/LightComponent.h>
+#include <Scene3D/Components/TransformComponent.h>
 
 namespace MitsubaExporterDetail
 {
@@ -434,6 +435,7 @@ void MitsubaExporterDetail::Exporter::CollectExportObjects(const DAVA::Entity* e
         }
         else
         {
+            DAVA::TransformComponent* tc = entity->GetComponent<DAVA::TransformComponent>();
             for (DAVA::uint32 i = 0, e = renderObject->GetRenderBatchCount(); i < e; ++i)
             {
                 DAVA::int32 lodIndex = -1;
@@ -451,7 +453,7 @@ void MitsubaExporterDetail::Exporter::CollectExportObjects(const DAVA::Entity* e
                     renderBatchesToExport.emplace_back(batchID, MitsubaExporterDetail::RenderBatchExport());
                     renderBatchesToExport.back().second.rb = batch;
                     renderBatchesToExport.back().second.material = materialID;
-                    renderBatchesToExport.back().second.transform = entity->GetWorldTransform();
+                    renderBatchesToExport.back().second.transform = tc->GetWorldMatrix();
                 }
             }
         }

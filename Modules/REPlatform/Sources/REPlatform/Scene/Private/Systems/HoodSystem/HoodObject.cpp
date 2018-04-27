@@ -70,7 +70,7 @@ HoodCollObject* HoodObject::CreateLine(const Vector3& from, const Vector3& to)
         rotateNormal.Normalize();
         rotateAngle = acosf(globalAxisX.DotProduct(direction));
 
-        ret->baseRotate.BuildRotation(rotateNormal, -rotateAngle);
+        ret->baseRotate.BuildRotation(rotateNormal, rotateAngle);
     }
 
     if (0 != rotateAngle)

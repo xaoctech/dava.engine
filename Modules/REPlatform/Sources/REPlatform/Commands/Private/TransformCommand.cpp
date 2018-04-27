@@ -5,7 +5,7 @@
 
 namespace DAVA
 {
-TransformCommand::TransformCommand(Selectable object_, const Matrix4& origTransform_, const Matrix4& newTransform_)
+TransformCommand::TransformCommand(Selectable object_, const Transform& origTransform_, const Transform& newTransform_)
     : RECommand("Transform")
     , object(object_)
     , undoTransform(origTransform_)

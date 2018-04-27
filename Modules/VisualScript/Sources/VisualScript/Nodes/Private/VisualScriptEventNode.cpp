@@ -10,6 +10,7 @@ DAVA_VIRTUAL_REFLECTION_IMPL(VisualScriptEventNode)
 {
     ReflectionRegistrator<VisualScriptEventNode>::Begin()
     .ConstructorByPointer()
+    .ConstructorByPointer<const FastName&>()
     .End();
 }
 
@@ -19,9 +20,16 @@ VisualScriptEventNode::VisualScriptEventNode()
     RegisterPin(new VisualScriptPin(this, VisualScriptPin::Attribute::EXEC_OUT, FastName("event"), nullptr));
 }
 
+VisualScriptEventNode::VisualScriptEventNode(const FastName& eventName_)
+    : VisualScriptEventNode()
+{
+    SetEventName(eventName_);
+}
+
 void VisualScriptEventNode::SetEventName(const FastName& eventName_)
 {
     const ReflectedType* rType = ReflectedTypeDB::GetByPermanentName(String(eventName_.c_str()));
+    DVASSERT(rType);
 
     for (const auto& field : rType->GetStructure()->fields)
     {

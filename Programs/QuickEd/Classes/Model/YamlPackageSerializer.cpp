@@ -15,15 +15,13 @@ YamlPackageSerializer::~YamlPackageSerializer()
 {
     DVASSERT(nodesStack.size() == 1);
 
-    for (auto it : nodesStack)
-        it->Release();
     nodesStack.clear();
 }
 
 void YamlPackageSerializer::PutValue(const DAVA::String& name, const DAVA::String& value, bool quotes)
 {
-    YamlNode* parent = nodesStack.back();
-    YamlNode* node = YamlNode::CreateStringNode();
+    YamlNode* parent = nodesStack.back().Get();
+    RefPtr<YamlNode> node = YamlNode::CreateStringNode();
     node->Set(value);
     if (!quotes)
     {
@@ -34,7 +32,7 @@ void YamlPackageSerializer::PutValue(const DAVA::String& name, const DAVA::Strin
 
 void YamlPackageSerializer::PutValue(const DAVA::String& name, const DAVA::Vector<DAVA::String>& value)
 {
-    YamlNode* node = YamlNode::CreateArrayNode(YamlNode::AR_FLOW_REPRESENTATION);
+    RefPtr<YamlNode> node = YamlNode::CreateArrayNode(YamlNode::AR_FLOW_REPRESENTATION);
     for (const auto& str : value)
         node->Add(str);
 
@@ -43,8 +41,8 @@ void YamlPackageSerializer::PutValue(const DAVA::String& name, const DAVA::Vecto
 
 void YamlPackageSerializer::PutValue(const DAVA::String& value, bool quotes)
 {
-    YamlNode* parent = nodesStack.back();
-    YamlNode* node = YamlNode::CreateStringNode();
+    YamlNode* parent = nodesStack.back().Get();
+    RefPtr<YamlNode> node = YamlNode::CreateStringNode();
     node->Set(value);
     if (!quotes)
     {
@@ -55,22 +53,22 @@ void YamlPackageSerializer::PutValue(const DAVA::String& value, bool quotes)
 
 void YamlPackageSerializer::PutValue(const DAVA::Any& value)
 {
-    YamlNode* parent = nodesStack.back();
-    YamlNode* node = YamlNode::CreateNodeFromAny(value);
+    RefPtr<YamlNode> parent = nodesStack.back();
+    RefPtr<YamlNode> node = YamlNode::CreateNodeFromAny(value);
     parent->Add(node);
 }
 
 void YamlPackageSerializer::BeginMap()
 {
-    YamlNode* node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
+    RefPtr<YamlNode> node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_PLAIN_REPRESENTATION);
     nodesStack.back()->Add(node);
     nodesStack.push_back(node);
 }
 
 void YamlPackageSerializer::BeginMap(const DAVA::String& name, bool quotes)
 {
-    YamlNode* node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION,
-                                             quotes ? YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION : YamlNode::SR_PLAIN_REPRESENTATION);
+    RefPtr<YamlNode> node = YamlNode::CreateMapNode(false, YamlNode::MR_BLOCK_REPRESENTATION,
+                                                    quotes ? YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION : YamlNode::SR_PLAIN_REPRESENTATION);
     nodesStack.back()->Add(name, node);
     nodesStack.push_back(node);
 }
@@ -82,21 +80,21 @@ void YamlPackageSerializer::EndMap()
 
 void YamlPackageSerializer::BeginArray(const DAVA::String& name, bool flow)
 {
-    YamlNode* node = YamlNode::CreateArrayNode(flow ? YamlNode::AR_FLOW_REPRESENTATION : YamlNode::AR_BLOCK_REPRESENTATION);
+    RefPtr<YamlNode> node = YamlNode::CreateArrayNode(flow ? YamlNode::AR_FLOW_REPRESENTATION : YamlNode::AR_BLOCK_REPRESENTATION);
     nodesStack.back()->Add(name, node);
     nodesStack.push_back(node);
 }
 
 void YamlPackageSerializer::BeginArray()
 {
-    YamlNode* node = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
+    RefPtr<YamlNode> node = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
     nodesStack.back()->Add(node);
     nodesStack.push_back(node);
 }
 
 void YamlPackageSerializer::BeginFlowArray()
 {
-    YamlNode* node = YamlNode::CreateArrayNode(YamlNode::AR_FLOW_REPRESENTATION);
+    RefPtr<YamlNode> node = YamlNode::CreateArrayNode(YamlNode::AR_FLOW_REPRESENTATION);
     nodesStack.back()->Add(node);
     nodesStack.push_back(node);
 }
@@ -109,7 +107,7 @@ void YamlPackageSerializer::EndArray()
 YamlNode* YamlPackageSerializer::GetYamlNode() const
 {
     DVASSERT(nodesStack.size() == 1);
-    return nodesStack.back();
+    return nodesStack.back().Get();
 }
 
 bool YamlPackageSerializer::WriteToFile(const FilePath& path)

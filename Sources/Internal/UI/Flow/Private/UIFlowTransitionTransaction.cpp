@@ -15,7 +15,10 @@
 
 namespace DAVA
 {
+namespace UIFlowTransitionTransactionDetails
+{
 static const uint32 LOADING_THREAD_STACK_SIZE = 1024 * 1024;
+}
 
 UIFlowTransitionTransaction::UIFlowTransitionTransaction(UIFlowStateComponent* activateState, UIFlowStateComponent* deactivateState, bool background, bool onlyLoad)
     : skipHistory(onlyLoad) // Only-load transactions doesn't append to history
@@ -545,7 +548,7 @@ void UIFlowTransitionTransaction::ChangeActivationBranch(const UIFlowTransitionT
 RefPtr<Thread> UIFlowTransitionTransaction::StartThread(const Function<void()>& fn)
 {
     RefPtr<Thread> t(Thread::Create(fn));
-    t->SetStackSize(LOADING_THREAD_STACK_SIZE);
+    t->SetStackSize(UIFlowTransitionTransactionDetails::LOADING_THREAD_STACK_SIZE);
     t->Start();
     return t;
 }

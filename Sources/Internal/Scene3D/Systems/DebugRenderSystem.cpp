@@ -87,9 +87,9 @@ void DebugRenderSystem::Process(float32 timeElapsed)
 				AABBox3 dcBox(Vector3(), 1.0f);
 
 				//Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-				//Matrix4 finalMatrix = transformComponent->GetWorldTransform() * prevMatrix;
+				//Matrix4 finalMatrix = transformComponent->GetWorldMatrix() * prevMatrix;
 				
-                Renderer::GetDynamicBindings().SetDynamicParam(PARAM_WORLD, &transformComponent->GetWorldTransform(), DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
+                Renderer::GetDynamicBindings().SetDynamicParam(PARAM_WORLD, &transformComponent->GetWorldMatrix(), DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
                 Renderer::GetDynamicBindings().SetDynamicParam(PARAM_VIEW, &camera->GetMatrix(), DynamicBindings::UPDATE_SEMANTIC_ALWAYS);
 
 								
@@ -107,7 +107,7 @@ void DebugRenderSystem::Process(float32 timeElapsed)
 				RenderSystem2D::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 				//RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 
-				dcBox.GetTransformedBox(transformComponent->GetWorldTransform(), debugBoundigBox);
+				dcBox.GetTransformedBox(transformComponent->GetWorldMatrix(), debugBoundigBox);
 			}
 		}
 

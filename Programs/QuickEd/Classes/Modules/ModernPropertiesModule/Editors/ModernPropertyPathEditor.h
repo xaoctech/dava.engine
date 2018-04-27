@@ -2,9 +2,13 @@
 
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyDefaultEditor.h"
 
+#include <QPointer>
+
 class QLineEdit;
 class QToolButton;
 class QHBoxLayout;
+class QAction;
+class QMenu;
 
 class ModernPropertyPathEditor : public ModernPropertyDefaultEditor
 {
@@ -22,18 +26,24 @@ protected:
     void ResetProperty() override;
 
 private:
-    void OnButtonClicked();
+    void OnChooseAction();
+    void OnOpenFileAction();
+    void OnOpenFolderAction();
     void OnEditingFinished();
     void OnTextChanged(const QString& text);
     bool IsPathValid(const QString& path) const;
     void ClearError();
 
-    QLineEdit* line = nullptr;
-    QToolButton* button = nullptr;
+    QPointer<QLineEdit> line;
+    QPointer<QToolButton> button;
+    QPointer<QMenu> menu;
+    QPointer<QAction> chooseAction;
+    QPointer<QAction> openFileAction;
+    QPointer<QAction> openFolderAction;
 
     QList<QString> resourceExtensions;
     QString resourceSubDir;
     bool allowAnyExtension = false;
 
-    QHBoxLayout* layout = nullptr;
+    QPointer<QHBoxLayout> layout;
 };

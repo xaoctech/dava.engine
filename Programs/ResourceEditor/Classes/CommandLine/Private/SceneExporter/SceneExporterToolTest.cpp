@@ -123,13 +123,13 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
     {
         using namespace DAVA;
 
-        ScopedPtr<YamlNode> rootNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
+        RefPtr<YamlNode> rootNode(YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION));
 
         {
-            YamlNode* iosNode = YamlNode::CreateMapNode(false);
+            RefPtr<YamlNode> iosNode = YamlNode::CreateMapNode(false);
             iosNode->Set(String("outdir"), SETestDetail::dataiOSStr);
 
-            YamlNode* gpuNode = YamlNode::CreateArrayNode();
+            RefPtr<YamlNode> gpuNode = YamlNode::CreateArrayNode();
             gpuNode->Add(GPUFamilyDescriptor::GetGPUName(eGPUFamily::GPU_POWERVR_IOS));
 
             iosNode->Add(String("gpu"), gpuNode);
@@ -137,10 +137,10 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
         }
 
         {
-            YamlNode* androidNode = YamlNode::CreateMapNode(false);
+            RefPtr<YamlNode> androidNode = YamlNode::CreateMapNode(false);
             androidNode->Set(String("outdir"), SETestDetail::dataAndroidStr);
 
-            YamlNode* gpuNode = YamlNode::CreateArrayNode();
+            RefPtr<YamlNode> gpuNode = YamlNode::CreateArrayNode();
             gpuNode->Add(GPUFamilyDescriptor::GetGPUName(eGPUFamily::GPU_MALI));
             gpuNode->Add(GPUFamilyDescriptor::GetGPUName(eGPUFamily::GPU_ADRENO));
 
@@ -150,7 +150,7 @@ DAVA_TARC_TESTCLASS(SceneExporterToolTest)
             rootNode->Add(androidNode);
         }
 
-        return YamlEmitter::SaveToYamlFile(yamlConfig, rootNode);
+        return YamlEmitter::SaveToYamlFile(yamlConfig, rootNode.Get());
     }
 
     DAVA_TEST (ExportSceneTest)

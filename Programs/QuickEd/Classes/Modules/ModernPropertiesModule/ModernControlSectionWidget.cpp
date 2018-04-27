@@ -18,8 +18,8 @@
 #include <QMoveEvent>
 #include <QStyle>
 
-ModernControlSectionWidget::ModernControlSectionWidget(DAVA::ContextAccessor* accessor_, DAVA::UI* ui_, ControlNode* controlNode_, ControlPropertiesSection* section_)
-    : ModernSectionWidget(accessor_, ui_, controlNode_)
+ModernControlSectionWidget::ModernControlSectionWidget(DAVA::ContextAccessor* accessor_, DAVA::OperationInvoker* invoker_, DAVA::UI* ui_, ControlNode* controlNode_, ControlPropertiesSection* section_)
+    : ModernSectionWidget(accessor_, invoker_, ui_, controlNode_)
     , section(section_)
 {
     using namespace DAVA;
