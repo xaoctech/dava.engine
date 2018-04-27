@@ -51,11 +51,6 @@ void NetworkInputSystem::RemoveEntity(Entity* entity)
 void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
 {
     DAVA_PROFILER_CPU_SCOPE("NetworkInputSystem::ProcessFixed");
-    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingleComponentForWrite<NetworkStatisticsSingleComponent>(this);
-    if (statsComp)
-    {
-        statsComp->UpdateFrameTimestamps();
-    }
 
     for (const FastName& justConnectedToken : netConnectionsComp->GetJustConnectedTokens())
     {
@@ -64,7 +59,13 @@ void NetworkInputSystem::ProcessFixed(float32 timeElapsed)
 
     ProcessReceivedInputData();
 
-    const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponent<NetworkTimeSingleComponent>();
+    NetworkStatisticsSingleComponent* statsComp = GetScene()->GetSingleComponentForWrite<NetworkStatisticsSingleComponent>(this);
+    if (statsComp)
+    {
+        statsComp->UpdateFrameTimestamps();
+    }
+
+    const NetworkTimeSingleComponent* netTimeComp = GetScene()->GetSingleComponentForRead<NetworkTimeSingleComponent>(this);
     for (auto& entityToBuffer : entitiesToBuffers)
     {
         Entity* entity = entityToBuffer.first;

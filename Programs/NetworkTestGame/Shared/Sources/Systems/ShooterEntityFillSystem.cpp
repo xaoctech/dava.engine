@@ -132,22 +132,19 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
     const bool isServer = IsServer(GetScene());
     const bool isClientOwner = IsClientOwner(entity);
 
-    if (isServer || isClientOwner)
-    {
-        const BattleOptionsSingleComponent* optionsComponent = GetScene()->GetSingleComponentForRead<BattleOptionsSingleComponent>(this);
+    const BattleOptionsSingleComponent* optionsComponent = GetScene()->GetSingleComponentForRead<BattleOptionsSingleComponent>(this);
 
-        CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
-        controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
-        controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
-        controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
-        uint32 collisionMask = SHOOTER_CCT_COLLIDE_WITH_MASK;
-        if (!optionsComponent->collideCharacters)
-        {
-            collisionMask &= ~SHOOTER_CHARACTER_COLLISION_TYPE;
-        }
-        controllerComponent->SetTypeMaskToCollideWith(collisionMask);
-        entity->AddComponent(controllerComponent);
+    CapsuleCharacterControllerComponent* controllerComponent = new CapsuleCharacterControllerComponent();
+    controllerComponent->SetHeight(SHOOTER_CHARACTER_CAPSULE_HEIGHT);
+    controllerComponent->SetRadius(SHOOTER_CHARACTER_CAPSULE_RADIUS);
+    controllerComponent->SetTypeMask(SHOOTER_CHARACTER_COLLISION_TYPE);
+    uint32 collisionMask = SHOOTER_CCT_COLLIDE_WITH_MASK;
+    if (!optionsComponent->collideCharacters)
+    {
+        collisionMask &= ~SHOOTER_CHARACTER_COLLISION_TYPE;
     }
+    controllerComponent->SetTypeMaskToCollideWith(collisionMask);
+    entity->AddComponent(controllerComponent);
 
     if (isServer)
     {
@@ -193,6 +190,7 @@ void ShooterEntityFillSystem::FillPlayerEntity(DAVA::Entity* entity)
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_MOVE_LEFT);
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_MOVE_RIGHT);
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_ACCELERATE);
+        remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_JUMP);
         remoteInputComponent->AddActionToReplicate(SHOOTER_ACTION_ATTACK_BULLET);
         entity->AddComponent(remoteInputComponent);
 

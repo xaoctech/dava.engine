@@ -1,4 +1,4 @@
-FROM docker-registry.k8s/build:centos7
+FROM docker-registry.k8s/build:clang6
 
 ARG WITH_BREAKPAD=no
 ENV WITH_BREAKPAD ${WITH_BREAKPAD}

@@ -47,8 +47,17 @@ public:
     /** Get character's movement mode. */
     MovementMode GetMovementMode() const;
 
-    /** Move a character for specified `displacement`. */
-    void Move(const Vector3& displacement);
+    /** Get character's offset for the next update. **/
+    const Vector3& GetOffset() const;
+
+    /** Set character's offset for the next update. **/
+    void SetOffset(const Vector3& value);
+
+    /** Get character's velocity for the next update. **/
+    const Vector3& GetVelocity() const;
+
+    /** Set character's velocity for the next update. **/
+    void SetVelocity(const Vector3& value);
 
     /** Teleport a character to specified `worldPosition`. */
     void Teleport(const Vector3& worldPosition);
@@ -89,6 +98,7 @@ private:
     bool grounded = false;
 
     Vector3 totalDisplacement = Vector3::Zero;
+    Vector3 totalVelocity = Vector3::Zero;
 
     bool teleported = false;
     Vector3 teleportDestination = Vector3::Zero;

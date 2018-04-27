@@ -149,7 +149,6 @@ private:
     void CalculateMedianAxes(const SelectableGroup& selection, DAVA::Vector3& axisX, DAVA::Vector3& axisY, DAVA::Vector3& axisZ) const;
 
 private:
-
     // entities to modify
     Vector<EntityToModify> modifEntities;
     Vector<Entity*> clonedEntities;

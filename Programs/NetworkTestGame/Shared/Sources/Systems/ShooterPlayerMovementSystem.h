@@ -39,6 +39,8 @@ private:
     void BeforeCharacterMove(DAVA::CharacterControllerComponent* cct);
     void AfterCharacterMove(DAVA::CharacterControllerComponent* cct);
     void MoveCharacter(DAVA::Entity* player, const DAVA::Vector3& offset, DAVA::float32 duration) const;
+    void JumpCharacter(DAVA::Entity* player, const DAVA::Vector3& offset, DAVA::float32 verticalOffset) const;
+    void ThrowCharacter(DAVA::Entity* player, const DAVA::Vector3& offset, DAVA::float32 verticalOffset) const;
     void MoveCar(DAVA::Entity* player, DAVA::VehicleCarComponent* car, DAVA::float32 acceleration, DAVA::float32 steer, DAVA::float32 duration) const;
 
 private:

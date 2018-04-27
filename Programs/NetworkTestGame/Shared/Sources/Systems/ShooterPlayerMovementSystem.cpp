@@ -36,6 +36,7 @@
 #include <Physics/Core/StaticBodyComponent.h>
 #include <Physics/Vehicles/VehicleCarComponent.h>
 #include <Physics/Controllers/CapsuleCharacterControllerComponent.h>
+#include <Physics/CollisionSingleComponent.h>
 #include <Physics/Core/CapsuleShapeComponent.h>
 #include <Physics/Core/Private/PhysicsMath.h>
 
@@ -68,6 +69,7 @@ ShooterMovementSystem::ShooterMovementSystem(DAVA::Scene* scene)
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_MOVE_LEFT, eInputElements::KB_A, keyboardId);
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_MOVE_RIGHT, eInputElements::KB_D, keyboardId);
     actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_ACCELERATE, eInputElements::KB_LSHIFT, keyboardId);
+    actionsSingleComponent->CollectDigitalAction(SHOOTER_ACTION_JUMP, eInputElements::KB_SPACE, keyboardId);
     actionsSingleComponent->AddAvailableAnalogAction(SHOOTER_ACTION_ANALOG_MOVE, AnalogPrecision::ANALOG_UINT16);
     actionsSingleComponent->AddAvailableAnalogAction(SHOOTER_ACTION_TELEPORT, AnalogPrecision::ANALOG_UINT16);
 
@@ -118,6 +120,22 @@ void ShooterMovementSystem::ProcessFixed(DAVA::float32 dt)
         }
 
         RotateEntityTowardsCurrentAim(entity);
+    }
+
+    CollisionSingleComponent* collisionSingleComponent = GetScene()->GetSingleComponent<CollisionSingleComponent>();
+    for (CollisionInfo& ci : collisionSingleComponent->collisions)
+    {
+        const CapsuleCharacterControllerComponent* a = ci.first->GetComponent<CapsuleCharacterControllerComponent>();
+        const CapsuleCharacterControllerComponent* b = ci.second->GetComponent<CapsuleCharacterControllerComponent>();
+        if (a != nullptr && b != nullptr && !ci.points.empty())
+        {
+            const Vector3& player1Position = ci.first->GetComponent<TransformComponent>()->GetLocalTransform().GetTranslation();
+            const Vector3& player2Position = ci.second->GetComponent<TransformComponent>()->GetLocalTransform().GetTranslation();
+            Vector3 player1ToPlayer2 = player1Position - player2Position;
+            player1ToPlayer2.Normalize();
+            Vector3 offset(player1ToPlayer2.x * SHOOTER_MOVEMENT_SPEED, player1ToPlayer2.y * SHOOTER_MOVEMENT_SPEED, 0.f);
+            ThrowCharacter(ci.first, offset, SHOOTER_PUSH_ACCELERATION);
+        }
     }
 }
 
@@ -180,6 +198,7 @@ void ShooterMovementSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA
     {
         Vector3 offset = Vector3::Zero;
         bool accelerate = false;
+        bool jump = false;
 
         for (const FastName& action : actions)
         {
@@ -203,18 +222,32 @@ void ShooterMovementSystem::ApplyDigitalActions(DAVA::Entity* entity, const DAVA
             {
                 accelerate = true;
             }
+            else if (action == SHOOTER_ACTION_JUMP)
+            {
+                jump = true;
+            }
         }
 
-        if (offset.SquareLength() > 0.0f)
+        if (jump || offset.SquareLength() > 0.0f)
         {
-            offset = Normalize(offset) * SHOOTER_MOVEMENT_SPEED;
-
-            if (accelerate)
+            if (offset.SquareLength() > 0.0f)
             {
-                offset *= 1.7f;
+                offset = Normalize(offset) * SHOOTER_MOVEMENT_SPEED;
+
+                if (accelerate)
+                {
+                    offset *= 1.7f;
+                }
             }
 
-            MoveCharacter(entity, offset, duration);
+            if (jump)
+            {
+                JumpCharacter(entity, offset, SHOOTER_JUMP_ACCELERATION);
+            }
+            else
+            {
+                MoveCharacter(entity, offset, duration);
+            }
         }
     }
 }
@@ -490,7 +523,44 @@ void ShooterMovementSystem::MoveCharacter(DAVA::Entity* player, const DAVA::Vect
         if (characterControllerComponent != nullptr && characterControllerComponent->IsGrounded())
         {
             const Transform& transform = player->GetComponent<TransformComponent>()->GetLocalTransform();
-            characterControllerComponent->Move(transform.GetRotation().ApplyToVectorFast(offset * duration));
+            characterControllerComponent->SetOffset(characterControllerComponent->GetOffset() + transform.GetRotation().ApplyToVectorFast(offset * duration));
+        }
+    }
+}
+
+void ShooterMovementSystem::JumpCharacter(DAVA::Entity* player, const DAVA::Vector3& offset, DAVA::float32 verticalOffset) const
+{
+    using namespace DAVA;
+
+    CharacterControllerComponent* characterControllerComponent = PhysicsUtils::GetCharacterControllerComponent(player);
+    if (characterControllerComponent != nullptr && characterControllerComponent->IsGrounded())
+    {
+        if (offset != Vector3::Zero)
+        {
+            const Transform& transform = player->GetComponent<TransformComponent>()->GetLocalTransform();
+            characterControllerComponent->SetVelocity(transform.GetRotation().ApplyToVectorFast(offset) + Vector3(0.f, 0.f, verticalOffset));
+        }
+        else
+        {
+            characterControllerComponent->SetVelocity(Vector3(0.f, 0.f, verticalOffset));
+        }
+    }
+}
+
+void ShooterMovementSystem::ThrowCharacter(DAVA::Entity* player, const DAVA::Vector3& offset, DAVA::float32 verticalOffset) const
+{
+    using namespace DAVA;
+
+    CharacterControllerComponent* characterControllerComponent = PhysicsUtils::GetCharacterControllerComponent(player);
+    if (characterControllerComponent != nullptr && characterControllerComponent->IsGrounded())
+    {
+        if (offset != Vector3::Zero)
+        {
+            characterControllerComponent->SetVelocity(offset + Vector3(0.f, 0.f, verticalOffset));
+        }
+        else
+        {
+            characterControllerComponent->SetVelocity(Vector3(0.f, 0.f, verticalOffset));
         }
     }
 }

@@ -24,7 +24,7 @@
 
 import subprocess
 import sys
-import os.path
+import os
 import signal
 
 def get_postfix(platform):
@@ -158,6 +158,7 @@ elif sys.platform == 'linux2':
     commandLine = [app_path]
     if run_at_teamcity == True:
         commandLine.extend(["-teamcity"])
+    os.environ['ASAN_OPTIONS'] = 'check_malloc_usable_size=0:detect_leaks=0'
     sub_process = subprocess.Popen(commandLine, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 app_exit_code = 0
@@ -183,6 +184,15 @@ while continue_process_stdout:
                     else:
                         sub_process.send_signal(signal.SIGINT)
                     continue_process_stdout = False
+                if sys.platform == 'linux2':
+                    continue_process_stdout = False
+                    while True:
+                        errline = sub_process.stderr.readline()
+                        if errline == '':
+                            break
+                        sys.stderr.write(errline)
+                        sys.stderr.flush()
+                        app_exit_code = 1
             if line.find("E/AndroidRuntime") != -1:
                 sys.stdout.write(line)
                 sys.stdout.flush()

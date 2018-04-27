@@ -253,32 +253,6 @@ PhysicsComponent* GetParentPhysicsComponent(Entity* entity)
     }
 }
 
-bool IsPhysicsEntity(Entity& entity, Component& componentToBeRemoved)
-{
-    PhysicsComponent* bodyComponent = PhysicsUtils::GetBodyComponent(&entity);
-    if (bodyComponent != nullptr && bodyComponent != &componentToBeRemoved)
-    {
-        return true;
-    }
-
-    Vector<CollisionShapeComponent*> shapeComponents = PhysicsUtils::GetShapeComponents(&entity);
-    if (shapeComponents.size() > 0)
-    {
-        if (shapeComponents.size() != 1 || shapeComponents[0] != &componentToBeRemoved)
-        {
-            return true;
-        }
-    }
-
-    CharacterControllerComponent* cctComponent = PhysicsUtils::GetCharacterControllerComponent(&entity);
-    if (cctComponent != nullptr && cctComponent != &componentToBeRemoved)
-    {
-        return true;
-    }
-
-    return false;
-}
-
 bool IsBodySleeping(PhysicsComponent* body)
 {
     DVASSERT(body != nullptr);
@@ -293,6 +267,8 @@ bool IsBodySleeping(PhysicsComponent* body)
 }
 
 const uint32 DEFAULT_SIMULATION_BLOCK_SIZE = 16 * 1024 * 512;
+
+const float32 GRAVITATION_CONSTANT = 1.0f / 15.f;
 } // namespace
 
 physx::PxFilterFlags FilterShader(physx::PxFilterObjectAttributes attributes0,
@@ -501,6 +477,61 @@ void PhysicsSystem::SimulationEventCallback::onContact(const physx::PxContactPai
     }
 }
 
+PhysicsSystem::ControllerHitCallback::ControllerHitCallback(DAVA::CollisionSingleComponent* targetCollisionSingleComponent)
+    : targetCollisionSingleComponent(targetCollisionSingleComponent)
+{
+    DVASSERT(targetCollisionSingleComponent != nullptr);
+}
+
+void PhysicsSystem::ControllerHitCallback::onControllerHit(const physx::PxControllersHit& hit)
+{
+    Component* firstCollisionComponent = static_cast<Component*>(hit.controller->getActor()->userData);
+    DVASSERT(firstCollisionComponent != nullptr);
+
+    Component* secondCollisionComponent = static_cast<Component*>(hit.other->getActor()->userData);
+    DVASSERT(secondCollisionComponent != nullptr);
+
+    ProcessCollision(hit, firstCollisionComponent, secondCollisionComponent);
+}
+
+void PhysicsSystem::ControllerHitCallback::onObstacleHit(const physx::PxControllerObstacleHit& hit)
+{
+}
+
+void PhysicsSystem::ControllerHitCallback::onShapeHit(const physx::PxControllerShapeHit& hit)
+{
+    if (hit.shape->getActor() != nullptr)
+    {
+        Component* firstCollisionComponent = static_cast<Component*>(hit.controller->getActor()->userData);
+        DVASSERT(firstCollisionComponent != nullptr);
+
+        Component* secondCollisionComponent = static_cast<Component*>(hit.shape->getActor()->userData);
+        DVASSERT(secondCollisionComponent != nullptr);
+
+        ProcessCollision(hit, firstCollisionComponent, secondCollisionComponent);
+    }
+}
+
+void PhysicsSystem::ControllerHitCallback::ProcessCollision(const physx::PxControllerHit& controllerHit, Component* firstCollisionComponent, Component* secondCollisionComponent)
+{
+    Entity* firstEntity = firstCollisionComponent->GetEntity();
+    DVASSERT(firstEntity != nullptr);
+
+    Entity* secondEntity = secondCollisionComponent->GetEntity();
+    DVASSERT(secondEntity != nullptr);
+
+    CollisionPoint collisionPoint;
+    collisionPoint.position = PhysicsMath::PxExtendedVec3ToVector3(controllerHit.worldPos);
+    collisionPoint.normal = PhysicsMath::PxVec3ToVector3(controllerHit.worldNormal);
+    collisionPoint.impulse = Vector3();
+
+    CollisionInfo collisionInfo;
+    collisionInfo.first = firstEntity;
+    collisionInfo.second = secondEntity;
+    collisionInfo.points = { collisionPoint };
+    targetCollisionSingleComponent->collisions.push_back(std::move(collisionInfo));
+}
+
 PhysicsSystem::PhysicsSystem(Scene* scene)
     : BaseSimulationSystem(scene, ComponentMask())
 {
@@ -511,6 +542,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
 
     simulationBlockSize = PhysicsSystemDetail::DEFAULT_SIMULATION_BLOCK_SIZE;
     simulationEventCallback = SimulationEventCallback(scene->GetSingleComponentForWrite<CollisionSingleComponent>(this));
+    controllerHitCallback = ControllerHitCallback(scene->GetSingleComponentForWrite<CollisionSingleComponent>(this));
 
     if (engine != nullptr)
     {
@@ -558,6 +590,8 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     convexHullAndRenderEntities = scene->AquireEntityGroup<RenderComponent, ConvexHullShapeComponent>();
     meshAndRenderEntities = scene->AquireEntityGroup<RenderComponent, MeshShapeComponent>();
     heightFieldAndRenderEntities = scene->AquireEntityGroup<RenderComponent, HeightFieldShapeComponent>();
+    physicsEntities = scene->AquireEntityGroupWithMatcher<AnyOfEntityMatcher,
+                                                          BoxShapeComponent, SphereShapeComponent, CapsuleShapeComponent, PlaneShapeComponent, MeshShapeComponent, ConvexHullShapeComponent, HeightFieldShapeComponent, DynamicBodyComponent, StaticBodyComponent, CapsuleCharacterControllerComponent, BoxCharacterControllerComponent>();
 
     convexHullAndRenderEntities->onEntityAdded->Connect(this, &PhysicsSystem::OnRenderedEntityReady);
     convexHullAndRenderEntities->onEntityRemoved->Connect(this, &PhysicsSystem::OnRenderedEntityNotReady);
@@ -565,6 +599,7 @@ PhysicsSystem::PhysicsSystem(Scene* scene)
     meshAndRenderEntities->onEntityRemoved->Connect(this, &PhysicsSystem::OnRenderedEntityNotReady);
     heightFieldAndRenderEntities->onEntityAdded->Connect(this, &PhysicsSystem::OnRenderedEntityReady);
     heightFieldAndRenderEntities->onEntityRemoved->Connect(this, &PhysicsSystem::OnRenderedEntityNotReady);
+    physicsEntities->onEntityRemoved->Connect(this, &PhysicsSystem::OnPhysicsEntityRemoved);
 
     // Component groups for newly created shapes
     staticBodiesPendingAdd = scene->AquireComponentGroupOnAdd(staticBodies, this);
@@ -608,13 +643,12 @@ PhysicsSystem::~PhysicsSystem()
     meshAndRenderEntities->onEntityRemoved->Disconnect(this);
     heightFieldAndRenderEntities->onEntityAdded->Disconnect(this);
     heightFieldAndRenderEntities->onEntityRemoved->Disconnect(this);
+    physicsEntities->onEntityRemoved->Disconnect(this);
 }
 
 void PhysicsSystem::UnregisterEntity(Entity* entity)
 {
     GetScene()->GetSingleComponentForWrite<CollisionSingleComponent>(this)->RemoveCollisionsWithEntity(entity);
-
-    physicsEntities.erase(entity);
 }
 
 void PhysicsSystem::PrepareForRemove()
@@ -624,7 +658,6 @@ void PhysicsSystem::PrepareForRemove()
     characterControllerComponentsUpdatePending.clear();
     teleportedCcts.clear();
     readyRenderedEntities.clear();
-    physicsEntities.clear();
 
     for (CollisionShapeComponent* component : shapes->components)
     {
@@ -1142,7 +1175,7 @@ void PhysicsSystem::SyncTransformToPhysx()
     {
         // Check for perfomance reason: if this entity is not participating in physics simulation,
         // there is no need to handle it
-        if (physicsEntities.find(entity) != physicsEntities.end())
+        if (physicsEntities->GetEntities().Contains(entity))
         {
             CharacterControllerComponent* controllerComponent = PhysicsUtils::GetCharacterControllerComponent(entity);
             const physx::PxController* pxController = (controllerComponent == nullptr) ? nullptr : controllerComponent->GetPxController();
@@ -1375,23 +1408,30 @@ void PhysicsSystem::MoveCharacterControllers(float32 timeElapsed)
                               physx::PxControllerCollisionFlags collisionFlags;
                               if (controllerComponent->GetMovementMode() == CharacterControllerComponent::MovementMode::Flying)
                               {
-                                  collisionFlags = controller->move(PhysicsMath::Vector3ToPxVec3(controllerComponent->totalDisplacement), 0.0f, timeElapsed, filter);
+                                  Vector3 momentumSpeed = controllerComponent->totalDisplacement + controllerComponent->totalVelocity * timeElapsed;
+
+                                  collisionFlags = controller->move(PhysicsMath::Vector3ToPxVec3(momentumSpeed), 0.0f, timeElapsed, filter);
                               }
                               else
                               {
                                   DVASSERT(controllerComponent->GetMovementMode() == CharacterControllerComponent::MovementMode::Walking);
 
-                                  // Ignore displacement along z axis
-                                  Vector3 displacement = controllerComponent->totalDisplacement;
-                                  displacement.z = 0.0f;
+                                  controllerComponent->totalVelocity += PhysicsMath::PxVec3ToVector3(physicsScene->getGravity() * PhysicsSystemDetail::GRAVITATION_CONSTANT);
 
-                                  // Apply gravity
-                                  displacement += PhysicsMath::PxVec3ToVector3(physicsScene->getGravity()) * timeElapsed;
-                                  collisionFlags = controller->move(PhysicsMath::Vector3ToPxVec3(displacement), 0.0f, timeElapsed, filter);
+                                  Vector3 momentumSpeed = controllerComponent->totalDisplacement + controllerComponent->totalVelocity * timeElapsed;
+
+                                  collisionFlags = controller->move(PhysicsMath::Vector3ToPxVec3(momentumSpeed), 0.0f, timeElapsed, filter);
                               }
 
                               controllerComponent->grounded = (collisionFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN);
                               controllerComponent->totalDisplacement = Vector3::Zero;
+
+                              if (controllerComponent->grounded)
+                              {
+                                  // When grounded, apply the gravitational acceleration,
+                                  // so when player starts falling he already has proper acceleration.
+                                  controllerComponent->totalVelocity = PhysicsMath::PxVec3ToVector3(physicsScene->getGravity());
+                              }
 
                               // Sync entity's transform
 
@@ -1509,8 +1549,6 @@ void PhysicsSystem::InitBodyComponent(PhysicsComponent* bodyComponent)
     AttachShapesRecursively(entity, bodyComponent, transform.GetScale());
 
     physicsScene->addActor(*createdActor);
-
-    physicsEntities.insert(entity);
 }
 
 void PhysicsSystem::InitShapeComponent(CollisionShapeComponent* shapeComponent)
@@ -1548,7 +1586,6 @@ void PhysicsSystem::InitShapeComponent(CollisionShapeComponent* shapeComponent)
             }
         }
         shape->release();
-        physicsEntities.insert(entity);
     }
 }
 
@@ -1580,6 +1617,7 @@ void PhysicsSystem::InitCCTComponent(CharacterControllerComponent* cctComponent)
         desc.contactOffset = boxCharacterControllerComponent->GetContactOffset();
         desc.scaleCoeff = boxCharacterControllerComponent->GetScaleCoeff();
         desc.material = physics->GetMaterial(FastName());
+        desc.reportCallback = &controllerHitCallback;
         DVASSERT(desc.isValid());
 
         controller = controllerManager->createController(desc);
@@ -1595,6 +1633,7 @@ void PhysicsSystem::InitCCTComponent(CharacterControllerComponent* cctComponent)
         desc.contactOffset = capsuleCharacterControllerComponent->GetContactOffset();
         desc.scaleCoeff = capsuleCharacterControllerComponent->GetScaleCoeff();
         desc.material = physics->GetMaterial(FastName());
+        desc.reportCallback = &controllerHitCallback;
         desc.upDirection = PhysicsMath::Vector3ToPxVec3(Vector3::UnitZ);
         DVASSERT(desc.isValid());
 
@@ -1619,8 +1658,6 @@ void PhysicsSystem::InitCCTComponent(CharacterControllerComponent* cctComponent)
     cctComponent->controller = controller;
 
     UpdateCCTFilterData(cctComponent, cctComponent->GetTypeMask(), cctComponent->GetTypeMaskToCollideWith());
-
-    physicsEntities.insert(entity);
 }
 
 void PhysicsSystem::DeinitBodyComponent(PhysicsComponent* bodyComponent)
@@ -1660,12 +1697,6 @@ void PhysicsSystem::DeinitBodyComponent(PhysicsComponent* bodyComponent)
             }
         }
     }
-
-    Entity* entity = bodyComponent->GetEntity();
-    if (!PhysicsSystemDetail::IsPhysicsEntity(*entity, *bodyComponent))
-    {
-        physicsEntities.erase(entity);
-    }
 }
 
 void PhysicsSystem::DeinitShapeComponent(CollisionShapeComponent* shapeComponent)
@@ -1678,11 +1709,6 @@ void PhysicsSystem::DeinitShapeComponent(CollisionShapeComponent* shapeComponent
     collisionComponentsUpdatePending.erase(shapeComponent);
 
     ReleaseShape(shapeComponent);
-
-    if (!PhysicsSystemDetail::IsPhysicsEntity(*entity, *shapeComponent))
-    {
-        physicsEntities.erase(entity);
-    }
 }
 
 void PhysicsSystem::DeinitCCTComponent(CharacterControllerComponent* cctComponent)
@@ -1690,12 +1716,6 @@ void PhysicsSystem::DeinitCCTComponent(CharacterControllerComponent* cctComponen
     if (cctComponent->controller != nullptr)
     {
         cctComponent->controller->release();
-    }
-
-    Entity* entity = cctComponent->GetEntity();
-    if (!PhysicsSystemDetail::IsPhysicsEntity(*entity, *cctComponent))
-    {
-        physicsEntities.erase(entity);
     }
 }
 
@@ -1720,6 +1740,11 @@ void PhysicsSystem::OnRenderedEntityNotReady(Entity* entity)
     processRenderDependentShapes(Type::Instance<ConvexHullShapeComponent>());
     processRenderDependentShapes(Type::Instance<MeshShapeComponent>());
     processRenderDependentShapes(Type::Instance<HeightFieldShapeComponent>());
+}
+
+void PhysicsSystem::OnPhysicsEntityRemoved(Entity* entity)
+{
+    previouslyActiveEntities.erase(std::remove(previouslyActiveEntities.begin(), previouslyActiveEntities.end(), entity), previouslyActiveEntities.end());
 }
 
 void PhysicsSystem::ExecuteForEachBody(Function<void(PhysicsComponent*)> func)

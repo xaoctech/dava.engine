@@ -194,8 +194,11 @@ void EntitiesManager::RegisterComponent(Entity* entity, Component* component)
 
             bool isAllRequiredComponentsAvailable = pair.first.maskMatcher(cm, entityComponentMask);
             bool isComponentMarkedForCheckAvailable = (cm & componentToCheckType) == componentToCheckType;
+            // The ComponentMask without the component we're adding already matches the mask.
+            // This means this entity already triggered onEntityAdded for the EntityGroup we're checking.
+            bool isMatchBefore = pair.first.maskMatcher(cm, entityComponentMask ^ componentToCheckType);
 
-            bool fit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable;
+            bool fit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable && !isMatchBefore;
             if (fit)
             {
                 CacheEntityAdded(&eg, entity);
@@ -272,8 +275,11 @@ void EntitiesManager::UnregisterComponent(Entity* entity, Component* component)
 
             bool isAllRequiredComponentsAvailable = pair.first.maskMatcher(cm, entityComponentMask);
             bool isComponentMarkedForCheckAvailable = (cm & componentToCheckType) == componentToCheckType;
+            // The ComponentMask without the component we're removing still matches the mask.
+            // This means this entity should not trigger onEntityRemoved for the EntityGroup we're checking.
+            bool isMatchAfter = pair.first.maskMatcher(cm, entityComponentMask ^ componentToCheckType);
 
-            bool fit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable;
+            bool fit = isAllRequiredComponentsAvailable && isComponentMarkedForCheckAvailable && !isMatchAfter;
             if (fit)
             {
                 CacheEntityRemoved(&eg, entity);

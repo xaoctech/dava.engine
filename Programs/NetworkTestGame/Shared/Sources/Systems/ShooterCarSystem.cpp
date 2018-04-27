@@ -483,9 +483,9 @@ void ShooterCarSystem::ToggleCharacterStateIfRequired(DAVA::Entity* player) cons
             if (!optionsComponent->collideCharacters)
             {
                 collisionMask &= ~SHOOTER_CHARACTER_COLLISION_TYPE;
-        }
-        controllerComponent->SetTypeMaskToCollideWith(collisionMask);
-        player->AddComponent(controllerComponent);
+            }
+            controllerComponent->SetTypeMaskToCollideWith(collisionMask);
+            player->AddComponent(controllerComponent);
         }
 
         NetworkPredictComponent* networkPredictComponent = player->GetComponent<NetworkPredictComponent>();

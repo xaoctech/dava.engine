@@ -45,9 +45,24 @@ CharacterControllerComponent::MovementMode CharacterControllerComponent::GetMove
     return mode;
 }
 
-void CharacterControllerComponent::Move(const Vector3& displacement)
+const Vector3& CharacterControllerComponent::GetOffset() const
 {
-    totalDisplacement += displacement;
+    return totalDisplacement;
+}
+
+void CharacterControllerComponent::SetOffset(const Vector3& value)
+{
+    totalDisplacement = value;
+}
+
+const Vector3& CharacterControllerComponent::GetVelocity() const
+{
+    return totalVelocity;
+}
+
+void CharacterControllerComponent::SetVelocity(const Vector3& value)
+{
+    totalVelocity = value;
 }
 
 void CharacterControllerComponent::Teleport(const Vector3& worldPosition)

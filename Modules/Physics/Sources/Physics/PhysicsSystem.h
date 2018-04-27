@@ -10,6 +10,7 @@
 #include <Scene3D/ComponentGroup.h>
 #include <Scene3D/Systems/BaseSimulationSystem.h>
 
+#include <physx/characterkinematic/PxController.h>
 #include <physx/PxQueryReport.h>
 #include <physx/PxSimulationEventCallback.h>
 #include <physx/PxForceMode.h>
@@ -115,6 +116,8 @@ private:
     void OnRenderedEntityReady(Entity* entity);
     void OnRenderedEntityNotReady(Entity* entity);
 
+    void OnPhysicsEntityRemoved(Entity* entity);
+
     void ExecuteForEachBody(Function<void(PhysicsComponent*)> func);
     void ExecuteForEachPendingBody(Function<void(PhysicsComponent*)> func);
     void ExecuteForEachCCT(Function<void(CharacterControllerComponent*)> func);
@@ -142,6 +145,21 @@ private:
         void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs) override;
 
     private:
+        CollisionSingleComponent* targetCollisionSingleComponent;
+    };
+
+    class ControllerHitCallback : public physx::PxUserControllerHitReport
+    {
+    public:
+        ControllerHitCallback() = default;
+        ControllerHitCallback(DAVA::CollisionSingleComponent* targetCollisionSingleComponent);
+        void onControllerHit(const physx::PxControllersHit& hit) override;
+        void onObstacleHit(const physx::PxControllerObstacleHit& hit) override;
+        void onShapeHit(const physx::PxControllerShapeHit& hit) override;
+
+    private:
+        void ProcessCollision(const physx::PxControllerHit& controllerHit, Component* firstCollisionComponent, Component* secondCollisionComponent);
+
         CollisionSingleComponent* targetCollisionSingleComponent;
     };
 
@@ -174,6 +192,7 @@ private:
 
     Vector<PendingForce> forces;
     SimulationEventCallback simulationEventCallback;
+    ControllerHitCallback controllerHitCallback;
 
     bool drawDebugInfo = false;
 
@@ -188,6 +207,7 @@ private:
     EntityGroup* convexHullAndRenderEntities;
     EntityGroup* meshAndRenderEntities;
     EntityGroup* heightFieldAndRenderEntities;
+    EntityGroup* physicsEntities;
 
     // New components which haven't been handled yet
     ComponentGroupOnAdd<StaticBodyComponent>* staticBodiesPendingAdd = nullptr;
@@ -198,9 +218,6 @@ private:
 
     // Set of entities whose render components are ready to be used for creating physx shape
     UnorderedSet<Entity*> readyRenderedEntities;
-
-    // Contains all the entities which participate in physics simulation
-    UnorderedSet<Entity*> physicsEntities;
 
     Vector<Entity*> previouslyActiveEntities;
 

@@ -32,6 +32,12 @@
 #define DAVA_SWITCH_CASE_FALLTHROUGH
 #endif
 
+#if defined(__has_feature)
+#if __has_feature(address_sanitizer)
+#define DAVA_ASAN_ENABLED
+#endif
+#endif
+
 #if defined(DAVA_MEMORY_PROFILING_ENABLE)
 #include "MemoryManager/AllocPools.h"
 #include "MemoryManager/TrackingAllocator.h"

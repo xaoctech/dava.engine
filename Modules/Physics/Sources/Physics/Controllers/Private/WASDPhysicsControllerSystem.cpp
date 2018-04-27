@@ -122,22 +122,22 @@ void WASDPhysicsControllerSystem::ProcessFixed(float32 timeElapsed)
 
         if (keyboard->GetKeyState(eInputElements::KB_W).IsPressed() || keyboard->GetKeyState(eInputElements::KB_UP).IsPressed())
         {
-            characterControllerComponent->Move(forward);
+            characterControllerComponent->SetOffset(characterControllerComponent->GetOffset() + forward);
         }
 
         if (keyboard->GetKeyState(eInputElements::KB_S).IsPressed() || keyboard->GetKeyState(eInputElements::KB_DOWN).IsPressed())
         {
-            characterControllerComponent->Move(-forward);
+            characterControllerComponent->SetOffset(characterControllerComponent->GetOffset() - forward);
         }
 
         if (keyboard->GetKeyState(eInputElements::KB_D).IsPressed() || keyboard->GetKeyState(eInputElements::KB_RIGHT).IsPressed())
         {
-            characterControllerComponent->Move(right);
+            characterControllerComponent->SetOffset(characterControllerComponent->GetOffset() + right);
         }
 
         if (keyboard->GetKeyState(eInputElements::KB_A).IsPressed() || keyboard->GetKeyState(eInputElements::KB_LEFT).IsPressed())
         {
-            characterControllerComponent->Move(-right);
+            characterControllerComponent->SetOffset(characterControllerComponent->GetOffset() - right);
         }
     }
 }

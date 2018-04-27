@@ -4,15 +4,19 @@ set -e
 clients_num=${AWS_TEST_CLIENTS_NUM:-126}
 bot_kind=random
 log_stats=false
+traffic_control=del
 
 OPTIND=1
-while getopts ":b:s" opt; do
+while getopts "b:st" opt; do
   case $opt in
     b)
       bot_kind=$OPTARG
       ;;
     s)
       log_stats=true
+      ;;
+    t)
+      traffic_control=add
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -34,6 +38,7 @@ ssh_opts="-o ConnectTimeout=10 -o UserKnownHostsFile=/dev/null -o StrictHostKeyC
 server=18.184.36.67
 
 hosts=(`aws/aws-ips ${dir} ${secret}`)
+./aws/aws-deploy udp_proxy/config.sh ${dir} ${secret}
 
 hosts_num=${#hosts[@]}
 clients_num_per_host=$((clients_num / hosts_num))
@@ -45,9 +50,10 @@ for host in ${hosts[@]}; do
 	fi
 
 	echo "Starting ${clients_num_per_host} clients on [${host}]"
-	ssh ${ssh_opts} ec2-user@${host} \
-        "LD_LIBRARY_PATH=~/_game/app BOT_APP=~/_game/app/Client bash ~/run_bots.sh ${clients_num_per_host} ${server} ${port} ${host_id} ${bot_kind} ${log_stats} </dev/null 1>clients-out.log 2>clients-err.log &"
-
+	ssh ${ssh_opts} ec2-user@${host} <<EOL
+sudo bash ~/udp_proxy/config.sh ${traffic_control}
+LD_LIBRARY_PATH=~/_game/app BOT_APP=~/_game/app/Client bash ~/run_bots.sh ${clients_num_per_host} ${server} ${port} ${host_id} ${bot_kind} ${log_stats} </dev/null 1>clients-out.log 2>clients-err.log &
+EOL
     host_id=$((host_id + 1))
 
 done

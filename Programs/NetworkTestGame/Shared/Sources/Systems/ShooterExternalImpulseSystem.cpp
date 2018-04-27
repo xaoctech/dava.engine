@@ -54,7 +54,7 @@ void ShooterExternalImpulseSystem::ProcessFixed(DAVA::float32 dt)
             }
             impulseComponent->velocity.z += -9.81f * dt;
 
-            cctComponent->Move(impulseComponent->velocity * dt);
+            cctComponent->SetOffset(cctComponent->GetOffset() + impulseComponent->velocity * dt);
         }
     }
 }

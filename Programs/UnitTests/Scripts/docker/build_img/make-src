@@ -8,4 +8,4 @@ mkdir -p /tmp/dava.framework/Programs/UnitTests/build
 export CC=clang
 export CXX=clang++
 cd /tmp/dava.framework/Programs/UnitTests/build
-cmake3 -DDEPLOY=true -DCMAKE_BUILD_TYPE=Release .. && make -j 4
+cmake3 -DDEPLOY=true -DCMAKE_BUILD_TYPE=Debug .. && make -j 4

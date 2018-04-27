@@ -10,6 +10,7 @@ static const DAVA::FastName SHOOTER_ACTION_MOVE_BACKWARD("SHOOTER_MOVE_BACKWARD"
 static const DAVA::FastName SHOOTER_ACTION_MOVE_LEFT("SHOOTER_MOVE_LEFT");
 static const DAVA::FastName SHOOTER_ACTION_MOVE_RIGHT("SHOOTER_MOVE_RIGHT");
 static const DAVA::FastName SHOOTER_ACTION_ACCELERATE("SHOOTER_ACCELERATE");
+static const DAVA::FastName SHOOTER_ACTION_JUMP("SHOOTER_JUMP");
 static const DAVA::FastName SHOOTER_ACTION_ANALOG_MOVE("LMOVE");
 static const DAVA::FastName SHOOTER_ACTION_ANALOG_ROTATE("RMOVE");
 static const DAVA::FastName SHOOTER_ACTION_ATTACK_BULLET("FIRST_SHOOT");
@@ -28,6 +29,8 @@ static const DAVA::Vector3 SHOOTER_CHARACTER_AIM_TO = DAVA::Vector3(0.f, 0.f, 1.
 static const DAVA::uint32 SHOOTER_CHARACTER_MAX_HEALTH = 10;
 static const DAVA::float32 SHOOTER_CHARACTER_ROTATION_SPEED = 0.20f;
 static const DAVA::float32 SHOOTER_MOVEMENT_SPEED = 2.0f; // m/s
+static const DAVA::float32 SHOOTER_JUMP_ACCELERATION = 15.0f;
+static const DAVA::float32 SHOOTER_PUSH_ACCELERATION = 5.0f; // Vertical acceleration player gets when touches another player.
 
 // Shooting traits
 static const DAVA::float32 SHOOTER_MAX_SHOOTING_DISTANCE = 80.0f;

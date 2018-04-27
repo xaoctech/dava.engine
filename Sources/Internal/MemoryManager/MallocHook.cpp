@@ -245,6 +245,7 @@ void MallocHook::Install()
 #else
     void* handle = RTLD_NEXT;
 #endif
+
     fptr = dlsym(handle, "malloc");
     RealMalloc = reinterpret_cast<void* (*)(size_t)>(fptr);
     assert(fptr != nullptr && "Failed to get 'malloc'");
@@ -283,7 +284,7 @@ void MallocHook::Install()
 
 } // namespace DAVA
 
-#if defined(__DAVAENGINE_POSIX__)
+#if defined(__DAVAENGINE_POSIX__) && !defined(DAVA_ASAN_ENABLED)
 
 void* malloc(size_t size)
 {

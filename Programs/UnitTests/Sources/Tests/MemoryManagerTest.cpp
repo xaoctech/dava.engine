@@ -3,7 +3,7 @@
 
 using namespace DAVA;
 
-#if defined(DAVA_MEMORY_PROFILING_ENABLE)
+#if defined(DAVA_MEMORY_PROFILING_ENABLE) && !defined(DAVA_ASAN_ENABLED)
 
 #include "MemoryManager/MemoryProfiler.h"
 

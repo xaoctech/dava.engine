@@ -357,7 +357,7 @@ void TestCharacterMoveSystem::ProcessFixed(float32 timeElapsed)
     const Vector3& rootOffsetDelta = controllerSystem->characterMotionComponent->GetRootOffsetDelta();
 
     Vector3 moveDisplacement = -characterForward * rootOffsetDelta.y + characterLeft * rootOffsetDelta.x;
-    controllerSystem->controllerComponent->Move(moveDisplacement);
+    controllerSystem->controllerComponent->SetOffset(controllerSystem->controllerComponent->GetOffset() + moveDisplacement);
 #endif
 }
 

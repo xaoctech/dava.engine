@@ -15,6 +15,7 @@ port=$(kubectl get svc | grep ${name} | sed 's/.*:\([0-9]*\)\/UDP.*/\1/')
 echo "Service was started using the port:" ${port}
 ./aws/aws-up dev
 ./deploy-all
+# run with tc: $>./remote-run -t ${port} dev
 ./remote-run ${port} dev
 ./analyzer ${name} start dev
 ./wait-for ${name}
