@@ -69,5 +69,50 @@ void ReplaceAll(WideString& string, const WideString& search, const WideString& 
         pos += 1;
     }
 }
+
+String SubstituteParams(const String& str, const DAVA::UnorderedMap<DAVA::String, DAVA::String>& replacements)
+{
+    String result;
+    result.reserve(static_cast<int32>(str.length() * 1.5f));
+
+    String::size_type pos = 0;
+    String::size_type next = 0;
+    while ((next = str.find("%(", pos)) != String::npos)
+    {
+        if (next > pos)
+        {
+            result += str.substr(pos, next - pos);
+        }
+
+        pos = next;
+        next = str.find(")", pos + 1);
+        if (next == String::npos)
+        {
+            DVASSERT(false, str.c_str());
+            return str;
+        }
+
+        String key = str.substr(pos + 2, next - pos - 2);
+        auto it = replacements.find(key);
+        if (it != replacements.end())
+        {
+            result += it->second;
+        }
+        else
+        {
+            result += "%(";
+            result += key;
+            result += ")";
+        }
+        pos = next + 1;
+    }
+
+    if (pos < str.length())
+    {
+        result += str.substr(pos, str.length() - pos);
+    }
+
+    return result;
+}
 }
 }

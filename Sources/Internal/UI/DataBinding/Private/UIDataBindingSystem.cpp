@@ -3,12 +3,12 @@
 #include "UI/UIControl.h"
 
 #include "UI/DataBinding/UIDataSourceComponent.h"
-#include "UI/DataBinding/UIDataScopeComponent.h"
 #include "UI/DataBinding/UIDataBindingComponent.h"
 #include "UI/DataBinding/UIDataListComponent.h"
 #include "UI/DataBinding/UIDataChildFactoryComponent.h"
 
 #include "UI/DataBinding/Private/UIDataModel.h"
+#include "UI/DataBinding/Private/UIDataRoot.h"
 #include "UI/DataBinding/Private/UIDataBinding.h"
 #include "UI/DataBinding/Private/UIDataList.h"
 #include "UI/DataBinding/Private/UIDataChildFactory.h"
@@ -22,7 +22,7 @@ namespace DAVA
 {
 UIDataBindingSystem::UIDataBindingSystem()
 {
-    rootModel = std::make_shared<UIDataRootModel>(false);
+    rootModel = std::make_shared<UIDataRoot>(false);
     dependenciesManager = std::make_unique<UIDataBindingDependenciesManager>();
 }
 
@@ -32,7 +32,7 @@ UIDataBindingSystem::~UIDataBindingSystem()
     dataBindings.clear();
 }
 
-FormulaContext* UIDataBindingSystem::GetFormulaContext(UIControl* control, int32 type) const
+std::shared_ptr<FormulaContext> UIDataBindingSystem::GetFormulaContext(UIControl* control) const
 {
     UIControl* c = control;
     while (c)
@@ -42,22 +42,12 @@ FormulaContext* UIDataBindingSystem::GetFormulaContext(UIControl* control, int32
             UIDataModel* model = it->get();
             if (model->GetComponent() && c == model->GetComponent()->GetControl())
             {
-                if (c == control)
-                {
-                    if (model->GetPriority() < type)
-                    {
-                        return model->GetFormulaContext().get();
-                    }
-                }
-                else
-                {
-                    return model->GetFormulaContext().get();
-                }
+                return model->GetFormulaContext();
             }
         }
         c = c->GetParent();
     }
-    return nullptr;
+    return std::shared_ptr<FormulaContext>();
 }
 
 void UIDataBindingSystem::SetDataDirty(void* dataPtr)
@@ -68,30 +58,39 @@ void UIDataBindingSystem::SetDataDirty(void* dataPtr)
 void UIDataBindingSystem::RegisterControl(UIControl* control)
 {
     TryToCreateDataModel<UIDataSourceComponent>(control);
-    TryToCreateDataModel<UIDataScopeComponent>(control);
-    TryToCreateDataModel<UIDataViewModelComponent>(control);
     TryToCreateDataModel<UIDataListComponent>(control);
     TryToCreateDataModel<UIDataChildFactoryComponent>(control);
-    TryToRegisterDataBinding(control);
+
+    int32 count = control->GetComponentCount<UIDataBindingComponent>();
+    for (int32 i = 0; i < count; i++)
+    {
+        RegisterDataBinding(control->GetComponent<UIDataBindingComponent>(i));
+    }
 }
 
 void UIDataBindingSystem::UnregisterControl(UIControl* control)
 {
-    DeleteDataModel(control->GetComponent<UIDataSourceComponent>());
-    DeleteDataModel(control->GetComponent<UIDataScopeComponent>());
-    DeleteDataModel(control->GetComponent<UIDataViewModelComponent>());
+    int32 count = control->GetComponentCount<UIDataSourceComponent>();
+    for (int32 i = 0; i < count; i++)
+    {
+        DeleteDataModel(control->GetComponent<UIDataSourceComponent>(i));
+    }
+
     DeleteDataModel(control->GetComponent<UIDataListComponent>());
     DeleteDataModel(control->GetComponent<UIDataChildFactoryComponent>());
-    TryToUnregisterDataBinding(control);
+
+    count = control->GetComponentCount<UIDataBindingComponent>();
+    for (int32 i = 0; i < count; i++)
+    {
+        UnregisterDataBinding(control->GetComponent<UIDataBindingComponent>(i));
+    }
 }
 
 void UIDataBindingSystem::RegisterComponent(UIControl* control, UIComponent* component)
 {
-    TryToCreateDataModel<UIDataSourceComponent>(component);
-    TryToCreateDataModel<UIDataScopeComponent>(component);
-    TryToCreateDataModel<UIDataViewModelComponent>(component);
-    TryToCreateDataModel<UIDataListComponent>(component);
-    TryToCreateDataModel<UIDataChildFactoryComponent>(component);
+    TryToCreateDataModel<UIDataSourceComponent>(control, component);
+    TryToCreateDataModel<UIDataListComponent>(control, component);
+    TryToCreateDataModel<UIDataChildFactoryComponent>(control, component);
 
     if (component->GetType() == Type::Instance<UIDataBindingComponent>())
     {
@@ -102,8 +101,6 @@ void UIDataBindingSystem::RegisterComponent(UIControl* control, UIComponent* com
 void UIDataBindingSystem::UnregisterComponent(UIControl* control, UIComponent* component)
 {
     if (component->GetType() == Type::Instance<UIDataSourceComponent>() ||
-        component->GetType() == Type::Instance<UIDataScopeComponent>() ||
-        component->GetType() == Type::Instance<UIDataViewModelComponent>() ||
         component->GetType() == Type::Instance<UIDataListComponent>() ||
         component->GetType() == Type::Instance<UIDataChildFactoryComponent>())
     {
@@ -195,24 +192,6 @@ void UIDataBindingSystem::SetEditorMode(bool editorMode_)
     editorMode = editorMode_;
 }
 
-void UIDataBindingSystem::TryToRegisterDataBinding(UIControl* control)
-{
-    int32 count = control->GetComponentCount<UIDataBindingComponent>();
-    for (int32 i = 0; i < count; i++)
-    {
-        RegisterDataBinding(control->GetComponent<UIDataBindingComponent>(i));
-    }
-}
-
-void UIDataBindingSystem::TryToUnregisterDataBinding(UIControl* control)
-{
-    int32 count = control->GetComponentCount<UIDataBindingComponent>();
-    for (int32 i = 0; i < count; i++)
-    {
-        UnregisterDataBinding(control->GetComponent<UIDataBindingComponent>(i));
-    }
-}
-
 void UIDataBindingSystem::RegisterDataBinding(UIDataBindingComponent* component)
 {
     component->SetDirty(true);
@@ -259,11 +238,15 @@ void UIDataBindingSystem::UpdateDependentModelsAndBindings(const UIDataModel* mo
 template <typename ComponentType>
 void UIDataBindingSystem::TryToCreateDataModel(UIControl* control)
 {
-    TryToCreateDataModel<ComponentType>(control->GetComponent<ComponentType>());
+    int32 count = control->GetComponentCount<ComponentType>();
+    for (int32 i = 0; i < count; i++)
+    {
+        TryToCreateDataModel<ComponentType>(control, control->GetComponent<ComponentType>(i));
+    }
 }
 
 template <typename ComponentType>
-void UIDataBindingSystem::TryToCreateDataModel(UIComponent* testComponent)
+void UIDataBindingSystem::TryToCreateDataModel(UIControl* control, UIComponent* testComponent)
 {
     if (testComponent && testComponent->GetType() == Type::Instance<ComponentType>())
     {
@@ -282,7 +265,7 @@ void UIDataBindingSystem::TryToCreateDataModel(UIComponent* testComponent)
 
         if (!modelAlreadyCreated)
         {
-            dataModels.push_back(UIDataModel::Create(component, editorMode));
+            dataModels.push_back(UIDataModel::Create(component, control->GetComponentIndex(component), editorMode));
             UIDataModel* model = dataModels.back().get();
             model->SetIssueDelegate(issueDelegate);
 

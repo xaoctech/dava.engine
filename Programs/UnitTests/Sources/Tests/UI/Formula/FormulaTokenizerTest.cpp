@@ -147,7 +147,7 @@ DAVA_TESTCLASS (FormulaTokenizerTest)
     // FormulaTokenizer::ReadToken
     DAVA_TEST (ReadOperatorTokens)
     {
-        FormulaTokenizer tokenizer(", . + - * / % and or not <= < >= > = != when ->");
+        FormulaTokenizer tokenizer(", . + - * / % and or not <= < >= > = == ; != when ->");
 
         FormulaToken token;
 
@@ -194,7 +194,13 @@ DAVA_TESTCLASS (FormulaTokenizerTest)
         TEST_VERIFY(token.GetType() == FormulaToken::GT);
 
         token = tokenizer.ReadToken();
+        TEST_VERIFY(token.GetType() == FormulaToken::ASSIGN);
+
+        token = tokenizer.ReadToken();
         TEST_VERIFY(token.GetType() == FormulaToken::EQ);
+
+        token = tokenizer.ReadToken();
+        TEST_VERIFY(token.GetType() == FormulaToken::SEMICOLON);
 
         token = tokenizer.ReadToken();
         TEST_VERIFY(token.GetType() == FormulaToken::NOT_EQ);

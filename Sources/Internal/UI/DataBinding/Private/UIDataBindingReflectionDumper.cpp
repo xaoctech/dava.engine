@@ -4,6 +4,7 @@
 #include "FileSystem/YamlEmitter.h"
 #include "Debug/DVAssert.h"
 #include "Reflection/ReflectedMeta.h"
+#include "Reflection/ReflectedTypeDB.h"
 #include "Utils/StringFormat.h"
 
 namespace DAVA
@@ -28,24 +29,25 @@ void UIDataBindingReflectionDumper::DumpToFile(const Reflection& ref, const File
 void UIDataBindingReflectionDumper::AddDescription(const String& name, const Reflection& ref, int32 indent)
 {
     Vector<Reflection::Field> fields = ref.GetFields();
-
     if (!name.empty())
     {
         stream << name << " = ";
     }
-    stream << (ref.GetFieldsCaps().hasFlatStruct ? "[" : "{");
+
+    bool isVector = ref.GetFieldsCaps().hasFlatStruct && ref.GetFieldsCaps().hasRangeAccess;
+    stream << (isVector ? "[" : "{");
 
     if (!fields.empty())
     {
         stream << std::endl;
-        AddFields(fields, !ref.GetFieldsCaps().hasFlatStruct, indent + 2);
+        AddFields(fields, !isVector, indent + 2);
         for (int32 i = 0; i < indent; i++)
         {
             stream << " ";
         }
     }
 
-    stream << (ref.GetFieldsCaps().hasFlatStruct ? "]" : "}");
+    stream << (isVector ? "]" : "}");
 
     if (indent == 0)
     {
@@ -64,27 +66,50 @@ void UIDataBindingReflectionDumper::AddFields(const Vector<Reflection::Field>& f
 
         if (map)
         {
-            String valueName;
             if (field.key.CanCast<String>())
             {
-                valueName = field.key.Cast<String>();
+                stream << field.key.Cast<String>();
+            }
+            else if (field.key.CanGet<int32>())
+            {
+                stream << field.key.Get<int32>();
+            }
+            else if (field.key.CanGet<uint32>())
+            {
+                stream << field.key.Get<uint32>() << "U";
+            }
+            else if (field.key.CanGet<uint64>())
+            {
+                stream << field.key.Get<uint64>() << "UL";
+            }
+            else if (field.key.CanGet<int64>())
+            {
+                stream << field.key.Get<int64>() << "L";
+            }
+            else if (field.key.CanGet<bool>())
+            {
+                stream << (field.key.Get<bool>() ? "true" : "false");
             }
             else
             {
-                valueName = "?";
+                stream << "?";
                 DVASSERT(false);
             }
-            stream << valueName << " = ";
+            stream << " = ";
         }
 
         Any val = field.ref.GetValue();
-        if (val.CanGet<int32>())
+        if (field.ref.GetMeta<M::HiddenField>() != nullptr)
+        {
+            stream << "nil";
+        }
+        else if (val.CanGet<int32>())
         {
             stream << val.Get<int32>();
         }
         else if (val.CanGet<uint32>())
         {
-            stream << val.Get<uint32>();
+            stream << val.Get<uint32>() << "U";
         }
         else if (val.CanGet<uint64>())
         {
@@ -124,7 +149,7 @@ void UIDataBindingReflectionDumper::AddFields(const Vector<Reflection::Field>& f
         }
         else if (val.CanGet<bool>())
         {
-            stream << val.Get<bool>();
+            stream << (val.Get<bool>() ? "true" : "false");
         }
         else if (field.ref.GetMeta<M::Enum>() != nullptr)
         {
@@ -143,6 +168,7 @@ void UIDataBindingReflectionDumper::AddFields(const Vector<Reflection::Field>& f
         {
             stream << "nil";
         }
+        stream << ";";
         stream << std::endl;
     }
 }
@@ -150,6 +176,9 @@ void UIDataBindingReflectionDumper::AddFields(const Vector<Reflection::Field>& f
 void UIDataBindingReflectionDumper::WriteToFile(const FilePath& path)
 {
     ScopedPtr<File> outFile(File::Create(path, File::CREATE | File::WRITE));
-    outFile->WriteString(stream.str());
+    if (outFile.get())
+    {
+        outFile->WriteString(stream.str());
+    }
 }
 }

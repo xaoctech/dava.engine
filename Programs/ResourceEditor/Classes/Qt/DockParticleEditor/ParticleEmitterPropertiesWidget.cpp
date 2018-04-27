@@ -13,7 +13,7 @@
 #include <QEvent>
 
 #define EMISSION_RANGE_MIN_LIMIT_DEGREES 0.0f
-#define EMISSION_RANGE_MAX_LIMIT_DEGREES 180.0f
+#define EMISSION_RANGE_MAX_LIMIT_DEGREES 360.0f
 
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent)
     : BaseParticleEditorContentWidget(parent)
@@ -58,6 +58,10 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
     mainLayout->addWidget(shortEffectCheckBox);
     connect(shortEffectCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
+    generateOnSurfaceCheckBox = new QCheckBox("Generate on surface");
+    mainLayout->addWidget(generateOnSurfaceCheckBox);
+    connect(generateOnSurfaceCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
+
     QHBoxLayout* emitterTypeHBox = new QHBoxLayout();
     emitterTypeHBox->addWidget(new QLabel("type"));
     emitterType = new QComboBox(this);
@@ -65,10 +69,21 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
     emitterType->addItem("Box");
     emitterType->addItem("Circle - Volume");
     emitterType->addItem("Circle - Edges");
-    emitterType->addItem("Shockwave");
+    emitterType->addItem("Sphere");
     emitterTypeHBox->addWidget(emitterType);
     mainLayout->addLayout(emitterTypeHBox);
     connect(emitterType, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
+
+    QHBoxLayout* shockwaveModeHBox = new QHBoxLayout();
+    shockwaveLabel = new QLabel("shockwave mode");
+    shockwaveModeHBox->addWidget(shockwaveLabel);
+    shockwaveBox = new QComboBox(this);
+    shockwaveBox->addItem("Disabled");
+    shockwaveBox->addItem("Shockwave");
+    shockwaveBox->addItem("Horizontal Shockwave");
+    shockwaveModeHBox->addWidget(shockwaveBox);
+    mainLayout->addLayout(shockwaveModeHBox);
+    connect(shockwaveBox, SIGNAL(currentIndexChanged(int)), this, SLOT(OnValueChanged()));
 
     QHBoxLayout* positionLayout = new QHBoxLayout();
 
@@ -288,6 +303,8 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
     bool initEmittersByDef = FLOAT_EQUAL(life, currentLifeTime) ? false : true;
 
     bool isShortEffect = shortEffectCheckBox->isChecked();
+    bool generateOnSurface = generateOnSurfaceCheckBox->isChecked();
+    DAVA::ParticleEmitter::eShockwaveMode shockwave = static_cast<DAVA::ParticleEmitter::eShockwaveMode>(shockwaveBox->currentIndex());
 
     DAVA::PropLineWrapper<DAVA::float32> propAngle;
     DAVA::PropLineWrapper<DAVA::float32> propAngleVariation;
@@ -307,7 +324,9 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
                                colorOverLife.GetPropLine(),
                                size.GetPropLine(),
                                life,
-                               isShortEffect);
+                               isShortEffect,
+                               generateOnSurface,
+                               shockwave);
 
     activeScene->Exec(std::move(commandUpdateEmitter));
     activeScene->MarkAsChanged();
@@ -341,6 +360,8 @@ void ParticleEmitterPropertiesWidget::UpdateProperties()
 
     emitterNameLineEdit->setText(QString::fromStdString(emitter->name.c_str()));
     shortEffectCheckBox->setChecked(emitter->shortEffect);
+    generateOnSurfaceCheckBox->setChecked(emitter->generateOnSurface);
+    shockwaveBox->setCurrentIndex(emitter->shockwaveMode);
 
     DAVA::float32 emitterLifeTime = emitter->lifeTime;
     DAVA::float32 minTime = 0.f;

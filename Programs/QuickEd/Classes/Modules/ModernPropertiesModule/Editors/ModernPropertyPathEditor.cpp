@@ -186,7 +186,7 @@ void ModernPropertyPathEditor::OnChooseAction()
         FilePath absoluteFilePath = QStringToString(filePathText);
         FilePath frameworkFilePath = absoluteFilePath.GetFrameworkPath();
 
-        ChangeProperty(frameworkFilePath);
+        ChangeProperty(frameworkFilePath.GetStringValue());
 
         QSignalBlocker blockLineSignals(line);
         line->setText(StringToQString(frameworkFilePath.GetStringValue()));
@@ -201,7 +201,7 @@ void ModernPropertyPathEditor::OnEditingFinished()
         DAVA::FilePath filePath = DAVA::FilePath(line->text().toStdString());
         if (filePath.Exists() || line->text().isEmpty())
         {
-            ChangeProperty(filePath);
+            ChangeProperty(filePath.GetStringValue());
         }
         else
         {

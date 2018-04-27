@@ -49,7 +49,7 @@ void TexturesLoadingTest::LoadResources()
     statusText = dialog->FindByName("StatusText")->GetOrCreateComponent<UITextComponent>();
 
     auto actions = dialog->GetOrCreateComponent<UIEventBindingComponent>();
-    actions->BindAction(FastName("PREPARE"), [&]() {
+    actions->BindAction(FastName("PREPARE"), [&](const DAVA::Any&) {
         if (!GetEngineContext()->fileSystem->Exists(workingDir))
         {
             int64 time = CreateFiles(false);
@@ -60,7 +60,7 @@ void TexturesLoadingTest::LoadResources()
             statusText->SetText(Format("Files exist! Clean first."));
         }
     });
-    actions->BindAction(FastName("PREPARE_NOISE"), [&]() {
+    actions->BindAction(FastName("PREPARE_NOISE"), [&](const DAVA::Any&) {
         if (!GetEngineContext()->fileSystem->Exists(workingDir))
         {
             int64 time = CreateFiles(true);
@@ -71,14 +71,14 @@ void TexturesLoadingTest::LoadResources()
             statusText->SetText(Format("Files exist! Clean first."));
         }
     });
-    actions->BindAction(FastName("CLEAN"), [&]() {
+    actions->BindAction(FastName("CLEAN"), [&](const DAVA::Any&) {
         if (IsFilesPrepared())
         {
             int64 time = RemoveFiles();
             statusText->SetText(Format("Files removed! Time: %d ms", static_cast<int32>(time)));
         }
     });
-    actions->BindAction(FastName("LOAD_ATLAS"), [&]() {
+    actions->BindAction(FastName("LOAD_ATLAS"), [&](const DAVA::Any&) {
         if (IsFilesPrepared())
         {
             DVASSERT(GetEngineContext()->fileSystem->Exists(workingDir));
@@ -86,14 +86,14 @@ void TexturesLoadingTest::LoadResources()
             statusText->SetText(Format("Atlas loaded! Time: %d(ms)", static_cast<int32>(time)));
         }
     });
-    actions->BindAction(FastName("LOAD_FILES"), [&]() {
+    actions->BindAction(FastName("LOAD_FILES"), [&](const DAVA::Any&) {
         if (IsFilesPrepared())
         {
             int64 time = LoadSmallFiles();
             statusText->SetText(Format("Files loaded! Time: %d(ms)", static_cast<int32>(time)));
         }
     });
-    actions->BindAction(FastName("LOAD_FILES_MT"), [&]() {
+    actions->BindAction(FastName("LOAD_FILES_MT"), [&](const DAVA::Any&) {
         if (IsFilesPrepared())
         {
             DVASSERT(GetEngineContext()->fileSystem->Exists(workingDir));
@@ -101,7 +101,7 @@ void TexturesLoadingTest::LoadResources()
             statusText->SetText(Format("Files loaded! Time: %d(ms)", static_cast<int32>(time)));
         }
     });
-    actions->BindAction(FastName("LOAD_FILES_DATA"), [&]() {
+    actions->BindAction(FastName("LOAD_FILES_DATA"), [&](const DAVA::Any&) {
         if (IsFilesPrepared())
         {
             DVASSERT(GetEngineContext()->fileSystem->Exists(workingDir));

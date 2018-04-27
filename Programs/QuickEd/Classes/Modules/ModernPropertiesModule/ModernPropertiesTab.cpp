@@ -179,10 +179,12 @@ void ModernPropertiesTab::PropertyChanged(AbstractProperty* property)
         else if (sectionWidget->GetSection() == property->GetParent())
         {
             ModernPropertyEditor* editor = sectionWidget->FindEditorForProperty(property);
-            if (editor != nullptr && editor->IsBindingEditor() != property->IsBound())
+
+            if ((editor != nullptr && editor->IsBindingEditor() != property->IsBound()) ||
+                sectionWidget->ShouldRecreateForChangedProperty(property->GetName()))
             {
                 // recreate section because editor widget must be changed
-                sectionWidget->AttachComponentPropertiesSection(sectionWidget->GetSection(), static_cast<RootProperty*>(property->GetRootProperty()));
+                sectionWidget->RecreateProperties();
             }
         }
     }

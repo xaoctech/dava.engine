@@ -166,7 +166,7 @@ String FormulaFormatter::BinaryOpToString(FormulaBinaryOperatorExpression::Opera
     case FormulaBinaryOperatorExpression::OP_OR:
         return "or";
     case FormulaBinaryOperatorExpression::OP_EQ:
-        return "=";
+        return "==";
     case FormulaBinaryOperatorExpression::OP_NOT_EQ:
         return "!=";
     case FormulaBinaryOperatorExpression::OP_LE:

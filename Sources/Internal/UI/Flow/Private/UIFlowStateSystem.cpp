@@ -342,7 +342,7 @@ bool UIFlowStateSystem::ProcessEvent(const FastName& eventName)
                     UIEventsSingleComponent* events = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
                     if (events)
                     {
-                        events->SendEvent(state->GetControl(), rule.sendEvent);
+                        events->SendEvent(state->GetControl(), rule.sendEvent, Any());
                     }
                     break;
                 }
@@ -459,7 +459,7 @@ void UIFlowStateSystem::FinishActivation(UIFlowStateComponent* state)
     UIEventsSingleComponent* eventSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
     for (const FastName& event : state->GetActivateEvents())
     {
-        eventSingle->SendEvent(state->GetControl(), event);
+        eventSingle->SendEvent(state->GetControl(), event, Any());
     }
 
     links[state].status = StateLink::Activated;
@@ -554,7 +554,7 @@ void UIFlowStateSystem::FinishDeactivation(UIFlowStateComponent* state)
     UIEventsSingleComponent* eventSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
     for (const FastName& event : state->GetDeactivateEvents())
     {
-        eventSingle->SendEvent(state->GetControl(), event);
+        eventSingle->SendEvent(state->GetControl(), event, Any());
     }
 
     // Update system's states

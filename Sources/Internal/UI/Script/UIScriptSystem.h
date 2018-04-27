@@ -22,7 +22,7 @@ public:
     bool IsPauseProcessing() const;
 
     /** Send message to controller of this control. */
-    bool ProcessEvent(UIControl* control, const FastName& event);
+    bool ProcessEvent(UIControl* control, const FastName& event, const Any& data);
 
     /** Process system*/
     void Process(float32 elapsedTime) override;

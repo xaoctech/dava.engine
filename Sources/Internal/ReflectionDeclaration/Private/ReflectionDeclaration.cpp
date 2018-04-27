@@ -116,11 +116,9 @@
 #include "UI/RichContent/UIRichContentAliasesComponent.h"
 #include "UI/Components/UIControlSourceComponent.h"
 #include "UI/Scroll/UIScrollComponent.h"
+#include "UI/DataBinding/UIDataSourceComponent.h"
 #include "UI/DataBinding/UIDataBindingComponent.h"
 #include "UI/DataBinding/UIDataListComponent.h"
-#include "UI/DataBinding/UIDataScopeComponent.h"
-#include "UI/DataBinding/UIDataSourceComponent.h"
-#include "UI/DataBinding/UIDataViewModelComponent.h"
 #include "UI/DataBinding/UIDataChildFactoryComponent.h"
 #include "UI/Text/UITextComponent.h"
 #include "UI/Flow/UIFlowContext.h"
@@ -416,8 +414,6 @@ void RegisterPermanentNames()
     DECL_UI_COMPONENT(UIEntityMarkersContainerComponent, "UIEntityMarkersContainerComponent");
     DECL_UI_COMPONENT(UITextComponent, "UITextComponent");
     DECL_UI_COMPONENT(UIDataSourceComponent, "UIDataSourceComponent");
-    DECL_UI_COMPONENT(UIDataScopeComponent, "UIDataScopeComponent");
-    DECL_UI_COMPONENT(UIDataViewModelComponent, "UIDataViewModelComponent");
     DECL_UI_COMPONENT(UIDataListComponent, "UIDataListComponent");
     DECL_UI_COMPONENT(UIDataBindingComponent, "UIDataBindingComponent");
     DECL_UI_COMPONENT(UIDataChildFactoryComponent, "UIDataChildFactoryComponent");

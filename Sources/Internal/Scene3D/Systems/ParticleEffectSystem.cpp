@@ -1100,6 +1100,9 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
     uint32 offset = static_cast<uint32>(uptr);
     uint32 ind = group.particlesGenerated + offset;
 
+    bool isCircleEmitter = group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME || group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES;
+    bool isSphereEmitter = group.emitter->emitterType == ParticleEmitter::EMITTER_SPHERE;
+
     // In VanDerCorput random we use different bases to avoid diagonal patterns.
     if (group.emitter->emitterType == ParticleEmitter::EMITTER_RECT)
     {
@@ -1109,18 +1112,11 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
             particle->position = Vector3(currSize.x * (ParticlesRandom::VanDerCorputRnd(ind, 3) - 0.5f), currSize.y * (ParticlesRandom::VanDerCorputRnd(ind, 2) - 0.5f), currSize.z * (ParticlesRandom::VanDerCorputRnd(ind, 5) - 0.5f));
         }
     }
-    else if ((group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME) || (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_EDGES) || (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE))
+    else if (isCircleEmitter)
     {
         float32 curRadius = 1.0f;
         float32 innerRadius = 0.0f;
-        if (group.emitter->radius)
-            curRadius = group.emitter->radius->GetValue(group.time);
-
-        if (group.emitter->innerRadius)
-        {
-            innerRadius = group.emitter->innerRadius->GetValue(group.time);
-            innerRadius = Min(innerRadius, curRadius);
-        }
+        FillEmitterRadiuses(group, curRadius, innerRadius);
 
         float32 angleBase = 0;
         float32 angleVariation = PI_2;
@@ -1140,6 +1136,31 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         SinCosFast(curAngle, sinAngle, cosAngle);
         particle->position = Vector3(curRadius * cosAngle, curRadius * sinAngle, 0.0f);
     }
+    else if (isSphereEmitter)
+    {
+        float32 curRadius = 1.0f;
+        float32 innerRadius = 0.0f;
+        FillEmitterRadiuses(group, curRadius, innerRadius);
+
+        float32 u = ParticlesRandom::VanDerCorputRnd(ind, 3);
+        float32 v = ParticlesRandom::VanDerCorputRnd(ind, 5);
+        float32 theta = PI_2 * u; // http://mathworld.wolfram.com/SpherePointPicking.html
+        float32 phi = std::acos(2.0f * v - 1.0f);
+        if (!group.emitter->generateOnSurface)
+        {
+            float32 rndRadiusNorm = std::sqrt(static_cast<float32>(GetEngineContext()->random->RandFloat())); // Better distribution on circle.
+            curRadius = Lerp(innerRadius, curRadius, rndRadiusNorm);
+        }
+        float32 cosPhi = 0.0f;
+        float32 sinPhi = 0.0f;
+        SinCosFast(phi, sinPhi, cosPhi);
+        float32 sinTheta = std::sin(theta);
+        float32 radTimesSinTheta = curRadius * sinTheta;
+        float32 x = radTimesSinTheta * cosPhi;
+        float32 y = radTimesSinTheta * sinPhi;
+        float32 z = curRadius * std::cos(theta);
+        particle->position = Vector3(x, y, z);
+    }
 
     //current emission vector and it's length
     Vector3 currEmissionVector(0, 0, 1);
@@ -1156,7 +1177,8 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
         currVelPower = currVelVector.Length();
     }
     //calculate speed in emitter space not transformed by emission vector yet
-    if (group.emitter->emitterType == ParticleEmitter::EMITTER_SHOCKWAVE)
+    if ((isCircleEmitter && group.emitter->shockwaveMode != ParticleEmitter::SHOCKWAVE_DISABLED)
+        || (isSphereEmitter && group.emitter->shockwaveMode == ParticleEmitter::SHOCKWAVE_NORMAL))
     {
         particle->speed = particle->position;
         float32 spl = particle->speed.SquareLength();
@@ -1165,18 +1187,42 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle* particle, Particle
             particle->speed *= currVelPower / std::sqrt(spl);
         }
     }
+    else if (isSphereEmitter && group.emitter->shockwaveMode == ParticleEmitter::SHOCKWAVE_HORIZONTAL)
+    {
+        float32 cosTheta = 0.0f;
+        float32 sinTheta = 0.0f;
+        if (group.emitter->emissionRange)
+        {
+            float32 rnd = ParticlesRandom::VanDerCorputRnd(ind, 3) * 2.0f - 1.0f;
+            float32 diviation = rnd * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
+
+            float32 theta = PI_05 + diviation;
+            SinCosFast(theta, sinTheta, cosTheta);
+        }
+        else
+            sinTheta = 1.0f; // theta = pi * 0.5
+
+        float32 phi = static_cast<float32>(GetEngineContext()->random->RandFloat()) * PI_2;
+        float32 cosPhi = 0.0f;
+        float32 sinPhi = 0.0f;
+        SinCosFast(phi, sinPhi, cosPhi);
+
+        Vector3 newVel;
+        newVel = Vector3(cosPhi * sinTheta, sinPhi * sinTheta, cosTheta);
+        newVel *= currVelPower;
+        particle->speed = newVel;
+    }
     else
     {
         if (group.emitter->emissionRange)
         {
             float32 theta = ParticlesRandom::VanDerCorputRnd(ind, 3) * DegToRad(group.emitter->emissionRange->GetValue(group.time)) * 0.5f;
             float32 phi = ParticlesRandom::VanDerCorputRnd(ind, 4) * PI_2;
-            particle->speed = Vector3(currVelPower * cos(phi) * sin(theta), currVelPower * sin(phi) * sin(theta), currVelPower * cos(theta));
+            float32 sinTheta = std::sin(theta);
+            particle->speed = Vector3(currVelPower * std::cos(phi) * sinTheta, currVelPower * std::sin(phi) * sinTheta, currVelPower * std::cos(theta));
         }
         else
-        {
             particle->speed = Vector3(0, 0, currVelPower);
-        }
     }
 
     //now transform position and speed by emissionVector and worldTransfrom rotations - preserving length
@@ -1283,6 +1329,18 @@ void ParticleEffectSystem::RemoveForcesFromGlobal(ParticleEffectComponent* effec
         auto it = globalForces.find(effect);
         if (it != globalForces.end())
             globalForces.erase(it);
+    }
+}
+
+void ParticleEffectSystem::FillEmitterRadiuses(const ParticleGroup& group, float32& radius, float32& innerRadius)
+{
+    if (group.emitter->radius)
+        radius = group.emitter->radius->GetValue(group.time);
+
+    if (group.emitter->innerRadius)
+    {
+        innerRadius = group.emitter->innerRadius->GetValue(group.time);
+        innerRadius = Min(innerRadius, radius);
     }
 }
 }

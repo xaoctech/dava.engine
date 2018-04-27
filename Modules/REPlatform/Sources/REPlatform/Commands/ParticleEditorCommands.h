@@ -476,7 +476,9 @@ public:
               RefPtr<PropertyLine<Color>> colorOverLife,
               RefPtr<PropertyLine<Vector3>> size,
               float32 life,
-              bool isShortEffect);
+              bool isShortEffect,
+              bool generateOnSurface,
+              DAVA::ParticleEmitter::eShockwaveMode shockwaveMode);
 
     ParticleEmitterInstance* GetEmitterInstance() const
     {
@@ -501,6 +503,8 @@ protected:
     RefPtr<PropertyLine<Vector3>> size;
     float32 life = 0.0f;
     bool isShortEffect = false;
+    bool generateOnSurface = false;
+    DAVA::ParticleEmitter::eShockwaveMode shockwaveMode = DAVA::ParticleEmitter::eShockwaveMode::SHOCKWAVE_DISABLED;
 
     DAVA_VIRTUAL_REFLECTION(CommandUpdateEmitter, CommandAction);
 };

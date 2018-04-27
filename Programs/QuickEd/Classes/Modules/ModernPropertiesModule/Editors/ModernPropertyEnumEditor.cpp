@@ -35,7 +35,7 @@ ModernPropertyEnumEditor::ModernPropertyEnumEditor(const std::shared_ptr<ModernP
     }
 
     QObject::connect(comboBox, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged),
-                     this, &ModernPropertyEnumEditor::OnCurrentIndexChanged);
+                     this, &ModernPropertyEnumEditor::OnCurrentIndexChanged, Qt::QueuedConnection);
 
     OnPropertyChanged();
 }

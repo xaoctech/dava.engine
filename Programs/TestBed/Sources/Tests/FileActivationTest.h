@@ -31,7 +31,7 @@ protected:
 private:
     void OnFileActivated(DAVA::Vector<DAVA::String> filenames);
 
-    void OnDumpFilenames();
+    void OnDumpFilenames(const DAVA::Any&);
 
     DAVA::String FormatFilenameList(const DAVA::Vector<DAVA::String>& filenames, size_t maxRows);
 

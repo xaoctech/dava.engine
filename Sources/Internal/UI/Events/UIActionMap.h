@@ -10,14 +10,14 @@ namespace DAVA
 class UIActionMap final
 {
 public:
-    typedef DAVA::Function<void()> SimpleAction;
+    typedef DAVA::Function<void(const Any& data)> SimpleAction;
 
     UIActionMap() = default;
     ~UIActionMap() = default;
 
     void Put(const FastName& name, const SimpleAction& action);
     void Remove(const FastName& name);
-    bool Perform(const FastName& name);
+    bool Perform(const FastName& name, const Any& data);
 
 private:
     UnorderedMap<FastName, SimpleAction> actions;

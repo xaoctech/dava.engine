@@ -52,6 +52,18 @@ public:
     {
         return emitterEmissionVector;
     };
+    QCheckBox* GetGenerateOnSurfaceCheckBox()
+    {
+        return generateOnSurfaceCheckBox;
+    }
+    QLabel* GetShockwaveLabel()
+    {
+        return shockwaveLabel;
+    }
+    QComboBox* GetShockwaveBox()
+    {
+        return shockwaveBox;
+    }
 
 signals:
     void ValueChanged();
@@ -72,10 +84,13 @@ private:
     QLineEdit* originalEmitterYamlPath = nullptr;
     QLineEdit* emitterYamlPath = nullptr;
     QComboBox* emitterType = nullptr;
+    QComboBox* shockwaveBox = nullptr;
+    QLabel* shockwaveLabel = nullptr;
     EventFilterDoubleSpinBox* positionXSpinBox = nullptr;
     EventFilterDoubleSpinBox* positionYSpinBox = nullptr;
     EventFilterDoubleSpinBox* positionZSpinBox = nullptr;
     QCheckBox* shortEffectCheckBox = nullptr;
+    QCheckBox* generateOnSurfaceCheckBox = nullptr;
 
     TimeLineWidget* emitterEmissionRange = nullptr;
     TimeLineWidget* emitterEmissionVector = nullptr;

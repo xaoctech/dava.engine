@@ -128,6 +128,8 @@ ParticleEmitter* ParticleEmitter::Clone()
 
     clonedEmitter->emitterType = this->emitterType;
     clonedEmitter->shortEffect = shortEffect;
+    clonedEmitter->generateOnSurface = generateOnSurface;
+    clonedEmitter->shockwaveMode = shockwaveMode;
 
     clonedEmitter->layers.resize(layers.size());
     for (size_t i = 0, sz = layers.size(); i < sz; ++i)
@@ -349,6 +351,20 @@ bool ParticleEmitter::LoadFromYaml(const FilePath& filename, bool preserveInheri
         if (shortEffectNode)
             shortEffect = shortEffectNode->AsBool();
 
+        const YamlNode* generateOnSurfaceNode = emitterNode->Get("generateOnSurface");
+        if (generateOnSurfaceNode)
+            generateOnSurface = generateOnSurfaceNode->AsBool();
+
+        const YamlNode* shockwaveModeNode = emitterNode->Get("shockwaveMode");
+        shockwaveMode = SHOCKWAVE_DISABLED;
+        if (shockwaveModeNode)
+        {
+            if (shockwaveModeNode->AsString() == "shockNormal")
+                shockwaveMode = SHOCKWAVE_NORMAL;
+            else if (shockwaveModeNode->AsString() == "shockHorizontal")
+                shockwaveMode = SHOCKWAVE_HORIZONTAL;
+        }
+
         const YamlNode* typeNode = emitterNode->Get("type");
         if (typeNode)
         {
@@ -364,8 +380,13 @@ bool ParticleEmitter::LoadFromYaml(const FilePath& filename, bool preserveInheri
                 emitterType = EMITTER_ONCIRCLE_VOLUME;
             else if (typeNode->AsString() == "oncircle_edges")
                 emitterType = EMITTER_ONCIRCLE_EDGES;
-            else if (typeNode->AsString() == "shockwave")
-                emitterType = EMITTER_SHOCKWAVE;
+            else if (typeNode->AsString() == "shockwave") // Deprecated.
+            {
+                emitterType = EMITTER_ONCIRCLE_EDGES;
+                shockwaveMode = SHOCKWAVE_NORMAL;
+            }
+            else if (typeNode->AsString() == "sphere")
+                emitterType = EMITTER_SPHERE;
             else
                 emitterType = EMITTER_POINT;
         }
@@ -421,6 +442,8 @@ void ParticleEmitter::SaveToYaml(const FilePath& filename)
     emitterYamlNode->Set("name", (name.c_str() ? String(name.c_str()) : ""));
     emitterYamlNode->Set("type", GetEmitterTypeName());
     emitterYamlNode->Set("shortEffect", shortEffect);
+    emitterYamlNode->Set("generateOnSurface", generateOnSurface);
+    emitterYamlNode->Set("shockwaveMode", GetEmitterShockwaveModeName());
 
     // Write the property lines.
     PropertyLineYamlWriter::WritePropertyLineToYamlNode<float32>(emitterYamlNode, "emissionAngle", this->emissionAngle);
@@ -490,15 +513,30 @@ String ParticleEmitter::GetEmitterTypeName()
         return "oncircle_edges";
     }
 
-    case EMITTER_SHOCKWAVE:
+    case EMITTER_SPHERE:
     {
-        return "shockwave";
+        return "sphere";
     }
 
     default:
     {
         return "unknown";
     }
+    }
+}
+
+String ParticleEmitter::GetEmitterShockwaveModeName()
+{
+    switch (shockwaveMode)
+    {
+    case SHOCKWAVE_DISABLED:
+        return "shockDisabeld";
+    case SHOCKWAVE_NORMAL:
+        return "shockNormal";
+    case SHOCKWAVE_HORIZONTAL:
+        return "shockHorizontal";
+    default:
+        return "shockUnknown";
     }
 }
 

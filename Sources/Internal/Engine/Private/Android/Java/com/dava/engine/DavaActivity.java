@@ -10,11 +10,13 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,9 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -337,6 +342,7 @@ public final class DavaActivity extends Activity
         keyboardState = new DavaKeyboardState();
         registerActivityListener(keyboardState);
 
+        clearActivationFilesCacheDir();
         CollectActivationFilenames(getIntent(), true);
         notifyListeners(ON_ACTIVITY_CREATE, savedInstanceState);
 
@@ -604,7 +610,7 @@ public final class DavaActivity extends Activity
         notifyListeners(ON_ACTIVITY_REQUEST_PERMISSION_RESULT, args);
     }
 
-    void CollectActivationFilenames(Intent intent, boolean onStartup)
+    private void CollectActivationFilenames(Intent intent, boolean onStartup)
     {
         if (intent != null)
         {
@@ -612,13 +618,105 @@ public final class DavaActivity extends Activity
             if (action != null && action.compareTo(Intent.ACTION_VIEW) == 0)
             {
                 String scheme = intent.getScheme();
-                if (scheme != null && scheme.compareTo(ContentResolver.SCHEME_FILE) == 0)
+                if (scheme != null)
                 {
                     Uri uri = intent.getData();
-                    nativeOnFileIntent(uri.getPath(), onStartup);
+                    if (scheme.compareTo(ContentResolver.SCHEME_FILE) == 0)
+                    {
+                        nativeOnFileIntent(uri.getPath(), onStartup);
+                    }
+                    else if (scheme.compareTo(ContentResolver.SCHEME_CONTENT) == 0)
+                    {
+                        try {
+                            ContentResolver resolver = getContentResolver();
+                            File file = getActivationFileFromContentScheme(resolver, uri);
+
+                            int size = 0;
+                            byte[] buffer = new byte[1024];
+                            InputStream is = resolver.openInputStream(uri);
+                            OutputStream os = new FileOutputStream(file);
+                            while ((size = is.read(buffer)) != -1)
+                                os.write(buffer, 0, size);
+                            os.close();
+
+                            nativeOnFileIntent(file.getAbsolutePath(), onStartup);
+                        } catch (Exception e) {
+                            DavaLog.e(LOG_TAG, "CollectActivationFilenames exception: " + e.toString());
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private File getActivationFileFromContentScheme(ContentResolver resolver, Uri uri) throws Exception
+    {
+        File tempDir = getActivationFilesCacheDir();
+
+        // https://developer.android.com/training/secure-file-sharing/retrieve-info#RetrieveFileInfo
+        Cursor cursor = resolver.query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME);
+        if (columnIndex >= 0)
+        {
+            String displayName = cursor.getString(columnIndex);
+            String[] baseAndExt = null;
+
+            // Try to create unique filename adding counter to name
+            int fileIndex = 0;
+            do {
+                String filename = displayName;
+                if (fileIndex > 0)
+                {
+                    if (baseAndExt == null)
+                        baseAndExt = splitFilename(displayName);
+                    filename = String.format("%s (%d)%s", baseAndExt[0], fileIndex, baseAndExt[1]);
+                }
+                File file = new File(tempDir, filename);
+                if (!file.exists())
+                {
+                    return file;
+                }
+                fileIndex += 1;
+            } while (fileIndex <= 42);
+            // Give up incrementing counter and let system to generate filename
+        }
+        return File.createTempFile("dava", null, tempDir);
+    }
+
+    private File getActivationFilesCacheDir()
+    {
+        File tempDir = new File(getCacheDir(), "dava_afiles");
+        if (!tempDir.exists())
+            tempDir.mkdir();
+        return tempDir;
+    }
+
+    private void clearActivationFilesCacheDir()
+    {
+        try {
+            File tempDir = getActivationFilesCacheDir();
+            for (File file : tempDir.listFiles())
+                file.delete();
+        } catch(Exception e){}
+    }
+
+    private static String[] splitFilename(String filename)
+    {
+        // It seems that Java does not have methods to split filename into basename and extension
+        String result[] = new String[]{"",""};
+        int dot = filename.indexOf('.');
+        if (dot > 0)
+        {
+            result[0] = filename.substring(0, dot);
+            result[1] = filename.substring(dot);
+        }
+        else
+        {
+            // Treat filenames starting with dot or without dot as having no extension
+            result[0] = filename;
+        }
+        return result;
     }
 
     void hideNavigationBar()

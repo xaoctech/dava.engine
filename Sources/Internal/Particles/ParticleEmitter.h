@@ -39,7 +39,7 @@ public:
         EMITTER_RECT,
         EMITTER_ONCIRCLE_VOLUME,
         EMITTER_ONCIRCLE_EDGES,
-        EMITTER_SHOCKWAVE
+        EMITTER_SPHERE
     };
 
     enum eState : uint32
@@ -47,6 +47,13 @@ public:
         STATE_PLAYING,
         STATE_STOPPING, //emitter is stopping - no new particle generation, still need to update and recalculate
         STATE_STOPPED //emitter is completely stopped - no processing at all
+    };
+
+    enum eShockwaveMode : uint32
+    {
+        SHOCKWAVE_DISABLED,
+        SHOCKWAVE_NORMAL,
+        SHOCKWAVE_HORIZONTAL
     };
 
     ParticleEmitter();
@@ -72,6 +79,7 @@ public:
     void InvertEmissionVectorCoordinates();
 
     String GetEmitterTypeName();
+    String GetEmitterShockwaveModeName();
 
     void GetModifableLines(List<ModifiablePropertyLineBase*>& modifiables);
 
@@ -96,7 +104,9 @@ public:
     RefPtr<PropertyLine<float32>> emissionAngleVariation;
     RefPtr<PropertyLine<Color>> colorOverLife;
 
+    eShockwaveMode shockwaveMode = SHOCKWAVE_DISABLED;
     bool shortEffect = false;
+    bool generateOnSurface = false;
 
 protected:
     virtual ~ParticleEmitter();

@@ -152,4 +152,16 @@ DAVA_TESTCLASS (StringUtilsTest)
         TEST_VERIFY(StringUtils::ToLowerCase(String("    ")) == "    ");
         TEST_VERIFY(StringUtils::ToLowerCase(String("\t \t")) == "\t \t");
     }
+
+    DAVA_TEST (SubstituteParamsTest)
+    {
+        UnorderedMap<String, String> replacements;
+        replacements["a"] = "123";
+        replacements["b"] = "Hello, world";
+        replacements["param"] = "Param";
+        TEST_VERIFY(StringUtils::SubstituteParams(String("bla bla bla str"), replacements) == "bla bla bla str");
+        TEST_VERIFY(StringUtils::SubstituteParams(String("bla %(a) %(b) str"), replacements) == "bla 123 Hello, world str");
+        TEST_VERIFY(StringUtils::SubstituteParams(String("bla %(b) %(a) str"), replacements) == "bla Hello, world 123 str");
+        TEST_VERIFY(StringUtils::SubstituteParams(String("bla %(a) %(c) str"), replacements) == "bla 123 %(c) str");
+    }
 };

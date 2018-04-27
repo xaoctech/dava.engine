@@ -13,6 +13,7 @@ namespace DAVA
 class UISizePolicyComponent;
 class UIFlowLayoutComponent;
 class UILinearLayoutComponent;
+class FormulaContext;
 
 class SizeMeasuringAlgorithm : public ReflectionBase
 {
@@ -53,9 +54,9 @@ private:
     float32 GetMinLimit() const;
     float32 GetMaxLimit() const;
     float32 GetValue() const;
-    float32 Min(float32 a, float32 b) const;
-    float32 Max(float32 a, float32 b) const;
-    float32 Clamp(float32 val, float32 a, float32 b) const;
+    float32 Min(const std::shared_ptr<FormulaContext>& context, float32 a, float32 b) const;
+    float32 Max(const std::shared_ptr<FormulaContext>& context, float32 a, float32 b) const;
+    float32 Clamp(const std::shared_ptr<FormulaContext>& context, float32 val, float32 a, float32 b) const;
 
     Layouter& layouter;
     ControlLayoutData& data;

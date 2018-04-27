@@ -37,7 +37,7 @@ public:
     ~ModernControlSectionWidget() override;
 
     ControlPropertiesSection* GetSection() const;
-    void RecreateProperties();
+    void RecreateProperties() override;
 
 private:
     ControlPropertiesSection* section = nullptr;

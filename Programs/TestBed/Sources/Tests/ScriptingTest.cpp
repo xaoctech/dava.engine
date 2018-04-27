@@ -117,25 +117,25 @@ void ScriptingTest::LoadResources()
     outputText->SetUtf8Text("");
 
     auto actions = dialog->GetOrCreateComponent<UIEventBindingComponent>();
-    actions->BindAction(FastName("LOAD_SCRIPT"), [&]() {
+    actions->BindAction(FastName("LOAD_SCRIPT"), [&](const DAVA::Any&) {
         String scriptBody = scriptText->GetUtf8Text();
         Run([&]() -> int32 {
             return script->ExecString(scriptBody);
         });
     });
-    actions->BindAction(FastName("RUN_MAIN"), [&]() {
+    actions->BindAction(FastName("RUN_MAIN"), [&](const DAVA::Any&) {
         int32 intArg = atoi(intArgText->GetUtf8Text().c_str());
         String strArg = strArgText->GetUtf8Text();
         Run([&]() -> int32 {
             return script->ExecFunction("main", intArg, strArg, objRef);
         });
     });
-    actions->BindAction(FastName("RUN_MAIN_NOARGS"), [&]() {
+    actions->BindAction(FastName("RUN_MAIN_NOARGS"), [&](const DAVA::Any&) {
         Run([&]() -> int32 {
             return script->ExecFunction("main");
         });
     });
-    actions->BindAction(FastName("RUN_10000"), [&]() {
+    actions->BindAction(FastName("RUN_10000"), [&](const DAVA::Any&) {
         int32 intArg = atoi(intArgText->GetUtf8Text().c_str());
         String strArg = strArgText->GetUtf8Text();
         Run([&]() -> int32 {
@@ -147,7 +147,7 @@ void ScriptingTest::LoadResources()
             return 0;
         });
     });
-    actions->BindAction(FastName("RUN_10000_NOARGS"), [&]() {
+    actions->BindAction(FastName("RUN_10000_NOARGS"), [&](const DAVA::Any&) {
         Run([&]() -> int32 {
             for (int32 i = 0; i < 10000; ++i)
             {
@@ -157,10 +157,10 @@ void ScriptingTest::LoadResources()
             return 0;
         });
     });
-    actions->BindAction(FastName("RESET_SCRIPT"), [&]() {
+    actions->BindAction(FastName("RESET_SCRIPT"), [&](const DAVA::Any&) {
         CreateScript();
     });
-    actions->BindAction(FastName("DUMP_STACK"), [&]() {
+    actions->BindAction(FastName("DUMP_STACK"), [&](const DAVA::Any&) {
         if (script)
         {
             script->DumpStackToLog(Logger::LEVEL_DEBUG);

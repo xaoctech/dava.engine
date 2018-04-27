@@ -29,6 +29,7 @@
 #include <Math/Vector.h>
 #include <Math/Transform.h>
 #include <Math/TransformUtils.h>
+#include <Render/Highlevel/Heightmap.h>
 #include <Scene3D/Components/ComponentHelpers.h>
 #include <Scene3D/Components/GeoDecalComponent.h>
 #include <Scene3D/Components/ParticleEffectComponent.h>
@@ -204,7 +205,7 @@ CollisionObj CreateLandscape(bool createCollision, Landscape* landscape, void* u
     CollisionObj result;
     result.isValid = true;
     result.shouldRecreate = true;
-    if (landscape->GetHeightmap() != nullptr)
+    if (landscape->GetHeightmap() != nullptr && landscape->GetHeightmap()->Data() != nullptr)
     {
         if (createCollision)
         {

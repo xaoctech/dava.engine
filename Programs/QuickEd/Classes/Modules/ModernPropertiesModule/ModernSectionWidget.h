@@ -36,6 +36,8 @@ public:
     ~ModernSectionWidget() override;
 
     ModernPropertyEditor* FindEditorForProperty(AbstractProperty* property);
+    virtual void RecreateProperties() = 0;
+    bool ShouldRecreateForChangedProperty(const DAVA::String& propertyNames);
 
 protected:
     void RemoveAllProperties();
@@ -48,6 +50,8 @@ protected:
     void AddPropertyEditor(ValueProperty* property, int row, int col, int colSpan = -1);
     ModernPropertyEditor* CreateDefaultPropertyEditor(AbstractProperty* section, const DAVA::String& name) const;
     void AddPropertyEditor(AbstractProperty* section, const DAVA::String& name, int row, int col, int colSpan);
+    void AddExpressionEditor(AbstractProperty* section, const DAVA::String& name, int row, int col, int colSpan);
+    void AddMultilineEditor(AbstractProperty* section, const DAVA::String& name, int row, int col, int colSpan);
     void AddPathPropertyEditor(AbstractProperty* section, const DAVA::String& name,
                                const QList<QString>& extensions, const QString& resourceSubDir, bool allowAnyExtension, int row, int col, int colSpan);
     void AddCompletionsEditor(AbstractProperty* section, const DAVA::String& name, std::unique_ptr<CompletionsProvider> completionsProvider, bool isEditable, int row, int col, int colSpan);
@@ -71,5 +75,6 @@ protected:
 
     std::shared_ptr<ModernPropertyContext> context;
     DAVA::UnorderedSet<DAVA::String> createdProperties;
+    DAVA::UnorderedSet<DAVA::String> refreshInitiatorProperties;
     DAVA::Vector<ModernPropertyEditor*> editors;
 };

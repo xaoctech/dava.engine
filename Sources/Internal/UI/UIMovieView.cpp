@@ -166,7 +166,7 @@ void UIMovieView::Update(float32 timeElapsed)
                     UIEventsSingleComponent* eventsSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
                     if (eventsSingle)
                     {
-                        eventsSingle->SendEvent(this, event);
+                        eventsSingle->SendEvent(this, event, Any());
                     }
                 }
             }

@@ -73,7 +73,7 @@ void UIScriptSystem::Process(float32 elapsedTime)
     }
 }
 
-bool UIScriptSystem::ProcessEvent(UIControl* control, const FastName& event)
+bool UIScriptSystem::ProcessEvent(UIControl* control, const FastName& event, const Any& data)
 {
     UIScriptComponent* component = control->GetComponent<UIScriptComponent>();
     if (component)
@@ -85,7 +85,9 @@ bool UIScriptSystem::ProcessEvent(UIControl* control, const FastName& event)
         {
             if (it->controller)
             {
-                return it->controller->ProcessEvent(component, event);
+                Vector<Any> controllerData;
+                controllerData.push_back(data);
+                return it->controller->ProcessEvent(component, event, controllerData);
             }
         }
     }

@@ -45,13 +45,13 @@ void UIJoypadSystemTest::LoadResources()
         {
             UIEventBindingComponent* binding = c->GetOrCreateComponent<UIEventBindingComponent>();
 
-            binding->BindAction(hoverOn, [c]() { c->AddClass(FastName("hoverOn")); });
+            binding->BindAction(hoverOn, [c](const DAVA::Any&) { c->AddClass(FastName("hoverOn")); });
 
-            binding->BindAction(hoverOff, [c]() { c->RemoveClass(FastName("hoverOn")); });
+            binding->BindAction(hoverOff, [c](const DAVA::Any&) { c->RemoveClass(FastName("hoverOn")); });
 
             binding->BindAction(
             touchDown,
-            [c]() {
+            [c](const DAVA::Any&) {
                 c->RemoveClass(FastName("hoverOn"));
                 c->AddClass(FastName("touchDown"));
             }
@@ -61,7 +61,7 @@ void UIJoypadSystemTest::LoadResources()
             {
                 binding->BindAction(
                 touchUpIn,
-                [this, c]() {
+                [this, c](const DAVA::Any&) {
                     c->RemoveClass(FastName("touchDown"));
 
                     if (StringUtils::EndsWith(c->GetName().c_str(), "Area"))
@@ -76,7 +76,7 @@ void UIJoypadSystemTest::LoadResources()
 
             binding->BindAction(
             touchUpOut,
-            [c]() {
+            [c](const DAVA::Any&) {
                 c->RemoveClass(FastName("touchDown"));
                 c->RemoveClass(FastName("hoverOn"));
             }
@@ -93,7 +93,7 @@ void UIJoypadSystemTest::LoadResources()
     {
         x.first->GetComponent<UIEventBindingComponent>()->BindAction(
         touchUpIn,
-        [this, x]() {
+        [this, x](const DAVA::Any&) {
             x.first->RemoveClass(FastName("touchDown"));
             (this->*x.second)(x.first);
         }

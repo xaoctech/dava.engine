@@ -395,8 +395,8 @@ private:
 
             testCompleted = false;
             resentSceneAction->triggered(false);
-
-            recentSceneDelayedExecutor.DelayedExecute(DAVA::MakeFunction(this, &SceneManagerModuleTests::OpenResentSceneFromMenuDelayed));
+            EXPECT_CALL(*this, AfterWrappersSync())
+            .WillOnce(::testing::Invoke(this, &SceneManagerModuleTests::OpenResentSceneFromMenuDelayed));
         }
     }
 

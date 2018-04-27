@@ -197,6 +197,10 @@ FormulaToken FormulaTokenizer::ReadToken()
         ReadChar();
         return FormulaToken(FormulaToken::COMMA, line, column);
 
+    case ';':
+        ReadChar();
+        return FormulaToken(FormulaToken::SEMICOLON, line, column);
+
     case '.':
         ReadChar();
         return FormulaToken(FormulaToken::DOT, line, column);
@@ -246,7 +250,12 @@ FormulaToken FormulaTokenizer::ReadToken()
 
     case '=':
         ReadChar();
-        return FormulaToken(FormulaToken::EQ, line, column);
+        if (ch == '=')
+        {
+            ReadChar();
+            return FormulaToken(FormulaToken::EQ, line, column);
+        }
+        return FormulaToken(FormulaToken::ASSIGN, line, column);
 
     case '!':
         ReadChar();

@@ -273,32 +273,32 @@ UIFocusSystem* UIInputSystem::GetFocusSystem() const
     return focusSystem;
 }
 
-void UIInputSystem::MoveFocusLeft()
+void UIInputSystem::MoveFocusLeft(const Any& data)
 {
     focusSystem->MoveFocus(UINavigationComponent::Direction::LEFT);
 }
 
-void UIInputSystem::MoveFocusRight()
+void UIInputSystem::MoveFocusRight(const Any& data)
 {
     focusSystem->MoveFocus(UINavigationComponent::Direction::RIGHT);
 }
 
-void UIInputSystem::MoveFocusUp()
+void UIInputSystem::MoveFocusUp(const Any& data)
 {
     focusSystem->MoveFocus(UINavigationComponent::Direction::UP);
 }
 
-void UIInputSystem::MoveFocusDown()
+void UIInputSystem::MoveFocusDown(const Any& data)
 {
     focusSystem->MoveFocus(UINavigationComponent::Direction::DOWN);
 }
 
-void UIInputSystem::MoveFocusForward()
+void UIInputSystem::MoveFocusForward(const Any& data)
 {
     focusSystem->MoveFocus(UITabOrderComponent::Direction::FORWARD, true);
 }
 
-void UIInputSystem::MoveFocusBackward()
+void UIInputSystem::MoveFocusBackward(const Any& data)
 {
     focusSystem->MoveFocus(UITabOrderComponent::Direction::BACKWARD, true);
 }
@@ -412,7 +412,7 @@ bool UIInputSystem::HandleKeyEvent(UIEvent* event)
                         UIEventsSingleComponent* eventsSingle = GetScene()->GetSingleComponent<UIEventsSingleComponent>();
                         if (eventsSingle && event.IsValid())
                         {
-                            if (eventsSingle->SendEvent(c, event))
+                            if (eventsSingle->SendEvent(c, event, Any()))
                             {
                                 break;
                             }

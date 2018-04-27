@@ -14,7 +14,6 @@
 #include <UI/DataBinding/UIDataBindingPostProcessingSystem.h>
 #include <UI/DataBinding/UIDataBindingComponent.h>
 #include <UI/DataBinding/UIDataSourceComponent.h>
-#include <UI/DataBinding/UIDataScopeComponent.h>
 #include <UI/DataBinding/UIDataListComponent.h>
 #include <UI/DataBinding/UIDataChildFactoryComponent.h>
 #include <UI/DataBinding/Private/UIDataModel.h>
@@ -178,8 +177,9 @@ DAVA_TESTCLASS (UIDataBindingTest)
         bindComp->SetControlFieldName("UITextComponent.text");
         bindComp->SetBindingExpression("a + b");
 
-        UIDataScopeComponent* scope = text->GetOrCreateComponent<UIDataScopeComponent>();
-        scope->SetExpression("map");
+        UIDataSourceComponent* scope = text->GetOrCreateComponent<UIDataSourceComponent>();
+        scope->SetSourceType(UIDataSourceComponent::FROM_EXPRESSION);
+        scope->SetSource("map");
 
         UIDataBindingSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIDataBindingSystem>();
         sys->Process(0.0f);
@@ -199,7 +199,7 @@ DAVA_TESTCLASS (UIDataBindingTest)
 
         TEST_VERIFY(text->GetUtf8Text() == "357");
 
-        FormulaContext* context = sys->GetFormulaContext(text.Get(), UIDataModel::PRIORITY_DATA_BINDING);
+        std::shared_ptr<FormulaContext> context = sys->GetFormulaContext(text.Get());
         TEST_VERIFY(context->FindReflection("a").IsValid());
     }
 

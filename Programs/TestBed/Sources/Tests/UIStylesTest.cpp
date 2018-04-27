@@ -28,25 +28,25 @@ void UIStylesTest::LoadResources()
     auto actions = main->GetOrCreateComponent<UIEventBindingComponent>();
     if (actions)
     {
-        actions->BindAction(FastName("ADD"), [&]() {
+        actions->BindAction(FastName("ADD"), [&](const DAVA::Any&) {
             container->RemoveClass(STYLE_OFF);
             container->AddClass(STYLE_ON);
         });
-        actions->BindAction(FastName("REMOVE"), [&]() {
+        actions->BindAction(FastName("REMOVE"), [&](const DAVA::Any&) {
             container->RemoveClass(STYLE_ON);
             container->AddClass(STYLE_OFF);
         });
-        actions->BindAction(FastName("MORE"), [&]() {
+        actions->BindAction(FastName("MORE"), [&](const DAVA::Any&) {
             for (uint32 i = 0; i < 1000; ++i)
             {
                 RefPtr<UIControl> c(proto->Clone());
                 container->AddControl(c.Get());
             }
         });
-        actions->GetActionMap().Put(FastName("ADD_GLOBAL"), [&]() {
+        actions->GetActionMap().Put(FastName("ADD_GLOBAL"), [&](const DAVA::Any&) {
             GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->AddGlobalClass(FastName("global"));
         });
-        actions->GetActionMap().Put(FastName("REMOVE_GLOBAL"), [&]() {
+        actions->GetActionMap().Put(FastName("REMOVE_GLOBAL"), [&](const DAVA::Any&) {
             GetEngineContext()->uiControlSystem->GetStyleSheetSystem()->RemoveGlobalClass(FastName("global"));
         });
     }

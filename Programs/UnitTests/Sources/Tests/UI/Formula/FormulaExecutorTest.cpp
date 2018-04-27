@@ -34,22 +34,22 @@ public:
         map["c"] = 33;
     }
 
-    int sum(int a, int b)
+    int sum(const std::shared_ptr<FormulaContext>& context, int a, int b)
     {
         return a + b;
     }
 
-    String intToStr(int a)
+    String intToStr(const std::shared_ptr<FormulaContext>& context, int a)
     {
         return Format("*%d*", a);
     }
 
-    String boolToStr(bool a)
+    String boolToStr(const std::shared_ptr<FormulaContext>& context, bool a)
     {
         return a ? "+" : "-";
     }
 
-    String floatToStr(float a)
+    String floatToStr(const std::shared_ptr<FormulaContext>& context, float a)
     {
         double var = static_cast<double>(a);
         return Format("%.3f", var);
@@ -113,16 +113,16 @@ DAVA_TESTCLASS (FormulaExecutorTest)
     // FormulaExecutor::Calculate
     DAVA_TEST (CalculateStrings)
     {
-        TEST_VERIFY(Execute("\"Hello, world\" = str") == Any(true));
-        TEST_VERIFY(Execute("\"Hello,\" + \" world\" = str") == Any(true));
-        TEST_VERIFY(Execute("intToStr(5) = \"*5*\"") == Any(true));
+        TEST_VERIFY(Execute("\"Hello, world\" == str") == Any(true));
+        TEST_VERIFY(Execute("\"Hello,\" + \" world\" == str") == Any(true));
+        TEST_VERIFY(Execute("intToStr(5) == \"*5*\"") == Any(true));
     }
 
     // FormulaExecutor::Calculate
     DAVA_TEST (CalculateWhen)
     {
         TEST_VERIFY(Execute("when true -> 0, 1") == Any(0));
-        TEST_VERIFY(Execute("when 5 = 2 -> 0, 1") == Any(1));
+        TEST_VERIFY(Execute("when 5 == 2 -> 0, 1") == Any(1));
     }
 
     // FormulaExecutor::Calculate
@@ -285,15 +285,15 @@ DAVA_TESTCLASS (FormulaExecutorTest)
         dependencies = GetDependencies("map.b + fl", &data);
         TEST_VERIFY(dependencies == Vector<void*>({ &(data.map), &(data.map["b"]), &(data.flVal) }));
 
-        dependencies = GetDependencies("b and (array[1] = 1)", &data);
+        dependencies = GetDependencies("b and (array[1] == 1)", &data);
         TEST_VERIFY(dependencies == Vector<void*>({ &(data.bVal), &(data.array), &(data.array[1]) }));
     }
 
     Any Execute(const String& str)
     {
         TestData data;
-        FormulaReflectionContext context(Reflection::Create(&data), std::shared_ptr<FormulaContext>());
-        FormulaExecutor executor(&context);
+        std::shared_ptr<FormulaContext> context = std::make_shared<FormulaReflectionContext>(Reflection::Create(&data), std::shared_ptr<FormulaContext>());
+        FormulaExecutor executor(context);
         FormulaParser parser(str);
         std::shared_ptr<FormulaExpression> exp = parser.ParseExpression();
         Any res = executor.Calculate(exp.get());
@@ -303,8 +303,8 @@ DAVA_TESTCLASS (FormulaExecutorTest)
 
     Vector<void*> GetDependencies(const String str, TestData* data)
     {
-        FormulaReflectionContext context(Reflection::Create(data), std::shared_ptr<FormulaContext>());
-        FormulaExecutor executor(&context);
+        std::shared_ptr<FormulaContext> context = std::make_shared<FormulaReflectionContext>(Reflection::Create(&data), std::shared_ptr<FormulaContext>());
+        FormulaExecutor executor(context);
         FormulaParser parser(str);
         std::shared_ptr<FormulaExpression> exp = parser.ParseExpression();
 

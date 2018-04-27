@@ -75,17 +75,17 @@ void TextSystemTest::LoadResources()
     holderControl = static_cast<UIStaticText*>(dialog->FindByName("Holder"));
 
     auto actions = dialog->GetOrCreateComponent<UIEventBindingComponent>();
-    actions->BindAction(FastName("START"), [&]() {
+    actions->BindAction(FastName("START"), [&](const DAVA::Any&) {
         state = PLAYING;
         ChangeCurrentTest(testIdx);
     });
-    actions->BindAction(FastName("STOP"), [&]() {
+    actions->BindAction(FastName("STOP"), [&](const DAVA::Any&) {
         state = STOPPED;
     });
-    actions->BindAction(FastName("NEXT"), [&]() {
+    actions->BindAction(FastName("NEXT"), [&](const DAVA::Any&) {
         ChangeCurrentTest(testIdx + 1);
     });
-    actions->BindAction(FastName("PREV"), [&]() {
+    actions->BindAction(FastName("PREV"), [&](const DAVA::Any&) {
         ChangeCurrentTest(testIdx - 1);
     });
 

@@ -47,16 +47,16 @@ public:
 
 private:
     /** Send event from child to root controls. */
-    bool SendEvent(UIControl* control, const FastName& event);
+    bool SendEvent(UIControl* control, const FastName& event, const Any& data);
 
     /** Broadcast event to all children controls. */
-    bool SendBroadcastEvent(UIControl* control, const FastName& event);
+    bool SendBroadcastEvent(UIControl* control, const FastName& event, const Any& data);
 
     /** Process event internal*/
-    bool ProcessEventOnContol(UIControl* sceneControl, const FastName& event, bool checkFlow);
+    bool ProcessEventOnContol(UIControl* sceneControl, const FastName& event, const Any& data, bool checkFlow);
 
     /** Process eventsfor UIEventBindingComponent */
-    bool ProcessEventOnBinding(UIControl* sceneControl, const FastName& event);
+    bool ProcessEventOnBinding(UIControl* sceneControl, const FastName& event, const Any& data);
 
     // bool ProcessEventOnController(UIControl* control, const FastName& event);
 

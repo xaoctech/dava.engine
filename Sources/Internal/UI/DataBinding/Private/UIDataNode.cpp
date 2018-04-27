@@ -62,4 +62,23 @@ void UIDataNode::ResetError()
         issueId = NO_ISSUE;
     }
 }
+
+UIDataErrorGuard::UIDataErrorGuard(UIDataNode* dataNode_)
+    : dataNode(dataNode_)
+{
+}
+
+UIDataErrorGuard::~UIDataErrorGuard()
+{
+    if (hasToResetError)
+    {
+        dataNode->ResetError();
+    }
+}
+
+void UIDataErrorGuard::NotifyError(const String& message, const String& property)
+{
+    hasToResetError = false;
+    dataNode->NotifyError(message, property);
+}
 }

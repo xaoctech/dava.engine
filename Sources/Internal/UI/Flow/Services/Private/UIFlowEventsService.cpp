@@ -22,7 +22,7 @@ void UIFlowEventsService::Send(UIControl* control, const FastName& event)
     UIEventsSingleComponent* events = Engine::Instance()->GetContext()->uiControlSystem->GetSingleComponent<UIEventsSingleComponent>();
     if (events)
     {
-        events->SendEvent(control, event);
+        events->SendEvent(control, event, Any());
     }
 }
 }

@@ -84,7 +84,9 @@ void CommandUpdateEmitter::Init(const FastName& name,
                                 RefPtr<PropertyLine<Color>> colorOverLife,
                                 RefPtr<PropertyLine<Vector3>> size,
                                 float32 life,
-                                bool isShortEffect)
+                                bool isShortEffect,
+                                bool generateOnSurface,
+                                DAVA::ParticleEmitter::eShockwaveMode shockwaveMode)
 {
     this->name = name;
     this->emitterType = emitterType;
@@ -99,6 +101,8 @@ void CommandUpdateEmitter::Init(const FastName& name,
     this->size = size;
     this->life = life;
     this->isShortEffect = isShortEffect;
+    this->generateOnSurface = generateOnSurface;
+    this->shockwaveMode = shockwaveMode;
 }
 
 void CommandUpdateEmitter::Redo()
@@ -117,6 +121,8 @@ void CommandUpdateEmitter::Redo()
     PropertyLineHelper::SetValueLine(emitter->emissionAngle, emissionAngle);
     PropertyLineHelper::SetValueLine(emitter->emissionAngleVariation, emissionAngleVariation);
     emitter->shortEffect = isShortEffect;
+    emitter->generateOnSurface = generateOnSurface;
+    emitter->shockwaveMode = shockwaveMode;
 }
 
 DAVA_VIRTUAL_REFLECTION_IMPL(CommandUpdateEmitter)

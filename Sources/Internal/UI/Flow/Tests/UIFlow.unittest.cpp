@@ -8,7 +8,6 @@
 #include "Job/JobManager.h"
 #include "Reflection/Reflection.h"
 #include "Reflection/ReflectionRegistrator.h"
-#include "UI/DataBinding/UIDataScopeComponent.h"
 #include "UI/DataBinding/UIDataSourceComponent.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Events/UIEventsSingleComponent.h"
@@ -193,7 +192,7 @@ DAVA_TESTCLASS (UIFlowTest)
 
     void SendEvent(const String& e)
     {
-        eventComp->SendEvent(controlSys->GetScreen(), FastName(e));
+        eventComp->SendEvent(controlSys->GetScreen(), FastName(e), Any());
     }
 
     bool HasControl(const String& path)
@@ -648,14 +647,16 @@ DAVA_TESTCLASS (UIFlowTest)
         SystemsUpdate();
 
         UIControl* view = controlSys->GetScreen()->FindByPath("**/View1");
-        UIDataSourceComponent* dataCom = view->GetComponent<UIDataSourceComponent>();
+        UIDataSourceComponent* dataCom = view->GetComponent<UIDataSourceComponent>(0);
         TEST_VERIFY(dataCom != nullptr);
+        TEST_VERIFY(dataCom->GetSourceType() == UIDataSourceComponent::FROM_REFLECTION);
         TEST_VERIFY(dataCom->GetData().IsValid());
         TEST_VERIFY(dataCom->GetData().GetField("a").IsValid());
 
-        UIDataScopeComponent* scopeCom = view->GetComponent<UIDataScopeComponent>();
+        UIDataSourceComponent* scopeCom = view->GetComponent<UIDataSourceComponent>(1);
         TEST_VERIFY(scopeCom != nullptr);
-        TEST_VERIFY(scopeCom->GetExpression() == "{b = 2}");
+        TEST_VERIFY(scopeCom->GetSourceType() == UIDataSourceComponent::FROM_EXPRESSION);
+        TEST_VERIFY(scopeCom->GetSource() == "{b = 2}");
     }
 
     DAVA_TEST (TransitionEffects)

@@ -28,13 +28,13 @@ void AssertTest::LoadResources()
     auto actions = dialog->GetOrCreateComponent<DAVA::UIEventBindingComponent>();
     if (actions)
     {
-        actions->BindAction(DAVA::FastName("ASSERT_ALWAYS"), [&]() {
+        actions->BindAction(DAVA::FastName("ASSERT_ALWAYS"), [&](const DAVA::Any&) {
             DVASSERT_ALWAYS(false, "Demo assert");
         });
-        actions->BindAction(DAVA::FastName("ASSERT"), [&]() {
+        actions->BindAction(DAVA::FastName("ASSERT"), [&](const DAVA::Any&) {
             DVASSERT(false, "Demo assert");
         });
-        actions->BindAction(DAVA::FastName("DELAYED_ASSERT"), [&]() {
+        actions->BindAction(DAVA::FastName("DELAYED_ASSERT"), [&](const DAVA::Any&) {
             timeOut = DEFAULT_TIMEOUT;
         });
 
@@ -71,14 +71,14 @@ void AssertTest::Update(DAVA::float32 timeElapsed)
     }
 }
 
-void AssertTest::ShowMessageBoxFromMainThread()
+void AssertTest::ShowMessageBoxFromMainThread(const DAVA::Any&)
 {
     using namespace DAVA;
     int r = Debug::MessageBox("Message box", "Message box from main thread", { "Ping", "Pong", "Kaboom" }, 1);
     Logger::Debug("You choose button %d", r);
 }
 
-void AssertTest::ShowMessageBoxFromUIThread()
+void AssertTest::ShowMessageBoxFromUIThread(const DAVA::Any&)
 {
     using namespace DAVA;
     Window* primaryWindow = GetPrimaryWindow();
@@ -88,7 +88,7 @@ void AssertTest::ShowMessageBoxFromUIThread()
     });
 }
 
-void AssertTest::ShowMessageBoxFromOtherThreads()
+void AssertTest::ShowMessageBoxFromOtherThreads(const DAVA::Any&)
 {
     using namespace DAVA;
     JobManager* jobman = GetEngineContext()->jobManager;

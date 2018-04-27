@@ -146,14 +146,19 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
     bool sizeTimeLineVisible = false;
 
     auto emitterInstance = emitterPropertiesWidget->GetEmitterInstance(emitterPropertiesWidget->GetActiveScene());
+    bool isSphere = emitterInstance->GetEmitter()->emitterType == DAVA::ParticleEmitter::EMITTER_SPHERE;
     switch (emitterInstance->GetEmitter()->emitterType)
     {
     case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME:
     case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_EDGES:
-    case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
     {
         radiusTimeLineVisible = true;
         angleTimeLineVisible = true;
+        break;
+    }
+    case DAVA::ParticleEmitter::EMITTER_SPHERE:
+    {
+        radiusTimeLineVisible = true;
         break;
     }
 
@@ -169,9 +174,13 @@ void ParticleEditorWidget::UpdateVisibleTimelinesForParticleEmitter()
     }
 
     emitterPropertiesWidget->GetEmitterRadiusTimeline()->setVisible(radiusTimeLineVisible);
-    emitterPropertiesWidget->GetEmitterInnerRadiusTimeline()->setVisible(emitterInstance->GetEmitter()->emitterType == DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME);
+    emitterPropertiesWidget->GetEmitterInnerRadiusTimeline()->setVisible(emitterInstance->GetEmitter()->emitterType == DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME || isSphere);
     emitterPropertiesWidget->GetEmitterAngleTimeline()->setVisible(angleTimeLineVisible);
     emitterPropertiesWidget->GetEmitterSizeTimeline()->setVisible(sizeTimeLineVisible);
+    emitterPropertiesWidget->GetGenerateOnSurfaceCheckBox()->setVisible(isSphere);
+    bool shockwaveVisible = emitterInstance->GetEmitter()->emitterType != DAVA::ParticleEmitter::EMITTER_POINT && emitterInstance->GetEmitter()->emitterType != DAVA::ParticleEmitter::EMITTER_RECT;
+    emitterPropertiesWidget->GetShockwaveLabel()->setVisible(shockwaveVisible);
+    emitterPropertiesWidget->GetShockwaveBox()->setVisible(shockwaveVisible);
 }
 
 void ParticleEditorWidget::UpdateWidgetsForLayer()

@@ -103,12 +103,14 @@ void ModernPropertyEditor::ChangeProperty(const DAVA::Any& value)
     if (!property->IsReadOnly())
     {
         DAVA::DataContext* activeContext = context->GetAccessor()->GetActiveContext();
-        DVASSERT(activeContext != nullptr);
-        DocumentData* documentData = activeContext->GetData<DocumentData>();
-        DVASSERT(documentData != nullptr);
+        if (activeContext)
+        {
+            DocumentData* documentData = activeContext->GetData<DocumentData>();
+            DVASSERT(documentData != nullptr);
 
-        RootProperty* root = DAVA::DynamicTypeCheck<RootProperty*>(property->GetRootProperty());
-        documentData->ExecCommand<ChangePropertyValueCommand>(root->GetControlNode(), property.Get(), value);
+            RootProperty* root = DAVA::DynamicTypeCheck<RootProperty*>(property->GetRootProperty());
+            documentData->ExecCommand<ChangePropertyValueCommand>(root->GetControlNode(), property.Get(), value);
+        }
     }
 }
 
@@ -117,12 +119,14 @@ void ModernPropertyEditor::ChangeBinding(const DAVA::String& expr, DAVA::int32 m
     if (!property->IsReadOnly())
     {
         DAVA::DataContext* activeContext = context->GetAccessor()->GetActiveContext();
-        DVASSERT(activeContext != nullptr);
-        DocumentData* documentData = activeContext->GetData<DocumentData>();
-        DVASSERT(documentData != nullptr);
+        if (activeContext)
+        {
+            DocumentData* documentData = activeContext->GetData<DocumentData>();
+            DVASSERT(documentData != nullptr);
 
-        RootProperty* root = DAVA::DynamicTypeCheck<RootProperty*>(property->GetRootProperty());
-        documentData->ExecCommand<ChangeBindingCommand>(root->GetControlNode(), property.Get(), expr, mode);
+            RootProperty* root = DAVA::DynamicTypeCheck<RootProperty*>(property->GetRootProperty());
+            documentData->ExecCommand<ChangeBindingCommand>(root->GetControlNode(), property.Get(), expr, mode);
+        }
     }
 }
 

@@ -48,13 +48,13 @@ public:
 
     UIFocusSystem* GetFocusSystem() const;
 
-    void MoveFocusLeft();
-    void MoveFocusRight();
-    void MoveFocusUp();
-    void MoveFocusDown();
+    void MoveFocusLeft(const Any& data);
+    void MoveFocusRight(const Any& data);
+    void MoveFocusUp(const Any& data);
+    void MoveFocusDown(const Any& data);
 
-    void MoveFocusForward();
-    void MoveFocusBackward();
+    void MoveFocusForward(const Any& data);
+    void MoveFocusBackward(const Any& data);
 
     /** \deprecated use UIEventsSystem method instead \sa UIEventsSystem */
     DAVA_DEPRECATED(void BindGlobalShortcut(const KeyboardShortcut& shortcut, const FastName& eventName));

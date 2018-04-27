@@ -1,4 +1,4 @@
-#include "Modules/ModernPropertiesModule/Editors/ModernPropertyBindingEditor.h"
+#include "Modules/ModernPropertiesModule/Editors/ModernPropertyExpressionEditor.h"
 
 #include "Model/ControlProperties/ValueProperty.h"
 #include "Model/ControlProperties/RootProperty.h"
@@ -8,7 +8,6 @@
 
 #include <Base/Any.h>
 #include <Engine/Engine.h>
-#include <UI/DataBinding/UIDataBindingComponent.h>
 #include <UI/DataBinding/UIDataBindingSystem.h>
 #include <UI/DataBinding/Private/UIDataModel.h>
 #include <UI/Formula/FormulaContext.h>
@@ -18,7 +17,6 @@
 #include <TArc/Utils/Utils.h>
 
 #include <QAction>
-#include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
@@ -27,84 +25,57 @@
 #include <QToolButton>
 #include <QTreeView>
 
-ModernPropertyBindingEditor::ModernPropertyBindingEditor(const std::shared_ptr<ModernPropertyContext>& context, ValueProperty* property)
+ModernPropertyExpressionEditor::ModernPropertyExpressionEditor(const std::shared_ptr<ModernPropertyContext>& context, ValueProperty* property)
     : ModernPropertyDefaultEditor(context, property)
 {
     using namespace DAVA;
 
-    updateModeComboBox = new QComboBox();
-    updateModeComboBox->setProperty("property", true);
-
-    updateModeComboBox->addItem(QIcon(":/Icons/link-r.png"), "", UIDataBindingComponent::MODE_READ);
-    updateModeComboBox->addItem(QIcon(":/Icons/link-w.png"), "", UIDataBindingComponent::MODE_WRITE);
-    updateModeComboBox->addItem(QIcon(":/Icons/link-rw.png"), "", UIDataBindingComponent::MODE_READ_WRITE);
-
-    QObject::connect(updateModeComboBox, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged),
-                     this, &ModernPropertyBindingEditor::OnCurrentIndexChanged);
-
     line = new QLineEdit();
     line->setProperty("property", true);
-    QObject::connect(line, &QLineEdit::editingFinished, this, &ModernPropertyBindingEditor::OnEditingFinished);
+    QObject::connect(line, &QLineEdit::editingFinished, this, &ModernPropertyExpressionEditor::OnEditingFinished);
 
     bindButton = new QToolButton();
     bindButton->setText("...");
     bindButton->setProperty("property", true);
-    QObject::connect(bindButton, &QToolButton::clicked, this, &ModernPropertyBindingEditor::OnButtonClicked);
+    QObject::connect(bindButton, &QToolButton::clicked, this, &ModernPropertyExpressionEditor::OnButtonClicked);
 
     layout = new QHBoxLayout();
     layout->setMargin(0);
     layout->setSpacing(4);
 
-    layout->addWidget(updateModeComboBox);
     layout->addWidget(line);
     layout->addWidget(bindButton);
 
     OnPropertyChanged();
 }
 
-ModernPropertyBindingEditor::~ModernPropertyBindingEditor()
+ModernPropertyExpressionEditor::~ModernPropertyExpressionEditor()
 {
-    delete updateModeComboBox;
     delete line;
     delete bindButton;
     delete layout;
 }
 
-bool ModernPropertyBindingEditor::IsBindingEditor() const
-{
-    return true;
-}
-
-void ModernPropertyBindingEditor::AddToGrid(QGridLayout* grid, int row, int col, int colSpan)
+void ModernPropertyExpressionEditor::AddToGrid(QGridLayout* grid, int row, int col, int colSpan)
 {
     grid->addWidget(propertyName, row, col);
     grid->addLayout(layout, row, col + 1, 1, colSpan);
 }
 
-void ModernPropertyBindingEditor::OnPropertyChanged()
+void ModernPropertyExpressionEditor::OnPropertyChanged()
 {
     ModernPropertyDefaultEditor::OnPropertyChanged();
 
     QSignalBlocker blockSignalsLine(line);
-    QSignalBlocker blockSignalsUpdateModeComboBox(updateModeComboBox);
 
-    QString stringValue = StringToQString(property->GetBindingExpression());
+    QString stringValue = StringToQString(property->GetValue().Cast<DAVA::String>());
     line->setText(DAVA::UnescapeString(stringValue));
     line->setDisabled(property->IsReadOnly());
-
-    for (int i = 0; i < updateModeComboBox->count(); i++)
-    {
-        if (updateModeComboBox->itemData(i).toInt() == property->GetBindingUpdateMode())
-        {
-            updateModeComboBox->setCurrentIndex(i);
-            break;
-        }
-    }
 
     ApplyStyleToWidget(line);
 }
 
-void ModernPropertyBindingEditor::OnEditingFinished()
+void ModernPropertyExpressionEditor::OnEditingFinished()
 {
     if (line->isModified())
     {
@@ -112,12 +83,12 @@ void ModernPropertyBindingEditor::OnEditingFinished()
     }
 }
 
-void ModernPropertyBindingEditor::OnCurrentIndexChanged(int index)
+void ModernPropertyExpressionEditor::OnCurrentIndexChanged(int index)
 {
     ApplyChanges();
 }
 
-void ModernPropertyBindingEditor::OnButtonClicked()
+void ModernPropertyExpressionEditor::OnButtonClicked()
 {
     using namespace DAVA;
 
@@ -170,14 +141,12 @@ void ModernPropertyBindingEditor::OnButtonClicked()
             exprStr = model->data(indices.first(), DataBindingInspectorModel::PATH_DATA).toString();
         }
 
-        DAVA::int32 mode = updateModeComboBox->currentData().toInt();
-        ChangeBinding(QStringToString(exprStr), mode);
+        ChangeProperty(QStringToString(exprStr));
     }
 }
 
-void ModernPropertyBindingEditor::ApplyChanges()
+void ModernPropertyExpressionEditor::ApplyChanges()
 {
     QString expr = DAVA::EscapeString(line->text());
-    DAVA::int32 mode = updateModeComboBox->currentData().toInt();
-    ChangeBinding(QStringToString(expr), mode);
+    ChangeProperty(QStringToString(expr));
 }

@@ -18,8 +18,9 @@
 
 #include <Reflection/ReflectedTypeDB.h>
 #include <UI/DataBinding/UIDataSourceComponent.h>
-#include <UI/DataBinding/UIDataViewModelComponent.h>
 #include <UI/DataBinding/UIDataListComponent.h>
+#include <UI/DataBinding/UIDataChildFactoryComponent.h>
+#include <UI/Events/UIInputEventComponent.h>
 #include <UI/Layouts/UIAnchorComponent.h>
 #include <UI/Layouts/UISizePolicyComponent.h>
 #include <UI/Layouts/UILinearLayoutComponent.h>
@@ -61,6 +62,14 @@ ModernComponentSectionWidget::ModernComponentSectionWidget(DAVA::ContextAccessor
 
 ModernComponentSectionWidget::~ModernComponentSectionWidget()
 {
+}
+
+void ModernComponentSectionWidget::RecreateProperties()
+{
+    if (section != nullptr)
+    {
+        AttachComponentPropertiesSection(section, DAVA::DynamicTypeCheck<RootProperty*>(section->GetRootProperty()));
+    }
 }
 
 void ModernComponentSectionWidget::AttachComponentPropertiesSection(ComponentPropertiesSection* section_, RootProperty* root)
@@ -178,7 +187,7 @@ void ModernComponentSectionWidget::AttachComponentPropertiesSection(ComponentPro
     }
     else if (componentType == DAVA::Type::Instance<DAVA::UITextComponent>())
     {
-        AddPropertyEditor(section, "text", row++, 0, -1);
+        AddMultilineEditor(section, "text", row++, 0, -1);
         AddPathPropertyEditor(section, "fontPath", { ".ttf", ".otf", ".fnt", ".fntconf" }, "/Fonts/", true, row++, 0, -1);
         AddPropertyEditor(section, "fontSize", row++, 0, -1);
         AddPropertyEditor(section, "fontName", row++, 0, -1);
@@ -221,15 +230,48 @@ void ModernComponentSectionWidget::AttachComponentPropertiesSection(ComponentPro
     }
     else if (componentType == DAVA::Type::Instance<DAVA::UIDataSourceComponent>())
     {
-        AddPathPropertyEditor(section, "dataFile", { ".model" }, "/UI/", false, row++, 0, -1);
-    }
-    else if (componentType == DAVA::Type::Instance<DAVA::UIDataViewModelComponent>())
-    {
-        AddPathPropertyEditor(section, "viewModel", { ".model" }, "/UI/", false, row++, 0, -1);
+        refreshInitiatorProperties.insert("sourceType");
+        AddPropertyEditor(section, "sourceType", row++, 0, 1);
+
+        if (section->FindPropertyByName("sourceType")->GetValue().Cast<DAVA::int32>() == DAVA::UIDataSourceComponent::FROM_EXPRESSION)
+        {
+            AddExpressionEditor(section, "source", row++, 0, 1);
+        }
+        else
+        {
+            AddPathPropertyEditor(section, "source", { ".model" }, "/UI/", false, row++, 0, -1);
+        }
     }
     else if (componentType == DAVA::Type::Instance<DAVA::UIDataListComponent>())
     {
         AddPathPropertyEditor(section, "cellPackage", { ".yaml" }, "/UI/", false, row++, 0, -1);
+        AddPropertyEditor(section, "cellControl", row++, 0, -1);
+        AddExpressionEditor(section, "dataContainer", row++, 0, -1);
+    }
+    else if (componentType == DAVA::Type::Instance<DAVA::UIDataChildFactoryComponent>())
+    {
+        AddExpressionEditor(section, "package", row++, 0, -1);
+        AddExpressionEditor(section, "control", row++, 0, -1);
+    }
+    else if (componentType == DAVA::Type::Instance<DAVA::UIInputEventComponent>())
+    {
+        AddPropertyEditor(section, "onTouchDown", row, 0, 1);
+        AddExpressionEditor(section, "onTouchDownData", row++, 2, 1);
+
+        AddPropertyEditor(section, "onTouchUpInside", row, 0, 1);
+        AddExpressionEditor(section, "onTouchUpInsideData", row++, 2, 1);
+
+        AddPropertyEditor(section, "onTouchUpOutside", row, 0, 1);
+        AddExpressionEditor(section, "onTouchUpOutsideData", row++, 2, 1);
+
+        AddPropertyEditor(section, "onValueChanged", row, 0, 1);
+        AddExpressionEditor(section, "onValueChangedData", row++, 2, 1);
+
+        AddPropertyEditor(section, "onHoverSet", row, 0, 1);
+        AddExpressionEditor(section, "onHoverSetData", row++, 2, 1);
+
+        AddPropertyEditor(section, "onHoverRemoved", row, 0, 1);
+        AddExpressionEditor(section, "onHoverRemovedData", row++, 2, 1);
     }
 
     if (section->GetCount() == 0)

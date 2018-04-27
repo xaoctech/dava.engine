@@ -7,9 +7,6 @@
 
 #include <TArc/Utils/Utils.h>
 
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QAction>
 #include <QLineEdit>
 
 ModernPropertyStringEditor::ModernPropertyStringEditor(const std::shared_ptr<ModernPropertyContext>& context, ValueProperty* property)

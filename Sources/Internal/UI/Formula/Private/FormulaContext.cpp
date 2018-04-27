@@ -15,9 +15,25 @@ FormulaContext::~FormulaContext()
 {
 }
 
-FormulaContext* FormulaContext::GetParent() const
+const std::shared_ptr<FormulaContext>& FormulaContext::GetParent() const
 {
-    return parent.get();
+    return parent;
+}
+
+Reflection FormulaContext::FindReflection(const String& name) const
+{
+    Reflection res = FindReflectionLocal(name);
+    if (res.IsValid())
+    {
+        return res;
+    }
+
+    if (GetParent() != nullptr)
+    {
+        return GetParent()->FindReflection(name);
+    }
+
+    return Reflection();
 }
 
 FormulaReflectionContext::FormulaReflectionContext(const Reflection& ref_, const std::shared_ptr<FormulaContext>& parent_)
@@ -47,20 +63,9 @@ AnyFn FormulaReflectionContext::FindFunction(const String& name, const Vector<co
     return AnyFn();
 }
 
-Reflection FormulaReflectionContext::FindReflection(const String& name) const
+Reflection FormulaReflectionContext::FindReflectionLocal(const String& name) const
 {
-    Reflection res = reflection.GetField(name);
-    if (res.IsValid())
-    {
-        return res;
-    }
-
-    if (GetParent() != nullptr)
-    {
-        return GetParent()->FindReflection(name);
-    }
-
-    return Reflection();
+    return reflection.GetField(name);
 }
 
 const Reflection& FormulaReflectionContext::GetReflection() const
@@ -72,7 +77,13 @@ bool FormulaReflectionContext::IsArgsMatchToFn(const Vector<const Type*>& types,
 {
     const Vector<const Type*>& fnTypes = fn.GetInvokeParams().argsType;
 
-    if (fnTypes.size() != types.size())
+    if (fnTypes.size() != types.size() + 1) // Extra param for formula context
+    {
+        return false;
+    }
+
+    if (fnTypes[0] != Type::Instance<std::shared_ptr<FormulaContext>>() &&
+        fnTypes[0]->Deref() != Type::Instance<std::shared_ptr<FormulaContext>>())
     {
         return false;
     }
@@ -80,7 +91,7 @@ bool FormulaReflectionContext::IsArgsMatchToFn(const Vector<const Type*>& types,
     for (std::size_t i = 0; i < types.size(); i++)
     {
         const Type* type = types[i];
-        const Type* fnType = fnTypes[i]->Decay();
+        const Type* fnType = fnTypes[i + 1]->Decay();
 
         const Type* int32T = Type::Instance<int32>();
         const Type* float32T = Type::Instance<float32>();
@@ -110,7 +121,10 @@ AnyFn FormulaFunctionContext::FindFunction(const String& name, const Vector<cons
         AnyFn res;
         for (const AnyFn& fn : it->second)
         {
-            if (fn.GetInvokeParams().argsType.size() == types.size())
+            const Vector<const Type*>& fnTypes = fn.GetInvokeParams().argsType;
+            if (fnTypes.size() == types.size() + 1 &&
+                (fnTypes[0]->Deref() == Type::Instance<std::shared_ptr<FormulaContext>>() ||
+                 fnTypes[0] == Type::Instance<std::shared_ptr<FormulaContext>>()))
             {
                 static const int32 FULL_MATCH = 2;
                 static const int32 NEED_CONVERTATION = 1;
@@ -120,9 +134,9 @@ AnyFn FormulaFunctionContext::FindFunction(const String& name, const Vector<cons
                 for (std::size_t i = 0; i < types.size(); i++)
                 {
                     const Type* type = types[i];
-                    const Type* fnType = fn.GetInvokeParams().argsType[i];
+                    const Type* fnType = fn.GetInvokeParams().argsType[i + 1];
 
-                    if (type != fnType && type->Pointer() != fnType->Pointer())
+                    if (type != fnType && type->Pointer() != fnType->Pointer() && fnType != Type::Instance<Any>() && fnType->Deref() != Type::Instance<Any>())
                     {
                         if (fnType == Type::Instance<float>() && type == Type::Instance<int>())
                         {
@@ -152,7 +166,7 @@ AnyFn FormulaFunctionContext::FindFunction(const String& name, const Vector<cons
     return AnyFn();
 }
 
-Reflection FormulaFunctionContext::FindReflection(const String& name) const
+Reflection FormulaFunctionContext::FindReflectionLocal(const String& name) const
 {
     return Reflection();
 }

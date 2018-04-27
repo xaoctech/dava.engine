@@ -162,7 +162,7 @@ DAVA_TESTCLASS (FormulaParserTest)
         TEST_VERIFY(Parse("1 % 2") == Vector<String>({ "%", "1", "2" }));
         TEST_VERIFY(Parse("true and false") == Vector<String>({ "and", "true", "false" }));
         TEST_VERIFY(Parse("true or false") == Vector<String>({ "or", "true", "false" }));
-        TEST_VERIFY(Parse("true = false") == Vector<String>({ "=", "true", "false" }));
+        TEST_VERIFY(Parse("true == false") == Vector<String>({ "==", "true", "false" }));
         TEST_VERIFY(Parse("true != false") == Vector<String>({ "!=", "true", "false" }));
         TEST_VERIFY(Parse("a <= b") == Vector<String>({ "<=", "field_a", "field_b" }));
         TEST_VERIFY(Parse("a < b") == Vector<String>({ "<", "field_a", "field_b" }));
@@ -192,8 +192,8 @@ DAVA_TESTCLASS (FormulaParserTest)
         TEST_VERIFY(Parse("1 * 2 / 3") == Vector<String>({ "/", "*", "1", "2", "3" }));
         TEST_VERIFY(Parse("1 + 2 / 3") == Vector<String>({ "+", "1", "/", "2", "3" }));
         TEST_VERIFY(Parse("1 + 2 < 3 - 4") == Vector<String>({ "<", "+", "1", "2", "-", "3", "4" }));
-        TEST_VERIFY(Parse("1 < 2 = 3 - 4") == Vector<String>({ "=", "<", "1", "2", "-", "3", "4" }));
-        TEST_VERIFY(Parse("1 < 2 and 3 = 4") == Vector<String>({ "and", "<", "1", "2", "=", "3", "4" }));
+        TEST_VERIFY(Parse("1 < 2 == 3 - 4") == Vector<String>({ "==", "<", "1", "2", "-", "3", "4" }));
+        TEST_VERIFY(Parse("1 < 2 and 3 == 4") == Vector<String>({ "and", "<", "1", "2", "==", "3", "4" }));
         TEST_VERIFY(Parse("true or false and true") == Vector<String>({ "or", "true", "and", "false", "true" }));
     }
 
@@ -223,9 +223,9 @@ DAVA_TESTCLASS (FormulaParserTest)
     // FormulaParser::ParseMap
     DAVA_TEST (ParseMap)
     {
-        std::shared_ptr<FormulaDataMap> map = FormulaParser("a = exp1 + 3"
-                                                            "b = {a = 2}"
-                                                            "c = [1 2 3]")
+        std::shared_ptr<FormulaDataMap> map = FormulaParser("a = exp1 + 3;"
+                                                            "b = {a = 2};"
+                                                            "c = [1; 2; 3];")
                                               .ParseMap();
 
         Vector<String> res;

@@ -103,10 +103,10 @@ DAVA_TESTCLASS (UIScriptTest)
     {
         UIScriptSystem* sys = GetEngineContext()->uiControlSystem->GetSystem<UIScriptSystem>();
         RefPtr<UIStaticText> dummyText = MakeRef<UIStaticText>();
-        TEST_VERIFY(sys->ProcessEvent(dummyText.Get(), FastName("TestEvent")) == false);
+        TEST_VERIFY(sys->ProcessEvent(dummyText.Get(), FastName("TestEvent"), Any()) == false);
         UIScriptComponent* scriptComp = dummyText->GetOrCreateComponent<UIScriptComponent>();
         screen->AddControl(dummyText.Get());
-        TEST_VERIFY(sys->ProcessEvent(dummyText.Get(), FastName("TestEvent")) == false);
+        TEST_VERIFY(sys->ProcessEvent(dummyText.Get(), FastName("TestEvent"), Any()) == false);
         screen->RemoveControl(dummyText.Get());
 
         RefPtr<UIScriptComponent> ref = MakeRef<UIScriptComponent>();
@@ -153,7 +153,7 @@ DAVA_TESTCLASS (UIScriptTest)
         sys->Process(0.0f);
         TEST_VERIFY(text->GetUtf8Text() == "TextFromCpp:parametersChanged:qwe");
 
-        TEST_VERIFY(sys->ProcessEvent(text.Get(), FastName("TestEvent")));
+        TEST_VERIFY(sys->ProcessEvent(text.Get(), FastName("TestEvent"), Any()));
         TEST_VERIFY(text->GetUtf8Text() == "TextFromCpp:processEvent:TestEvent")
         TEST_VERIFY(sys->GetController(scriptComp) != nullptr);
 
@@ -181,7 +181,7 @@ DAVA_TESTCLASS (UIScriptTest)
         sys->Process(0.0f);
         TEST_VERIFY(text->GetUtf8Text() == "TextFromLua:parametersChanged:qwe");
 
-        TEST_VERIFY(sys->ProcessEvent(text.Get(), FastName("TestEvent")));
+        TEST_VERIFY(sys->ProcessEvent(text.Get(), FastName("TestEvent"), Any()));
         TEST_VERIFY(text->GetUtf8Text() == "TextFromLua:processEvent:TestEvent")
         TEST_VERIFY(sys->GetController(scriptComp) != nullptr);
 
@@ -203,7 +203,7 @@ DAVA_TESTCLASS (UIScriptTest)
         sys->Process(0.0f);
         scriptComp->SetParameters("qwe");
         sys->Process(0.0f);
-        sys->ProcessEvent(text.Get(), FastName("TestEvent"));
+        sys->ProcessEvent(text.Get(), FastName("TestEvent"), Any());
 
         // switch controller
         scriptComp->SetLuaScriptPath("~res:/UI/Flow/Lua/TestComponent.lua");

@@ -5,7 +5,6 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Logger/Logger.h"
 #include "Reflection/ReflectedTypeDB.h"
-#include "UI/DataBinding/UIDataScopeComponent.h"
 #include "UI/DataBinding/UIDataSourceComponent.h"
 #include "UI/DefaultUIPackageBuilder.h"
 #include "UI/Flow/UIFlowContext.h"
@@ -134,8 +133,10 @@ UIControl* UIFlowViewSystem::InitView(UIFlowViewComponent* component, UIFlowCont
 
                     if (!component->GetModelScope().empty())
                     {
-                        UIDataScopeComponent* dataScope = root->GetOrCreateComponent<UIDataScopeComponent>();
-                        dataScope->SetExpression(component->GetModelScope());
+                        RefPtr<UIDataSourceComponent> dataScope = MakeRef<UIDataSourceComponent>();
+                        dataScope->SetSourceType(UIDataSourceComponent::FROM_EXPRESSION);
+                        dataScope->SetSource(component->GetModelScope());
+                        root->AddComponent(dataScope.Get());
                     }
 
                     // Update link

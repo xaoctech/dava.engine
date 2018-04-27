@@ -98,8 +98,8 @@ void BasePropertyDelegate::enumEditorActions(QWidget* parent, const QModelIndex&
 
         if (control)
         {
-            FormulaContext* context = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UIDataBindingSystem>()->GetFormulaContext(control, UIDataModel::PRIORITY_DATA_BINDING);
-            model->UpdateModel(context);
+            std::shared_ptr<FormulaContext> context = DAVA::GetEngineContext()->uiControlSystem->GetSystem<UIDataBindingSystem>()->GetFormulaContext(control);
+            model->UpdateModel(context.get());
         }
         expr = QString::fromStdString(property->GetBindingExpression());
         bindAction->setProperty("model", QVariant::fromValue(model));

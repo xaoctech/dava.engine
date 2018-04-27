@@ -69,7 +69,7 @@ void DataBindingInspectorModel::UpdateModel(DAVA::FormulaContext* context)
             {
                 InsertDataFromReflection(ref);
             }
-            context = reflectionContext->GetParent();
+            context = reflectionContext->GetParent().get();
         }
         else
         {
@@ -118,31 +118,52 @@ void DataBindingInspectorModel::InsertDataFromReflection(const DAVA::Reflection&
 
     std::pair<QStandardItem*, QStandardItem*> oldCurrent = current;
     QString parentPath = current.first->data(DataBindingInspectorModel::PATH_DATA).value<QString>();
-    if (!ref.GetFieldsCaps().hasRangeAccess && !parentPath.isEmpty())
-    {
-        parentPath += ".";
-    }
 
     for (auto& it : fields)
     {
         const Any& key = it.key;
 
         QString name = "";
+        QString dot = "";
 
-        if (key.CanGet<size_t>())
+        if (key.CanGet<int32>())
+        {
+            name = QString("[%1]").arg(key.Get<int32>());
+        }
+        else if (key.CanGet<uint32>())
+        {
+            name = QString("[%1U]").arg(key.Get<uint32>());
+        }
+        else if (key.CanGet<int64>())
+        {
+            name = QString("[%1L]").arg(key.Get<int64>());
+        }
+        else if (key.CanGet<uint64>())
+        {
+            name = QString("[%1UL]").arg(key.Get<uint64>());
+        }
+        else if (key.CanGet<bool>())
+        {
+            name = QString("[%1]").arg(key.Get<bool>());
+        }
+        else if (key.CanGet<size_t>())
         {
             name = QString("[%1]").arg(key.Get<size_t>());
         }
-        else if (key.CanGet<String>())
+        else if (key.CanCast<String>())
         {
-            name = QString::fromStdString(key.Get<String>());
+            if (!parentPath.isEmpty())
+            {
+                dot = ".";
+            }
+            name = QString::fromStdString(key.Cast<String>());
         }
         else
         {
             DVASSERT(false);
         }
 
-        current = AddChild(oldCurrent.first, name, parentPath + name);
+        current = AddChild(oldCurrent.first, name, parentPath + dot + name);
         InsertDataFromReflection(it.ref);
     }
 

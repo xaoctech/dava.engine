@@ -12,6 +12,12 @@ class UIDataSourceComponent : public UIComponent
     DECLARE_UI_COMPONENT(UIDataSourceComponent);
 
 public:
+    enum eSourceType
+    {
+        FROM_REFLECTION,
+        FROM_FILE,
+        FROM_EXPRESSION
+    };
     UIDataSourceComponent() = default;
     UIDataSourceComponent(const String& modelName);
     UIDataSourceComponent(const UIDataSourceComponent& c);
@@ -20,11 +26,14 @@ public:
 
     UIDataSourceComponent* Clone() const override;
 
+    eSourceType GetSourceType() const;
+    void SetSourceType(eSourceType source);
+
     const Reflection& GetData() const;
     void SetData(const Reflection& data);
 
-    const FilePath& GetDataFile() const;
-    void SetDataFile(const FilePath& path);
+    const String& GetSource() const;
+    void SetSource(const String& value);
 
     bool IsDirty() const;
     void SetDirty(bool dirty_);
@@ -33,8 +42,9 @@ protected:
     ~UIDataSourceComponent() override = default;
 
 private:
+    eSourceType sourceType;
     Reflection data;
-    FilePath dataFile;
+    String source;
     bool isDirty = false;
 };
 }

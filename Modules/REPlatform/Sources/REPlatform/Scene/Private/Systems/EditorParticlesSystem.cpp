@@ -89,9 +89,9 @@ void EditorParticlesSystem::DrawEmitter(ParticleEmitterInstance* emitter, Entity
             DrawSizeCircle(owner, emitter);
             break;
         }
-        case ParticleEmitter::EMITTER_SHOCKWAVE:
+        case ParticleEmitter::EMITTER_SPHERE:
         {
-            DrawSizeCircleShockWave(owner, emitter);
+            DrawSizeSphere(owner, emitter);
             break;
         }
 
@@ -148,47 +148,16 @@ void EditorParticlesSystem::ProcessCommand(const RECommandNotificationObject& co
     }
 }
 
-void EditorParticlesSystem::DrawSizeCircleShockWave(Entity* effectEntity, ParticleEmitterInstance* emitter)
-{
-    float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
-    float32 emitterRadius = (emitter->GetEmitter()->radius != nullptr) ? emitter->GetEmitter()->radius->GetValue(time) : 0.0f;
-
-    Vector3 emissionVector(0.0f, 0.0f, 1.0f);
-
-    if (emitter->GetEmitter()->emissionVector)
-    {
-        TransformComponent* tc = effectEntity->GetComponent<TransformComponent>();
-        Transform wTrans = tc->GetWorldTransform();
-        wTrans.SetTranslation(Vector3::Zero);
-        emissionVector = emitter->GetEmitter()->emissionVector->GetValue(time) * wTrans;
-    }
-
-    auto center = Selectable(emitter).GetWorldTransform().GetTranslation();
-
-    auto drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
-    drawer->DrawCircle(center, emissionVector, emitterRadius, 12, Color(0.7f, 0.0f, 0.0f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
-}
-
 void EditorParticlesSystem::DrawSizeCircle(Entity* effectEntity, ParticleEmitterInstance* emitter)
 {
     float32 emitterRadius = 0.0f;
     float32 emitterInnerRadius = 0.0f;
+    FillEmitterRadii(effectEntity, emitter, emitterRadius, emitterInnerRadius);
+
     Vector3 emitterVector;
-    float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
-
-    if (emitter->GetEmitter()->radius)
-    {
-        emitterRadius = emitter->GetEmitter()->radius->GetValue(time);
-    }
-
-    if (emitter->GetEmitter()->innerRadius)
-    {
-        emitterInnerRadius = emitter->GetEmitter()->innerRadius->GetValue(time);
-        emitterInnerRadius = Min(emitterInnerRadius, emitterRadius);
-    }
-
     if (emitter->GetEmitter()->emissionVector)
     {
+        float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
         TransformComponent* tc = effectEntity->GetComponent<TransformComponent>();
         Transform wTrans = tc->GetWorldTransform();
         wTrans.SetTranslation(Vector3::Zero);
@@ -202,6 +171,23 @@ void EditorParticlesSystem::DrawSizeCircle(Entity* effectEntity, ParticleEmitter
                        Color(0.7f, 0.0f, 0.0f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
     if (emitter->GetEmitter()->emitterType == DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)
         drawer->DrawCircle(center, emitterVector, emitterInnerRadius, 12, Color(0.0f, 0.0f, 0.0f, 0.4f), RenderHelper::DRAW_SOLID_DEPTH);
+}
+
+void EditorParticlesSystem::DrawSizeSphere(Entity* effectEntity, ParticleEmitterInstance* emitter)
+{
+    float32 emitterRadius = 0.0f;
+    float32 emitterInnerRadius = 0.0f;
+    FillEmitterRadii(effectEntity, emitter, emitterRadius, emitterInnerRadius);
+
+    float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
+    TransformComponent* tc = effectEntity->GetComponent<TransformComponent>();
+    const Transform& wTrans = tc->GetWorldTransform();
+    const Vector3& center = wTrans.GetTranslation();
+
+    auto drawer = GetScene()->GetRenderSystem()->GetDebugDrawer();
+    drawer->DrawIcosahedron(center, emitterRadius, Color(0.7f, 0.0f, 0.0f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
+    drawer->DrawIcosahedron(center, emitterRadius, Color(0.0f, 0.0f, 0.0f, 0.4f), RenderHelper::DRAW_WIRE_DEPTH);
+    drawer->DrawIcosahedron(center, emitterInnerRadius, Color(0.0f, 0.0f, 0.0f, 0.4f), RenderHelper::DRAW_SOLID_DEPTH);
 }
 
 void EditorParticlesSystem::DrawSizeBox(Entity* effectEntity, ParticleEmitterInstance* emitter)
@@ -393,6 +379,22 @@ void EditorParticlesSystem::DrawParticleForces(ParticleForce* force)
         float32 radius = force->GetRadius();
         drawer->DrawIcosahedron(wTrans.GetTranslation(), radius, Color(0.0f, 0.7f, 0.3f, 0.25f), RenderHelper::DRAW_SOLID_DEPTH);
         drawer->DrawIcosahedron(wTrans.GetTranslation(), radius, Color(0.0f, 0.35f, 0.15f, 0.35f), RenderHelper::DRAW_WIRE_DEPTH);
+    }
+}
+
+void EditorParticlesSystem::FillEmitterRadii(Entity* effectEntity, ParticleEmitterInstance* emitter, float32& radius, float32& innerRadius)
+{
+    float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
+
+    if (emitter->GetEmitter()->radius)
+    {
+        radius = emitter->GetEmitter()->radius->GetValue(time);
+    }
+
+    if (emitter->GetEmitter()->innerRadius)
+    {
+        innerRadius = emitter->GetEmitter()->innerRadius->GetValue(time);
+        innerRadius = Min(innerRadius, radius);
     }
 }
 

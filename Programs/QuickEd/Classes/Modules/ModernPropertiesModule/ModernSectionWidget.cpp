@@ -2,6 +2,7 @@
 
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyDefaultEditor.h"
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyStringEditor.h"
+#include "Modules/ModernPropertiesModule/Editors/ModernPropertyMultilineEditor.h"
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyFloatEditor.h"
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyIntEditor.h"
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyVectorEditor.h"
@@ -14,6 +15,7 @@
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyTableEditor.h"
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyFMODEventEditor.h"
 #include "Modules/ModernPropertiesModule/Editors/ModernPropertyBindingEditor.h"
+#include "Modules/ModernPropertiesModule/Editors/ModernPropertyExpressionEditor.h"
 
 #include "UI/Properties/PredefinedCompletionsProvider.h"
 #include "UI/Properties/CompletionsProviderForScrollBar.h"
@@ -90,6 +92,11 @@ ModernPropertyEditor* ModernSectionWidget::FindEditorForProperty(AbstractPropert
     return nullptr;
 }
 
+bool ModernSectionWidget::ShouldRecreateForChangedProperty(const DAVA::String& propertyNames)
+{
+    return refreshInitiatorProperties.find(propertyNames) != refreshInitiatorProperties.end();
+}
+
 void ModernSectionWidget::RemoveAllProperties()
 {
     container->hide();
@@ -99,6 +106,7 @@ void ModernSectionWidget::RemoveAllProperties()
     }
     editors.clear();
     createdProperties.clear();
+    refreshInitiatorProperties.clear();
     RemoveAllPropertiesImpl(containerLayout);
 }
 
@@ -233,6 +241,20 @@ void ModernSectionWidget::AddPropertyEditor(AbstractProperty* section, const DAV
 {
     AddCustomPropertyEditor(section, name, row, col, colSpan, [this](ValueProperty* property) {
         return CreateDefaultPropertyEditor(property);
+    });
+}
+
+void ModernSectionWidget::AddExpressionEditor(AbstractProperty* section, const DAVA::String& name, int row, int col, int colSpan)
+{
+    AddCustomPropertyEditor(section, name, row, col, colSpan, [this](ValueProperty* property) {
+        return new ModernPropertyExpressionEditor(context, property);
+    });
+}
+
+void ModernSectionWidget::AddMultilineEditor(AbstractProperty* section, const DAVA::String& name, int row, int col, int colSpan)
+{
+    AddCustomPropertyEditor(section, name, row, col, colSpan, [this](ValueProperty* property) {
+        return new ModernPropertyMultilineEditor(context, property);
     });
 }
 

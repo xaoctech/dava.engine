@@ -19,7 +19,7 @@ public:
     {
     }
 
-    int sum(int a, int b)
+    int sum(const std::shared_ptr<FormulaContext>& context, int a, int b)
     {
         return a + b;
     }

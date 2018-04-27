@@ -28,7 +28,7 @@ public:
     UIDataBindingSystem();
     virtual ~UIDataBindingSystem();
 
-    FormulaContext* GetFormulaContext(UIControl* control, int32 type) const;
+    std::shared_ptr<FormulaContext> GetFormulaContext(UIControl* control) const;
     void SetDataDirty(void* dataPtr);
 
     void RegisterControl(UIControl* control) override;
@@ -47,8 +47,6 @@ public:
     Signal<UIControl*, UIComponent*> onValueWrittenToModel;
 
 private:
-    void TryToRegisterDataBinding(UIControl* control);
-    void TryToUnregisterDataBinding(UIControl* control);
     void RegisterDataBinding(UIDataBindingComponent* component);
     void UnregisterDataBinding(UIDataBindingComponent* component);
 
@@ -58,7 +56,7 @@ private:
     void TryToCreateDataModel(UIControl* control);
 
     template <typename ComponentType>
-    void TryToCreateDataModel(UIComponent* component);
+    void TryToCreateDataModel(UIControl* control, UIComponent* component);
 
     void DeleteDataModel(UIComponent* component);
 

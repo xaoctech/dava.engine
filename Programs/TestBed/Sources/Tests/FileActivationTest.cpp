@@ -71,7 +71,7 @@ void FileActivationTest::OnFileActivated(DAVA::Vector<DAVA::String> filenames)
     pendingUIUpdate = true;
 }
 
-void FileActivationTest::OnDumpFilenames()
+void FileActivationTest::OnDumpFilenames(const DAVA::Any&)
 {
     Logger::Debug("Startup activation filenames:");
     for (const String& f : app.startupActivationFilenames)

@@ -90,7 +90,7 @@ bool UIDataChildFactory::Process(UIDataBindingDependenciesManager* dependenciesM
         {
             Any anyPackageName;
             Any anyControlName;
-            FormulaExecutor executor(parentContext.get());
+            FormulaExecutor executor(parentContext);
             try
             {
                 anyPackageName = executor.Calculate(packageExpression.get());
@@ -99,7 +99,7 @@ bool UIDataChildFactory::Process(UIDataBindingDependenciesManager* dependenciesM
             catch (const FormulaException& error)
             {
                 hasToResetError = false;
-                NotifyError(error.GetErrorMessage(), "UIDataListComponent/dataContainer");
+                NotifyError(error.GetFormattedMessage(), "UIDataListComponent/dataContainer");
             }
 
             if (!anyPackageName.IsEmpty() && !anyControlName.IsEmpty())

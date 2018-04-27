@@ -186,7 +186,7 @@ bool UIDataList::Process(UIDataBindingDependenciesManager* dependenciesManager)
         {
             try
             {
-                FormulaExecutor executor(parentContext.get());
+                FormulaExecutor executor(parentContext);
                 Reflection dataRef = executor.GetDataReference(expression.get());
 
                 const Vector<void*>& dependencies = executor.GetDependencies();
@@ -205,7 +205,7 @@ bool UIDataList::Process(UIDataBindingDependenciesManager* dependenciesManager)
             catch (const FormulaException& error)
             {
                 hasToResetError = false;
-                NotifyError(error.GetErrorMessage(), "UIDataListComponent/dataContainer");
+                NotifyError(error.GetFormattedMessage(), "UIDataListComponent/dataContainer");
             }
         }
 

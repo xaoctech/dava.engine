@@ -30,7 +30,6 @@ private:
 
     void OnDataModelProcessed(DAVA::UIControl* control, DAVA::UIComponent* component);
     void OnSelectionChanged(const DAVA::Any& selectionValue);
-    void OnInspectDataIndexChanged(const DAVA::Any& val);
     void OnCurrentControlChanged(const DAVA::Any& val);
 
     void RefreshData();

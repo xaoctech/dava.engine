@@ -94,7 +94,7 @@ void UIDataBinding::ProcessReadFromModel(UIDataBindingDependenciesManager* depen
 
     if (expression.get() && component->GetUpdateMode() != UIDataBindingComponent::MODE_WRITE && (parent->IsDirty() || expChanged || dependenciesManager->IsDirty(dependencyId)))
     {
-        FormulaContext* context = parent->GetFormulaContext().get();
+        std::shared_ptr<FormulaContext> context = parent->GetFormulaContext();
         hasToResetError = true;
         try
         {
@@ -129,7 +129,7 @@ void UIDataBinding::ProcessReadFromModel(UIDataBindingDependenciesManager* depen
                 {
                     if (!val.IsEmpty())
                     {
-                        controlReflection.SetValue(val);
+                        controlReflection.SetValueWithCast(val);
                     }
                     else
                     {
@@ -145,7 +145,7 @@ void UIDataBinding::ProcessReadFromModel(UIDataBindingDependenciesManager* depen
         catch (const FormulaException& error)
         {
             hasToResetError = false;
-            NotifyError(error.GetErrorMessage(), component->GetControlFieldName());
+            NotifyError(error.GetFormattedMessage(), component->GetControlFieldName());
         }
         catch (const Exception& exception)
         {
@@ -164,7 +164,7 @@ bool UIDataBinding::ProcessWriteToModel(UIDataBindingDependenciesManager* depend
     bool result = false;
     if (expression.get() && component->GetUpdateMode() != UIDataBindingComponent::MODE_READ && !dependenciesManager->IsDirty(dependencyId))
     {
-        FormulaContext* context = parent->GetFormulaContext().get();
+        std::shared_ptr<FormulaContext> context = parent->GetFormulaContext();
         Any uiValue = controlReflection.GetValue();
         bool hasToResetError = true;
         try

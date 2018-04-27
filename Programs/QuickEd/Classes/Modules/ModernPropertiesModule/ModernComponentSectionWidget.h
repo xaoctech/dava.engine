@@ -36,6 +36,8 @@ public:
     ModernComponentSectionWidget(DAVA::ContextAccessor* accessor, DAVA::OperationInvoker* invoker, DAVA::UI* ui, ControlNode* controlNode, const DAVA::Type* componentType);
     ~ModernComponentSectionWidget() override;
 
+    void RecreateProperties() override;
+
     void AttachComponentPropertiesSection(ComponentPropertiesSection* section, RootProperty* root);
     void DetachComponentPropertiesSection();
 

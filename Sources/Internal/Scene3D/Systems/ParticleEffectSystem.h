@@ -102,6 +102,7 @@ private:
     void ApplyGlobalForces(Particle* particle, float32 dt, float32 overLife, float32 layerOverLife, Vector3 prevParticlePosition);
     void UpdateStripe(Particle* particle, ParticleEffectData& effectData, ParticleGroup& group, float32 dt, AABBox3& bbox, const Vector<Vector3>& currForceValues, int32 forcesCount, bool isActive);
     void SimulateEffect(ParticleEffectComponent* effect);
+    void FillEmitterRadiuses(const ParticleGroup& group, float32& radius, float32& innerRadius);
 
     Map<String, float32> globalExternalValues;
     Vector<ParticleEffectComponent*> activeComponents;

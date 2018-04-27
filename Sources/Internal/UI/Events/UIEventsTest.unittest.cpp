@@ -106,25 +106,25 @@ DAVA_TESTCLASS (UIEventsTest)
 
         // Bind action
         auto actions = text->GetOrCreateComponent<UIEventBindingComponent>();
-        actions->BindAction(DISPATCH_TEST_EVENT, [&]() {
+        actions->BindAction(DISPATCH_TEST_EVENT, [&](const Any& data) {
             dispatchTest = true;
         });
 
         auto actionsChild = childText->GetOrCreateComponent<UIEventBindingComponent>();
-        actionsChild->BindAction(BROADCAST_TEST_EVENT, [&]() {
+        actionsChild->BindAction(BROADCAST_TEST_EVENT, [&](const Any& data) {
             broadcastTest = true;
         });
 
         TEST_VERIFY(!dispatchTest);
         TEST_VERIFY(!broadcastTest);
 
-        TEST_VERIFY(eventsSingle->SendEvent(childText.Get(), DISPATCH_TEST_EVENT));
+        TEST_VERIFY(eventsSingle->SendEvent(childText.Get(), DISPATCH_TEST_EVENT, Any()));
         sys->Process(0.f);
 
         TEST_VERIFY(dispatchTest);
         TEST_VERIFY(!broadcastTest);
 
-        TEST_VERIFY(eventsSingle->SendBroadcastEvent(text.Get(), BROADCAST_TEST_EVENT));
+        TEST_VERIFY(eventsSingle->SendBroadcastEvent(text.Get(), BROADCAST_TEST_EVENT, Any()));
         sys->Process(0.f);
 
         TEST_VERIFY(dispatchTest);
@@ -136,7 +136,7 @@ DAVA_TESTCLASS (UIEventsTest)
         actions->UnbindAction(DISPATCH_TEST_EVENT);
         TEST_VERIFY(!dispatchTest);
 
-        eventsSingle->SendEvent(childText.Get(), DISPATCH_TEST_EVENT);
+        eventsSingle->SendEvent(childText.Get(), DISPATCH_TEST_EVENT, Any());
         sys->Process(0.f);
 
         TEST_VERIFY(!dispatchTest);
@@ -146,8 +146,8 @@ DAVA_TESTCLASS (UIEventsTest)
         clone->Release();
 
         FastName empty;
-        TEST_VERIFY(!eventsSingle->SendEvent(childText.Get(), empty));
-        TEST_VERIFY(!eventsSingle->SendBroadcastEvent(text.Get(), empty));
+        TEST_VERIFY(!eventsSingle->SendEvent(childText.Get(), empty, Any()));
+        TEST_VERIFY(!eventsSingle->SendBroadcastEvent(text.Get(), empty, Any()));
     }
 
     DAVA_TEST (ShortcutsTest)
@@ -193,7 +193,7 @@ DAVA_TESTCLASS (UIEventsTest)
         auto TEST_GLOBAL_F2_EVENT = FastName("TEST_GLOBAL_F2");
 
         int32 count = 0;
-        sys->BindGlobalAction(TEST_GLOBAL_F2_EVENT, [&]() {
+        sys->BindGlobalAction(TEST_GLOBAL_F2_EVENT, [&](const Any& data) {
             count++;
         });
 
@@ -226,7 +226,7 @@ DAVA_TESTCLASS (UIEventsTest)
             eventNames.push_back(name);
             results.push_back(false);
 
-            actions->BindAction(name, [&results, idx]() {
+            actions->BindAction(name, [&results, idx](const Any& data) {
                 results[idx] = true;
             });
         }

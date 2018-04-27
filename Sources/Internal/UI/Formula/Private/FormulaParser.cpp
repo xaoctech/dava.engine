@@ -7,10 +7,11 @@
     \ingroup formula
  
     grammar formula; // antlr EBNF format https://github.com/antlr/antlr4/blob/master/doc/index.md
-
+ 
  expression: whenExpression  | vector | map;
- vector: OPEN_SQUARE_BRACKET expression* CLOSE_SQUAR_BRACKET;
- map: OPEN_CURLY_BRACKET (IDENTIFIER EQ expression)* CLOSE_CURLY_BRACKET;
+ 
+ vector: OPEN_SQUARE_BRACKET (expression SEMICOLON)* expression? CLOSE_SQUAR_BRACKET;
+ map: OPEN_CURLY_BRACKET (IDENTIFIER ASSIGN expression SEMICOLON)* (IDENTIFIER ASSIGN expression)? CLOSE_CURLY_BRACKET;
  
  whenExpression : logicalOrExpression | WHEN whenEntry+ elseExpression;
  whenEntry: whenExpression ARROW whenExpression COMMA;
@@ -49,6 +50,7 @@
  fragment LONG_SUFFIX: [lL];
  
  COMMA: ',';
+ SEMICOLON: ';';
  DOT: '.';
  LT: '<';
  LE: '<=';
@@ -59,7 +61,8 @@
  MUL: '*';
  DIV: '/';
  MOD: '%';
- EQ: '=';
+ ASSIGN: '=';
+ EQ: '==';
  NOT_EQ: '!=';
  NOT: 'not';
  AND: 'and';
@@ -73,6 +76,7 @@
  CLOSE_SQUAR_BRACKET: ']';
  
  WS : [ \t\r\n]+ -> skip ;
+
  */
 
 namespace DAVA
@@ -134,13 +138,14 @@ shared_ptr<FormulaDataMap> FormulaParser::ParseMap()
     shared_ptr<FormulaDataMap> map = make_shared<FormulaDataMap>();
 
     FormulaToken token = LookToken();
-    while (token.GetType() == FormulaToken::IDENTIFIER)
+    bool inProgress = token.GetType() == FormulaToken::IDENTIFIER;
+    while (inProgress)
     {
         token = NextToken();
         String name = GetTokenStringValue(token);
 
         token = NextToken();
-        if (token.GetType() != FormulaToken::EQ)
+        if (token.GetType() != FormulaToken::ASSIGN)
         {
             DAVA_THROW(FormulaException, "'=' expected", token.GetLineNumber(), token.GetPositionInLine());
         }
@@ -163,6 +168,16 @@ shared_ptr<FormulaDataMap> FormulaParser::ParseMap()
         }
 
         token = LookToken();
+        if (token.GetType() == FormulaToken::SEMICOLON)
+        {
+            NextToken(); // semicolon
+            token = LookToken();
+            inProgress = token.GetType() == FormulaToken::IDENTIFIER;
+        }
+        else
+        {
+            inProgress = false;
+        }
     }
 
     return map;
@@ -174,7 +189,8 @@ std::shared_ptr<FormulaDataVector> FormulaParser::ParseVector()
 
     int32 index = 0;
     FormulaToken token = LookToken();
-    while (token.GetType() != FormulaToken::CLOSE_SQUARE_BRACKET)
+    bool inProgress = token.GetType() != FormulaToken::CLOSE_SQUARE_BRACKET;
+    while (inProgress)
     {
         shared_ptr<FormulaExpression> exp = ParseExpression();
         if (!exp)
@@ -193,6 +209,18 @@ std::shared_ptr<FormulaDataVector> FormulaParser::ParseVector()
         }
 
         token = LookToken();
+
+        if (token.GetType() == FormulaToken::SEMICOLON)
+        {
+            NextToken(); // semicolon
+            token = LookToken();
+            inProgress = token.GetType() != FormulaToken::CLOSE_SQUARE_BRACKET;
+        }
+        else
+        {
+            inProgress = false;
+        }
+
         index++;
     }
 

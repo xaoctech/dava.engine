@@ -150,7 +150,7 @@ float32 SizeMeasuringAlgorithm::Calculate()
         value = ClampValue(percentedValue);
     }
 
-    return Max(value, 0.0f);
+    return DAVA::Max(value, 0.0f);
 }
 
 float32 SizeMeasuringAlgorithm::CalculateFixedSize() const
@@ -248,7 +248,7 @@ float32 SizeMeasuringAlgorithm::CalculateHorizontalFlowLayoutChildrenSum() const
 
             if (newLineBeforeThis)
             {
-                maxWidth = Max(maxWidth, lineWidth);
+                maxWidth = DAVA::Max(maxWidth, lineWidth);
                 lineWidth = 0.0f;
                 firstInLine = true;
             }
@@ -262,7 +262,7 @@ float32 SizeMeasuringAlgorithm::CalculateHorizontalFlowLayoutChildrenSum() const
         }
     }
 
-    maxWidth = Max(maxWidth, lineWidth);
+    maxWidth = DAVA::Max(maxWidth, lineWidth);
     return maxWidth;
 }
 
@@ -281,7 +281,7 @@ float32 SizeMeasuringAlgorithm::CalculateVerticalFlowLayoutChildrenSum() const
         if (childData.HaveToSkipControl(skipInvisible))
             continue;
 
-        lineHeight = Max(lineHeight, childData.GetHeight());
+        lineHeight = DAVA::Max(lineHeight, childData.GetHeight());
 
         if (childData.HasFlag(ControlLayoutData::FLAG_LAST_IN_LINE))
         {
@@ -307,7 +307,7 @@ float32 SizeMeasuringAlgorithm::CalculateMaxChild() const
         const ControlLayoutData& childData = layoutData[i];
         if (!childData.HaveToSkipControl(skipInvisible))
         {
-            value = Max(value, GetSize(childData));
+            value = DAVA::Max(value, GetSize(childData));
         }
     }
 
@@ -455,7 +455,7 @@ float32 SizeMeasuringAlgorithm::ClampValue(float32 value) const
     UISizePolicyComponent::eSizePolicy policy = sizePolicy->GetPolicyByAxis(axis);
     if (policy != UISizePolicyComponent::PERCENT_OF_PARENT && policy != UISizePolicyComponent::IGNORE_SIZE)
     {
-        return Clamp(value, sizePolicy->GetMinValueByAxis(axis), sizePolicy->GetMaxValueByAxis(axis));
+        return DAVA::Clamp(value, sizePolicy->GetMinValueByAxis(axis), sizePolicy->GetMaxValueByAxis(axis));
     }
     return value;
 }
@@ -475,17 +475,17 @@ float32 SizeMeasuringAlgorithm::GetValue() const
     return sizePolicy->GetValueByAxis(axis);
 }
 
-float32 SizeMeasuringAlgorithm::Min(float32 a, float32 b) const
+float32 SizeMeasuringAlgorithm::Min(const std::shared_ptr<FormulaContext>& context, float32 a, float32 b) const
 {
     return DAVA::Min(a, b);
 }
 
-float32 SizeMeasuringAlgorithm::Max(float32 a, float32 b) const
+float32 SizeMeasuringAlgorithm::Max(const std::shared_ptr<FormulaContext>& context, float32 a, float32 b) const
 {
     return DAVA::Max(a, b);
 }
 
-float32 SizeMeasuringAlgorithm::Clamp(float32 val, float32 a, float32 b) const
+float32 SizeMeasuringAlgorithm::Clamp(const std::shared_ptr<FormulaContext>& context, float32 val, float32 a, float32 b) const
 {
     return DAVA::Clamp(val, a, b);
 }

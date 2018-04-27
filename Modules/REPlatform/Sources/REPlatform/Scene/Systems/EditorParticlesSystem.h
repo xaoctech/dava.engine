@@ -46,11 +46,12 @@ private:
     void DrawEmitter(ParticleEmitterInstance* emitter, Entity* owner, bool selected);
 
     void DrawSizeCircle(Entity* effectEntity, ParticleEmitterInstance* emitter);
-    void DrawSizeCircleShockWave(Entity* effectEntity, ParticleEmitterInstance* emitter);
+    void DrawSizeSphere(Entity* effectEntity, ParticleEmitterInstance* emitter);
     void DrawSizeBox(Entity* effectEntity, ParticleEmitterInstance* emitter);
     void DrawVectorArrow(ParticleEmitterInstance* emitter, Vector3 center);
 
     void DrawParticleForces(ParticleForce* force);
+    void FillEmitterRadii(Entity* effectEntity, ParticleEmitterInstance* emitter, float32& radius, float32& innerRadius);
 
 private:
     Vector<Entity*> entities;

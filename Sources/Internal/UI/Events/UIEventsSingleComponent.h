@@ -10,13 +10,14 @@ class UIControl;
 
 struct DefferedEvent
 {
-    DefferedEvent(UIControl* control, const FastName& event, bool broadcast_);
+    DefferedEvent(UIControl* control, const FastName& event, const Any& data, bool broadcast_);
     DefferedEvent(const DefferedEvent&) = default;
     DefferedEvent() = default;
     ~DefferedEvent() = default;
 
     RefPtr<UIControl> control;
     FastName event;
+    Any data;
     bool broadcast;
 };
 
@@ -29,9 +30,9 @@ struct UIEventsSingleComponent : public UISingleComponent
     void ResetState() override;
 
     /** Send event through controls graph. */
-    bool SendEvent(UIControl* control, const FastName& event);
+    bool SendEvent(UIControl* control, const FastName& event, const Any& data);
 
     /** Broadcast event to control children. */
-    bool SendBroadcastEvent(UIControl* control, const FastName& event);
+    bool SendBroadcastEvent(UIControl* control, const FastName& event, const Any& data);
 };
 }

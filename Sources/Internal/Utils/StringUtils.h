@@ -107,6 +107,13 @@ WideString RemoveNonPrintable(const WideString& string, const int8 tabRule = -1)
 void ReplaceAll(WideString& string, const WideString& search, const WideString& replacement);
 
 /**
+ * \brief Substitute all param occurrences like '%(param_name)' in source string with values from replacements map.
+ * \param string Original string with params %(param_name1), %(param_name2), etc.
+ * \param replacements Map with substitutions like 'param_name' = 'ParamValue'
+ */
+String SubstituteParams(const String& string, const DAVA::UnorderedMap<DAVA::String, DAVA::String>& replacements);
+
+/**
 * \brief Query if 't' is kind of printable character.
 * \param t The char16 to process.
 * \return false if not printable.
